@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>5.1. MBStyle Quickstart &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="5.2. Lines" href="linestring.html" />
+    <link rel="prev" title="5. MBStyle Styling Workbook" href="index.html" /> 
+  </head><body class="styling/workshop/mbstyle/mbstyle">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling Workshop</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U"><span class="section-number">5. </span>MBStyle Styling Workbook</a> &raquo;</li>
+    <li>5.1. MBStyle Quickstart</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="linestring.html" title="<span class="section-number">5.2. </span>Lines" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="<span class="section-number">5. </span>MBStyle Styling Workbook" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="mbstyle-quickstart">
+<span id="styling-workshop-mbstyle-quickstart"></span><h1><span class="section-number">5.1. </span>MBStyle Quickstart<a class="headerlink" href="#mbstyle-quickstart" title="Permalink to this headline">¶</a></h1>
+<p>In the last section, we saw how the OGC defines style using XML documents (called SLD files).</p>
+<p>We will now explore GeoServer styling in greater detail using a tool to generate our SLD files. The <strong>MBStyle</strong> GeoServer extension is used to generate SLD files using the <strong>MabBox Style</strong> styling language. Styles written in this language can also be used to style <a class="reference internal" href="../../../extensions/vectortiles/index.html#vectortiles"><span class="std std-ref">vector tiles</span></a> in client-side applications.</p>
+<p>Using the MBStyle extension to define styles results in shorter examples that are easier to understand. At any point we will be able to review the generated SLD file.</p>
+<p>Reference:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../mbstyle/reference/index.html#mbstyle-reference"><span class="std std-ref">MBStyle Reference</span></a></p></li>
+</ul>
+<div class="section" id="mbstyle-syntax">
+<h2><span class="section-number">5.1.1. </span>MBStyle Syntax<a class="headerlink" href="#mbstyle-syntax" title="Permalink to this headline">¶</a></h2>
+<p>This section provides a quick introduction to MBStyle syntax for mapping professionals who may not be familiar with JSON.</p>
+<div class="section" id="json-syntax">
+<h3><span class="section-number">5.1.1.1. </span>JSON Syntax<a class="headerlink" href="#json-syntax" title="Permalink to this headline">¶</a></h3>
+<p>All MBStyles consist of a JSON document. There are three types of structures in a JSON document:</p>
+<ol class="arabic simple">
+<li><p>Object, a collection of key-value pairs. All JSON documents are JSON objects.</p></li>
+<li><p>Array, a collection of values.</p></li>
+<li><p>Value, the value in a key-value pair, or an entry in an array. Values can be objects, arrays, strings, numbers, <cite>true</cite>, <cite>false</cite>, or <cite>null</cite>.</p></li>
+</ol>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 93%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Object</p></td>
+<td><p>A collection of key-value pairs, enclosed by curly braces and delimited by commas. Keys are surrounded by quotes and seperarted from values by a colon.</p></td>
+</tr>
+<tr class="row-even"><td><p>Array</p></td>
+<td><p>A collection values, enclosed by square brackets and delimited by commas.</p></td>
+</tr>
+<tr class="row-odd"><td><p>String</p></td>
+<td><p>Text value.  Must be surrounded by quotes.</p></td>
+</tr>
+<tr class="row-even"><td><p>Number</p></td>
+<td><p>Numerical value. Must not be surrounded by quotes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Boolean</p></td>
+<td><p><cite>true</cite> or <cite>false</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Null</p></td>
+<td><p><cite>null</cite>. Represents an undefined or unset value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="mbstyle-specification">
+<h3><span class="section-number">5.1.1.2. </span>MBStyle Specification<a class="headerlink" href="#mbstyle-specification" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="https://www.mapbox.com/mapbox-gl-js/style-spec/">Mapbox Style specification</a> defines a number of additional rules that MBStyles must follow.</p>
+<div class="section" id="root-level-properties">
+<h4><span class="section-number">5.1.1.2.1. </span>Root-level Properties<a class="headerlink" href="#root-level-properties" title="Permalink to this headline">¶</a></h4>
+<p>Root level properties of a Mapbox style specify the map’s layers, tile sources and other resources, and default values for the initial camera position when not specified elsewhere.</p>
+<p>The following root-level properties are required for all MBStyles. Additional root-level properties which are supported but not required can be found in the spec.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><cite>version</cite></p></td>
+<td><p>The version of the Mapbox Style specification to use. Must be set to <cite>8</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>name</cite></p></td>
+<td><p>The name of the style.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>sources</cite></p></td>
+<td><p>An object defining the source data. Not used by GeoServer.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>layers</cite></p></td>
+<td><p>An array of layer style objects</p></td>
+</tr>
+</tbody>
+</table>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Streets&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+    <span class="s2">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sources">
+<h4><span class="section-number">5.1.1.2.2. </span>Sources<a class="headerlink" href="#sources" title="Permalink to this headline">¶</a></h4>
+<p>The sources parameter consists of a collection of named sources which define vector tile data the style is to be applied to. This is only used for MBStyles used in client-side applications, and is ignored by GeoServer. If you are only using MBStyles to style your layers within GeoServer, you don’t need a sources parameter. However, if you also want to use your MBStyles for client-side styling, you will need the sources parameter.</p>
+<p>A GeoServer vector tile source would be defined like this:</p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;cookbook&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;tiles&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&amp;SERVICE=WMTS&amp;VERSION=1.0.0&amp;LAYER=cookbook&amp;STYLE=&amp;TILEMATRIX=EPSG:900913:{z}&amp;TILEMATRIXSET=EPSG:900913&amp;FORMAT=application/vnd.mapbox-vector-tile&amp;TILECOL={x}&amp;TILEROW={y}&quot;</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;minZoom&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;maxZoom&quot;</span><span class="p">:</span> <span class="mi">14</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="layers">
+<h4><span class="section-number">5.1.1.2.3. </span>Layers<a class="headerlink" href="#layers" title="Permalink to this headline">¶</a></h4>
+<p>The layers parameter contains the primary layout and styling information in the MBStyle. Each layer in the layers list is a self-contained block of styling information. Layers are applied in order, so the last layer in the layers list will be rendered at the top of the image.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A layer in an MBStyle is not the same as a layer in GeoServer. A GeoServer layer is a raster or vector dataset that represents a collection of geographic features. A MBStyle layer is a block of styling information, similar to a SLD Symbolizer.</p>
+</div>
+<p>&lt;Example&gt;</p>
+<p>Reference:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../mbstyle/index.html#mbstyle-styling"><span class="std std-ref">MBStyle Styling</span></a> (User Guide)</p></li>
+<li><p><a class="reference external" href="https://www.mapbox.com/mapbox-gl-js/style-spec/">Mapbox Style specification</a></p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="compare-mbstyle-to-sld">
+<h2><span class="section-number">5.1.2. </span>Compare MBStyle to SLD<a class="headerlink" href="#compare-mbstyle-to-sld" title="Permalink to this headline">¶</a></h2>
+<p>The MBStyle extension is built with the same GeoServer rendering engine in mind, providing access to most of the functionality of SLD. The two approaches use slightly different terminology: SLD uses terms familiar to mapping professionals, while MBStyle uses ideas more familiar to web developers.</p>
+<div class="section" id="sld-style">
+<h3><span class="section-number">5.1.2.1. </span>SLD Style<a class="headerlink" href="#sld-style" title="Permalink to this headline">¶</a></h3>
+<p>Here is an example <a class="reference download internal" download="" href="../../../_downloads/6b267cdfd71b6d4d5037c808f44c5be5/airports0.sld"><code class="xref download docutils literal notranslate"><span class="pre">SLD</span> <span class="pre">file</span></code></a> for reference:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="lineno"> 2 </span><span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+<span class="lineno"> 3 </span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;</span>
+<span class="lineno"> 4 </span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span>
+<span class="lineno"> 5 </span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+<span class="lineno"> 6 </span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+<span class="lineno"> 7 </span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 8 </span>  <span class="nt">&lt;NamedLayer&gt;</span>
+<span class="lineno"> 9 </span>    <span class="nt">&lt;Name&gt;</span>airports<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">10 </span>    <span class="nt">&lt;UserStyle&gt;</span>
+<span class="lineno">11 </span>      <span class="nt">&lt;Title&gt;</span>Airports<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno">12 </span>      <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno">13 </span>        <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">14 </span>          <span class="nt">&lt;Name&gt;</span>airports<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">15 </span>          <span class="nt">&lt;Title&gt;</span>Airports<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno">16 </span>          <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno">17 </span>            <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno">18 </span>              <span class="nt">&lt;ExternalGraphic&gt;</span>
+<span class="lineno">19 </span>                <span class="nt">&lt;OnlineResource</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+<span class="lineno">20 </span>                <span class="na">xlink:href=</span><span class="s">&quot;airport.svg&quot;</span> <span class="nt">/&gt;</span>
+<span class="lineno">21 </span>                <span class="nt">&lt;Format&gt;</span>image/svg<span class="nt">&lt;/Format&gt;</span>
+<span class="lineno">22 </span>              <span class="nt">&lt;/ExternalGraphic&gt;</span>
+<span class="lineno">23 </span>              <span class="nt">&lt;Size&gt;</span>16<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">24 </span>            <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">25 </span>          <span class="nt">&lt;/PointSymbolizer&gt;</span>
+<span class="lineno">26 </span>        <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">27 </span>      <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+<span class="lineno">28 </span>    <span class="nt">&lt;/UserStyle&gt;</span>
+<span class="lineno">29 </span>  <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="lineno">30 </span><span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mbstyle-style">
+<h3><span class="section-number">5.1.2.2. </span>MBStyle Style<a class="headerlink" href="#mbstyle-style" title="Permalink to this headline">¶</a></h3>
+<p>Here is the same example as <a class="reference download internal" download="" href="../../../_downloads/86cebc7074f2696e07deb6a7044ff1a0/airports0.json"><code class="xref download docutils literal notranslate"><span class="pre">MBStyle</span></code></a>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="p">{</span>
+<span class="lineno"> 2 </span>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="lineno"> 3 </span>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;airports&quot;</span><span class="p">,</span>
+<span class="lineno"> 4 </span>  <span class="nt">&quot;sprite&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/styles/sprites&quot;</span><span class="p">,</span>
+<span class="lineno"> 5 </span>  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="lineno"> 6 </span>      <span class="p">{</span>
+<span class="lineno"> 7 </span>          <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;airports&quot;</span><span class="p">,</span>
+<span class="lineno"> 8 </span>          <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+<span class="lineno"> 9 </span>          <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno">10 </span>              <span class="nt">&quot;icon-image&quot;</span><span class="p">:</span> <span class="s2">&quot;airport&quot;</span>
+<span class="lineno">11 </span>          <span class="p">}</span>
+<span class="lineno">12 </span>      <span class="p">}</span>
+<span class="lineno">13 </span>  <span class="p">]</span>
+<span class="lineno">14 </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>We use a point symbolizer to indicate we want this content drawn as a <strong>Point</strong> (line 16 in the SLD, line 8 in the MBStyle). The point symbolizer declares an external graphic, which contains the URL <kbd class="kbd docutils literal notranslate">airports.svg</kbd> indicating the image that should be drawn (line 20 in the SLD, line 10 in the MBStyle).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Rather than refer to many diffferent icons separately, MBStyles use a single sprite-sheet containing all the necessary icons for the style. This is defined by the <code class="docutils literal notranslate"><span class="pre">sprite</span></code> property at the top-level of the style.</p>
+</div>
+</div>
+</div>
+<div class="section" id="tour">
+<h2><span class="section-number">5.1.3. </span>Tour<a class="headerlink" href="#tour" title="Permalink to this headline">¶</a></h2>
+<p>To confirm everything works, let’s reproduce the airports style above.</p>
+<ol class="arabic">
+<li><p>Navigate to the <strong>Styles</strong> page.</p></li>
+<li><p>Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click <span class="guilabel">Add a new style</span> and choose the following:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Name:</p></td>
+<td><p><kbd class="kbd docutils literal notranslate">airports0</kbd></p></td>
+</tr>
+<tr class="row-even"><td><p>Workspace:</p></td>
+<td><p>(leave empty)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Format:</p></td>
+<td><p><kbd class="kbd docutils literal notranslate">MBStyle</kbd></p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p>Replace the initial MBStyle definition with our airport MBStyle example and click <span class="guilabel">Apply</span>:</p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;airports&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;sprite&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/styles/sprites&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+          <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;airports&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;icon-image&quot;</span><span class="p">:</span> <span class="s2">&quot;airport&quot;</span>
+          <span class="p">}</span>
+      <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Click the <span class="guilabel">Layer Preview</span> tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select <kbd class="kbd docutils literal notranslate">ne:airports</kbd> from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.</p>
+<div class="figure align-default" id="id2">
+<img alt="../../../_images/css_02_choose_data.png" src="../../../_images/css_02_choose_data.png" />
+<p class="caption"><span class="caption-text">Choosing the airports layer</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/css_06_preview.png" src="../../../_images/css_06_preview.png" />
+<p class="caption"><span class="caption-text">Layer preview</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click <span class="guilabel">Layer Data</span> for a summary of the selected data.</p>
+<div class="figure align-default" id="id4">
+<img alt="../../../_images/css_07_data.png" src="../../../_images/css_07_data.png" />
+<p class="caption"><span class="caption-text">Layer attributes</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="bonus">
+<h2><span class="section-number">5.1.4. </span>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
+<p>Finished early? For now please help your neighbour so we can proceed with the workshop.</p>
+<p>If you are really stuck please consider the following challenge rather than skipping ahead.</p>
+<div class="section" id="explore-data">
+<h3><span class="section-number">5.1.4.1. </span>Explore Data<a class="headerlink" href="#explore-data" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Return to the <span class="guilabel">Data</span> tab and use the <span class="guilabel">Compute</span> link to determine the minimum and maximum for the <strong>scalerank</strong> attribute.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-compare-sld-generation">
+<h3><span class="section-number">5.1.4.2. </span>Challenge Compare SLD Generation<a class="headerlink" href="#challenge-compare-sld-generation" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>The rest API can be used to review your YAML file directly.</p></li>
+</ol>
+<blockquote>
+<div><p>Browser:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="view-source:http://localhost:8080/geoserver/rest/styles/airport0.json">view-source:http://localhost:8080/geoserver/rest/styles/airport0.json</a></p></li>
+</ul>
+<p>Command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XGET</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">styles</span><span class="o">/</span><span class="n">airports0</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p>The REST API can also be used generate an SLD file:</p>
+<p>Browser:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="view-source:http://localhost:8080/geoserver/rest/styles/airport0.sld?pretty=true">view-source:http://localhost:8080/geoserver/rest/styles/airport0.sld?pretty=true</a></p></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<div><p>Command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld?pretty=true
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Compare the generated SLD differ above with the handwritten <a class="reference download internal" download="" href="../../../_downloads/6b267cdfd71b6d4d5037c808f44c5be5/airports0.sld"><code class="xref download docutils literal notranslate"><span class="pre">SLD</span> <span class="pre">file</span></code></a> used as an example?</p>
+<p><strong>Challenge:</strong> What differences can you spot?</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter"><span class="section-number">5. </span>MBStyle Styling Workbook</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="linestring.html" title="next chapter"><span class="section-number">5.2. </span>Lines</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">5.1. MBStyle Quickstart</a><ul>
+<li><a class="reference internal" href="#mbstyle-syntax">5.1.1. MBStyle Syntax</a><ul>
+<li><a class="reference internal" href="#json-syntax">5.1.1.1. JSON Syntax</a></li>
+<li><a class="reference internal" href="#mbstyle-specification">5.1.1.2. MBStyle Specification</a><ul>
+<li><a class="reference internal" href="#root-level-properties">5.1.1.2.1. Root-level Properties</a></li>
+<li><a class="reference internal" href="#sources">5.1.1.2.2. Sources</a></li>
+<li><a class="reference internal" href="#layers">5.1.1.2.3. Layers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compare-mbstyle-to-sld">5.1.2. Compare MBStyle to SLD</a><ul>
+<li><a class="reference internal" href="#sld-style">5.1.2.1. SLD Style</a></li>
+<li><a class="reference internal" href="#mbstyle-style">5.1.2.2. MBStyle Style</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tour">5.1.3. Tour</a></li>
+<li><a class="reference internal" href="#bonus">5.1.4. Bonus</a><ul>
+<li><a class="reference internal" href="#explore-data">5.1.4.1. Explore Data</a></li>
+<li><a class="reference internal" href="#challenge-compare-sld-generation">5.1.4.2. Challenge Compare SLD Generation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter"><span class="section-number">5. </span>MBStyle Styling Workbook</a></li>
+            <li>Next: <a href="linestring.html" title="next chapter"><span class="section-number">5.2. </span>Lines</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/workshop/mbstyle/mbstyle.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

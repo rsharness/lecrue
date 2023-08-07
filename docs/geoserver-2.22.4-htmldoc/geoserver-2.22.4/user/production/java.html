@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Considerations &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Container Considerations" href="container.html" />
+    <link rel="prev" title="Running in a production environment" href="index.html" /> 
+  </head><body class="production/java">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Running in a production environment</a> &raquo;</li>
+    <li>Java Considerations</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="container.html" title="Container Considerations" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="Running in a production environment" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="java-considerations">
+<span id="production-java"></span><h1>Java Considerations<a class="headerlink" href="#java-considerations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="use-supported-jre">
+<h2>Use supported JRE<a class="headerlink" href="#use-supported-jre" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer’s speed depends a lot on the chosen Java Runtime Environment (JRE). The latest versions of GeoServer are tested with both Oracle JRE and OpenJDK. Implementations other than those tested may work correctly, but are generally not recommended.</p>
+<p>Tested:</p>
+<ul class="simple">
+<li><p>Java 11 and Java 8 - GeoServer 2.15.x and above (OpenJDK tested)</p></li>
+<li><p>Java 8 - GeoServer 2.9.x and above (OpenJDK and Oracle JRE tested)</p></li>
+<li><p>Java 7 - GeoServer 2.6.x to GeoServer 2.8.x (OpenJDK and Oracle JRE tested)</p></li>
+<li><p>Java 6 - GeoServer 2.3.x to GeoServer 2.5.x (Oracle JRE tested)</p></li>
+<li><p>Java 5 - GeoServer 2.2.x and earlier (Sun JRE tested)</p></li>
+</ul>
+<p>As of GeoServer 2.0, a Java Runtime Environment (JRE) is sufficient to run GeoServer.  GeoServer no longer requires a Java Development Kit (JDK).</p>
+</div>
+<div class="section" id="running-on-java-17-experimental">
+<h2>Running on Java 17 (experimental!)<a class="headerlink" href="#running-on-java-17-experimental" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer 2.21.x is compatible with Java 17, but requires extra care for running in some environments.</p>
+<p>Deployment on Tomcat 9.0.55 has been tested with success.</p>
+<p>The “bin” packaging can work too, but requires turning off the Marlin rasterizer integration.
+This can be done by modifying the scripts, or by simply removing the Marlin jars:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="n">webapps</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">WEB</span><span class="o">-</span><span class="n">INF</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">marlin</span><span class="o">-</span><span class="mf">0.9</span><span class="o">.</span><span class="mf">3.</span><span class="n">jar</span>
+</pre></div>
+</div>
+<p>GeoServer code depends on a variety of libraries trying to access the JDK internals. As reported above,
+it does not seem to matter when running as a web application. However, in case of need, here is
+the full list of opens used by the build process:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">opens</span><span class="o">=</span><span class="n">java</span><span class="o">.</span><span class="n">base</span><span class="o">/</span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">=</span><span class="n">ALL</span><span class="o">-</span><span class="n">UNNAMED</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">opens</span><span class="o">=</span><span class="n">java</span><span class="o">.</span><span class="n">base</span><span class="o">/</span><span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">=</span><span class="n">ALL</span><span class="o">-</span><span class="n">UNNAMED</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">opens</span><span class="o">=</span><span class="n">java</span><span class="o">.</span><span class="n">base</span><span class="o">/</span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">reflect</span><span class="o">=</span><span class="n">ALL</span><span class="o">-</span><span class="n">UNNAMED</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">opens</span><span class="o">=</span><span class="n">java</span><span class="o">.</span><span class="n">base</span><span class="o">/</span><span class="n">java</span><span class="o">.</span><span class="n">text</span><span class="o">=</span><span class="n">ALL</span><span class="o">-</span><span class="n">UNNAMED</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">opens</span><span class="o">=</span><span class="n">java</span><span class="o">.</span><span class="n">desktop</span><span class="o">/</span><span class="n">java</span><span class="o">.</span><span class="n">awt</span><span class="o">.</span><span class="n">font</span><span class="o">=</span><span class="n">ALL</span><span class="o">-</span><span class="n">UNNAMED</span>  <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">opens</span><span class="o">=</span><span class="n">java</span><span class="o">.</span><span class="n">desktop</span><span class="o">/</span><span class="n">sun</span><span class="o">.</span><span class="n">awt</span><span class="o">.</span><span class="n">image</span><span class="o">=</span><span class="n">ALL</span><span class="o">-</span><span class="n">UNNAMED</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">opens</span><span class="o">=</span><span class="n">java</span><span class="o">.</span><span class="n">naming</span><span class="o">/</span><span class="n">com</span><span class="o">.</span><span class="n">sun</span><span class="o">.</span><span class="n">jndi</span><span class="o">.</span><span class="n">ldap</span><span class="o">=</span><span class="n">ALL</span><span class="o">-</span><span class="n">UNNAMED</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-on-java-11">
+<h2>Running on Java 11<a class="headerlink" href="#running-on-java-11" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer 2.15 will run under Java 11 with no additional configuration on <strong>Tomcat 9</strong> or newer and <strong>Jetty 9.4.12</strong> or newer.</p>
+<p>Running GeoServer under Java 11 on other Application Servers may require some additional configuration. Some Application Servers do not support Java 11 yet.</p>
+<ul>
+<li><p><strong>Wildfly 14</strong> supports Java 11, with some additional configuration - in the run configuration, under VM arguments add:</p>
+<blockquote>
+<div><p>–add-modules=java.se</p>
+</div></blockquote>
+<p>Future WildFly releases should support Java 11 with no additional configuration.</p>
+</li>
+<li><p><strong>GlassFish</strong> does not currently Java 11, although the upcoming 5.0.1 release is expected to include support for it.</p></li>
+<li><p><strong>WebLogic</strong> do not yet support Java 11.</p></li>
+</ul>
+</div>
+<div class="section" id="installing-unlimited-strength-jurisdiction-policy-files">
+<span id="java-policyfiles"></span><h2>Installing Unlimited Strength Jurisdiction Policy Files<a class="headerlink" href="#installing-unlimited-strength-jurisdiction-policy-files" title="Permalink to this headline">¶</a></h2>
+<p>These policy files are needed for unlimited cryptography. As an example, Java does not support AES
+with a key length of 256 bit. Installing the policy files removes these restrictions.</p>
+<div class="section" id="open-jdk">
+<h3>Open JDK<a class="headerlink" href="#open-jdk" title="Permalink to this headline">¶</a></h3>
+<p>Since Open JDK is Open Source, the policy files are already installed.</p>
+</div>
+<div class="section" id="oracle-java">
+<h3>Oracle Java<a class="headerlink" href="#oracle-java" title="Permalink to this headline">¶</a></h3>
+<p>The policy files are available at</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html">Java 8 JCE policy jars</a></p></li>
+</ul>
+<p>The download contains two files, <strong>local_policy.jar</strong> and  <strong>US_export_policy.jar</strong>. The default
+versions of these two files are stored in JRE_HOME/lib/security. Replace these two files with the
+versions from the download.</p>
+<div class="section" id="test-if-unlimited-key-length-is-available">
+<h4>Test if unlimited key length is available<a class="headerlink" href="#test-if-unlimited-key-length-is-available" title="Permalink to this headline">¶</a></h4>
+<p>Start or restart GeoServer and login as administrator. The annotated warning should have disappeared.</p>
+<div class="figure align-default">
+<img alt="../_images/unlimitedkey.png" src="../_images/unlimitedkey.png" />
+</div>
+<p>Additionally, the GeoServer log file should contain the following line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Strong cryptography is available&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The replacement has to be done for each update of the Java runtime.</p>
+</div>
+</div>
+</div>
+<div class="section" id="ibm-java">
+<h3>IBM Java<a class="headerlink" href="#ibm-java" title="Permalink to this headline">¶</a></h3>
+<p>The policy files are available at</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www14.software.ibm.com/webapp/iwm/web/preLogin.do?source=jcesdk">IBM JCE policy jars</a></p></li>
+</ul>
+<p>An IBM ID is needed to log in. The installation is identical to Oracle.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">Running in a production environment</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="container.html" title="next chapter">Container Considerations</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Java Considerations</a><ul>
+<li><a class="reference internal" href="#use-supported-jre">Use supported JRE</a></li>
+<li><a class="reference internal" href="#running-on-java-17-experimental">Running on Java 17 (experimental!)</a></li>
+<li><a class="reference internal" href="#running-on-java-11">Running on Java 11</a></li>
+<li><a class="reference internal" href="#installing-unlimited-strength-jurisdiction-policy-files">Installing Unlimited Strength Jurisdiction Policy Files</a><ul>
+<li><a class="reference internal" href="#open-jdk">Open JDK</a></li>
+<li><a class="reference internal" href="#oracle-java">Oracle Java</a><ul>
+<li><a class="reference internal" href="#test-if-unlimited-key-length-is-available">Test if unlimited key length is available</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ibm-java">IBM Java</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">Running in a production environment</a></li>
+            <li>Next: <a href="container.html" title="next chapter">Container Considerations</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/production/java.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

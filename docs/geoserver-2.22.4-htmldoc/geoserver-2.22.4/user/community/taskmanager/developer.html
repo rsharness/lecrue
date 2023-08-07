@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Developer’s Guide &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Teradata" href="../teradata/index.html" />
+    <link rel="prev" title="TaskManager User Guide" href="user.html" /> 
+  </head><body class="community/taskmanager/developer">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Geoserver Task Manager</a> &raquo;</li>
+    <li>Developer’s Guide</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../teradata/index.html" title="Teradata" accesskey="N">Next</a></li>
+  <li>
+    <a href="user.html" title="TaskManager User Guide" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="developer-s-guide">
+<h1>Developer’s Guide<a class="headerlink" href="#developer-s-guide" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="#task-types">Task Types</a> - write your own operations</p></li>
+<li><p><a class="reference external" href="#actions">Actions</a> - extend the GUI for your tasks</p></li>
+<li><p><a class="reference external" href="#reporting">Reporting</a> - choose the content and destination of
+your batch reports</p></li>
+</ul>
+<div class="section" id="task-types">
+<h2>Task Types<a class="headerlink" href="#task-types" title="Permalink to this headline">¶</a></h2>
+<p>Task manager can be extended with custom made task types. Make your own
+implementation of the interface <code class="docutils literal notranslate"><span class="pre">TaskType</span></code> and let it be a spring
+bean. The name provided via the <code class="docutils literal notranslate"><span class="pre">Named</span></code> interface is used as a
+reference.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * A Task Type.</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">TaskType</span> <span class="kd">extends</span> <span class="n">Named</span> <span class="p">{</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Return parameter info for this task type.</span>
+<span class="cm">     * It is recommended to use a LinkedHashMap and add the parameters in a intuitive order.</span>
+<span class="cm">     * This order will be preserved to present parameters to the user.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return the parameter info</span>
+<span class="cm">     */</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">ParameterInfo</span><span class="o">&gt;</span> <span class="nf">getParameterInfo</span><span class="p">();</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Run a task, based on these parameter values.</span>
+<span class="cm">     * @param ctx task context</span>
+<span class="cm">     * @return the task result</span>
+<span class="cm">     */</span>
+    <span class="n">TaskResult</span> <span class="nf">run</span><span class="p">(</span><span class="n">TaskContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">TaskException</span><span class="p">;</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Do a clean-up for this task (for example, if this task publishes something, remove it).</span>
+<span class="cm">     * @param ctx task context</span>
+<span class="cm">     * @throws TaskException</span>
+<span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">cleanup</span><span class="p">(</span><span class="n">TaskContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">TaskException</span><span class="p">;</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * task type can specify whether it supports clean-up or not</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return true if clean-up is supported</span>
+<span class="cm">     */</span>
+    <span class="k">default</span> <span class="kt">boolean</span> <span class="nf">supportsCleanup</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A ParameterInfo object contains a name, a <a class="reference external" href="#parameter-type">type</a>,
+whether they are required, and which other parameters they depend on
+(for example, a database table depends on a database).</p>
+<p>The Task context looks as follows:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Task Context used during batch run or task clean-up.</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">TaskContext</span> <span class="p">{</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * @return the task</span>
+<span class="cm">     */</span>
+    <span class="n">Task</span> <span class="nf">getTask</span><span class="p">();</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * @return the batch context, null if this is a clean-up</span>
+<span class="cm">     */</span>
+    <span class="n">BatchContext</span> <span class="nf">getBatchContext</span><span class="p">();</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return the parameter values, lazy loaded from task and configuration.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @throws TaskException</span>
+<span class="cm">     */</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">getParameterValues</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">TaskException</span><span class="p">;</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Tasks can call this function to check if the user wants to interrupt the batch</span>
+<span class="cm">     * and interrupt themselves.</span>
+<span class="cm">     * If they do, they should still return a TaskResult that implements a roll back</span>
+<span class="cm">     * of what was already done.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return whether the batch run should be interrupted, false if this is a clean-up</span>
+<span class="cm">     */</span>
+    <span class="kt">boolean</span> <span class="nf">isInterruptMe</span><span class="p">();</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The batch context looks as follows:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * During run, tasks create temporary objects that are committed to real objects during</span>
+<span class="cm"> * the commit phase (such as a table name) This maps real objects</span>
+<span class="cm"> * to temporary objects during a single batch run. Tasks should save and look up temporary</span>
+<span class="cm"> * objects so that tasks within a batch can work together.</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">BatchContext</span> <span class="p">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">interface</span> <span class="nc">Dependency</span> <span class="p">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">revert</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">TaskException</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">Object</span> <span class="nf">get</span><span class="p">(</span><span class="n">Object</span> <span class="n">original</span><span class="p">);</span>
+
+    <span class="n">Object</span> <span class="nf">get</span><span class="p">(</span><span class="n">Object</span> <span class="n">original</span><span class="p">,</span> <span class="n">Dependency</span> <span class="n">dependency</span><span class="p">);</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Whatever is put here in the task, must be removed in the commit!</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param original</span>
+<span class="cm">     * @param temp</span>
+<span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">put</span><span class="p">(</span><span class="n">Object</span> <span class="n">original</span><span class="p">,</span> <span class="n">Object</span> <span class="n">temp</span><span class="p">);</span>
+
+    <span class="kt">void</span> <span class="nf">delete</span><span class="p">(</span><span class="n">Object</span> <span class="n">original</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">TaskException</span><span class="p">;</span>
+
+    <span class="n">BatchRun</span> <span class="nf">getBatchRun</span><span class="p">();</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The task result looks as follows:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * A handle of a task that was run but must still be committed or rolled back.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">TaskResult</span> <span class="p">{</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * finalize and clean-up resources any roll-back data</span>
+<span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">commit</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">TaskException</span><span class="p">;</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * batch has failed - cancel all changes</span>
+<span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">rollback</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">TaskException</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is an example of how a task type can create temporary object:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">//inside TaskType.run method</span>
+
+<span class="n">ctx</span><span class="p">.</span><span class="na">getBatchContext</span><span class="p">().</span><span class="na">put</span><span class="p">(</span><span class="n">originalObject</span><span class="p">,</span> <span class="n">tempObject</span><span class="p">)</span>
+
+<span class="p">...</span>
+
+<span class="k">return</span> <span class="k">new</span> <span class="n">TaskResult</span><span class="p">()</span> <span class="p">{</span>
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commit</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">TaskException</span> <span class="p">{</span>
+       <span class="c1">//this MUST be done!!!</span>
+       <span class="n">ctx</span><span class="p">.</span><span class="na">getBatchContext</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="n">originalObject</span><span class="p">)</span>
+   <span class="p">}</span>
+
+       <span class="p">...</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Another task type would use this temporary object as follows:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span> <span class="c1">//inside TaskType.run method</span>
+
+<span class="n">Object</span> <span class="n">tempObject</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="na">getBatchContext</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="n">originalObject</span><span class="p">,</span> <span class="k">new</span> <span class="n">Dependency</span><span class="p">()</span> <span class="p">{</span>
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">revert</span><span class="p">()</span> <span class="p">{</span>
+       <span class="n">Object</span> <span class="n">object</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="na">getBatchContext</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="n">originalObject</span><span class="p">);</span>
+
+       <span class="n">mySomething</span><span class="p">.</span><span class="na">setMyProperty</span><span class="p">(</span><span class="n">object</span><span class="p">);</span>
+       <span class="n">mySomething</span><span class="p">.</span><span class="na">save</span><span class="p">();</span>
+   <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="n">mySomething</span><span class="p">.</span><span class="na">setMyProperty</span><span class="p">(</span><span class="n">tempObject</span><span class="p">);</span>
+<span class="n">mySomething</span><span class="p">.</span><span class="na">save</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="section" id="parameter-types">
+<h3>Parameter Types<a class="headerlink" href="#parameter-types" title="Permalink to this headline">¶</a></h3>
+<p>Custom task types may use existing or define new parameter types. They
+handle parameter validation, parsing parameter Strings into other object
+types, and provide information to the GUI about the parameters.</p>
+<p>Existing regular Parameter Types (static members of <code class="docutils literal notranslate"><span class="pre">ParameterType</span></code>
+interface):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">STRING</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">INTEGER</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BOOLEAN</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">URI</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SQL</span></code> (protects against ‘;’ hacking)</p></li>
+</ul>
+<p>External Parameter Types (members of <code class="docutils literal notranslate"><span class="pre">ExtTypes</span></code> spring bean): *
+<code class="docutils literal notranslate"><span class="pre">dbName</span></code>: <a class="reference external" href="user#databases">database name</a> * <code class="docutils literal notranslate"><span class="pre">tableName</span></code>:
+table name (parameter must depend on parameter of <code class="docutils literal notranslate"><span class="pre">dbName</span></code> type) *
+<code class="docutils literal notranslate"><span class="pre">extGeoserver</span></code>: <a class="reference external" href="user#external-geoservers">external geoserver</a>
+* <code class="docutils literal notranslate"><span class="pre">internalLayer</span></code>: layer from geoserver catalog * <code class="docutils literal notranslate"><span class="pre">name</span></code>: name
+qualified with namespace from geoserver catalog * <code class="docutils literal notranslate"><span class="pre">fileService</span></code>:
+<a class="reference external" href="user#file-services">file service</a> * <code class="docutils literal notranslate"><span class="pre">file</span></code>: reference to file
+(parameter must dpend of parameter of <code class="docutils literal notranslate"><span class="pre">fileService</span></code> type)</p>
+<p>Defining a new Parameter Type:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * A Parameter Type For a Task</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ParameterType</span> <span class="p">{</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * List possible values for this parameter (when applicable).</span>
+<span class="cm">     * Include an empty string if custom value is also allowed.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param dependsOnRawValues raw values of depending parameters.</span>
+<span class="cm">     * @return list of possible values, null if not applicable.</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getDomain</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">dependsOnRawValues</span><span class="p">);</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Validate and parse a parameter value for this parameter (at run time).</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param value the raw value.</span>
+<span class="cm">     * @param dependsOnRawValues raw values of depending parameters.</span>
+<span class="cm">     * @return the parsed value, NULL if the value is invalid.</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">parse</span><span class="p">(</span><span class="n">String</span> <span class="n">value</span><span class="p">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">dependsOnRawValues</span><span class="p">);</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Validate a parameter value (at configuration time).</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param value the raw value.</span>
+<span class="cm">     * @param dependsOnRawValues raw values of depending parameters.</span>
+<span class="cm">     * @return true if the value is considered valid at configuration time (may still be considered</span>
+<span class="cm">     * invalid at parse time)</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="k">default</span> <span class="kt">boolean</span> <span class="nf">validate</span><span class="p">(</span><span class="n">String</span> <span class="n">value</span><span class="p">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">dependsOnRawValues</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">parse</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dependsOnRawValues</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Returns a list of web actions related to this type</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return list of web actions</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="k">default</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getActions</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Collections</span><span class="p">.</span><span class="na">emptyList</span><span class="p">();</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="actions">
+<h2>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h2>
+<p>Actions are extensions to the taskmanager webGUI attached to particular
+parameter types.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Action</span> <span class="kd">extends</span> <span class="n">Named</span><span class="p">,</span> <span class="n">Serializable</span> <span class="p">{</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Execute this action.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param onPage the configuration page.</span>
+<span class="cm">     * @param target the target of the ajax request that executed this action.</span>
+<span class="cm">     * @param valueModel the value of the attribute, for reading and writing.</span>
+<span class="cm">     * @param dependsOnRawValues raw values of depending attributes.</span>
+<span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">execute</span><span class="p">(</span><span class="n">ConfigurationPage</span> <span class="n">onPage</span><span class="p">,</span> <span class="n">AjaxRequestTarget</span> <span class="n">target</span><span class="p">,</span> <span class="n">IModel</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">valueModel</span><span class="p">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">dependsOnRawValues</span><span class="p">);</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Check whether this action can be executed with current values.</span>
+<span class="cm">     * \</span>
+<span class="cm">     * @param value the value of the attribute.</span>
+<span class="cm">     * @param dependsOnRawValues raw values of depending attributes.</span>
+<span class="cm">     * @return whether this action accepts these values.</span>
+<span class="cm">     */</span>
+    <span class="k">default</span> <span class="kt">boolean</span> <span class="nf">accept</span><span class="p">(</span><span class="n">String</span> <span class="n">value</span><span class="p">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">dependsOnRawValues</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In order to be linked to parameter types, an action must be spring bean.
+The name provided via the <code class="docutils literal notranslate"><span class="pre">Named</span></code> interface is used as a reference.</p>
+</div>
+<div class="section" id="reporting">
+<h2>Reporting<a class="headerlink" href="#reporting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="report-builders">
+<h3>Report builders<a class="headerlink" href="#report-builders" title="Permalink to this headline">¶</a></h3>
+<p>Reports are user friendly representations of finished batch runs, that
+are sent to some destination right after the batch run has finished. A
+report has a type (<code class="docutils literal notranslate"><span class="pre">FAILED</span></code>, <code class="docutils literal notranslate"><span class="pre">CANCELLED</span></code> or <code class="docutils literal notranslate"><span class="pre">SUCCESS</span></code>), a title
+and a content. Use spring to configure a single report builder.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * A report builder generates a report from a batch.</span>
+<span class="cm"> * One could write a custom one.</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ReportBuilder</span> <span class="p">{</span>
+
+    <span class="n">Report</span> <span class="nf">buildBatchRunReport</span><span class="p">(</span><span class="n">BatchRun</span> <span class="n">batchRun</span><span class="p">);</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="report-services">
+<h3>Report services.<a class="headerlink" href="#report-services" title="Permalink to this headline">¶</a></h3>
+<p>Use spring to configure any number of report services.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * A report service sends a report to a particular destination.</span>
+<span class="cm"> * One can add an unlimited amount of report services which will all be used.</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ReportService</span> <span class="p">{</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Enumeration for filter.</span>
+<span class="cm">     *</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="kd">enum</span> <span class="n">Filter</span> <span class="p">{</span>
+        <span class="cm">/** All batch runs are reported **/</span>
+        <span class="n">ALL</span> <span class="p">(</span><span class="n">Report</span><span class="p">.</span><span class="na">Type</span><span class="p">.</span><span class="na">FAILED</span><span class="p">,</span> <span class="n">Report</span><span class="p">.</span><span class="na">Type</span><span class="p">.</span><span class="na">CANCELLED</span><span class="p">,</span> <span class="n">Report</span><span class="p">.</span><span class="na">Type</span><span class="p">.</span><span class="na">SUCCESS</span><span class="p">),</span>
+        <span class="cm">/** Only failed and cancelled batch runs are reported **/</span>
+        <span class="n">FAILED_AND_CANCELLED</span> <span class="p">(</span><span class="n">Report</span><span class="p">.</span><span class="na">Type</span><span class="p">.</span><span class="na">FAILED</span><span class="p">,</span> <span class="n">Report</span><span class="p">.</span><span class="na">Type</span><span class="p">.</span><span class="na">CANCELLED</span><span class="p">),</span>
+        <span class="cm">/** Only failed batch runs are reported **/</span>
+        <span class="n">FAILED_ONLY</span> <span class="p">(</span><span class="n">Report</span><span class="p">.</span><span class="na">Type</span><span class="p">.</span><span class="na">FAILED</span><span class="p">);</span>
+
+        <span class="n">Report</span><span class="p">.</span><span class="na">Type</span><span class="o">[]</span> <span class="n">types</span><span class="p">;</span>
+
+        <span class="kd">private</span> <span class="nf">Filter</span><span class="p">(</span><span class="n">Report</span><span class="p">.</span><span class="na">Type</span><span class="p">...</span> <span class="n">types</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="na">types</span> <span class="o">=</span> <span class="n">types</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">matches</span><span class="p">(</span><span class="n">Report</span><span class="p">.</span><span class="na">Type</span> <span class="n">type</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">ArrayUtils</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">types</span><span class="p">,</span> <span class="n">type</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Return the filter of the report.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return the filter of the report.</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="n">Filter</span> <span class="nf">getFilter</span><span class="p">();</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Send a report.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param report the report.</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendReport</span><span class="p">(</span><span class="n">Report</span> <span class="n">report</span><span class="p">);</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="user.html" title="previous chapter">TaskManager User Guide</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../teradata/index.html" title="next chapter">Teradata</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Developer’s Guide</a><ul>
+<li><a class="reference internal" href="#task-types">Task Types</a><ul>
+<li><a class="reference internal" href="#parameter-types">Parameter Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#actions">Actions</a></li>
+<li><a class="reference internal" href="#reporting">Reporting</a><ul>
+<li><a class="reference internal" href="#report-builders">Report builders</a></li>
+<li><a class="reference internal" href="#report-services">Report services.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="user.html" title="previous chapter">TaskManager User Guide</a></li>
+            <li>Next: <a href="../teradata/index.html" title="next chapter">Teradata</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/taskmanager/developer.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

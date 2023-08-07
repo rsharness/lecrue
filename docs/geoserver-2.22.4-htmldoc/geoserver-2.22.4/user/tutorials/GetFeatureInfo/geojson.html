@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoJSON output format &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Raster GetFeatureInfo Response Customization" href="raster.html" />
+    <link rel="prev" title="HTML output format" href="html.html" /> 
+  </head><body class="tutorials/GetFeatureInfo/geojson">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GetFeatureInfo Templates</a> &raquo;</li>
+    <li>GeoJSON output format</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="raster.html" title="Raster GetFeatureInfo Response Customization" accesskey="N">Next</a></li>
+  <li>
+    <a href="html.html" title="HTML output format" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="geojson-output-format">
+<span id="tutorials-getfeatureinfo-geojson"></span><h1>GeoJSON output format<a class="headerlink" href="#geojson-output-format" title="Permalink to this headline">¶</a></h1>
+<p>The default GeoJSON output uses the WFS GeoJSON  encoding mechanism, producing a fixed output, it is however possible to customize the output using FreeMarker templates.
+GeoServer will lookup for json templates following the same rules defined for the html output, but the template files have to be named appending <code class="docutils literal notranslate"><span class="pre">_json</span></code> to the usual name, as below:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">header_json.ftl</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">content_json.ftl</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">footer_json.ftl</span></code></p></li>
+</ul>
+<p>Moreover, unlike the html case, all three template files must be provided.
+In case of a multi-layer request, GeoServer will act in the following way:</p>
+<ul class="simple">
+<li><p>content template will be searched following the usual rules;</p></li>
+<li><p>since there are no default templates for GeoJSON, header and footer will be looked up in the <code class="docutils literal notranslate"><span class="pre">templates</span></code> directory;</p></li>
+<li><p>features with no content template will be encoded with the normal GeoJSON encoding, along with the customized ones.</p></li>
+</ul>
+<p>Follow examples of json template for each type.</p>
+<p>The <em>header json template</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="s2">&quot;header&quot;</span><span class="p">:</span><span class="s2">&quot;this is the header&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;features&quot;</span><span class="p">:[</span>
+</pre></div>
+</div>
+<p>The <em>footer json template</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="p">],</span>
+ <span class="s2">&quot;footer&quot;</span> <span class="p">:</span> <span class="s2">&quot;this is the footer&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <em>content json template</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> &lt;#list features as feature&gt;
+{
+ &quot;content&quot; : &quot;this is the content&quot;,
+ &quot;type&quot;: &quot;Feature&quot;,
+ &quot;id&quot; : &quot;${feature.fid}&quot;,
+ &lt;#list feature.attributes as attribute&gt;
+ &lt;#if attribute.isGeometry&gt;
+ &quot;geometry&quot;: ${geoJSON.geomToGeoJSON(attribute.rawValue)},
+ &lt;/#if&gt;
+ &lt;/#list&gt;
+ &quot;properties&quot;: {
+ &lt;#list feature.attributes?filter(a -&gt; !a.isGeometry) as attribute&gt;
+ &quot;${attribute.name}&quot;: &quot;${attribute.value}&quot;
+ &lt;#if attribute_has_next&gt;
+ ,
+ &lt;/#if&gt;
+ &lt;/#list&gt;
+ }
+}
+&lt;#if feature_has_next&gt;
+,
+&lt;/#if&gt;
+&lt;/#list&gt;
+</pre></div>
+</div>
+<p>As it is possible to see from the content template, a new static model <code class="docutils literal notranslate"><span class="pre">geoJSON</span></code>, which has the <code class="docutils literal notranslate"><span class="pre">geomToGeoJSON</span></code> method   has been provided. It can be used to encode a valid geoJSON geometry by passing to it the raw value of the geometry attribute in the following way:  <code class="docutils literal notranslate"><span class="pre">${geoJSON.geomToGeoJSON(attribute.rawValue)}</span></code>.</p>
+<p>Placing the above templates in the directory of layer tiger_roads and issuing this request,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/tiger/wms?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetFeatureInfo&amp;FORMAT=application/json&amp;TRANSPARENT=true&amp;QUERY_LAYERS=tiger:tiger_roads&amp;LAYERS=tiger:tiger_roads&amp;exceptions=application/vnd.ogc.se_inimage&amp;INFO_FORMAT=application/json&amp;FEATURE_COUNT=50&amp;X=50&amp;Y=50&amp;SRS=EPSG:4326&amp;STYLES=&amp;WIDTH=101&amp;HEIGHT=101&amp;BBOX=-73.96894311918004,40.78191518783569,-73.96460866941197,40.78624963760376
+</pre></div>
+</div>
+<p>will produce the output:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;header&quot;</span><span class="p">:</span><span class="s2">&quot;this is the header&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;features&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="s2">&quot;this is the content&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;tiger_roads.7752&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiLineString&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+              <span class="p">[</span>
+                 <span class="p">[</span>
+                    <span class="mf">-73.9674</span><span class="p">,</span>
+                    <span class="mf">40.7844</span>
+                 <span class="p">],</span>
+                 <span class="p">[</span>
+                    <span class="mf">-73.9642</span><span class="p">,</span>
+                    <span class="mf">40.7832</span>
+                 <span class="p">],</span>
+                 <span class="p">[</span>
+                    <span class="mf">-73.9628</span><span class="p">,</span>
+                    <span class="mf">40.7813</span>
+                 <span class="p">]</span>
+              <span class="p">]</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;CFCC&quot;</span><span class="p">:</span><span class="s2">&quot;A41&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;NAME&quot;</span><span class="p">:</span><span class="s2">&quot;85th St Transverse&quot;</span>
+        <span class="p">}</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;footer&quot;</span><span class="p">:</span><span class="s2">&quot;this is the footer&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>While taking care of moving header_json.ftl and footer_json.ftl into the templates directory and performing the following request against the layer group tiger-ny</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetFeatureInfo&amp;FORMAT=application/json&amp;TRANSPARENT=true&amp;QUERY_LAYERS=tiger-ny&amp;LAYERS=tiger-ny&amp;exceptions=application/vnd.ogc.se_inimage&amp;INFO_FORMAT=application/json&amp;FEATURE_COUNT=50&amp;X=50&amp;Y=50&amp;SRS=EPSG:4326&amp;STYLES=&amp;WIDTH=101&amp;HEIGHT=101&amp;BBOX=-74.01161170018896,40.70833468424098,-74.00944447530493,40.710501909125014
+</pre></div>
+</div>
+<p>will return the following result:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;header&quot;</span><span class="p">:</span><span class="s2">&quot;this is the header&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;features&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;giant_polygon.1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiPolygon&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+              <span class="p">[</span>
+                 <span class="p">[</span>
+                    <span class="p">[</span>
+                       <span class="mi">-180</span><span class="p">,</span>
+                       <span class="mi">-90</span>
+                    <span class="p">],</span>
+                    <span class="p">[</span>
+                       <span class="mi">-180</span><span class="p">,</span>
+                       <span class="mi">90</span>
+                    <span class="p">],</span>
+                    <span class="p">[</span>
+                       <span class="mi">180</span><span class="p">,</span>
+                       <span class="mi">90</span>
+                    <span class="p">],</span>
+                    <span class="p">[</span>
+                       <span class="mi">180</span><span class="p">,</span>
+                       <span class="mi">-90</span>
+                    <span class="p">],</span>
+                    <span class="p">[</span>
+                       <span class="mi">-180</span><span class="p">,</span>
+                       <span class="mi">-90</span>
+                    <span class="p">]</span>
+                 <span class="p">]</span>
+              <span class="p">]</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;@featureType&quot;</span><span class="p">:</span><span class="s2">&quot;giant_polygon&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;the_geom&quot;</span><span class="p">:{</span>
+              <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiPolygon&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+                 <span class="p">[</span>
+                    <span class="p">[</span>
+                       <span class="p">[</span>
+                          <span class="mi">-180</span><span class="p">,</span>
+                          <span class="mi">-90</span>
+                       <span class="p">],</span>
+                       <span class="p">[</span>
+                          <span class="mi">-180</span><span class="p">,</span>
+                          <span class="mi">90</span>
+                       <span class="p">],</span>
+                       <span class="p">[</span>
+                          <span class="mi">180</span><span class="p">,</span>
+                          <span class="mi">90</span>
+                       <span class="p">],</span>
+                       <span class="p">[</span>
+                          <span class="mi">180</span><span class="p">,</span>
+                          <span class="mi">-90</span>
+                       <span class="p">],</span>
+                       <span class="p">[</span>
+                          <span class="mi">-180</span><span class="p">,</span>
+                          <span class="mi">-90</span>
+                       <span class="p">]</span>
+                    <span class="p">]</span>
+                 <span class="p">]</span>
+              <span class="p">]</span>
+           <span class="p">}</span>
+        <span class="p">}</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="s2">&quot;this is the content&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;tiger_roads.7672&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiLineString&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+              <span class="p">[</span>
+                 <span class="p">[</span>
+                    <span class="mf">-74.0108</span><span class="p">,</span>
+                    <span class="mf">40.7093</span>
+                 <span class="p">],</span>
+                 <span class="p">[</span>
+                    <span class="mf">-74.0105</span><span class="p">,</span>
+                    <span class="mf">40.7096</span>
+                 <span class="p">]</span>
+              <span class="p">]</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;CFCC&quot;</span><span class="p">:</span><span class="s2">&quot;A41&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;NAME&quot;</span><span class="p">:</span><span class="s2">&quot;Broadway&quot;</span>
+        <span class="p">}</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;poi.3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+              <span class="mf">-74.01053</span><span class="p">,</span>
+              <span class="mf">40.709387</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;@featureType&quot;</span><span class="p">:</span><span class="s2">&quot;poi&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;the_geom&quot;</span><span class="p">:{</span>
+              <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+                 <span class="mf">-74.01053</span><span class="p">,</span>
+                 <span class="mf">40.709387</span>
+              <span class="p">]</span>
+           <span class="p">},</span>
+           <span class="nt">&quot;NAME&quot;</span><span class="p">:</span><span class="s2">&quot;art&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;THUMBNAIL&quot;</span><span class="p">:</span><span class="s2">&quot;pics/22037856-Ti.jpg&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;MAINPAGE&quot;</span><span class="p">:</span><span class="s2">&quot;pics/22037856-L.jpg&quot;</span>
+        <span class="p">}</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;footer&quot;</span><span class="p">:</span><span class="s2">&quot;this is the footer&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As it is possible to see, the json output comprises a mix of the output mediated by a content_json.ftl for the tiger_roads feature, and the normal output for the other features, while header and footer have been kept respectively at the top and at the bottom.</p>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="html.html" title="previous chapter">HTML output format</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="raster.html" title="next chapter">Raster GetFeatureInfo Response Customization</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="html.html" title="previous chapter">HTML output format</a></li>
+            <li>Next: <a href="raster.html" title="next chapter">Raster GetFeatureInfo Response Customization</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/GetFeatureInfo/geojson.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

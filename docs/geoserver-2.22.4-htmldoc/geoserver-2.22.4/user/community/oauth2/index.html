@@ -1,0 +1,660 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication with OAuth2 &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="OGC API Extension" href="../ogc-api/index.html" />
+    <link rel="prev" title="Notification community module Plugin Documentation" href="../notification/index.html" /> 
+  </head><body class="community/oauth2/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>Authentication with OAuth2</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../ogc-api/index.html" title="OGC API Extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="../notification/index.html" title="Notification community module Plugin Documentation" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="authentication-with-oauth2">
+<span id="security-tutorials-oauth2"></span><h1>Authentication with OAuth2<a class="headerlink" href="#authentication-with-oauth2" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial introduces GeoServer OAuth2 support and walks through the process of
+setting up authentication against an OAuth2 provider. It is recommended that the
+<a class="reference internal" href="../../security/auth/chain.html#security-auth-chain"><span class="std std-ref">Authentication chain</span></a> section be read before proceeding.</p>
+<div class="section" id="oauth2-protocol-and-geoserver-oauth2-core-module">
+<h2>OAuth2 Protocol and GeoServer OAuth2 core module<a class="headerlink" href="#oauth2-protocol-and-geoserver-oauth2-core-module" title="Permalink to this headline">¶</a></h2>
+<p>This module allows GeoServer to authenticate against the <a class="reference external" href="https://tools.ietf.org/html/rfc6749">OAuth2 Protocol</a>.</p>
+<p>In order to let the module work, it is mandatory to setup and configure both the <code class="docutils literal notranslate"><span class="pre">oauth2</span></code> and <code class="docutils literal notranslate"><span class="pre">oauth2-xxxx-extension</span></code> (where xxxx is the provider e.g. google, github, openid, geonode).  Both files are included in one ZIP file, obtained from the  <a class="reference external" href="https://build.geoserver.org/geoserver/2.19.x/community-latest/">GeoServer build server</a> (change version as necessary) - search for <cite>sec-oauth2</cite>.</p>
+<p>The first one contains the necessary dependencies of the OAuth2 core module. This module contains the implementation of the
+GeoServer security filter, the base classes for the OAuth2 Token services and the GeoServer GUI panel.</p>
+<p>The second one provides the OAuth2 implementation for each provider.  Since in almost all cases the only thing different between OAuth2 Providers are the endpoint URIs and the client connection information (not only the keys - public and secret - but also the user profile representations), in order to allow GeoServer
+connecting to a specific OAuth2 provider it is sufficient to install the OAuth2 Core module plugin (and correctly configure
+the parameters through the GeoServer GUI - see next section for the details) and the concrete implementation of the OAuth2
+REST token template and resource details.</p>
+<p>Currently this module is shipped with a sample extension for Google OAuth2 Provider. This is a particular case since the
+Google JWT response is not standard and therefore we had to define and inject also a <code class="docutils literal notranslate"><span class="pre">GoogleUserAuthenticationConverter</span></code> taking
+the Google REST response against a valid <code class="docutils literal notranslate"><span class="pre">access_token</span></code> and converting it to an OAuth2 standard one.</p>
+<p>Other than this the most interesting part is the implementation of the base class <code class="docutils literal notranslate"><span class="pre">GeoServerOAuth2SecurityConfiguration</span></code>.</p>
+<p>The latter contains the Google implementation of the <code class="docutils literal notranslate"><span class="pre">OAuth2RestTemplate</span></code>.</p>
+<p>In the next section we will see how to install and configure the OAuth2 security filter on GeoServer authenticating against
+Google OAuth2 Provider.</p>
+</div>
+<div class="section" id="configure-the-google-authentication-provider">
+<h2>Configure the Google authentication provider<a class="headerlink" href="#configure-the-google-authentication-provider" title="Permalink to this headline">¶</a></h2>
+<p>The first thing to do is to configure the OAuth2 Provider and obtain <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">ID</span></code> and <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">Secret</span></code> keys.</p>
+<ol class="arabic">
+<li><p>Obtain OAuth 2.0 credentials from the Google API Console.</p>
+<p>Visit the <a class="reference external" href="https://console.developers.google.com/">Google API Console</a> to obtain OAuth 2.0 credentials such as a client ID and client secret
+that are known to both Google and your application. The set of values varies based on what type of application you are building.
+For example, a JavaScript application does not require a secret, but a web server application does.</p>
+<ul>
+<li><p>Login with a valid Google Account</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/google_api_console001.png" src="../../_images/google_api_console001.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click on <code class="docutils literal notranslate"><span class="pre">API</span> <span class="pre">Manager</span></code></p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/google_api_console002.png" src="../../_images/google_api_console002.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click on <code class="docutils literal notranslate"><span class="pre">Credentials</span></code></p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/google_api_console003.png" src="../../_images/google_api_console003.png" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The first time you land here, Google will ask to create at least one project</p>
+<div class="figure align-center">
+<img alt="../../_images/google_api_console004.png" src="../../_images/google_api_console004.png" />
+</div>
+<p>For the purpose of this tutorial we will create a sample project. You are free to create other projects or update existing ones through the <a class="reference external" href="https://console.developers.google.com/">Google API Console</a> later.</p>
+<div class="figure align-center">
+<img alt="../../_images/google_api_console005.png" src="../../_images/google_api_console005.png" />
+</div>
+<p>If no <code class="docutils literal notranslate"><span class="pre">Credentials</span></code> are present, you will be asked to create new one.</p>
+<div class="figure align-center">
+<img alt="../../_images/google_api_console006.png" src="../../_images/google_api_console006.png" />
+</div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</li>
+<li><p>Select an existing (or create a new one) <code class="docutils literal notranslate"><span class="pre">OAuth</span> <span class="pre">Client</span> <span class="pre">ID</span></code></p>
+<p>Click on the <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">credentials</span></code> context menu as shown in the figure below.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/google_api_console007.png" src="../../_images/google_api_console007.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Configure a new <code class="docutils literal notranslate"><span class="pre">Web</span> <span class="pre">application</span></code></p>
+<ul>
+<li><p>If it is the first time you create an <code class="docutils literal notranslate"><span class="pre">OAuth</span> <span class="pre">Client</span> <span class="pre">ID</span></code>, you will be asked to create a new <code class="docutils literal notranslate"><span class="pre">consent</span> <span class="pre">screen</span></code></p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/google_api_console008.png" src="../../_images/google_api_console008.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Customize the <code class="docutils literal notranslate"><span class="pre">consent</span> <span class="pre">screen</span></code></p>
+<blockquote>
+<div><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is mandatory only if it’s the first time you are defining a <code class="docutils literal notranslate"><span class="pre">Web</span> <span class="pre">application</span></code> on a new project.</p>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_api_console009.png" src="../../_images/google_api_console009.png" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It can be edited and updated also later (see last point of this section below)</p>
+</div>
+</div></blockquote>
+</li>
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">Application</span> <span class="pre">type</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Web</span> <span class="pre">application</span></code></p>
+<blockquote>
+<div><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is mandatory only if it’s the first time you are defining a <code class="docutils literal notranslate"><span class="pre">Web</span> <span class="pre">application</span></code> on a new project.</p>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_api_console010.png" src="../../_images/google_api_console010.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">Name</span></code> and the <code class="docutils literal notranslate"><span class="pre">Authorized</span> <span class="pre">redirect</span> <span class="pre">URIs</span></code> like shown here below.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This sample creates a client working on the default local URL <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/geoserver</span></code>. Of course this will work only on a local instance and can’t be used for a production system.</p>
+<p>However it is possible to add as many <code class="docutils literal notranslate"><span class="pre">Authorized</span> <span class="pre">redirect</span> <span class="pre">URIs</span></code> you need to a new <code class="docutils literal notranslate"><span class="pre">Web</span> <span class="pre">application</span></code>.</p>
+<p>It is also possible to create many <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">credentials</span></code> with customised <code class="docutils literal notranslate"><span class="pre">consent</span> <span class="pre">screen</span></code> and <code class="docutils literal notranslate"><span class="pre">Web</span> <span class="pre">application</span></code>, depending on your specific needs.
+Every public GeoServer instance (or cluster of GeoServer belonging to a specific project) should have its own specific <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">credentials</span></code>.</p>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_api_console011.png" src="../../_images/google_api_console011.png" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Always add two entries for each URI. One without the ending <code class="docutils literal notranslate"><span class="pre">/</span></code> and another one with it.</p>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_api_console012.png" src="../../_images/google_api_console012.png" />
+</div>
+</div></blockquote>
+</li>
+</ul>
+</li>
+<li><p>Click on <code class="docutils literal notranslate"><span class="pre">Create</span></code> and take note of the <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">ID</span></code> and the <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">Secret</span></code>.</p>
+<p>At the end of the procedure Google will show-up a small dialog box with the <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">ID</span></code> and the <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">Secret</span></code>.
+That info can be always accessed and updated from the <a class="reference external" href="https://console.developers.google.com/">Google API Console</a></p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/google_api_console013.png" src="../../_images/google_api_console013.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Optionally customize the <code class="docutils literal notranslate"><span class="pre">OAuth</span> <span class="pre">consent</span> <span class="pre">screen</span></code>.</p>
+<p>At any time it is possible to update and customize the <code class="docutils literal notranslate"><span class="pre">OAuth</span> <span class="pre">consent</span> <span class="pre">screen</span></code>. You can put here your logo, app name, ToS and so on.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/google_api_console014.png" src="../../_images/google_api_console014.png" />
+</div>
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="configure-the-geoserver-oauth2-filter">
+<h2>Configure the GeoServer OAuth2 filter<a class="headerlink" href="#configure-the-geoserver-oauth2-filter" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Start GeoServer and login to the web admin interface as the <code class="docutils literal notranslate"><span class="pre">admin</span></code> user.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Authentication</span></code> link located under the <code class="docutils literal notranslate"><span class="pre">Security</span></code> section of
+the navigation sidebar.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/filter1.jpg" src="../../_images/filter1.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Scroll down to the <code class="docutils literal notranslate"><span class="pre">Authentication</span> <span class="pre">Filters</span></code> panel and click the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">new</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/filter2.jpg" src="../../_images/filter2.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">OAuth2</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/filter3.jpg" src="../../_images/filter3.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Fill in the fields of the settings form as follows:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/oauth2chain001.png" src="../../_images/oauth2chain001.png" />
+</div>
+<p>The default values provided with the plugin are valid for the Google OAuth2 Provider and are the following:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Enable Redirect Authentication EntryPoint&quot;</span> <span class="o">=</span> False
+<span class="s2">&quot;Access Token URI&quot;</span> <span class="o">=</span> https://accounts.google.com/o/oauth2/token
+<span class="s2">&quot;User Authorization URI&quot;</span> <span class="o">=</span> https://accounts.google.com/o/oauth2/auth
+<span class="s2">&quot;Redirect URI&quot;</span> <span class="o">=</span> http://localhost:8080/geoserver
+<span class="s2">&quot;Check Token Endpoint URL&quot;</span> <span class="o">=</span> https://www.googleapis.com/oauth2/v1/tokeninfo
+<span class="s2">&quot;Logout URI&quot;</span> <span class="o">=</span> https://accounts.google.com/logout
+<span class="s2">&quot;Scopes&quot;</span> <span class="o">=</span> https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">ID</span></code> and <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">Secret</span></code> are the ones Google provided</p></li>
+<li><p>Choose a <code class="docutils literal notranslate"><span class="pre">Role</span> <span class="pre">Service</span></code> able to recognize user emails as IDs. By default a connected user will have <code class="docutils literal notranslate"><span class="pre">ROLE_USER</span></code> role</p></li>
+</ol>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A few words on the <strong>Enable Redirect Authentication EntryPoint</strong> option</p>
+<p>This option allows you to decide whether or not to <em>force</em> automatic redirection to OAuth2 Access Token URI or not for authentication.</p>
+<p>What does that mean?</p>
+<ul>
+<li><p><em>Enable Redirect Authentication EntryPoint</em> = True</p>
+<blockquote>
+<div><p>If not already authenticated (or no valid <strong>Access Token</strong> is provided in the query string), this option will <strong>force</strong> a redirection to the OAuth2 Provider Login page.</p>
+<p>This may cause unwanted behavior since it will override every other explicit login method like <code class="docutils literal notranslate"><span class="pre">form</span></code>. In other words if the filter is applied for instance to the <code class="docutils literal notranslate"><span class="pre">web</span></code> endpoint, it won’t be possible to access to the GeoServer Admin GUI using the standard login method via browser.</p>
+</div></blockquote>
+</li>
+<li><p><em>Enable Redirect Authentication EntryPoint</em> = False</p>
+<blockquote>
+<div><p>In order to avoid the above issue, by disabling this option you will be <strong>forced</strong> to use an explicit Authentication Endpoint to login via the OAuth2 Provider login page.</p>
+<p>If not already authenticated (or no valid <strong>Access Token</strong> is provided in the query string), you <strong>must</strong> authenticate through the following URLs:</p>
+<ol class="arabic">
+<li><p><em>GeoServer OAuth2 Authorization Endpoint</em>; <code class="docutils literal notranslate"><span class="pre">http://&lt;host:port&gt;/geoserver/j_spring_oauth2_login</span></code></p></li>
+<li><p><em>OAuth2 Provider Explicit User Authorization Endpoint</em>; this must be adapted for your specific OAuth2 Provider, the protocol stated that it should be</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://&lt;USER_AUTHORIZATION_URI&gt;?scope=&lt;SCOPES&gt;&amp;response_type=code&amp;redirect_uri=&lt;REDIRECT_URI&gt;&amp;client_id=&lt;CLIENT_ID&gt;
+</pre></div>
+</div>
+<p>For Google OAuth2 Provider is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://accounts.google.com/o/oauth2/auth?scope%3Dhttps://www.googleapis.com/auth/userinfo.email%2Bhttps://www.googleapis.com/auth/userinfo.profile%26response_type%3Dcode%26redirect_uri%3D&lt;REDIRECT_URI&gt;%26client_id%3D&lt;CLIENT_ID&gt;
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div></blockquote>
+</li>
+<li><p>Update the filter chains by adding the new OAuth2 filter.</p>
+<p>Once everything has been configured you should be able to see the new <code class="docutils literal notranslate"><span class="pre">oauth2</span></code> filter available among the <code class="docutils literal notranslate"><span class="pre">Authentication</span> <span class="pre">Filters</span></code> list</p>
+<div class="figure align-center">
+<img alt="../../_images/oauth2filter001.png" src="../../_images/oauth2filter001.png" />
+</div>
+<p>Through this it will be always possible to modify / update the filter options, or create more of them.</p>
+<p>The next step is to add the filter to the <code class="docutils literal notranslate"><span class="pre">Filter</span> <span class="pre">Chains</span></code> you want to protect with OAuth2 also</p>
+<div class="figure align-center">
+<img alt="../../_images/oauth2filter002.png" src="../../_images/oauth2filter002.png" />
+</div>
+</li>
+<li><p>Select the OAuth2 Filter for each filter chain you want to protect with OAuth2.</p>
+<p>If you need to protect <strong>all</strong> the GeoServer services and the GeoServer Admin GUI too with OAuth2, you need to add the <code class="docutils literal notranslate"><span class="pre">oauth2</span></code> filter to all the following chains</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">web</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rest</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default</span></code></p></li>
+</ul>
+<p>The order of the authentication filters depends basically on which method you would like GeoServer to <em>try first</em>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>During the authentication process, the authentication filters of a <code class="docutils literal notranslate"><span class="pre">Filter</span> <span class="pre">Chain</span></code> are executed serially until one succeed (for more details please see the section <a class="reference internal" href="../../security/auth/chain.html#security-auth-chain"><span class="std std-ref">Authentication chain</span></a>)</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If <em>Enable Redirect Authentication EntryPoint</em> = <strong>True</strong> for OAuth2 Filter, the <code class="docutils literal notranslate"><span class="pre">web</span></code> chain won’t be able to login through the <code class="docutils literal notranslate"><span class="pre">form</span></code> method.</p>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/oauth2filter003.png" src="../../_images/oauth2filter003.png" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Remember that the <code class="docutils literal notranslate"><span class="pre">anonymous</span></code> filter must be always the last one.</p>
+</div>
+</li>
+<li><p>Save.</p>
+<div class="figure align-center">
+<img alt="../../_images/oauth2filter004.png" src="../../_images/oauth2filter004.png" />
+</div>
+</li>
+</ol>
+<p>It’s now possible to test the authentication:</p>
+<ol class="arabic">
+<li><p>Navigate to the GeoServer home page and log out of the admin account.</p></li>
+<li><p>Try to login again, you should be able now to see the external Google login form.</p>
+<div class="figure align-center">
+<img alt="../../_images/test1.jpg" src="../../_images/test1.jpg" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/test2.jpg" src="../../_images/test2.jpg" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/test3.jpg" src="../../_images/test3.jpg" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/test4.jpg" src="../../_images/test4.jpg" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/test5.jpg" src="../../_images/test5.jpg" />
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="openid-connect-authentication">
+<h2>OpenID connect authentication<a class="headerlink" href="#openid-connect-authentication" title="Permalink to this headline">¶</a></h2>
+<p>The OpenID connect authentication is working in a way quite similar to Google (and GitHub)
+authentications, the only difference is that the authentication page cannot propose default
+values for the various endpoints, which have to be configured manually.</p>
+<p>In case the web login will not be used, the “client ID” and “client secret” are not actually
+needed, and can be filled with two made up values (the validation just checks they are present,
+but they will be used only in the “authorisation flow”, but not when doing OGC requests
+where the client is supposed to have autonomously retrieved a valid bearer token).</p>
+<p>The configuration GUI supports OpenID Discovery documents.  If the server supports them
+it’s sufficient to provide the path to the document, or to the authentication service root,
+and the GUI will auto-fill itself based on the document contents:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/discovery.png" src="../../_images/discovery.png" />
+</div>
+</div></blockquote>
+<p>The UI allow to set also the <code class="docutils literal notranslate"><span class="pre">Post</span> <span class="pre">Logout</span> <span class="pre">Redirect</span> <span class="pre">URI</span></code> which will be used to populate the  <code class="docutils literal notranslate"><span class="pre">post_logout_redirect_uri</span></code> request param, when doing the global logout from the GeoServer UI. The OpenId provider will use the URI to redirect to the desired app page.</p>
+<p>In addition, the OpenID connect authentication is able to extract the user roles from
+either the ID token or the Access Token:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openidconnect-roles.png" src="../../_images/openidconnect-roles.png" />
+</div>
+</div></blockquote>
+<p>The chosen attribute must be present in either the Access Token or in the Id token,
+and be either a string or an array of strings.</p>
+<p>From UI it is also possible to set the <code class="docutils literal notranslate"><span class="pre">Response</span> <span class="pre">Mode</span></code> value. The field can be kept empty but it is needed when the OpenId server used as Identity Provider doesn’t send by default the authorization code as a query string (that is mandatory in order to allow GeoServer and OpenId integration to work properly).</p>
+<p>Finally the admin can allow the sending of the client_secret during an access_token request trough the <code class="docutils literal notranslate"><span class="pre">Send</span> <span class="pre">Client</span> <span class="pre">Secret</span> <span class="pre">in</span> <span class="pre">Token</span> <span class="pre">Request</span></code>. Some OpenId implementation requires it for the Authorization Code flow when the client app is a confidential client and can safely store the client_secret.</p>
+<div class="section" id="openid-connect-with-attached-access-bearer-tokens">
+<h3>OpenID Connect With Attached Access Bearer Tokens<a class="headerlink" href="#openid-connect-with-attached-access-bearer-tokens" title="Permalink to this headline">¶</a></h3>
+<p>The OpenID Connect plugin allows the use of Attached Bearer Access Tokens. This is typically used by automated (i.e. desktop or external Web Service) to access the Geoserver REST API.</p>
+<p>The setup process is as follows:</p>
+<ol class="arabic simple">
+<li><p>Setup your OAuth2 OpenID Connect configuration as normal</p></li>
+<li><p>On the OpenID Connect configuration screen (bottom), makes sure “Allow Attached Bearer Tokens” is checked</p></li>
+<li><p>You can not use ID Tokens as a Role Source for the attached Bearer Tokens (see below)</p></li>
+</ol>
+<p>To Use:</p>
+<ol class="arabic simple">
+<li><p>Obtain an Access Token from the underlying IDP</p></li>
+<li><p>Attach the access token to your HTTP request headers</p></li>
+</ol>
+<p><cite>Authorization: Bearer &lt;token&gt;</cite></p>
+<p>The Access Token (JWT) is validated;</p>
+<ol class="arabic simple">
+<li><p>The Access Token is used to get the “userinfo” endpoint.  The underlying IDP will verify the token (i.e. signature and expiry)</p></li>
+<li><p>The Audience of the Token is checked that it contains the GeoServer configured Client Id.  This make sure an Access Token for another application is not being inappropriately reused in GeoServer (cf. <cite>AudienceAccessTokenValidator.java</cite>).</p></li>
+<li><p>The Subject of the <cite>userinfo</cite> and Access Token are verified to be about the same person.  The OpenID specification recommends checking this (cf. <cite>SubjectTokenValidator.java</cite>).</p></li>
+</ol>
+<p>For KeyCloak, consider using the “userinfo endpoint” role source and configure Keycloak to put groups in the “userinfo.”</p>
+<p>For Azure AD, configure Azure to allow access to the MS Graph API (memberOf) and use the “Microsoft Graph API (Azure AD)” role source.</p>
+<p>To configure Azure AD for “memberOf” (“GroupMember.Read.All” permission) access;</p>
+<ol class="arabic simple">
+<li><p>go to your application in Azure AD (in the portal)</p></li>
+<li><p>On the left, go to “API permissions”</p></li>
+<li><p>click “Add a permission”</p></li>
+<li><p>press “Microsoft Graph”</p></li>
+<li><p>press “Delegated permission”</p></li>
+<li><p>Scroll down to “GroupMember”</p></li>
+<li><p>Choose “GroupMemeber.Read.All”</p></li>
+<li><p>press “Add permission”</p></li>
+<li><p>on the API Permission screen, press the “Grant admin consent for …” text</p></li>
+</ol>
+<p>This has been tested with KeyCloak (with groups in the <cite>userinfo</cite> endpoint response), and with MS Azure AD (with the groups from the GraphAPI).  This should work with other IDPs - however, make sure that the Subject and Audience token verification works with their tokens.</p>
+<p>If you do not need Bearer Token functionality, it is recommended to turn this off.</p>
+</div>
+<div class="section" id="azure-ad-and-adfs-setup">
+<h3>Azure AD and ADFS setup<a class="headerlink" href="#azure-ad-and-adfs-setup" title="Permalink to this headline">¶</a></h3>
+<p>To make the OpenIdConnect filter to work properly with an Azure AD or ADFS server via the OpenId protocol, the user must set, in addition to the other configuration parameters, the <code class="docutils literal notranslate"><span class="pre">Response</span> <span class="pre">Mode</span></code> to query (otherwise by default ADFS will return a url fragment) and check the checkbox <code class="docutils literal notranslate"><span class="pre">Send</span> <span class="pre">Client</span> <span class="pre">Secret</span> <span class="pre">in</span> <span class="pre">Token</span> <span class="pre">Request</span></code> (the client_secret is mandatory in token request according to the <a class="reference external" href="https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/overview/ad-fs-openid-connect-oauth-flows-scenarios#request-an-access-token">Microsoft documentation</a>).</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/adfs-setup.png" src="../../_images/adfs-setup.png" />
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="ssl-trusted-certificates">
+<h2>SSL Trusted Certificates<a class="headerlink" href="#ssl-trusted-certificates" title="Permalink to this headline">¶</a></h2>
+<p>When using a custom <code class="docutils literal notranslate"><span class="pre">Keystore</span></code> or trying to access a non-trusted or self-signed SSL-protected OAuth2 Provider from a non-SSH connection, you will need to add the certificates to the JVM <code class="docutils literal notranslate"><span class="pre">Keystore</span></code>.</p>
+<p>In order to do this you can follow the next steps:</p>
+<blockquote>
+<div><p>In this example we are going to</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Retrieve SSL certificates from Google domains:</p>
+<blockquote>
+<div><p>“Access Token URI” = <a class="reference external" href="https://accounts.google.com/o/oauth2/token">https://accounts.google.com/o/oauth2/token</a> therefore we need to trust <code class="docutils literal notranslate"><span class="pre">https://accounts.google.com</span></code> or (<code class="docutils literal notranslate"><span class="pre">accounts.google.com:443</span></code>)
+“Check Token Endpoint URL” = <a class="reference external" href="https://www.googleapis.com/oauth2/v1/tokeninfo">https://www.googleapis.com/oauth2/v1/tokeninfo</a> therefore we need to trust <code class="docutils literal notranslate"><span class="pre">https://www.googleapis.com</span></code> or (<code class="docutils literal notranslate"><span class="pre">www.googleapis.com:443</span></code>)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You will need to get and trust certificates from every different HTTPS URL used on OAuth2 Endpoints.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p>Store SSL Certificates on local hard disk</p></li>
+<li><p>Add SSL Certificates to the Java Keystore</p></li>
+<li><p>Enable the JVM to check for SSL Certificates from the Keystore</p></li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Retrieve the SSL Certificates from Google domains</p>
+<blockquote>
+<div><p>Use the <code class="docutils literal notranslate"><span class="pre">openssl</span></code> command in order to dump the certificate</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">https://accounts.google.com</span></code></p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>openssl s_client -connect accounts.google.com:443
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_001.png" src="../../_images/google_ssl_001.png" />
+</div>
+</div></blockquote>
+<p>And for <code class="docutils literal notranslate"><span class="pre">https://www.googleapis.com</span></code></p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>openssl s_client -connect www.googleapis.com:443
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_002.png" src="../../_images/google_ssl_002.png" />
+</div>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p>Store SSL Certificates on local hard disk</p>
+<blockquote>
+<div><p>Copy-and-paste the two sections <code class="docutils literal notranslate"><span class="pre">-BEGIN</span> <span class="pre">CERTIFICATE-</span></code>, <code class="docutils literal notranslate"><span class="pre">-END</span> <span class="pre">CERTIFICATE-</span></code> and save them into two different <code class="docutils literal notranslate"><span class="pre">.cert</span></code> files</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">.cert</span></code> file are plain text files containing the ASCII characters included on the <code class="docutils literal notranslate"><span class="pre">-BEGIN</span> <span class="pre">CERTIFICATE-</span></code>, <code class="docutils literal notranslate"><span class="pre">-END</span> <span class="pre">CERTIFICATE-</span></code> sections</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">google.cert</span></code> (or whatever name you want with <code class="docutils literal notranslate"><span class="pre">.cert</span></code> extension)</p>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_003.png" src="../../_images/google_ssl_003.png" />
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">google-apis.cert</span></code> (or whatever name you want with <code class="docutils literal notranslate"><span class="pre">.cert</span></code> extension)</p>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_004.png" src="../../_images/google_ssl_004.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Add SSL Certificates to the Java Keystore</p>
+<blockquote>
+<div><blockquote>
+<div><p>You can use the Java command <code class="docutils literal notranslate"><span class="pre">keytool</span></code> like this</p>
+<p><code class="docutils literal notranslate"><span class="pre">google.cert</span></code> (or whatever name you want with <code class="docutils literal notranslate"><span class="pre">.cert</span></code> extension)</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>keytool -import -noprompt -trustcacerts -alias google -file google.cert -keystore <span class="si">${</span><span class="nv">KEYSTOREFILE</span><span class="si">}</span> -storepass <span class="si">${</span><span class="nv">KEYSTOREPASS</span><span class="si">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">google-apis.cert</span></code> (or whatever name you want with <code class="docutils literal notranslate"><span class="pre">.cert</span></code> extension)</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>keytool -import -noprompt -trustcacerts -alias google-apis -file google-apis.cert -keystore <span class="si">${</span><span class="nv">KEYSTOREFILE</span><span class="si">}</span> -storepass <span class="si">${</span><span class="nv">KEYSTOREPASS</span><span class="si">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<p>or, alternatively, you can use some graphic tool which helps you managing the SSL Certificates and Keystores, like <a class="reference external" href="http://portecle.sourceforge.net/">Portecle</a></p>
+<blockquote>
+<div><blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>java -jar c:<span class="se">\a</span>pps<span class="se">\p</span>ortecle-1.9<span class="se">\p</span>ortecle.jar
+</pre></div>
+</div>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_005.png" src="../../_images/google_ssl_005.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_006.png" src="../../_images/google_ssl_006.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_007.png" src="../../_images/google_ssl_007.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_008.png" src="../../_images/google_ssl_008.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_009.png" src="../../_images/google_ssl_009.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_010.png" src="../../_images/google_ssl_010.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_011.png" src="../../_images/google_ssl_011.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_012.png" src="../../_images/google_ssl_012.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/google_ssl_013.png" src="../../_images/google_ssl_013.png" />
+</div>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p>Enable the JVM to check for SSL Certificates from the Keystore</p>
+<blockquote>
+<div><p>In order to do this, you need to pass a <code class="docutils literal notranslate"><span class="pre">JAVA_OPTION</span></code> to your JVM:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>-Djavax.net.ssl.trustStore<span class="o">=</span>F:<span class="se">\t</span>mp<span class="se">\k</span>eystore.key
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p>Restart your server</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Here below you can find a bash script which simplifies the Keystore SSL Certificates importing. Use it at your convenience.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">HOST</span><span class="o">=</span>myhost.example.com
+<span class="nv">PORT</span><span class="o">=</span><span class="m">443</span>
+<span class="nv">KEYSTOREFILE</span><span class="o">=</span>dest_keystore
+<span class="nv">KEYSTOREPASS</span><span class="o">=</span>changeme
+
+<span class="c1"># get the SSL certificate</span>
+openssl s_client -connect <span class="si">${</span><span class="nv">HOST</span><span class="si">}</span>:<span class="si">${</span><span class="nv">PORT</span><span class="si">}</span> &lt;/dev/null <span class="se">\</span>
+        <span class="p">|</span> sed -ne <span class="s1">&#39;/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p&#39;</span> &gt; <span class="si">${</span><span class="nv">HOST</span><span class="si">}</span>.cert
+
+<span class="c1"># create a keystore and import certificate</span>
+keytool -import -noprompt -trustcacerts <span class="se">\</span>
+        -alias <span class="si">${</span><span class="nv">HOST</span><span class="si">}</span> -file <span class="si">${</span><span class="nv">HOST</span><span class="si">}</span>.cert <span class="se">\</span>
+        -keystore <span class="si">${</span><span class="nv">KEYSTOREFILE</span><span class="si">}</span> -storepass <span class="si">${</span><span class="nv">KEYSTOREPASS</span><span class="si">}</span>
+
+<span class="c1"># verify we&#39;ve got it.</span>
+keytool -list -v -keystore <span class="si">${</span><span class="nv">KEYSTOREFILE</span><span class="si">}</span> -storepass <span class="si">${</span><span class="nv">KEYSTOREPASS</span><span class="si">}</span> -alias <span class="si">${</span><span class="nv">HOST</span><span class="si">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../notification/index.html" title="previous chapter">Notification community module Plugin Documentation</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../ogc-api/index.html" title="next chapter">OGC API Extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Authentication with OAuth2</a><ul>
+<li><a class="reference internal" href="#oauth2-protocol-and-geoserver-oauth2-core-module">OAuth2 Protocol and GeoServer OAuth2 core module</a></li>
+<li><a class="reference internal" href="#configure-the-google-authentication-provider">Configure the Google authentication provider</a></li>
+<li><a class="reference internal" href="#configure-the-geoserver-oauth2-filter">Configure the GeoServer OAuth2 filter</a></li>
+<li><a class="reference internal" href="#openid-connect-authentication">OpenID connect authentication</a><ul>
+<li><a class="reference internal" href="#openid-connect-with-attached-access-bearer-tokens">OpenID Connect With Attached Access Bearer Tokens</a></li>
+<li><a class="reference internal" href="#azure-ad-and-adfs-setup">Azure AD and ADFS setup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ssl-trusted-certificates">SSL Trusted Certificates</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../notification/index.html" title="previous chapter">Notification community module Plugin Documentation</a></li>
+            <li>Next: <a href="../ogc-api/index.html" title="next chapter">OGC API Extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/oauth2/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

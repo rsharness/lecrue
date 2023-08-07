@@ -1,0 +1,682 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ImageMosaic configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Using the ImageMosaic extension" href="tutorial.html" />
+    <link rel="prev" title="ImageMosaic" href="index.html" /> 
+  </head><body class="data/raster/imagemosaic/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Raster data</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">ImageMosaic</a> &raquo;</li>
+    <li>ImageMosaic configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="tutorial.html" title="Using the ImageMosaic extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="ImageMosaic" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <blockquote>
+<div></div></blockquote>
+<div class="section" id="imagemosaic-configuration">
+<span id="data-imagemosaic-config"></span><h1>ImageMosaic configuration<a class="headerlink" href="#imagemosaic-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="granules">
+<h2>Granules<a class="headerlink" href="#granules" title="Permalink to this headline">¶</a></h2>
+<p>Each individual image is commonly referred to as a <strong>granule</strong>. In recent releases of GeoServer the similarities requirements
+for the granules have been dropped significantly, including:</p>
+<ul class="simple">
+<li><p>The granules do not need to share the same coordinate reference system (see <a class="reference internal" href="tutorial.html#multi-crs-mosaic"><span class="std std-ref">the multi-CRS mosaic tutorial</span></a>)</p></li>
+<li><p>The granules can be in different color models, with an allowance of mixing gray, RGB, RGBA and indexed color granules
+(it is however not possible to mix colored granules with scientific data types like as float/double).
+In order to benefit of mixed color models JAI-Ext support must be enabled, see <a class="reference internal" href="../../../configuration/image_processing/index.html#jaiext"><span class="std std-ref">the JAI-EXT support documentation</span></a>.</p></li>
+</ul>
+<p>In addition it is worth remarking on the fact that currently the ImageMosaic is able to handle raster data whose grid-to-world transformation is a scale and translate transformation, hence no rotation or skew.</p>
+</div>
+<div class="section" id="index-and-configuration-file-creation">
+<h2>Index and configuration file creation<a class="headerlink" href="#index-and-configuration-file-creation" title="Permalink to this headline">¶</a></h2>
+<p>When a new store is created, an index shapefile will be generated to associate each granule file with its bounding box. The index creation respects directory trees as well as single directories. All you need to do is point the store to the root of the hierarchy, and all images will be considered for inclusion in the ImageMosaic.</p>
+<p>The index will contain the enclosing polygon for each raster file (in an appropriate coordinate reference system) and the path to each of these files. The location attribute can be relative to the configuration folder or absolute. By default, the name of this attribute is <code class="docutils literal notranslate"><span class="pre">location</span></code>, but this can be changed in the main configuration file.</p>
+<p>If you already have these files generated, GeoServer will respect them and not generate a new index. By default, a shapefile is used for the index, but PostGIS, H2, and Oracle are also supported, with additional configuration steps.</p>
+</div>
+<div class="section" id="configuration-files">
+<h2>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<p>Within each store there are multiple configuration files that determine how the mosaic is rendered.</p>
+<div class="section" id="primary-configuration-file">
+<h3>Primary configuration file<a class="headerlink" href="#primary-configuration-file" title="Permalink to this headline">¶</a></h3>
+<p>The mosaic configuration file is the primary file used to store the configuration parameters that control the ImageMosaic plugin. When created by GeoServer it is by default called <code class="docutils literal notranslate"><span class="pre">&lt;directory&gt;.properties</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;directory&gt;</span></code> is the name of the root directory of the store. (It is not related to the store name in GeoServer.) It can have other names, as long as it does not conflict with other files such as <code class="file docutils literal notranslate"><span class="pre">datastore.properties</span></code> or <code class="file docutils literal notranslate"><span class="pre">indexer.properties</span></code>. This file usually does not require manual editing.</p>
+<p>The table below describes the various elements in this configuration file.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 5%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Parameter</p></th>
+<th class="head"><p>Mandatory?</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>Levels</p></th>
+<td><p>Y</p></td>
+<td><p>Represents the resolutions for the various levels of the granules of this mosaic.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Heterogeneous</p></th>
+<td><p>N</p></td>
+<td><p>Sets whether the image files are heterogeneous. Default is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>AbsolutePath</p></th>
+<td><p>N</p></td>
+<td><p>Controls whether or not the path stored inside the <code class="docutils literal notranslate"><span class="pre">location</span></code> attribute represents an absolute path or a path relative to the location of the shapefile index. Notice that a relative index ensures much more portability of the mosaic itself. Default value for this parameter is <code class="docutils literal notranslate"><span class="pre">false</span></code>, which means relative paths.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Name</p></th>
+<td><p>N</p></td>
+<td><p>The name to be assigned to the index. If unspecified, the index name will usually match the name of the folder containing the mosaic.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>TypeName</p></th>
+<td><p>Y</p></td>
+<td><p>Featuretype name for this mosaic. Usually the name as <code class="docutils literal notranslate"><span class="pre">Name</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Caching</p></th>
+<td><p>N</p></td>
+<td><p>Boolean value to enable caching. When set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the ImageMosaic will try to save in memory the entire contents of the index to reduce loading/query time. Set to <code class="docutils literal notranslate"><span class="pre">false</span></code> for a large granule index and/or if new granules are to be ingested (for example, when the index is on a database and we interact directly with it). Default is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>ExpandToRGB</p></th>
+<td><p>N</p></td>
+<td><p>Boolean flag to force color expansion from index color model (paletted datasets) to component color model (RGB). Default is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>LocationAttribute</p></th>
+<td><p>Y</p></td>
+<td><p>The name of the attribute path in the shapefile index. Default is <code class="docutils literal notranslate"><span class="pre">location</span></code>.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>SuggestedSPI</p></th>
+<td><p>Y</p></td>
+<td><p>Suggested plugin for reading the image files.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>SuggestedFormat</p></th>
+<td><p>N</p></td>
+<td><p>Suggested GridFormat for reading the image files.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Envelope2D</p></th>
+<td><p>N</p></td>
+<td><p>Envelope for the mosaic formatted as <code class="docutils literal notranslate"><span class="pre">LLX,LLY</span> <span class="pre">URX,URY</span></code> (notice the space between the lower left and upper right coordinate pairs).</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>CheckAuxiliaryMetadata</p></th>
+<td><p>N</p></td>
+<td><p>This parameter allows to specify whether the ImageMosaic plugin should check for the presence of a GDAL aux.xml file beside each granule file. For most common use cases, you don’t need to set or specify this parameter. Being disabled by Default, ImageMosaic won’t look for an ancillary file for each granule being initialized in the GranuleCatalog. This avoid useless checks, especially when dealing with thousand of granules. You should set that parameter to <code class="docutils literal notranslate"><span class="pre">true</span></code> when you want to instruct the ImageMosaic to look for a GDAL generated aux.xml file containing PAM (Persistent Auxiliary Metadata) for each granule, to be attached to the Granule info (GranuleDescriptor). This is specially useful when you have setup a <a class="reference internal" href="../../../community/colormap/index.html#community-colormap"><span class="std std-ref">Dynamic ColorMap rendering transformation</span></a> which dynamically set a color map based on the statistics collected into the granule’s GDAL PAM being previously generated with a gdalinfo -stats parameter.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>LevelsNum</p></th>
+<td><p>Y</p></td>
+<td><p>Represents the number of reduced resolution layers that we currently have for the granules of this mosaic.</p></td>
+</tr>
+</tbody>
+</table>
+<p>A sample configuration file follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Levels</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.4</span>
+<span class="n">Heterogeneous</span><span class="o">=</span><span class="n">false</span>
+<span class="n">AbsolutePath</span><span class="o">=</span><span class="n">false</span>
+<span class="n">Name</span><span class="o">=</span><span class="n">osm</span>
+<span class="n">TypeName</span><span class="o">=</span><span class="n">osm</span>
+<span class="n">Caching</span><span class="o">=</span><span class="n">false</span>
+<span class="n">ExpandToRGB</span><span class="o">=</span><span class="n">false</span>
+<span class="n">LocationAttribute</span><span class="o">=</span><span class="n">location</span>
+<span class="n">SuggestedSPI</span><span class="o">=</span><span class="n">it</span><span class="o">.</span><span class="n">geosolutions</span><span class="o">.</span><span class="n">imageioimpl</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">tiff</span><span class="o">.</span><span class="n">TIFFImageReaderSpi</span>
+<span class="n">SuggestedFormat</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">gce</span><span class="o">.</span><span class="n">geotiff</span><span class="o">.</span><span class="n">GeoTiffFormat</span>
+<span class="n">CheckAuxiliaryMetadata</span><span class="o">=</span><span class="n">false</span>
+<span class="n">LevelsNum</span><span class="o">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="datastore-properties">
+<span id="mosaic-datastore-properties"></span><h3><code class="file docutils literal notranslate"><span class="pre">datastore.properties</span></code><a class="headerlink" href="#datastore-properties" title="Permalink to this headline">¶</a></h3>
+<p>By default the ImageMosaic index is specified by a shapefile, which is located at the root of the ImageMosaic directory, just like the primary configuration file.</p>
+<p>If needed, different storage can be used for the index — like a spatial DBMS, which is the preferred solution when you wish to share the ImageMosaic itself in a cluster of GeoServer instances. In this case the user must supply GeoServer with the proper connection parameters, which can be specified by using a <code class="file docutils literal notranslate"><span class="pre">datastore.properties</span></code> file placed at the root of the ImageMosaic directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A shapefile is created automagically if it does not exist or if there is no <code class="file docutils literal notranslate"><span class="pre">datastore.properties</span></code> file.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>At the time of writing the following spatial DBMS have been tested successfully: Oracle, PostgreSQL, H2, SQLServer.</p>
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 5%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Parameter</p></th>
+<th class="head"><p>Mandatory?</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>StoreName</p></th>
+<td><p>N</p></td>
+<td><p>Can be used to refer to a GeoServer registered store, using a “workspace:storeName” syntax. When this is used,
+the no other connection parameters need to be provided. The SPI can still be provided to inform the mosaic of
+the resulting type of store (e.g., Oracle) in case specific behavior need to be enacted for it (e.g., in the
+case of Oracle the attributes are all uppercase and cannot be longer than 30 chars, the mosaic will respect
+the limits but the <cite>SPI</cite> parameter needs to be explicitly set to <cite>org.geotools.data.oracle.OracleNGDataStoreFactory</cite>
+as the actual store type is hidden when it reaches the mosaic code).
+Also, as a reminder, the code is picking up a Store reference, not a layer one, meaning that security restrictions
+that might have been applied to a layer exposing the feature type do not apply to the mosaic code (e.g., if
+a user has restrictions such as a spatial filter on said layer, it won’t transfer to the mosaic, which needs to
+be secured separately)</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>SPI</p></th>
+<td><p>Y</p></td>
+<td><p>The DataStoreFactory used to connect to the index store:</p>
+<ul class="simple">
+<li><p>PostGIS: <code class="docutils literal notranslate"><span class="pre">org.geotools.data.postgis.PostgisNGDataStoreFactory</span></code></p></li>
+<li><p>Oracle: <code class="docutils literal notranslate"><span class="pre">org.geotools.data.oracle.OracleNGDataStoreFactory</span></code></p></li>
+<li><p>H2: <code class="docutils literal notranslate"><span class="pre">org.geotools.data.h2.H2DataStoreFactory</span></code></p></li>
+<li><p>SQLServer: <code class="docutils literal notranslate"><span class="pre">org.geotools.data.sqlserver.SQLServerDataStoreFactory</span></code></p></li>
+</ul>
+<p><a class="reference internal" href="../../../tutorials/tomcat-jndi/tomcat-jndi.html#tomcat-jndi"><span class="std std-ref">JNDI</span></a> can also be used with any of these stores. If JNDI is used, the DataStoreFactory name will differ from the above.</p>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Connection parameters</p></th>
+<td><p>Y</p></td>
+<td><p>The connection parameters used by the specified SPI. The list of these connection parameters can be found in the GeoTools documentation on the relevant store:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.geotools.org/latest/userguide/library/jdbc/postgis.html">PostGIS</a></p></li>
+<li><p><a class="reference external" href="https://docs.geotools.org/latest/userguide/library/jdbc/oracle.html">Oracle</a></p></li>
+<li><p><a class="reference external" href="https://docs.geotools.org/latest/userguide/library/jdbc/h2.html">H2</a></p></li>
+<li><p><a class="reference external" href="https://docs.geotools.org/latest/userguide/library/jdbc/sqlserver.html">SQLServer</a></p></li>
+</ul>
+<p>If JNDI is used, the connection parameters will include <code class="docutils literal notranslate"><span class="pre">jndiReferenceName</span></code> instead of <code class="docutils literal notranslate"><span class="pre">host</span></code>, <code class="docutils literal notranslate"><span class="pre">port</span></code>, etc.
+Note that for any connection parameters that include a space (such as <code class="docutils literal notranslate"><span class="pre">loose</span> <span class="pre">bbox</span></code>), the space must be escaped by preceding it with a backslash (<code class="docutils literal notranslate"><span class="pre">loose\</span> <span class="pre">bbox</span></code>).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Here is a sample <code class="file docutils literal notranslate"><span class="pre">datastore.properties</span></code> file for a PostGIS index:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SPI</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">postgis</span><span class="o">.</span><span class="n">PostgisNGDataStoreFactory</span>
+<span class="n">host</span><span class="o">=</span><span class="n">localhost</span>
+<span class="n">port</span><span class="o">=</span><span class="mi">5432</span>
+<span class="n">database</span><span class="o">=</span><span class="n">osm</span>
+<span class="n">schema</span><span class="o">=</span><span class="n">public</span>
+<span class="n">user</span><span class="o">=</span><span class="n">user</span>
+<span class="n">passwd</span><span class="o">=</span><span class="n">password</span>
+<span class="n">Loose</span>\ <span class="n">bbox</span><span class="o">=</span><span class="n">true</span>
+<span class="n">Estimated</span>\ <span class="n">extends</span><span class="o">=</span><span class="n">false</span>
+<span class="n">validate</span>\ <span class="n">connections</span><span class="o">=</span><span class="n">true</span>
+<span class="n">Connection</span>\ <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span>
+<span class="n">preparedStatements</span><span class="o">=</span><span class="n">true</span>
+</pre></div>
+</div>
+<p>Here is a sample <code class="file docutils literal notranslate"><span class="pre">datastore.properties</span></code> file for a PostGIS index via JNDI:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SPI</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">postgis</span><span class="o">.</span><span class="n">PostgisNGJNDIDataStoreFactory</span>
+<span class="c1">#String</span>
+<span class="c1"># JNDI data source</span>
+<span class="c1"># Default &quot;java:comp/env/&quot;+&quot;jdbc/mydatabase&quot;</span>
+<span class="n">jndiReferenceName</span><span class="o">=</span>
+
+<span class="c1">#Boolean</span>
+<span class="c1"># perform only primary filter on bbox</span>
+<span class="c1"># Default Boolean.TRUE</span>
+<span class="n">Loose</span>\ <span class="n">bbox</span><span class="o">=</span><span class="n">true</span>
+
+<span class="c1">#Boolean</span>
+<span class="c1"># use prepared statements</span>
+<span class="c1">#Default Boolean.FALSE</span>
+<span class="n">preparedStatements</span><span class="o">=</span><span class="n">false</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="indexer-properties">
+<h3><code class="file docutils literal notranslate"><span class="pre">indexer.properties</span></code><a class="headerlink" href="#indexer-properties" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the required envelope and location attributes, the schema for the index store may expose other custom attributes which can be used later for filtering the ImageMosaic granules on the fly during a WMS or WCS request or to diver WMS and WCS dimensions like TIME, ELEVATION and so on. This is configured by the <code class="file docutils literal notranslate"><span class="pre">indexer.properties</span></code> file:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 5%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Parameter</p></th>
+<th class="head"><p>Mandatory?</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>Schema</p></th>
+<td><p>Y</p></td>
+<td><p>A comma-separated sequence describing the mapping between attribute and data type.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>PropertyCollectors</p></th>
+<td><p>Y</p></td>
+<td><p>A comma-separated list of PropertyCollectors. Each entry in the list includes the extractor class, the file name (within square brackets <code class="docutils literal notranslate"><span class="pre">[</span> <span class="pre">]</span></code> and not including the <code class="docutils literal notranslate"><span class="pre">.properties</span></code> suffix) containing the regular expression needed to extract the attribute value from the granule file name, and the attribute name (within parentheses <code class="docutils literal notranslate"><span class="pre">(</span> <span class="pre">)</span></code>). The instance of the extractor class also indicates the type of object computed by the specific collector, so a <code class="docutils literal notranslate"><span class="pre">TimestampFileNameExtractorSPI</span></code> will return <code class="docutils literal notranslate"><span class="pre">Timestamps</span></code> while a <code class="docutils literal notranslate"><span class="pre">DoubleFileNameExtractorSPI</span></code> will return <code class="docutils literal notranslate"><span class="pre">Double</span></code> numbers.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>TimeAttribute</p></th>
+<td><p>N</p></td>
+<td><p>Specifies the name of the time-variant attribute.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>ElevationAttribute</p></th>
+<td><p>N</p></td>
+<td><p>Specifies the name of the elevation attribute.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>AuxiliaryFile</p></th>
+<td><p>N</p></td>
+<td><p>Path to an auxiliary file to be used for internal purposes (For example: when dealing with NetCDF granules, it refers to the NetCDF XML ancillary file.)</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>AbsolutePath</p></th>
+<td><p>N</p></td>
+<td><p>Controls whether or not the path stored inside the <code class="docutils literal notranslate"><span class="pre">location</span></code> attribute represents an absolute path or a path relative to the location of the shapefile index. Notice that a relative index ensures better portability of the mosaic itself. Default value for this parameter is <code class="docutils literal notranslate"><span class="pre">false</span></code>, which means relative paths.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Caching</p></th>
+<td><p>N</p></td>
+<td><p>Boolean value to enable caching. When set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the ImageMosaic will try to save in memory the entire contents of the index to reduce loading/query time. Set to <code class="docutils literal notranslate"><span class="pre">false</span></code> for a large granule index and/or if new granules are to be ingested (for example, when the index is on a database and we interact directly with it). Default is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>CanBeEmpty</p></th>
+<td><p>N</p></td>
+<td><p>Boolean flag used for configuring empty mosaics. When enabled the ImageMosaic will not throw an exception caused by the absence of any coverage. By default it is set to <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Envelope2D</p></th>
+<td><p>N</p></td>
+<td><p>Envelope for the mosaic formatted as <code class="docutils literal notranslate"><span class="pre">LLX,LLY</span> <span class="pre">URX,URY</span></code> (notice the space between the lower left and upper right coordinate pairs).</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>ExpandToRGB</p></th>
+<td><p>N</p></td>
+<td><p>Boolean flag to force color expansion from index color model (paletted datasets) to component color model (RGB). Default is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>IndexingDirectories</p></th>
+<td><p>N</p></td>
+<td><p>Comma separated values list of paths referring to directories containing granules to be indexed. If unspecified, the IndexingDirectory will be the mosaic configuration directory. This parameter allows configuration of a mosaic in a folder which contains only configuration files, while the granules to be indexed are stored somewhere else.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Name</p></th>
+<td><p>N</p></td>
+<td><p>The name to be assigned to the index. If unspecified, the index name will usually match the name of the folder containing the mosaic.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>NoData</p></th>
+<td><p>N</p></td>
+<td><p>Specifies the NoData for the mosaic. (This might be useful, as an instance, when imposing the Envelope2D. At time of ImageMosaic’s initialization, a small 5x5 pixels sample read is performed by ImageMosaic on the Envelope’s corner in order to retrieve granule’s metadata and properties, as nodata. If Envelope2D is forced in configuration, there might be the case that this sample read will not involve any actual granule so a default noData will be set which may be different with respect to what is actually stored on granules. Specifying the desired NoData property in indexer will solve this type of issue).</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>CoverageNameCollectorSPI</p></th>
+<td><p>N</p></td>
+<td><p>As described in the previous row, the Name parameter allows specification of the coverage name to be exposed by the ImageMosaic. An ImageMosaic of NetCDFs instead exposes a coverage for each supported variable found in the NetCDF, using the variable’s name as the coverage name (for instance, air_temperature, wind_speed, etc.) The optional CoverageNameCollectorSPI property allows specification of a CoverageNameCollector plugin to be used to instruct the ImageMosaic on how to setup different coverageNames for granules. It should contains the full name of the implementing class plus an optional set of semicolon-separated keyValue pairs prefixed by “:”. See below for an example.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Recursive</p></th>
+<td><p>N</p></td>
+<td><p>Boolean flag used at indexing time. When set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the indexer will look for granules by scanning any subdirectory contained in the indexing directory. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, only the main folder will be analyzed. Default is <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>UseExistingSchema</p></th>
+<td><p>N</p></td>
+<td><p>Boolean flag used for enabling/disabling the use of existing schemas. When enabled, the ImageMosaic will start indexing granules using the existing database schema (from <code class="file docutils literal notranslate"><span class="pre">datastore.properties</span></code>) instead of populating it. This is useful when you already have a database with a valid mosaic schema (the_geom, location and other attributes, take a look at gdalindex) or when you do not want to rename the images to add times and dimensions (you should simply add them to the table, to AdditionalDomainAttributes and to PropertyCollectors). Default is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Wildcard</p></th>
+<td><p>N</p></td>
+<td><p>Wildcard used to specify which files should be scanned by the indexer. (For instance: “*.tif”). Currently, logic operators and lists aren’t supported, so this field is limited to a single wildcard element with no support for AND/OR operators combinations.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>WrapStore</p></th>
+<td><p>N</p></td>
+<td><p>By default, Postgresql identifiers can’t be longer than 63 chars. Longer names will be truncated to that fixed length. When dealing with multidimensional datasets (for instance: NetCDFs, GRIBs) each variable (NetCDF) or parameter (GRIB) is indexed into a table with the same name. Therefore an atmosphere-absorption-optical-thickness-due-to-particulate-organic-matter-ambient-aerosol-particles NetCDF CF variable will be associated to a table with the same name. Postgresql will truncate that to atmosphere-absorption-optical-thickness-due-to-particulate-orga breaking the one-to-one mapping and therefore breaking the proper functioning. Setting the WrapStore flag to <code class="docutils literal notranslate"><span class="pre">true</span></code> will establish a hidden mapping between full long names and truncated table names to support proper working.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>MosaicCRS</p></th>
+<td><p>N</p></td>
+<td><p>The “native” CRS of the mosaic, that is, the one in which footprints are collected. Useful when dealing with granules in multiple CRSs (see tutorial)</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>AdditionalDomainAttributes</p></th>
+<td><p>N</p></td>
+<td><p>Comma separate list of custom dimensions to be exposed. Each custom dimension declaration can be a simple attribute name from the
+schema, e.g., <code class="docutils literal notranslate"><span class="pre">runtime</span></code>, a mapping from dimension name to attribute name, e.g. <code class="docutils literal notranslate"><span class="pre">time2(runtime)</span></code>, or a mapping from a range dimension name to two attributes, e.g., <code class="docutils literal notranslate"><span class="pre">timerange(timeStart,timeEnd)</span></code></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>PropertySelection</p></th>
+<td><p>N</p></td>
+<td><p>Boolean value to enable/disable selection of properties from the mosaic index. Default is <code class="docutils literal notranslate"><span class="pre">false</span></code>. When enabled, the ImageMosaic will try to load in memory only the properties needed to perform mosaicking. A typical use case is using a STAC API as a mosaic index, a STAC item typically contains many complex properties, and the API might be remote, reducing the payload improves both query time and memory usage.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Here is a sample <code class="file docutils literal notranslate"><span class="pre">indexer.properties</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Schema</span><span class="o">=*</span><span class="n">the_geom</span><span class="p">:</span><span class="n">Polygon</span><span class="p">,</span><span class="n">location</span><span class="p">:</span><span class="n">String</span><span class="p">,</span><span class="n">ingestion</span><span class="p">:</span><span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span><span class="n">elevation</span><span class="p">:</span><span class="n">Double</span>
+<span class="n">PropertyCollectors</span><span class="o">=</span><span class="n">TimestampFileNameExtractorSPI</span><span class="p">[</span><span class="n">timeregex</span><span class="p">](</span><span class="n">ingestion</span><span class="p">),</span><span class="n">DoubleFileNameExtractorSPI</span><span class="p">[</span><span class="n">elevationregex</span><span class="p">](</span><span class="n">elevation</span><span class="p">)</span>
+<span class="n">TimeAttribute</span><span class="o">=</span><span class="n">ingestion</span>
+<span class="n">ElevationAttribute</span><span class="o">=</span><span class="n">elevation</span>
+<span class="n">Caching</span><span class="o">=</span><span class="n">false</span>
+<span class="n">AbsolutePath</span><span class="o">=</span><span class="n">false</span>
+</pre></div>
+</div>
+<p>An example of optional CoverageNameCollectorSPI could be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CoverageNameCollectorSPI</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">gce</span><span class="o">.</span><span class="n">imagemosaic</span><span class="o">.</span><span class="n">namecollector</span><span class="o">.</span><span class="n">FileNameRegexNameCollectorSPI</span><span class="p">:</span><span class="n">regex</span><span class="o">=^</span><span class="p">([</span><span class="n">a</span><span class="o">-</span><span class="n">zA</span><span class="o">-</span><span class="n">Z0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This defines a regex-based name collector which extracts the coverage name from the prefix of the file name, so that an ImageMosaic with temperature_2015.tif, temperature_2016.tif, pressure_2015.tif, pressure_2016.tif will put temperature* granules on a <code class="docutils literal notranslate"><span class="pre">temperature</span></code> coverage and pressure* granules on a <code class="docutils literal notranslate"><span class="pre">pressure</span></code> coverage.</p>
+</div>
+<div class="section" id="property-collectors">
+<h3>Property collectors<a class="headerlink" href="#property-collectors" title="Permalink to this headline">¶</a></h3>
+<p>The following table enumerates the available property collectors</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Collector SPI name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>ByteFileNameExtractorSPI
+DoubleFileNameExtractorSPI
+FloatFileNameExtractorSPI
+IntegerFileNameExtractorSPI
+LongFileNameExtractorSPI
+ShortFileNameExtractorSPI</p></th>
+<td><p>Extracts an number from the file name using a regular expression specified in a sidecar file, casting it to the desired type based on the SPI name (e..g, DoubleFileNameExtractorSPI extracts double precision floating points, IntegerFileNameExtractorSPI extracts 32 bit integers)</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>TimestampFileNameExtractorSPI</p></th>
+<td><p>Extracts a timestamp from the filename using a regular expression specified in a sidecar file</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>StringFileNameExtractorSPI</p></th>
+<td><p>Extracts a string from the filename using a regular expression specified in a sidecar file</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>CurrentDateExtractorSPI</p></th>
+<td><p>Returns the current date and time (useful to track ingestion times in a mosaic)</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>FSDateExtractorSPI</p></th>
+<td><p>Returns the creation date of the file being harvested</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>DateExtractorSPI</p></th>
+<td><p>Returns the date found in tiff file header “DateTime” (code 306)</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>ResolutionExtractorSPI
+ResolutionXExtractorSPI
+ResolutionYExtractorSPI</p></th>
+<td><p>Returns the native resolution of the raster being harvested. ResolutionExtractorSPI and ResolutionXExtractorSPI return the x resolution of the raster, ResolutionYExtractorSPI returns the resolution on the Y axis instead</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>CRSExtractorSPI</p></th>
+<td><p>Returns the code of the raster coordinate reference system, as a string, e.g. “EPSG:4326”</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">PropertyCollectors</span></code> parameter in the example above indicates two additional <code class="docutils literal notranslate"><span class="pre">.properties</span></code> files used to populate the <code class="docutils literal notranslate"><span class="pre">ingestion</span></code> and <code class="docutils literal notranslate"><span class="pre">elevation</span></code> attributes:</p>
+<p><code class="file docutils literal notranslate"><span class="pre">timeregex.properties</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>regex=[0-9]{8}T[0-9]{9}Z(\?!.\*[0-9]{8}T[0-9]{9}Z.\*)
+</pre></div>
+</div>
+<p>The above is a property file containing a regex used to extract Date and Time represented in <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a> as part of the filename.
+(Note the T char between digits for date and digits for time, as per ISO-8601)</p>
+<p>In case of custom format datetimes in filename, an additional <em>format</em> element should be added after the regex, preceded by a comma, defining the custom representation.</p>
+<div class="line-block">
+<div class="line">Example:</div>
+<div class="line">Temperature_2017111319.tif</div>
+<div class="line">an hourly Temperature file with datetime = November, 13 2017 at 7:00 PM (the last 2 digits = 19)</div>
+<div class="line"><br /></div>
+<div class="line">In that case, the timeregex.properties file should be like this:</div>
+</div>
+<blockquote>
+<div><p>regex=.*([0-9]{10}).*,format=yyyyMMddHH</p>
+</div></blockquote>
+<p>In case of reduced precision of temporal information, where there is the need to get the higher time included in that reduced value, an additional <em>,useHighTime=true</em> element should be added.</p>
+<div class="line-block">
+<div class="line">Example:</div>
+<div class="line">Temperature_2017111319.tif</div>
+<div class="line">an hourly Temperature file with datetime = November, 13 2017 at 19h 00m 00s 000ms</div>
+<div class="line">You want to get the max time included in that reduced precision, which is November, 13 2017 at 19h 59m 59s 999ms</div>
+<div class="line"><br /></div>
+<div class="line">In that case, the timeregex.properties file should be like this:</div>
+</div>
+<blockquote>
+<div><p>regex=.*([0-9]{10}).*,format=yyyyMMddHH,useHighTime=true</p>
+</div></blockquote>
+<p>In case the temporal information is spread along the whole file path, an additional <em>,fullPath=true</em> element should be added.</p>
+<div class="line-block">
+<div class="line">Example:</div>
+<div class="line">/data/20120202/Temperature.T1800.tif</div>
+<div class="line">an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embedded in the name (Temperature.T1800.tif)</div>
+<div class="line"><br /></div>
+<div class="line">In that case, the timeregex.properties file should be like this:</div>
+</div>
+<blockquote>
+<div><p>regex=(?:/)(\d{8})(?:/)(?:Temperature.)(T\d{4})(?:.tif),fullPath=true</p>
+</div></blockquote>
+<p><code class="file docutils literal notranslate"><span class="pre">elevationregex.properties</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>regex=(?&lt;=_)(\\d{4}\\.\\d{3})(?=_)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="store-parameters">
+<h2>Store parameters<a class="headerlink" href="#store-parameters" title="Permalink to this headline">¶</a></h2>
+<p>By default, <span class="guilabel">ImageMosaic</span> will be an option in the <span class="guilabel">Raster Data Sources</span> list when creating a new data store.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../../_images/imagemosaiccreate.png" src="../../../_images/imagemosaiccreate.png" />
+<p class="caption"><span class="caption-text">ImageMosaic in the list of raster data stores</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id2">
+<img alt="../../../_images/imagemosaicconfigure.png" src="../../../_images/imagemosaicconfigure.png" />
+<p class="caption"><span class="caption-text">Configuring an ImageMosaic data store</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><span class="guilabel">Workspace</span></p></th>
+<td><p>Workspace for the store</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><span class="guilabel">Data Source Name</span></p></th>
+<td><p>Name of the store</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><span class="guilabel">Description</span></p></th>
+<td><p>Description of the store</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><span class="guilabel">Enabled</span></p></th>
+<td><p>Determines whether the store is enabled. If unchecked, all layers in the store will be disabled.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><span class="guilabel">URL</span></p></th>
+<td><p>The location of the store. Can be a local directory.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="coverage-parameters">
+<h2>Coverage parameters<a class="headerlink" href="#coverage-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Creation of the store is the first step to getting an ImageMosaic published in GeoServer. Most of the configuration is done when publishing the resulting coverage (layer).</p>
+<p>The Coverage Editor gives users the possibility to set a few control parameters to further control the mosaic creation process.</p>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/coverageparameters.png" src="../../../_images/coverageparameters.png" />
+<p class="caption"><span class="caption-text">Coverage parameters</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>The parameters are as follows:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>Accurate resolution computation</p></th>
+<td><p>Boolean value. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, computes the resolution of the granules in 9 points: the corners of the requested area and the middle points, taking the better one. This will provide better results for cases where there is a lot more deformation on a subregion (top/bottom/sides) of the requested bounding box with respect to others. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, computes the resolution using a basic affine scale transform.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>AllowMultithreading</p></th>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, enables multithreaded tile loading. This allows performing parallelized loading of the granules that compose the mosaic. Setting this to <code class="docutils literal notranslate"><span class="pre">true</span></code> makes sense only if you set USE_JAI_IMAGEREAD to <code class="docutils literal notranslate"><span class="pre">false</span></code> at the same time to force immediate loading of data into memory.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>BackgroundValues</p></th>
+<td><p>Sets the value of the mosaic background. Depending on the nature of the mosaic it is wise to set a value for the “nodata” area (usually -9999). This value is repeated on all the mosaic bands.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Filter</p></th>
+<td><p>Sets the default mosaic filter. It should be a valid <a class="reference internal" href="../../../tutorials/cql/cql_tutorial.html#cql-tutorial"><span class="std std-ref">ECQL query</span></a> to be used by default if no <code class="docutils literal notranslate"><span class="pre">cql_filter</span></code> is specified (instead of Filter.INCLUDE). This filter will be applied against the mosaic index, and may include any attributes exposed by the index store. If the <code class="docutils literal notranslate"><span class="pre">cql_filter</span></code> is specified in the request it will be overridden.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Do not use this filter to change time or elevation dimensions defaults. It will be added as AND condition with CURRENT for “time” and LOWER for “elevation”.</p>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>FootprintBehavior</p></th>
+<td><p>Sets the behavior of the regions of a granule that are outside of the granule footprint. Can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (ignore the footprint), <code class="docutils literal notranslate"><span class="pre">Cut</span></code> (remove regions outside the footprint from the image and don’t add an alpha channel), or <code class="docutils literal notranslate"><span class="pre">Transparent</span></code> (make regions outside the footprint completely transparent, and add an alpha channel if one is not already present). Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>InputTransparentColor</p></th>
+<td><p>Sets the transparent color of the granules prior to processing by the ImageMosaic plugin, in order to control how they are superimposed. When GeoServer composes the granules to satisfy a user request, some can overlap others; setting this parameter with an appropriate color avoids the overlap of “nodata” areas between granules. See below for an example:</p>
+<div class="figure align-default" id="id4">
+<img alt="../../../_images/input_color.png" src="../../../_images/input_color.png" />
+<p class="caption"><span class="caption-text">InputTransparentColor parameter not configured</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id5">
+<img alt="../../../_images/input_color2.png" src="../../../_images/input_color2.png" />
+<p class="caption"><span class="caption-text">InputTransparentColor parameter configured</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>MaxAllowedTiles</p></th>
+<td><p>Sets the maximum number of tiles that can be loaded simultaneously for a request. For large mosaics, this parameter should be set to avoid saturating the server by loading too many granules simultaneously.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>MergeBehavior</p></th>
+<td><p>The method used to handle overlapping granules during the mosaic operation. Can be <code class="docutils literal notranslate"><span class="pre">FLAT</span></code> (only the topmost granule is visible in the case of an overlap) or <code class="docutils literal notranslate"><span class="pre">STACK</span></code> (a band-stacking merge is applied to the overlapping granules). Default is <code class="docutils literal notranslate"><span class="pre">FLAT</span></code>.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>OutputTransparentColor</p></th>
+<td><p>Set the transparent color for the mosaic. This parameter make sense for RGB or paletted mosaics, but not for a DEM or MetOc data. See below for an example:</p>
+<div class="figure align-default" id="id6">
+<img alt="../../../_images/output_color.png" src="../../../_images/output_color.png" />
+<p class="caption"><span class="caption-text">OutputTransparentColor parameter configured with “no color”</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id7">
+<img alt="../../../_images/output_color2.png" src="../../../_images/output_color2.png" />
+<p class="caption"><span class="caption-text">OutputTransparentColor parameter configured with “nodata” color</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>SORTING</p></th>
+<td><p>Controls the order in which the granules are passed to the mosaic operation. Only useful if MergeBehavior is set to <code class="docutils literal notranslate"><span class="pre">FLAT</span></code>. Should be the name of an attribute in the index file, followed by a space, followed by <cite>A</cite> for ascending, or <cite>D</cite> for descending. For example: <code class="docutils literal notranslate"><span class="pre">sortattr</span> <span class="pre">D</span></code>.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>SUGGESTED_TILE_SIZE</p></th>
+<td><p>Controls the tile size of the input granules as well as the tile size of the output mosaic. It consists of two positive integers separated by a comma. Default is <code class="docutils literal notranslate"><span class="pre">512,512</span></code>. If your data is properly tiled, you might want to set this parameter to blank to avoid unnecessarily reformatting when reading.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>USE_JAI_IMAGEREAD</p></th>
+<td><p>Controls the low-level mechanism used to read the granules. If set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, GeoServer will use the JAI ImageRead operation and its deferred loading mechanism. If set to <code class="docutils literal notranslate"><span class="pre">false</span></code>, GeoServer will perform direct ImageIO read calls, which will result in immediate loading.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Deferred loading consumes less memory since it uses a streaming approach to only load into memory the data immediately needed for processing, but may cause problems under heavy load since it keeps the granule files open for a long time.</p>
+<p>Immediate loading consumes more memory since it loads the requested mosaic into memory all at once, but usually performs faster and prevents the “too many files open” error conditions that can occur with deferred loading.</p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Continue on with the <a class="reference internal" href="tutorial.html#data-imagemosaic-tutorial"><span class="std std-ref">ImageMosaic tutorial</span></a> to learn more and see examples.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">ImageMosaic</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="tutorial.html" title="next chapter">Using the ImageMosaic extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">ImageMosaic configuration</a><ul>
+<li><a class="reference internal" href="#granules">Granules</a></li>
+<li><a class="reference internal" href="#index-and-configuration-file-creation">Index and configuration file creation</a></li>
+<li><a class="reference internal" href="#configuration-files">Configuration files</a><ul>
+<li><a class="reference internal" href="#primary-configuration-file">Primary configuration file</a></li>
+<li><a class="reference internal" href="#datastore-properties"><code class="file docutils literal notranslate"><span class="pre">datastore.properties</span></code></a></li>
+<li><a class="reference internal" href="#indexer-properties"><code class="file docutils literal notranslate"><span class="pre">indexer.properties</span></code></a></li>
+<li><a class="reference internal" href="#property-collectors">Property collectors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#store-parameters">Store parameters</a></li>
+<li><a class="reference internal" href="#coverage-parameters">Coverage parameters</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">ImageMosaic</a></li>
+            <li>Next: <a href="tutorial.html" title="next chapter">Using the ImageMosaic extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/raster/imagemosaic/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

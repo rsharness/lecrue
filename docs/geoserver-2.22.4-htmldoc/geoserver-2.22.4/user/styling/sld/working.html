@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Working with SLD &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SLD Cookbook" href="cookbook/index.html" />
+    <link rel="prev" title="Introduction to SLD" href="introduction.html" /> 
+  </head><body class="styling/sld/working">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+    <li>Working with SLD</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="cookbook/index.html" title="SLD Cookbook" accesskey="N">Next</a></li>
+  <li>
+    <a href="introduction.html" title="Introduction to SLD" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="working-with-sld">
+<span id="sld-working"></span><h1>Working with SLD<a class="headerlink" href="#working-with-sld" title="Permalink to this headline">¶</a></h1>
+<p>This section describes how to create, view and troubleshoot SLD styling in GeoServer.</p>
+<div class="section" id="creating">
+<h2>Creating<a class="headerlink" href="#creating" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer comes with some basic styles defined in its catalog.
+Any number of new styles can be added to the catalog.
+Styles can also be specified <strong>externally</strong> to the server,
+either to define a complete map,
+or to extend the server style catalog using <strong>library mode</strong>.</p>
+<div class="section" id="catalog-styles">
+<h3>Catalog Styles<a class="headerlink" href="#catalog-styles" title="Permalink to this headline">¶</a></h3>
+<p>Styles in the catalog can be viewed, edited and validated via the <a class="reference internal" href="../webadmin/index.html#styling-webadmin-styles"><span class="std std-ref">Styles page</span></a> menu of the <a class="reference internal" href="../../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>.
+They may also be created and accessed via the REST <a class="reference internal" href="../../rest/api/styles.html#rest-api-styles"><span class="std std-ref">Styles</span></a> API.</p>
+<p>There are two types of Catalog Styles: Symbology Encoding styles (the default) and Style Layer Descriptor styles.</p>
+<div class="section" id="symbology-encoding-styles">
+<h4>Symbology Encoding Styles<a class="headerlink" href="#symbology-encoding-styles" title="Permalink to this headline">¶</a></h4>
+<p>A Symbology Encoding style consists of a <code class="file docutils literal notranslate"><span class="pre">Symbology</span> <span class="pre">Encoding</span></code> document used to specify the styling of a single layer.
+In GeoServer, this is more commonly referred to as a style.</p>
+<p>GeoServer supports the use of a <a class="reference internal" href="reference/sld.html#sld-reference-sld"><span class="std std-ref">StyledLayerDescriptor</span></a> document containing a single <code class="docutils literal notranslate"><span class="pre">&lt;NamedLayer&gt;</span></code> element, which
+contains a single <code class="docutils literal notranslate"><span class="pre">&lt;UserStyle&gt;</span></code> element to specify the styling.</p>
+<ul class="simple">
+<li><p>When used in this fashion the layer name is ignored, since the style may be applied to many different layers.</p></li>
+<li><p>When using an <a class="reference internal" href="reference/sld.html#sld-reference-sld"><span class="std std-ref">StyledLayerDescriptor</span></a> generated by another application keep in mind only the first <code class="docutils literal notranslate"><span class="pre">&lt;NamedLayer&gt;</span></code>
+is used, any subsequent content is ignored.</p></li>
+</ul>
+<p>Every layer (featuretype) registered with GeoServer must have at least one symbology encoding style associated with it,
+which is the default style for rendering the layer.
+Any number of additional styles can be associated with a layer.
+This allows layers to have appropriate styles advertised in the WMS <code class="docutils literal notranslate"><span class="pre">GetCapabilities</span></code> document.
+A layer’s styles can be changed using the <a class="reference internal" href="../../data/webadmin/layers.html#data-webadmin-layers"><span class="std std-ref">Layers</span></a> page of the <a class="reference internal" href="../../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When adding a layer and a style for it to GeoServer at the same time, the style should be added first,
+so that the new layer can be associated with the style immediately.</p>
+</div>
+</div>
+<div class="section" id="style-layer-descriptor-styles">
+<h4>Style Layer Descriptor Styles<a class="headerlink" href="#style-layer-descriptor-styles" title="Permalink to this headline">¶</a></h4>
+<p>A Style Layer Descriptor is a <a class="reference internal" href="reference/sld.html#sld-reference-sld"><span class="std std-ref">StyledLayerDescriptor</span></a> document containing any number of <code class="docutils literal notranslate"><span class="pre">&lt;NamedLayer&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;UserLayer&gt;</span></code> elements,
+each of which may contain any number of <code class="docutils literal notranslate"><span class="pre">&lt;UserStyle&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;NamedStyle&gt;</span></code> elements.</p>
+<p>Within a Style Layer Descriptor document, the name of any <code class="docutils literal notranslate"><span class="pre">&lt;NamedLayer&gt;</span></code> elements should match a layer (or layer group) in the catalog.
+Likewise, any <code class="docutils literal notranslate"><span class="pre">&lt;NamedStyle&gt;</span></code> elements should refer to a style in the catalog.</p>
+<p>Style Layer Descriptor styles can define new layers of styled data, by using the <a class="reference internal" href="reference/layers.html#sld-reference-inlinefeature"><span class="std std-ref">InlineFeature</span></a> element to
+provide feature data.</p>
+<p>Within GeoServer, when Style Layer Descriptor styles are used they are typically in the form of style groups. Style groups can
+be added to layer groups  as an alternative way of defining a collection of styled layers, using either the
+<a class="reference internal" href="../../data/webadmin/layergroups.html#data-webadmin-layergroups"><span class="std std-ref">Web Administration interface</span></a> or the <a class="reference external" href="http://docs.geoserver.org/latest/en/api/#1.0.0/layergroups.yaml">REST API</a>.</p>
+<p>Style Layer Descriptor styles can still be assigned to layers and used like a layer style, in which case only the first
+<code class="docutils literal notranslate"><span class="pre">&lt;NamedLayer&gt;</span></code> will be used. Style Layer Descriptor styles can also be used as an External Style, via the geoserver styles
+endpoint (<code class="docutils literal notranslate"><span class="pre">/geoserver/styles</span></code>) or the geoserver REST api.</p>
+</div>
+</div>
+<div class="section" id="external-styles">
+<h3>External Styles<a class="headerlink" href="#external-styles" title="Permalink to this headline">¶</a></h3>
+<p>Styling can be defined externally to the server in a number of ways:</p>
+<ul class="simple">
+<li><p>An internet-accessible SLD document can be provided via
+the <code class="docutils literal notranslate"><span class="pre">SLD=url</span></code> parameter in a WMS <a class="reference internal" href="../../services/wms/reference.html#wms-getmap"><span class="std std-ref">GetMap</span></a> GET request</p></li>
+<li><p>An SLD document can be provided directly in a
+WMS <a class="reference internal" href="../../services/wms/reference.html#wms-getmap"><span class="std std-ref">GetMap</span></a> GET request using the <code class="docutils literal notranslate"><span class="pre">SLD_BODY=style</span></code> parameter.
+The SLD XML must be URL-encoded.</p></li>
+<li><p>A <a class="reference internal" href="reference/sld.html#sld-reference-sld"><span class="std std-ref">StyledLayerDescriptor</span></a> element can be included in a WMS <code class="docutils literal notranslate"><span class="pre">GetMap</span></code> POST request XML document.</p></li>
+</ul>
+<p>In all of these cases, if the WMS <code class="docutils literal notranslate"><span class="pre">layers</span></code> parameter is not supplied
+then the map content is defined completely
+by the layers and styles present in the external SLD.
+If the <code class="docutils literal notranslate"><span class="pre">layers</span></code> parameter is present, then styling operates in <a class="reference internal" href="#sld-library-mode"><span class="std std-ref">Library Mode</span></a>.</p>
+<p>The structure of an external style is the same as a Style Layer Descriptor style, as described above.</p>
+<p>External styles can define new layers of styled data,
+by using the SLD <a class="reference internal" href="reference/layers.html#sld-reference-inlinefeature"><span class="std std-ref">InlineFeature</span></a> element to provide feature data.
+This can be used to implement dynamic feature highlighting, for example.</p>
+<p>External styling may be generated dynamically by client applications,
+This provides a powerful way for clients to control styling effects.</p>
+</div>
+<div class="section" id="library-mode">
+<span id="sld-library-mode"></span><h3>Library Mode<a class="headerlink" href="#library-mode" title="Permalink to this headline">¶</a></h3>
+<p>In <strong>library mode</strong> externally-defined styles are treated as a <em>style library</em>,
+which acts as an extension to the server style catalog.
+Library mode occurs when map layers and styles are specified using the <code class="docutils literal notranslate"><span class="pre">layers</span></code> and <code class="docutils literal notranslate"><span class="pre">styles</span></code> WMS parameters,
+and additional styling is supplied externally
+using one of the methods described in the previous section.
+The styles in the external style document
+take precedence over the catalog styles during rendering.</p>
+<p>Style lookup in library mode operates as follows:</p>
+<ul class="simple">
+<li><p>For each layer in the <code class="docutils literal notranslate"><span class="pre">layers</span></code> list, the applied style is either
+a named style specified in the <code class="docutils literal notranslate"><span class="pre">styles</span></code> list (if present), or the layer default style</p></li>
+<li><p>For a <strong>named</strong> style, if the external style document has a <code class="docutils literal notranslate"><span class="pre">&lt;NamedLayer&gt;...&lt;UserStyle&gt;</span></code>
+with matching layer name and style name, then it is used.
+Otherwise, the style name is searched for in the catalog.
+If it is not found there, an error occurs.</p></li>
+<li><p>For a <strong>default</strong> style, the external style document is
+searched to find a <code class="docutils literal notranslate"><span class="pre">&lt;NamedLayer&gt;</span></code> element with the layer name.
+If it contains a <code class="docutils literal notranslate"><span class="pre">&lt;UserStyle&gt;</span></code> with the <code class="docutils literal notranslate"><span class="pre">&lt;IsDefault&gt;</span></code> element having the value <code class="docutils literal notranslate"><span class="pre">1</span></code>
+then that style is used.
+Otherwise, the default server style for the layer (which must exist) is used.</p></li>
+</ul>
+<p>Generally it is simpler and more performant to use styles from the server catalog.
+However, library mode can be useful if it is required to style a map containing many layers and
+where only a few of them need to have their styling defined externally.</p>
+</div>
+</div>
+<div class="section" id="viewing">
+<h2>Viewing<a class="headerlink" href="#viewing" title="Permalink to this headline">¶</a></h2>
+<p>Once a style has been associated with a layer, the resulting rendering of the layer data
+can be viewed by using the <a class="reference internal" href="../../data/webadmin/layerpreview.html#layerpreview"><span class="std std-ref">Layer Preview</span></a>.
+The most convenient output format to use is the built-in OpenLayers viewer.
+Styles can be modified while the view is open, and their effect is visible as
+soon as the map view is panned or zoomed.
+Alternate styles can be viewed by specifying them in the <code class="docutils literal notranslate"><span class="pre">styles</span></code> WMS request parameter.</p>
+<p>To view the effect of compositing multiple styled layers, several approaches are available:</p>
+<ul class="simple">
+<li><p>Create a <strong>layer group</strong> for the desired layers using the <a class="reference internal" href="../../data/webadmin/layergroups.html#data-webadmin-layergroups"><span class="std std-ref">Layer Groups</span></a> page, and preview it.
+Non-default styles can be specified for layers if required.</p></li>
+<li><p>Submit a WMS <a class="reference internal" href="../../services/wms/reference.html#wms-getmap"><span class="std std-ref">GetMap</span></a> GET request specifying multiple layers in the <code class="docutils literal notranslate"><span class="pre">layers</span></code> parameter,
+and the corresponding styles in the <code class="docutils literal notranslate"><span class="pre">styles</span></code> parameter (if non-default styles are required).</p></li>
+<li><p>Submit a WMS <code class="docutils literal notranslate"><span class="pre">GetMap</span></code> POST request containing a <a class="reference internal" href="reference/sld.html#sld-reference-sld"><span class="std std-ref">StyledLayerDescriptor</span></a> element
+specifying server layers, optional layers of inline data,
+and either named catalog styles or user-defined styling for each layer.</p></li>
+</ul>
+</div>
+<div class="section" id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<p>SLD is a type of programming language, not unlike creating a web page or building a script.
+As such, problems may arise that may require troubleshooting.</p>
+<div class="section" id="syntax-errors">
+<h3>Syntax Errors<a class="headerlink" href="#syntax-errors" title="Permalink to this headline">¶</a></h3>
+<p>To minimize syntax errors when creating the SLD,
+it is recommended to use a text editor that is designed to work with XML
+(such as the <span class="guilabel">Style Editor</span> provided in the GeoServer UI).
+XML editors can make finding syntax errors easier by providing syntax highlighting and (sometimes) built-in error checking.</p>
+<p>The GeoServer <span class="guilabel">Style Editor</span> allows validating a document against the SLD XML schema.
+This is not mandatory, but is recommended to do before saving styles.</p>
+</div>
+<div class="section" id="semantic-errors">
+<h3>Semantic Errors<a class="headerlink" href="#semantic-errors" title="Permalink to this headline">¶</a></h3>
+<p>Semantic errors cannot be caught by SLD validation,
+but show up when a style is applied during map rendering.
+Most of the time this will result in a map displaying no features (a blank map),
+but some errors will prevent the map from rendering at all.</p>
+<p>The easiest way to fix semantic errors in an SLD is to try to isolate the error.
+If the SLD is long with many rules and filters, try temporarily removing some of them to see if the errors go away.</p>
+<p>In some cases the server will produce a WMS Exception document which may help to identify the error.
+It is also worth checking the server log to see if any error messages have been recorded.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="introduction.html" title="previous chapter">Introduction to SLD</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="cookbook/index.html" title="next chapter">SLD Cookbook</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Working with SLD</a><ul>
+<li><a class="reference internal" href="#creating">Creating</a><ul>
+<li><a class="reference internal" href="#catalog-styles">Catalog Styles</a><ul>
+<li><a class="reference internal" href="#symbology-encoding-styles">Symbology Encoding Styles</a></li>
+<li><a class="reference internal" href="#style-layer-descriptor-styles">Style Layer Descriptor Styles</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#external-styles">External Styles</a></li>
+<li><a class="reference internal" href="#library-mode">Library Mode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#viewing">Viewing</a></li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#syntax-errors">Syntax Errors</a></li>
+<li><a class="reference internal" href="#semantic-errors">Semantic Errors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="introduction.html" title="previous chapter">Introduction to SLD</a></li>
+            <li>Next: <a href="cookbook/index.html" title="next chapter">SLD Cookbook</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/working.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

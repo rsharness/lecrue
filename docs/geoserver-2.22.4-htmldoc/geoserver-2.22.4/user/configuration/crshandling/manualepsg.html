@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manually editing the EPSG database &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Virtual Services" href="../virtual-services.html" />
+    <link rel="prev" title="Coordinate Operations" href="coordtransforms.html" /> 
+  </head><body class="configuration/crshandling/manualepsg">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Server configuration</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Coordinate Reference System Handling</a> &raquo;</li>
+    <li>Manually editing the EPSG database</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../virtual-services.html" title="Virtual Services" accesskey="N">Next</a></li>
+  <li>
+    <a href="coordtransforms.html" title="Coordinate Operations" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="manually-editing-the-epsg-database">
+<span id="crs-manual-epsg"></span><h1>Manually editing the EPSG database<a class="headerlink" href="#manually-editing-the-epsg-database" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>These instructions are very advanced, and are here mainly for the curious who want to know details about the EPSG database subsystem.</p>
+</div>
+<p>To define a custom projection, edit the EPSG.sql file, which is used to create the cached EPSG database.</p>
+<ol class="arabic">
+<li><p>Navigate to the <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory</p></li>
+<li><p>Uncompress the <code class="file docutils literal notranslate"><span class="pre">gt2-epsg-h.jar</span></code> file.  On Linux, the command is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jar</span> <span class="n">xvf</span> <span class="n">gt2</span><span class="o">-</span><span class="n">epsg</span><span class="o">-</span><span class="n">h</span><span class="o">.</span><span class="n">jar</span>
+</pre></div>
+</div>
+</li>
+<li><p>Open <code class="file docutils literal notranslate"><span class="pre">org/geotools/referencing/factory/epsg/EPSG.sql</span></code> with a text editor.  To add a custom projection, these entries are essential:</p>
+<ol class="arabic">
+<li><p>An entry in the EPSG_COORDINATEREFERENCESYSTEM table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">41111</span><span class="p">,</span><span class="s1">&#39;WGC 84 / WRF Lambert&#39;</span><span class="p">,</span><span class="mi">1324</span><span class="p">,</span><span class="s1">&#39;projected&#39;</span><span class="p">,</span><span class="mi">4400</span><span class="p">,</span><span class="n">NULL</span><span class="p">,</span><span class="mi">4326</span><span class="p">,</span><span class="mi">20000</span><span class="p">,</span><span class="n">NULL</span><span class="p">,</span><span class="n">NULL</span><span class="p">,</span><span class="s1">&#39;US Nat. scale mapping.&#39;</span><span class="p">,</span><span class="s1">&#39;Entered by Alex Petkov&#39;</span><span class="p">,</span><span class="s1">&#39;Missoula Firelab WRF&#39;</span><span class="p">,</span><span class="s1">&#39;WRF&#39;</span><span class="p">,</span><span class="s1">&#39;2000-10-19&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+</pre></div>
+</div>
+<p>where:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>1324</strong> is the EPSG_AREA code that describes the area covered by my projection</p></li>
+<li><p><strong>4400</strong> is the EPSG_COORDINATESYSTEM code for my projection</p></li>
+<li><p><strong>20000</strong> is the EPSG_COORDOPERATIONPARAMVALUE key for the array that contains my projection parameters</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>An entry in the EPSG_COORDOPERATIONPARAMVALUE table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">20000</span><span class="p">,</span><span class="mi">9802</span><span class="p">,</span><span class="mi">8821</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="mi">9102</span><span class="p">),</span>    <span class="o">//</span><span class="n">latitude</span> <span class="n">of</span> <span class="n">origin</span>
+<span class="p">(</span><span class="mi">20000</span><span class="p">,</span><span class="mi">9802</span><span class="p">,</span><span class="mi">8822</span><span class="p">,</span><span class="o">-</span><span class="mf">97.0</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="mi">9102</span><span class="p">),</span> <span class="o">//</span><span class="n">central</span> <span class="n">meridian</span>
+<span class="p">(</span><span class="mi">20000</span><span class="p">,</span><span class="mi">9802</span><span class="p">,</span><span class="mi">8823</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="mi">9110</span><span class="p">),</span>    <span class="o">//</span><span class="n">st</span> <span class="n">parallel</span> <span class="mi">1</span>
+<span class="p">(</span><span class="mi">20000</span><span class="p">,</span><span class="mi">9802</span><span class="p">,</span><span class="mi">8824</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="mi">9110</span><span class="p">),</span>    <span class="o">//</span><span class="n">st</span> <span class="n">parallel</span> <span class="mi">2</span>
+<span class="p">(</span><span class="mi">20000</span><span class="p">,</span><span class="mi">9802</span><span class="p">,</span><span class="mi">8826</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="mi">9001</span><span class="p">),</span>   <span class="o">//</span><span class="n">false</span> <span class="n">easting</span>
+<span class="p">(</span><span class="mi">20000</span><span class="p">,</span><span class="mi">9802</span><span class="p">,</span><span class="mi">8827</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="mi">9001</span><span class="p">)</span>    <span class="o">//</span><span class="n">false</span> <span class="n">northing</span>
+</pre></div>
+</div>
+<p>where:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>9802</strong> is the EPSG_COORDOPERATIONMETHOD key for the Lambert Conic Conformal (2SP) formula</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>An entry in the EPSG_COORDOPERATION table:</p>
+<p>(20000,’WRF Lambert’,’conversion’,NULL,NULL,’’,NULL,1324,’Used for weather forecasting.’,0.0,9802,NULL,NULL,’Used with the WRF-Chem model for weather forecasting’,’Firelab in Missoula, MT’,’EPSG’,’2005-11-23’,’2005.01’,1,0)</p>
+<p>where:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>1324</strong> is the EPSG_AREA code that describes the area covered by my projection</p></li>
+<li><p><strong>9802</strong> is the EPSG_COORDOPERATIONMETHOD key for the Lambert Conic Conformal (2SP) formula</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Observe the commas. If you enter a line that is at the end of an INSERT statement, the comma is omitted (make sure the row before that has a comma at the end). Otherwise, add a comma at the end of your entry.</p>
+</div>
+<ol class="arabic">
+<li><p>After all edits, save the file and exit.</p></li>
+<li><p>Compress the gt2-epsg-h.jar file.  On Linux, the command is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jar</span> <span class="o">-</span><span class="n">Mcvf</span> <span class="n">gt2</span><span class="o">-</span><span class="n">epsg</span><span class="o">-</span><span class="n">h</span><span class="o">.</span><span class="n">jar</span> <span class="n">META</span><span class="o">-</span><span class="n">INF</span> <span class="n">org</span>
+</pre></div>
+</div>
+</li>
+<li><p>Remove the cached copy of the EPSG database, so that can be recreated. On Linux, the command is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">Geotools</span><span class="o">/</span><span class="n">Databases</span><span class="o">/</span><span class="n">HSQL</span>
+</pre></div>
+</div>
+</li>
+<li><p>Restart GeoServer.</p></li>
+</ol>
+<p>The new projection will be successfully parsed. Verify that the CRS has been properly parsed by navigating to the <a class="reference internal" href="../demos/index.html#srs-list"><span class="std std-ref">SRS List</span></a> page in the <a class="reference internal" href="../../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>.</p>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="coordtransforms.html" title="previous chapter">Coordinate Operations</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../virtual-services.html" title="next chapter">Virtual Services</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="coordtransforms.html" title="previous chapter">Coordinate Operations</a></li>
+            <li>Next: <a href="../virtual-services.html" title="next chapter">Virtual Services</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/configuration/crshandling/manualepsg.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

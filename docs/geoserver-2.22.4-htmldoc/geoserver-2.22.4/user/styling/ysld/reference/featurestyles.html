@@ -1,0 +1,633 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feature Styles &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Rules" href="rules.html" />
+    <link rel="prev" title="Structure" href="structure.html" /> 
+  </head><body class="styling/ysld/reference/featurestyles">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">YSLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">YSLD reference</a> &raquo;</li>
+    <li>Feature Styles</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="rules.html" title="Rules" accesskey="N">Next</a></li>
+  <li>
+    <a href="structure.html" title="Structure" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="feature-styles">
+<span id="ysld-reference-featurestyles"></span><h1>Feature Styles<a class="headerlink" href="#feature-styles" title="Permalink to this headline">¶</a></h1>
+<p>In YSLD, a Feature Style is a block of styling <a class="reference internal" href="rules.html#ysld-reference-rules"><span class="std std-ref">Rules</span></a>. The Feature Style is applied to a single feature type and drawn in an off-screen buffer.</p>
+<div class="figure align-default" id="id2">
+<img alt="../../../_images/feature-style.svg" src="../../../_images/feature-style.svg" /><p class="caption"><span class="caption-text">The feature style element</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>The purpose of a Feature Style is to specify drawing order.</strong> The buffer for the first Feature Style will be drawn first, while buffer for the second Feature Style will be processed after that, etc. When drawing is complete the buffers will composed into the final drawn map.</p>
+<p>A Feature Style is a <strong>top-level element</strong> in a YSLD style.</p>
+<p>Consider the following hierarchy:</p>
+<ul class="simple">
+<li><p>Feature Style 1</p>
+<ul>
+<li><p>Rule 1a</p></li>
+<li><p>Rule 1b</p></li>
+</ul>
+</li>
+<li><p>Feature Style 2</p>
+<ul>
+<li><p>Rule 2a</p></li>
+<li><p>Rule 2b</p></li>
+<li><p>Rule 2c</p></li>
+</ul>
+</li>
+</ul>
+<p>In this case, the rules contained inside Feature Style 1 will be processed and their <a class="reference internal" href="symbolizers/index.html#ysld-reference-symbolizers"><span class="std std-ref">symbolizers</span></a> drawn first. After Rule 1a and 1b are processed, the renderer will move on to Feature Style 2, where Rule 2a, 2b, and 2c will then be processed and their symbolizers drawn.</p>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/feature-style-order.svg" src="../../../_images/feature-style-order.svg" /><p class="caption"><span class="caption-text">Feature style order</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="drawing-order">
+<h2>Drawing order<a class="headerlink" href="#drawing-order" title="Permalink to this headline">¶</a></h2>
+<p>The order of feature styles is significant, and also the order of rules inside feature styles is significant.</p>
+<p>Rules inside a feature style are all applied to each feature at once. After all of the rules in a feature style have been applied to each feature, the next feature style will start again, applying rules to each feature.</p>
+<p>The off-screen buffer for each feature style is merged together during composition. These buffers are merged in the order defined by the feature styles. In this way, <strong>using multiple feature styles is a way of specifying z-order</strong>.</p>
+<p>Consider the same hierarchy as above. Given a layer that contains three features, the rules will be applied as follows:</p>
+<p>Feature style 1 will draw an off-screen buffer:</p>
+<ol class="arabic simple">
+<li><p>Rule 1a is applied to the first feature, followed by rule 1b</p></li>
+<li><p>Rule 1a is applied to the second feature, followed by rule 1b</p></li>
+<li><p>Rule 1a is applied to the third feature, followed by rule 1b</p></li>
+</ol>
+<div class="figure align-default" id="id4">
+<img alt="../../../_images/draw-order-buffer1.svg" src="../../../_images/draw-order-buffer1.svg" /><p class="caption"><span class="caption-text">Feature style 1 buffer</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>Feature style 2 will draw an off-screen buffer:</p>
+<ol class="arabic simple">
+<li><p>Rule 2a is applied to the first feature, followed by rule 2b and then rule 2c</p></li>
+<li><p>Rule 2a is applied to the second feature, followed by rule 2b and then rule 2c</p></li>
+<li><p>Rule 2a is applied to the third feature, followed by rule 2b and then rule 2c</p></li>
+</ol>
+<div class="figure align-default" id="id5">
+<img alt="../../../_images/draw-order-buffer2.svg" src="../../../_images/draw-order-buffer2.svg" /><p class="caption"><span class="caption-text">Feature style 2 buffer</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>This final map is produced by composition:</p>
+<ol class="arabic simple">
+<li><p>The buffer for feature style 1 is drawn</p></li>
+<li><p>The buffer for feature style 2 is drawn</p></li>
+<li><p>Any labeling is drawn on top</p></li>
+</ol>
+<div class="figure align-default" id="id6">
+<img alt="../../../_images/draw-order-map.svg" src="../../../_images/draw-order-map.svg" /><p class="caption"><span class="caption-text">Composition of both feature styles</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>If you need a rule to apply on top of other rules, use a second feature style.</strong> A useful case for this is for lines representing bridges or overpasses. In order to ensure that the bridge lines always display on “top” of other lines (which in a display that includes, they would need to be applied using a second feature style.)</p>
+</div>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>The following is the basic syntax of a feature style. Note that the contents of the block are not all expanded here.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;text&gt;</span>
+  <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;text&gt;</span>
+  <span class="nt">abstract</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;text&gt;</span>
+  <span class="nt">transform</span><span class="p">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">...</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
+  <span class="nt">x-ruleEvaluation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;text&gt;</span>
+  <span class="nt">x-composite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;text&gt;</span>
+  <span class="nt">x-composite-base</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;boolean&gt;</span>
+  <span class="nt">x-inclusion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;text&gt;</span>
+</pre></div>
+</div>
+<p>where:</p>
+<table class="colwidths-given non-responsive docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 50%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Property</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Internal reference to the feature style. It is recommended that the value be <strong>lower case</strong> and contain <strong>no spaces</strong>.</p></td>
+<td><p>Blank</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">title</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Human-readable name of the feature style. Exposed as a name for the group of rules contained in the feature style.</p></td>
+<td><p>Blank</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">abstract</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Longer description of the feature style.</p></td>
+<td><p>Blank</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">transform</span></code></p></th>
+<td><p>No</p></td>
+<td><p><a class="reference internal" href="transforms.html#ysld-reference-transforms"><span class="std std-ref">Rendering transformation</span></a> information.</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">rules</span></code></p></th>
+<td><p>Yes</p></td>
+<td><p>List of styling <a class="reference internal" href="rules.html#ysld-reference-rules"><span class="std std-ref">rules</span></a>.</p></td>
+<td><p>N/A</p></td>
+</tr>
+</tbody>
+</table>
+<p>The following properties are equivalent to SLD “vendor options”.</p>
+<table class="colwidths-given non-responsive docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 50%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Property</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">x-ruleEvaluation</span></code></p></th>
+<td><p>No</p></td>
+<td><p>When equals to <code class="docutils literal notranslate"><span class="pre">first</span></code> - stops rule evaluation after the first match. Can make the rendering more efficient by reducing the number of rules that need to be traversed by features, as well as simplyfing the rule filters.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">all</span></code></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">x-composite</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Allows for both alpha compositing and color blending options between buffers. There are many options; <a class="reference internal" href="#ysld-reference-featurestyles-composite"><span class="std std-ref">see below</span></a>.</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">x-composite-base</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Allows the rendering engine to use that feature-style as a “base”, and will compose all subsequent feature-styles and layers on top of it, until another base is found. Once the full set of layers against a base is composed, then the base itself will be composed against the next set of composed layers using its own compositing operator, if present. This is useful to fine-tune the use of <code class="docutils literal notranslate"><span class="pre">x-composite</span></code>, and to make sure that only the desired content is composited/blended and not all of the drawn content.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">x-inclusion</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Define if rule should be included in style for <code class="docutils literal notranslate"><span class="pre">legendOnly</span></code> or <code class="docutils literal notranslate"><span class="pre">mapOnly</span></code> (see <a class="reference internal" href="../../sld/extensions/rendering-selection.html#rendering-selection"><span class="std std-ref">Rendering Selection</span></a>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">normal</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="compositing-and-blending">
+<span id="ysld-reference-featurestyles-composite"></span><h2>Compositing and blending<a class="headerlink" href="#compositing-and-blending" title="Permalink to this headline">¶</a></h2>
+<p>By default, multiple feature styles are drawn with one buffer on top of the other. However, using the <code class="docutils literal notranslate"><span class="pre">x-composite</span></code> and <code class="docutils literal notranslate"><span class="pre">x-composite-base</span></code> options, one can customize the way that buffers are displayed.</p>
+<p>The following two tables show the possible alpha compositing and color blending values for the <code class="docutils literal notranslate"><span class="pre">x-composite</span></code> option. Note that in the tables below, <strong>source</strong> refers to the buffer that is drawn on top, while <strong>destination</strong> refers to the buffer that the source is drawn on top of.</p>
+<p><strong>Alpha compositing</strong></p>
+<p>Alpha compositing controls how buffers are merged using the transparent areas of each buffer.</p>
+<table class="colwidths-given non-responsive docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">copy</span></code></p></th>
+<td><p>Only the source will be present in the output.</p>
+<img alt="../../../_images/composite-source.svg" src="../../../_images/composite-source.svg" /></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">destination</span></code></p></th>
+<td><p>Only the destination will be present in the output.</p>
+<img alt="../../../_images/composite-destination.svg" src="../../../_images/composite-destination.svg" /></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">source-over</span></code></p></th>
+<td><p>The source is drawn over the destination, and the destination is visible where the source is transparent. Opposite of <code class="docutils literal notranslate"><span class="pre">destination-over</span></code>. This is the default value for x-composite.</p>
+<img alt="../../../_images/composite-source-over.svg" src="../../../_images/composite-source-over.svg" /></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">destination-over</span></code></p></th>
+<td><p>The source is drawn below the destination, and is visible only when the destination is transparent. Opposite of <code class="docutils literal notranslate"><span class="pre">source-over</span></code>.</p>
+<img alt="../../../_images/composite-destination-over.svg" src="../../../_images/composite-destination-over.svg" /></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">source-in</span></code></p></th>
+<td><p>The source is visible only when overlapping some non-transparent pixel of the destination. This allows the background map to act as a mask for the layer/feature being drawn. Opposite of <code class="docutils literal notranslate"><span class="pre">destination-in</span></code>.</p>
+<img alt="../../../_images/composite-source-in.svg" src="../../../_images/composite-source-in.svg" /></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">destination-in</span></code></p></th>
+<td><p>The destination is retained only when overlapping some non transparent pixel in the source. This allows the layer/feature to be drawn to act as a mask for the background map. Opposite of <code class="docutils literal notranslate"><span class="pre">source-in</span></code>.</p>
+<img alt="../../../_images/composite-destination-in.svg" src="../../../_images/composite-destination-in.svg" /></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">source-out</span></code></p></th>
+<td><p>The source is retained only in areas where the destination is transparent. This acts as a reverse mask when compared to <code class="docutils literal notranslate"><span class="pre">source-in</span></code>.</p>
+<img alt="../../../_images/composite-source-out.svg" src="../../../_images/composite-source-out.svg" /></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">destination-out</span></code></p></th>
+<td><p>The destination is retained only in areas where the source is transparent. This acts as a reverse mask when compared to <code class="docutils literal notranslate"><span class="pre">destination-in</span></code>.</p>
+<img alt="../../../_images/composite-destination-out.svg" src="../../../_images/composite-destination-out.svg" /></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">source-atop</span></code></p></th>
+<td><p>The destination is drawn fully, while the source is drawn only where it intersects the destination.</p>
+<img alt="../../../_images/composite-source-atop.svg" src="../../../_images/composite-source-atop.svg" /></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">destination-atop</span></code></p></th>
+<td><p>The source is drawn fully, and the destination is drawn over the source only where it intersects it.</p>
+<img alt="../../../_images/composite-destination-atop.svg" src="../../../_images/composite-destination-atop.svg" /></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">xor</span></code></p></th>
+<td><p>“Exclusive Or” mode. Each pixel is rendered only if either the source or the destination is not blank, but not both.</p>
+<img alt="../../../_images/composite-xor.svg" src="../../../_images/composite-xor.svg" /></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Color blending</strong></p>
+<p>Color blending allows buffers to be mixed during composition.</p>
+<table class="colwidths-given non-responsive docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">multiply</span></code></p></th>
+<td><p>The source color is multiplied by the destination color and replaces the destination. The resulting color is always at least as dark as either the source or destination color. Multiplying any color with black results in black. Multiplying any color with white preserves the original color.</p>
+<img alt="../../../_images/blend-multiply.png" src="../../../_images/blend-multiply.png" />
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">screen</span></code></p></th>
+<td><p>Multiplies the complements of the source and destination color values, then complements the result. The end result color is always at least as light as either of the two constituent colors. Screening any color with white produces white; screening with black leaves the original color unchanged.</p>
+<img alt="../../../_images/blend-screen.png" src="../../../_images/blend-screen.png" />
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">overlay</span></code></p></th>
+<td><p>Multiplies the colors depending on the destination color value. Source colors overlay the destination while preserving highlights and shadows. The backdrop color is not replaced but is mixed with the source color to reflect the lightness or darkness of the backdrop.</p>
+<img alt="../../../_images/blend-overlay.png" src="../../../_images/blend-overlay.png" />
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">darken</span></code></p></th>
+<td><p>Selects the darker of the destination and source colors. The destination is replaced with the source only where the source is darker.</p>
+<img alt="../../../_images/blend-darken.png" src="../../../_images/blend-darken.png" />
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">lighten</span></code></p></th>
+<td><p>Selects the lighter of the destination and source colors. The destination is replaced with the source only where the source is lighter.</p>
+<img alt="../../../_images/blend-lighten.png" src="../../../_images/blend-lighten.png" />
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">color-dodge</span></code></p></th>
+<td><p>Brightens the destination color to reflect the source color. Drawing with black produces no changes.</p>
+<img alt="../../../_images/blend-color-dodge.png" src="../../../_images/blend-color-dodge.png" />
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">color-burn</span></code></p></th>
+<td><p>Darkens the destination color to reflect the source color. Drawing with white produces no change.</p>
+<img alt="../../../_images/blend-color-burn.png" src="../../../_images/blend-color-burn.png" />
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">hard-light</span></code></p></th>
+<td><p>Multiplies the colors, depending on the source color value. The effect is similar to shining a harsh spotlight on the destination.</p>
+<img alt="../../../_images/blend-hard-light.png" src="../../../_images/blend-hard-light.png" />
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">soft-light</span></code></p></th>
+<td><p>Darkens or lightens the colors, depending on the source color value. The effect is similar to a diffused spotlight on the destination.</p>
+<img alt="../../../_images/blend-soft-light.png" src="../../../_images/blend-soft-light.png" />
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">difference</span></code></p></th>
+<td><p>Subtracts the darker of the two constituent colors from the lighter color. White inverts the destination color; black produces no change.</p>
+<img alt="../../../_images/blend-difference.png" src="../../../_images/blend-difference.png" />
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">exclusion</span></code></p></th>
+<td><p>Produces an effect similar to that of difference but lower in contrast. White inverts the destination color; black produces no change.</p>
+<img alt="../../../_images/blend-difference.png" src="../../../_images/blend-difference.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more details about the compositing and blending options, please see the <a class="reference external" href="../../../geoserver/styling/sld-extensions/composite-blend/">GeoServer User Manual</a>.</p>
+</div>
+</div>
+<div class="section" id="short-syntax">
+<h2>Short syntax<a class="headerlink" href="#short-syntax" title="Permalink to this headline">¶</a></h2>
+<p>When a style has a single feature style, it is possible to omit the syntax for the feature style and start at the first parameter inside.</p>
+<p>So the following complete styles are both equivalent:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rule1</span>
+    <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span><span class="nv">50000</span><span class="p p-Indicator">]</span>
+    <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">line</span><span class="p">:</span>
+        <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;#000000&#39;</span>
+        <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rule2</span>
+    <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">50000</span><span class="p p-Indicator">,</span><span class="nv">max</span><span class="p p-Indicator">]</span>
+    <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">line</span><span class="p">:</span>
+        <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;#000000&#39;</span>
+        <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rule1</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span><span class="nv">50000</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">line</span><span class="p">:</span>
+      <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;#000000&#39;</span>
+      <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rule2</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">50000</span><span class="p p-Indicator">,</span><span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">line</span><span class="p">:</span>
+      <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;#000000&#39;</span>
+      <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="road-casing">
+<h3>Road casing<a class="headerlink" href="#road-casing" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how a smaller line can be drawn on top of a larger line, creating the effect of lines being drawn with a border or “casing”:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">outer</span>
+  <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Outer line</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">outer_rule</span>
+    <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">line</span><span class="p">:</span>
+        <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;#808080&#39;</span>
+        <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">inner</span>
+  <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Inner line</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">inner_rule</span>
+    <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">line</span><span class="p">:</span>
+        <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;#44FF88&#39;</span>
+        <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+</pre></div>
+</div>
+<p>To draw the inner lines always on top of the outer lines we need to control the <strong>z-order</strong>. The <code class="docutils literal notranslate"><span class="pre">outer_rule</span></code> is encased in its own feature style and drawn into a distinct “Outer line” buffer. Next the <code class="docutils literal notranslate"><span class="pre">inner_rule</span></code> is encased in its own feature style and drawn into a distinct “Inner line” buffer.</p>
+<div class="figure align-default" id="id7">
+<img alt="../../../_images/line-casing-buffers.svg" src="../../../_images/line-casing-buffers.svg" /><p class="caption"><span class="caption-text">Feature style buffers</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>During composition these two off-screen buffers are combined into the final map.</p>
+<div class="figure align-default" id="id8">
+<img alt="../../../_images/line-casing-map.svg" src="../../../_images/line-casing-map.svg" /><p class="caption"><span class="caption-text">Final map composition</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<p>When drawn, the outer line has a width of 8 pixels and the inner line has a width of 6 pixels, so the line “border” is 1 pixel (on each side).</p>
+<div class="figure align-default" id="id9">
+<img alt="../../../_images/fs_roadcasing.png" src="../../../_images/fs_roadcasing.png" />
+<p class="caption"><span class="caption-text">Example showing road casing</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="first-match">
+<h3>First match<a class="headerlink" href="#first-match" title="Permalink to this headline">¶</a></h3>
+<p>Given a style that has many rules with distinct outcomes, it may be advantageous to employ <code class="docutils literal notranslate"><span class="pre">x-ruleEvaluation:</span> <span class="pre">first</span></code> so as to improve rendering efficiency and simplify those rules.</p>
+<p>This first example shows the standard way of creating rules for a dataset. There are villages, towns, and cities (<code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">=</span> <span class="pre">'village'</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">=</span> <span class="pre">'town'</span></code> or <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">=</span> <span class="pre">'city'</span></code>) and they have an <code class="docutils literal notranslate"><span class="pre">industry</span></code> which could be either <code class="docutils literal notranslate"><span class="pre">fishing</span></code> or other values.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In order to simplify this example, the specifics of the point symbolizers have been replaced by <a class="reference internal" href="variables.html#ysld-reference-variables"><span class="std std-ref">Define and reuse YAML Variables</span></a>. In a real-world example, these would need to be defined in the YSLD as well.</p>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="lineno"> 2 </span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">without_first_match</span>
+<span class="lineno"> 3 </span>  <span class="nt">rules</span><span class="p">:</span>
+<span class="lineno"> 4 </span>  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fishing_town</span>
+<span class="lineno"> 5 </span>    <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${type = &#39;town&#39; AND industry = &#39;fishing&#39;}</span>
+<span class="lineno"> 6 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno"> 7 </span>    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno"> 8 </span>        <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*fishingtown</span>
+<span class="lineno"> 9 </span>  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fishing_city</span>
+<span class="lineno">10 </span>    <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${type = &#39;city&#39; AND industry = &#39;fishing&#39;}</span>
+<span class="lineno">11 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">12 </span>    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno">13 </span>        <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*fishingcity</span>
+<span class="lineno">14 </span>  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">other_towns_cities</span>
+<span class="lineno">15 </span><span class="hll">    <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${type IN (&#39;town&#39;, &#39;city&#39;) AND industry &lt;&gt; &#39;fishing&#39;}</span>
+</span><span class="lineno">16 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">17 </span>    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno">18 </span>        <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*othertownscities</span>
+<span class="lineno">19 </span>  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">other</span>
+<span class="lineno">20 </span>    <span class="nt">else</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="lineno">21 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">22 </span>    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno">23 </span>        <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*allotherplaces</span>
+</pre></div>
+</div>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">x-ruleEvaluation:</span> <span class="pre">first</span></code> parameter, the style is simplified:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="lineno"> 2 </span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">with_first_match</span>
+<span class="lineno"> 3 </span><span class="hll">  <span class="nt">x-ruleEvaluation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">first</span>
+</span><span class="lineno"> 4 </span>  <span class="nt">rules</span><span class="p">:</span>
+<span class="lineno"> 5 </span>  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fishing_town</span>
+<span class="lineno"> 6 </span>    <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${type = &#39;town&#39; AND industry = &#39;fishing&#39;}</span>
+<span class="lineno"> 7 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno"> 8 </span>    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno"> 9 </span>        <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*fishingtown</span>
+<span class="lineno">10 </span>  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fishing_city</span>
+<span class="lineno">11 </span>    <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${type = &#39;city&#39; AND industry = &#39;fishing&#39;}</span>
+<span class="lineno">12 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">13 </span>    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno">14 </span>        <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*fishingcity</span>
+<span class="lineno">15 </span>  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">other_towns_cities</span>
+<span class="lineno">16 </span><span class="hll">    <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${type IN (&#39;town&#39;, &#39;city&#39;)}</span>
+</span><span class="lineno">17 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">18 </span>    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno">19 </span>        <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*othertownscities</span>
+<span class="lineno">20 </span>  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">other</span>
+<span class="lineno">21 </span>    <span class="nt">else</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="lineno">22 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">23 </span>    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno">24 </span>        <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*allotherplaces</span>
+</pre></div>
+</div>
+<p>Specifically, the third rule no longer needs the extra <code class="docutils literal notranslate"><span class="pre">AND</span> <span class="pre">industry</span> <span class="pre">&lt;&gt;</span> <span class="pre">'fishing'</span></code>, because the previous two rules imply that any features remaining by this rule have that condition.</p>
+</div>
+<div class="section" id="layer-mask">
+<h3>Layer mask<a class="headerlink" href="#layer-mask" title="Permalink to this headline">¶</a></h3>
+<p>Given two layers (in this case, two three-band rasters), one can mask or “knock out” the other, making visible what’s beneath.</p>
+<div class="figure align-default" id="id10">
+<img alt="../../../_images/fs_land.png" src="../../../_images/fs_land.png" />
+<p class="caption"><span class="caption-text">Top/source layer</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id11">
+<img alt="../../../_images/fs_ocean.png" src="../../../_images/fs_ocean.png" />
+<p class="caption"><span class="caption-text">Bottom/destination layer</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Screenshots show data provided by <a class="reference external" href="http://naturalearthdata.com">Natural Earth</a>.</p>
+</div>
+<p>Layer 1 (top/source):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="lineno">2 </span><span class="p p-Indicator">-</span> <span class="nt">rules</span><span class="p">:</span>
+<span class="lineno">3 </span>  <span class="p p-Indicator">-</span> <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Top/source</span>
+<span class="lineno">4 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">5 </span>    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+<span class="lineno">6 </span>        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="lineno">7 </span><span class="hll">  <span class="nt">x-composite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xor</span>
+</span></pre></div>
+</div>
+<p>Layer 2 (bottom/destination):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="lineno">2 </span><span class="p p-Indicator">-</span> <span class="nt">rules</span><span class="p">:</span>
+<span class="lineno">3 </span>  <span class="p p-Indicator">-</span> <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Bottom/destination</span>
+<span class="lineno">4 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">5 </span>    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+<span class="lineno">6 </span>        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id12">
+<img alt="../../../_images/fs_xor.png" src="../../../_images/fs_xor.png" />
+<p class="caption"><span class="caption-text">Layer as mask</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="color-inversion">
+<h3>Color inversion<a class="headerlink" href="#color-inversion" title="Permalink to this headline">¶</a></h3>
+<p>Given the same two layers as the previous example, one can display the difference of the colors of layers, which can have the effect of a color “inversion”.</p>
+<p>Layer 1 (top/source):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="lineno">2 </span><span class="p p-Indicator">-</span> <span class="nt">rules</span><span class="p">:</span>
+<span class="lineno">3 </span>  <span class="p p-Indicator">-</span> <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Top/source</span>
+<span class="lineno">4 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">5 </span>    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+<span class="lineno">6 </span>        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="lineno">7 </span><span class="hll">  <span class="nt">x-composite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">difference</span>
+</span></pre></div>
+</div>
+<p>Layer 2 (bottom/destination):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="lineno">2 </span><span class="p p-Indicator">-</span> <span class="nt">rules</span><span class="p">:</span>
+<span class="lineno">3 </span>  <span class="p p-Indicator">-</span> <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Bottom/destination</span>
+<span class="lineno">4 </span>    <span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno">5 </span>    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+<span class="lineno">6 </span>        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id13">
+<img alt="../../../_images/fs_difference.png" src="../../../_images/fs_difference.png" />
+<p class="caption"><span class="caption-text">Layer as color inversion</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="structure.html" title="previous chapter">Structure</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="rules.html" title="next chapter">Rules</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Feature Styles</a><ul>
+<li><a class="reference internal" href="#drawing-order">Drawing order</a></li>
+<li><a class="reference internal" href="#syntax">Syntax</a></li>
+<li><a class="reference internal" href="#compositing-and-blending">Compositing and blending</a></li>
+<li><a class="reference internal" href="#short-syntax">Short syntax</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#road-casing">Road casing</a></li>
+<li><a class="reference internal" href="#first-match">First match</a></li>
+<li><a class="reference internal" href="#layer-mask">Layer mask</a></li>
+<li><a class="reference internal" href="#color-inversion">Color inversion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="structure.html" title="previous chapter">Structure</a></li>
+            <li>Next: <a href="rules.html" title="next chapter">Rules</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/ysld/reference/featurestyles.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

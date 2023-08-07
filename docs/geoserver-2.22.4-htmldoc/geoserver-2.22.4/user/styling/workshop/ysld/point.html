@@ -1,0 +1,942 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>4.4. Points &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="4.5. Rasters" href="raster.html" />
+    <link rel="prev" title="4.3. Polygons" href="polygon.html" /> 
+  </head><body class="styling/workshop/ysld/point">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling Workshop</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U"><span class="section-number">4. </span>YSLD Styling Workbook</a> &raquo;</li>
+    <li>4.4. Points</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="raster.html" title="<span class="section-number">4.5. </span>Rasters" accesskey="N">Next</a></li>
+  <li>
+    <a href="polygon.html" title="<span class="section-number">4.3. </span>Polygons" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="points">
+<span id="styling-workshop-point"></span><h1><span class="section-number">4.4. </span>Points<a class="headerlink" href="#points" title="Permalink to this headline">¶</a></h1>
+<p>The next stop of the ysld styling tour is the representation of points.</p>
+<div class="figure align-default">
+<img alt="../../../_images/PointSymbology.svg" src="../../../_images/PointSymbology.svg" /></div>
+<p>Review of point symbology:</p>
+<ul class="simple">
+<li><p>Points are used to represent a location only, and do not form a shape. The visual width of lines do not change depending on scale.</p></li>
+<li><p>SLD uses a <strong>PointSymbolizer</strong> record how the shape of a line is drawn.</p></li>
+<li><p>Labeling of points is anchored to the point location.</p></li>
+</ul>
+<p>As points have no inherent shape of their own, emphasis is placed on marking locations with an appropriate symbol.</p>
+<p>Reference:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../ysld/reference/index.html#ysld-reference"><span class="std std-ref">YSLD Reference</span></a></p></li>
+<li><p><a class="reference internal" href="../../ysld/reference/symbolizers/point.html#ysld-reference-symbolizers-point"><span class="std std-ref">YSLD Reference Point symbolizer</span></a> (User Manual | YSLD Reference)</p></li>
+<li><p><a class="reference internal" href="../../sld/reference/pointsymbolizer.html#sld-reference-pointsymbolizer"><span class="std std-ref">Point</span></a> (User Manual | SLD Reference )</p></li>
+</ul>
+<p>This exercise makes use of the <code class="docutils literal notranslate"><span class="pre">ne:populated_places</span></code> layer.</p>
+<ol class="arabic">
+<li><p>Navigate to the <strong>Styles</strong> page.</p></li>
+<li><p>Click <span class="guilabel">Add a new style</span> and choose the following:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Name:</p></td>
+<td><p><kbd class="kbd docutils literal notranslate">point_example</kbd></p></td>
+</tr>
+<tr class="row-even"><td><p>Workspace:</p></td>
+<td><p><kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">No</kbd> <kbd class="kbd docutils literal notranslate">workspace</kbd></kbd></p></td>
+</tr>
+<tr class="row-odd"><td><p>Format:</p></td>
+<td><p><kbd class="kbd docutils literal notranslate">YSLD</kbd></p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p>Choose <span class="guilabel">point</span> from the <code class="docutils literal notranslate"><span class="pre">Generate</span> <span class="pre">a</span> <span class="pre">default</span> <span class="pre">style</span></code> dropdown and click <span class="guilabel">generate</span>.</p></li>
+<li><p>Replace the initial YSLD definition with the following and click <span class="guilabel">apply</span>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">symbolizers</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+    <span class="nt">symbols</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+        <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+        <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</li>
+<li><p>And use the <span class="guilabel">Layer Preview</span> tab to preview the result.</p>
+<img alt="../../../_images/point_03_map.png" src="../../../_images/point_03_map.png" />
+</li>
+</ol>
+<div class="section" id="mark">
+<h2><span class="section-number">4.4.1. </span>Mark<a class="headerlink" href="#mark" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>point</strong> symbolizer controls the display of point data. Points are represented with the mandatory property <strong>mark</strong>.</p>
+<div class="figure align-default">
+<img alt="../../../_images/PointSymbology.svg" src="../../../_images/PointSymbology.svg" /></div>
+<p>The SLD standard provides “well-known” symbols for use with point symbology: <code class="docutils literal notranslate"><span class="pre">circle</span></code>, <code class="docutils literal notranslate"><span class="pre">square</span></code>, <code class="docutils literal notranslate"><span class="pre">triangle</span></code>, <code class="docutils literal notranslate"><span class="pre">arrow</span></code>, <code class="docutils literal notranslate"><span class="pre">cross</span></code>, <code class="docutils literal notranslate"><span class="pre">star</span></code>, and <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<ol class="arabic">
+<li><p>Change the symbol used by the style to a square:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">symbolizers</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+    <span class="nt">symbols</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+<span class="hll">        <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">square</span>
+</span>        <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</li>
+<li><p>Map Preview:</p>
+<img alt="../../../_images/point_mark_1.png" src="../../../_images/point_mark_1.png" />
+</li>
+<li><p>Before we continue we will use a filter to cut down the amount of data shown to a reasonable level.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="hll"><span class="nt">rules</span><span class="p">:</span>
+</span><span class="hll"><span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+</span><span class="hll">  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+</span>  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">square</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>symbolizers</strong> has been indented under <strong>rules</strong></p>
+</div>
+<ol class="arabic">
+<li><p>Resulting in a considerably cleaner image:</p>
+<img alt="../../../_images/point_mark_2.png" src="../../../_images/point_mark_2.png" />
+</li>
+<li><p>Additional properties are available to control a mark’s presentation:</p>
+<p>The <strong>size</strong> property is used to control symbol size.</p>
+<p>The <strong>rotation</strong> property controls orientation, accepting input in degrees.</p>
+<p>Trying these two settings together:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="hll">      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8</span>
+</span><span class="hll">      <span class="nt">rotation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">45.0</span>
+</span>      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">square</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</li>
+<li><p>Results in each location being marked with a diamond:</p>
+<img alt="../../../_images/point_mark_3.png" src="../../../_images/point_mark_3.png" />
+</li>
+<li><p>The <strong>mark</strong> property provides parameters to style the point symbol. Let’s change the <strong>fill-color</strong> to gray.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8</span>
+      <span class="nt">rotation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">45.0</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">square</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="hll">          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</span></pre></div>
+</div>
+</li>
+<li><p>Updating the mark to a gray square with a black outline.</p>
+<img alt="../../../_images/point_mark_4.png" src="../../../_images/point_mark_4.png" />
+</li>
+<li><p>You can add more symbolizers to apply additional point styles.</p>
+<p>Using this approach marks can be composed of multiple symbols, each with its own settings:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="hll">      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">16</span>
+</span>      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">square</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="hll">          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;red&#39;</span>
+</span><span class="hll">  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+</span><span class="hll">      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">14</span>
+</span><span class="hll">      <span class="nt">rotation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">45.0</span>
+</span><span class="hll">      <span class="nt">symbols</span><span class="p">:</span>
+</span><span class="hll">      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+</span><span class="hll">          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cross</span>
+</span><span class="hll">          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;white&#39;</span>
+</span><span class="hll">          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</span><span class="hll">          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+</span></pre></div>
+</div>
+</li>
+<li><p>Producing an interesting compound symbol effect:</p>
+<img alt="../../../_images/point_mark_5.png" src="../../../_images/point_mark_5.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="graphic">
+<h2><span class="section-number">4.4.2. </span>Graphic<a class="headerlink" href="#graphic" title="Permalink to this headline">¶</a></h2>
+<p>Symbols can also be supplied by an external graphic,</p>
+<img alt="../../../_images/Point_Graphic.svg" src="../../../_images/Point_Graphic.svg" /><p>This technique was shown with the initial <code class="file docutils literal notranslate"><span class="pre">airport.svg</span></code> YSLD example.</p>
+<ol class="arabic">
+<li><p>To use an external graphic two pieces of information are required.</p>
+<p><strong>url</strong> property is defined with a <strong>url</strong> reference to image.</p>
+<p><strong>format</strong> property is used to tell the rendering engine what file format to expect</p>
+<p>This technique is used to reference files placed in the styles directory.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">external</span><span class="p">:</span>
+          <span class="nt">url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">file:/path/to/geoserver/data_dir/styles/port.svg</span>
+          <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">image/svg</span>
+</pre></div>
+</div>
+</li>
+<li><p>Drawing the provided shape in each location:</p>
+<img alt="../../../_images/point_graphic_1.png" src="../../../_images/point_graphic_1.png" />
+</li>
+<li><p>The property <strong>url</strong> reference can also be used to reference external images. We can make use of the GeoServer logo.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="hll">      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">16</span>
+</span>      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">external</span><span class="p">:</span>
+<span class="hll">          <span class="nt">url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png</span>
+</span>          <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">image/png</span>
+</pre></div>
+</div>
+</li>
+<li><p>As shown in the map preview.</p>
+<img alt="../../../_images/point_graphic_2.png" src="../../../_images/point_graphic_2.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="label">
+<h2><span class="section-number">4.4.3. </span>Label<a class="headerlink" href="#label" title="Permalink to this headline">¶</a></h2>
+<p>Labeling is now familiar from our experience with LineString and Polygons.</p>
+<img alt="../../../_images/Point_Label.svg" src="../../../_images/Point_Label.svg" /><p>The <strong>text</strong> symbolizer with the <strong>label</strong> property are required to label Point Locations.</p>
+<ol class="arabic">
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">point_example</span></code> with the following:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+      <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+</pre></div>
+</div>
+</li>
+<li><p>Confirm the result in <code class="docutils literal notranslate"><span class="pre">Layer</span> <span class="pre">Preview</span></code> preview.</p>
+<img alt="../../../_images/point_label_1.png" src="../../../_images/point_label_1.png" />
+</li>
+<li><p>Each label is drawn starting from the provided point - which is unfortunate as it assures each label will overlap with the symbol used. To fix this limitation we will make use of the YSLD controls for label placement:</p>
+<p><strong>anchor</strong> provides two values expressing how a label is aligned with respect to the starting label position.</p>
+<p><strong>displacement</strong> is be used to provide an initial displacement using and x and y offset. For points this offset is recommended to adjust the label position away for the area used by the symbol.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The property <strong>anchor</strong> defines an anchor position relative to the bounding box formed by the resulting label.  This anchor position is snapped to the label position generated by the point location and displacement offset.</p>
+</div>
+<p>Using these two facilities together we can center our labels below the symbol, taking care that the displacement used provides an offset just outside the area required for the symbol size.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="hll">      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+</span>      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+<span class="hll">      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+</span>      <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+<span class="hll">      <span class="nt">anchor</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">]</span>
+</span><span class="hll">      <span class="nt">displacement</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">-12</span><span class="p p-Indicator">]</span>
+</span></pre></div>
+</div>
+</li>
+<li><p>Each label is now placed under the mark.</p>
+<img alt="../../../_images/point_label_2.png" src="../../../_images/point_label_2.png" />
+</li>
+<li><p>One remaining issue is the overlap between labels and symbols.</p>
+<p>GeoServer provides a vendor specific parameter to allow symbols to take part in label conflict resolution, preventing labels from overlapping any symbols. This severely limits the area available for labeling and is best used in conjunction with a large maximum displacement vendor option.</p>
+<p><strong>x-labelObstacle</strong> vendor parameter asks the rendering engine to avoid drawing labels over top of the indicated symbol. This applies to the point symbolizer.</p>
+<p><strong>x-maxDisplacement</strong> vendor parameter provides the rendering engine a maximum distance it is allowed to move labels during conflict resolution. This applies to the text symbolizer.</p>
+<p><strong>x-spaceAround</strong> vendor parameter tells the rendering engine to provide a minimum distance between the labels on the map, ensuring they do not overlap. This applies to the text symbolizer.</p>
+<p>Update our example to use these settings:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+<span class="hll">      <span class="nt">x-labelObstacle</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</span>  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+      <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+      <span class="nt">anchor</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">]</span>
+      <span class="nt">displacement</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">-12</span><span class="p p-Indicator">]</span>
+<span class="hll">      <span class="nt">x-maxDisplacement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100</span>
+</span><span class="hll">      <span class="nt">x-spaceAround</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+</span></pre></div>
+</div>
+</li>
+<li><p>Resulting in a considerably cleaner image:</p>
+<img alt="../../../_images/point_label_3.png" src="../../../_images/point_label_3.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="dynamic-styling">
+<h2><span class="section-number">4.4.4. </span>Dynamic Styling<a class="headerlink" href="#dynamic-styling" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>We will quickly use <strong>scalerank</strong> to select content based on &#64;scale filters.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;point</span>
+  <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+  <span class="nt">symbols</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+      <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+      <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+      <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;7&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;4000000.0&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;8000000.0&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;5&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;8000000.0&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;1.7E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;4&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;1.7E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;3.5E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;3&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;3.5E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;7.0E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;2&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;7.0E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;1.4E8&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;1.4E8&#39;</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+<span class="p p-Indicator">-</span> <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="s">&#39;4000000.0&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+</pre></div>
+</div>
+</li>
+<li><p>Click <span class="guilabel">Apply</span> to update the <span class="guilabel">Layer Preview</span> after each step.</p>
+<img alt="../../../_images/point_04_scale.png" src="../../../_images/point_04_scale.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This YSLD makes use of a <strong>define</strong> to avoid repeating the point symbolizer content multiple times. As an example the <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">scale:</kbd> <kbd class="kbd docutils literal notranslate">[min,</kbd> <kbd class="kbd docutils literal notranslate">'4000000.0']</kbd></kbd> rule, combined with the <kbd class="kbd docutils literal notranslate">define:</kbd> results in the following collection of properties:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="s">&#39;4000000.0&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>To add labeling we must use both a point and text symbolizer in each scale filter.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;point</span>
+  <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+  <span class="nt">symbols</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+      <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+      <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+      <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+<span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;label</span>
+  <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+  <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+  <span class="nt">font-family</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Arial</span>
+  <span class="nt">font-size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">font-style</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normal</span>
+  <span class="nt">font-weight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normal</span>
+  <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;7&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;4000000.0&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;8000000.0&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;5&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;8000000.0&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;1.7E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;4&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;1.7E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;3.5E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;3&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;3.5E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;7.0E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;2&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;7.0E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;1.4E8&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;1.4E8&#39;</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="s">&#39;4000000.0&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+</pre></div>
+</div>
+<img alt="../../../_images/point_05_label.png" src="../../../_images/point_05_label.png" />
+</li>
+<li><p>We will use <strong>displacement</strong> and <strong>anchor</strong> to position the label above each symbol.</p>
+<p>Add the following two lines to the <kbd class="kbd docutils literal notranslate">label</kbd> define:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;label</span>
+  <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+  <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+  <span class="nt">font-family</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Arial</span>
+  <span class="nt">font-size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">font-style</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normal</span>
+  <span class="nt">font-weight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normal</span>
+  <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+<span class="hll">  <span class="nt">anchor</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
+</span><span class="hll">  <span class="nt">displacement</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">6</span><span class="p p-Indicator">]</span>
+</span></pre></div>
+</div>
+<img alt="../../../_images/point_05_align.png" src="../../../_images/point_05_align.png" />
+</li>
+<li><p>A little bit of work with vendor specific parameters will prevent our labels from colliding with each symbol, while giving the rendering engine some flexibility in how far it is allowed to relocate a label.</p>
+<p>Add the following vendor options to the <kbd class="kbd docutils literal notranslate">label</kbd> define:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;label</span>
+  <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+  <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+  <span class="nt">font-family</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Arial</span>
+  <span class="nt">font-size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">font-style</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normal</span>
+  <span class="nt">font-weight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normal</span>
+  <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+  <span class="nt">anchor</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
+  <span class="nt">displacement</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">6</span><span class="p p-Indicator">]</span>
+<span class="hll">  <span class="nt">x-maxDisplacement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">90</span>
+</span><span class="hll">  <span class="nt">x-spaceAround</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+</span></pre></div>
+</div>
+<p>Add the following vendor option to the <kbd class="kbd docutils literal notranslate">point</kbd> define:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;point</span>
+  <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+  <span class="nt">symbols</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+      <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+      <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+      <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+<span class="hll">  <span class="nt">x-labelObstacle</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></pre></div>
+</div>
+<img alt="../../../_images/point_06_relocate.png" src="../../../_images/point_06_relocate.png" />
+</li>
+<li><p>Now that we have clearly labeled our cities, zoom into an area you are familiar with and we can look at changing symbology on a case-by-case basis.</p>
+<p>We have used expressions previous to generate an appropriate label. Expressions can also be used for many other property settings.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ne:populated_places</span></code> layer provides several attributes specifically to make styling easier:</p>
+<ul class="simple">
+<li><p><strong>SCALERANK</strong>: we have already used this attribute to control the level of detail displayed</p></li>
+<li><p><strong>LABELRANK</strong>: hint used for conflict resolution, allowing important cities such as capitals to be labeled even when they are close to a larger neighbor.</p></li>
+<li><p><strong>FEATURECLA</strong>: used to indicate different types of cities. We will check for <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">Admin</kbd>-<kbd class="kbd docutils literal notranslate">0</kbd> <kbd class="kbd docutils literal notranslate">capital</kbd></kbd> cities.</p></li>
+</ul>
+<p>The first thing we will do is calculate the point <strong>size</strong> using a quick expression:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${10-(SCALERANK/2)}
+</pre></div>
+</div>
+<p>This expression should result in sizes between 5 and 9 and will need to be applied to both point <strong>size</strong> and label <strong>displacement</strong>.</p>
+<p>Rather than the “first come first served” default to resolve labeling conflicts we can manually provide GeoServer with a label priority. The expression provided is calculated for each label, in the event of a conflict the label with the highest priority takes precedence.</p>
+<p>The LABELRANK attribute goes from 1 through 10 and needs to be flipped around before use as a GeoServer label priority:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${10 - LABELRANK}
+</pre></div>
+</div>
+<p>This expression will result in values between 0 and 10 and will be used for the <strong>priority</strong>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;point</span>
+<span class="hll">  <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${10-(SCALERANK/2)}</span>
+</span>  <span class="nt">symbols</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+      <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+      <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+      <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+  <span class="nt">x-labelObstacle</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;label</span>
+  <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+  <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+  <span class="nt">font-family</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Arial</span>
+  <span class="nt">font-size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">font-style</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normal</span>
+  <span class="nt">font-weight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normal</span>
+  <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+  <span class="nt">anchor</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="hll">  <span class="nt">displacement</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span> <span class="s">&#39;${</span><span class="se">&#39;&#39;</span><span class="s">10</span><span class="se">&#39;&#39;</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">SCALERANK</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="se">&#39;&#39;</span><span class="s">2</span><span class="se">&#39;&#39;</span><span class="s">}&#39;</span><span class="p p-Indicator">]</span>
+</span><span class="hll">  <span class="nt">priority</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${&#39;10&#39; - LABELRANK}</span>
+</span>  <span class="nt">x-maxDisplacement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">90</span>
+  <span class="nt">x-spaceAround</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+</pre></div>
+</div>
+<img alt="../../../_images/point_07_expression.png" src="../../../_images/point_07_expression.png" />
+</li>
+<li><p>Next we can use <code class="docutils literal notranslate"><span class="pre">FEATURECLA</span></code> to check for capital cities.</p>
+<p>Adding a filter for capital cities at the top of the <strong>rules</strong> list:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;2&#39; AND FEATURECLA = &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;7.0E7&#39;</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">capitals</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">star</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+      <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${FEATURECLA = &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="s">&#39;7.0E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">capitals</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">star</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+      <span class="nt">placement</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">point</span>
+</pre></div>
+</div>
+<p>And updating the populated places filters to ignore capital cities:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;7&#39; AND FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;4000000.0&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;8000000.0&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;5&#39; AND FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;8000000.0&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;1.7E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;4&#39; AND FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;1.7E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;3.5E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;3&#39; AND FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;3.5E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;7.0E7&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;2&#39; AND FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;7.0E7&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;1.4E8&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${SCALERANK &lt; &#39;1&#39; AND FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;1.4E8&#39;</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+<span class="p p-Indicator">-</span> <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="s">&#39;4000000.0&#39;</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*point</span>
+  <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+      <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*label</span>
+</pre></div>
+</div>
+<img alt="../../../_images/point_09_fill.png" src="../../../_images/point_09_fill.png" />
+</li>
+<li><p>If you would like to check your work the final file is here: <a class="reference download internal" download="" href="../../../_downloads/d9e1d27c0b9b216291f87c2a72873b89/point_example.ysld"><code class="xref download docutils literal notranslate"><span class="pre">point_example.ysld</span></code></a></p></li>
+</ol>
+</div>
+<div class="section" id="bonus">
+<h2><span class="section-number">4.4.5. </span>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="challenge-geometry-location">
+<span id="ysld-point-q1"></span><h3><span class="section-number">4.4.5.1. </span>Challenge Geometry Location<a class="headerlink" href="#challenge-geometry-location" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>The <strong>mark</strong> property can be used to render any geometry content.</p></li>
+<li><p><strong>Challenge:</strong> Try this yourself by rendering a polygon layer using a <strong>mark</strong> property.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#ysld-point-a1"><span class="std std-ref">discussed</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="explore-dynamic-symbolization">
+<span id="ysld-point-q2"></span><h3><span class="section-number">4.4.5.2. </span>Explore Dynamic Symbolization<a class="headerlink" href="#explore-dynamic-symbolization" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>We went to a lot of work to set up filters to choose between star and circle for capital cities.</p>
+<p>This approach is straightforward when applied in isolation:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${FEATURECLA = &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">star</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>When combined with checking another attribute, or checking &#64;scale as in our example, this approach can quickly lead to many rules which can be difficult to keep straight.</p>
+</li>
+<li><p>Taking a closer look, <code class="docutils literal notranslate"><span class="pre">shape</span></code> can actually be expressed using a string:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${FEATURECLA = &#39;Admin-0 capital&#39;}</span>
+  <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+  <span class="nt">symbolizers</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+      <span class="nt">symbols</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+          <span class="nt">shape</span><span class="p">:</span> <span class="s">&#39;star&#39;</span>
+          <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+          <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+          <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Which is represented in SLD as:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="nt">&lt;sld:PointSymbolizer&gt;</span>
+   <span class="nt">&lt;sld:Graphic&gt;</span>
+      <span class="nt">&lt;sld:Mark&gt;</span>
+         <span class="nt">&lt;sld:WellKnownName&gt;</span>star<span class="nt">&lt;/sld:WellKnownName&gt;</span>
+         <span class="nt">&lt;sld:Fill/&gt;</span>
+         <span class="nt">&lt;sld:Stroke/&gt;</span>
+      <span class="nt">&lt;/sld:Mark&gt;</span>
+   <span class="nt">&lt;/sld:Graphic&gt;</span>
+<span class="nt">&lt;/sld:PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.</p>
+<p>This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">${</kbd> <kbd class="kbd docutils literal notranslate">}</kbd></kbd> as shown:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+    <span class="nt">symbols</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+        <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${if_then_else(equalTo(FEATURECLA,&#39;Admin-0 capital&#39;),&#39;star&#39;,&#39;circle&#39;)}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Which is represented in SLD as:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="nt">&lt;sld:PointSymbolizer&gt;</span>
+   <span class="nt">&lt;sld:Graphic&gt;</span>
+      <span class="nt">&lt;sld:Mark&gt;</span>
+         <span class="nt">&lt;sld:WellKnownName&gt;</span>${if_then_else(equalTo(FEATURECLA,&#39;Admin-0 capital&#39;),&#39;star&#39;,&#39;circle&#39;)}<span class="nt">&lt;/sld:WellKnownName&gt;</span>
+         <span class="nt">&lt;sld:Fill/&gt;</span>
+         <span class="nt">&lt;sld:Stroke/&gt;</span>
+      <span class="nt">&lt;/sld:Mark&gt;</span>
+   <span class="nt">&lt;/sld:Graphic&gt;</span>
+<span class="nt">&lt;/sld:PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Challenge:</strong> Use this approach to rewrite the <em>Dynamic Styling</em> example.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#ysld-point-a2"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-layer-group">
+<span id="ysld-point-q3"></span><h3><span class="section-number">4.4.5.3. </span>Challenge Layer Group<a class="headerlink" href="#challenge-layer-group" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>Use a <strong>Layer Group</strong> to explore how symbology works together to form a map.</p>
+<ul class="simple">
+<li><p>ne:NE1</p></li>
+<li><p>ne:states_provincces_shp</p></li>
+<li><p>ne:populated_places</p></li>
+</ul>
+</li>
+<li><p>To help start things out here is a style for <code class="docutils literal notranslate"><span class="pre">ne:states_provinces_shp</span></code>:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">symbolizers</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">polygon</span><span class="p">:</span>
+    <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+    <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.25</span>
+    <span class="nt">stroke-opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
+    <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;white&#39;</span>
+    <span class="nt">fill-opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<span class="p p-Indicator">-</span> <span class="nt">polygon</span><span class="p">:</span>
+    <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+    <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.25</span>
+    <span class="nt">stroke-opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
+    <span class="nt">fill-color</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${Recode(mapcolor9,&#39;1&#39;,&#39;#8dd3c7&#39;,&#39;2&#39;,&#39;#ffffb3&#39;,&#39;3&#39;,&#39;#bebada&#39;,&#39;4&#39;,&#39;#fb8072&#39;,&#39;5&#39;,&#39;#80b1d3&#39;,&#39;6&#39;,&#39;#fdb462&#39;,&#39;7&#39;,&#39;#b3de69&#39;,&#39;8&#39;,&#39;#fccde5&#39;,&#39;9&#39;,&#39;#d9d9d9&#39;)}</span>
+    <span class="nt">fill-opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.</p></li>
+<li><p><strong>Challenge:</strong> Do your best to style populated_places over this busy background.</p>
+<p>Here is an example with labels for inspiration:</p>
+<img alt="../../../_images/point_challenge_1.png" src="../../../_images/point_challenge_1.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#ysld-point-a3"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="explore-true-type-fonts">
+<h3><span class="section-number">4.4.5.4. </span>Explore True Type Fonts<a class="headerlink" href="#explore-true-type-fonts" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>In addition to image formats GeoServer can make use other kinds of graphics, such as True Type fonts:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">symbolizers</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+    <span class="nt">symbols</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+        <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ttf://Webdings#0x0064</span>
+        <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;blue&#39;</span>
+        <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</li>
+<li><p>Additional fonts dropped in the <code class="file docutils literal notranslate"><span class="pre">styles</span></code> directory are available for use.</p></li>
+</ol>
+</div>
+<div class="section" id="explore-custom-graphics">
+<h3><span class="section-number">4.4.5.5. </span>Explore Custom Graphics<a class="headerlink" href="#explore-custom-graphics" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>The GeoServer rendering engine allows Java developers to hook in additional symbol support.</p>
+<p>This facility is used by GeoServer to offer the shapes used for pattern fills. Community extensions allow the use of simple custom shapes and even charts.</p>
+</li>
+<li><p>Support has been added for custom graphics using the WKT Geometry representation.</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">symbolizers</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+    <span class="nt">symbols</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+        <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25))</span>
+        <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;blue&#39;</span>
+        <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="polygon.html" title="previous chapter"><span class="section-number">4.3. </span>Polygons</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="raster.html" title="next chapter"><span class="section-number">4.5. </span>Rasters</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">4.4. Points</a><ul>
+<li><a class="reference internal" href="#mark">4.4.1. Mark</a></li>
+<li><a class="reference internal" href="#graphic">4.4.2. Graphic</a></li>
+<li><a class="reference internal" href="#label">4.4.3. Label</a></li>
+<li><a class="reference internal" href="#dynamic-styling">4.4.4. Dynamic Styling</a></li>
+<li><a class="reference internal" href="#bonus">4.4.5. Bonus</a><ul>
+<li><a class="reference internal" href="#challenge-geometry-location">4.4.5.1. Challenge Geometry Location</a></li>
+<li><a class="reference internal" href="#explore-dynamic-symbolization">4.4.5.2. Explore Dynamic Symbolization</a></li>
+<li><a class="reference internal" href="#challenge-layer-group">4.4.5.3. Challenge Layer Group</a></li>
+<li><a class="reference internal" href="#explore-true-type-fonts">4.4.5.4. Explore True Type Fonts</a></li>
+<li><a class="reference internal" href="#explore-custom-graphics">4.4.5.5. Explore Custom Graphics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="polygon.html" title="previous chapter"><span class="section-number">4.3. </span>Polygons</a></li>
+            <li>Next: <a href="raster.html" title="next chapter"><span class="section-number">4.5. </span>Rasters</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/workshop/ysld/point.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

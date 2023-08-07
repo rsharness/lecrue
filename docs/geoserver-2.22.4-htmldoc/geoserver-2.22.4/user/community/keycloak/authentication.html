@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication with Keycloak &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Keycloak Role Service" href="keycloak_role_service.html" />
+    <link rel="prev" title="Installing Keycloak" href="installation.html" /> 
+  </head><body class="community/keycloak/authentication">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Keycloak extension</a> &raquo;</li>
+    <li>Authentication with Keycloak</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="keycloak_role_service.html" title="Keycloak Role Service" accesskey="N">Next</a></li>
+  <li>
+    <a href="installation.html" title="Installing Keycloak" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="authentication-with-keycloak">
+<span id="security-tutorials-keycloak"></span><h1>Authentication with Keycloak<a class="headerlink" href="#authentication-with-keycloak" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial introduces GeoServer Keycloak support and walks through the process of
+setting up authentication against an Keycloak provider. It is recommended that the
+<a class="reference internal" href="../../security/auth/chain.html#security-auth-chain"><span class="std std-ref">Authentication chain</span></a> section be read before proceeding.</p>
+<p>The GeoServer Keycloak-authn/authz plugin will allow you to use an instance of Keycloak to control access to resources within GeoServer.</p>
+<div class="section" id="configuration-instructions">
+<h2>Configuration Instructions<a class="headerlink" href="#configuration-instructions" title="Permalink to this headline">¶</a></h2>
+<p><strong>As the Keycloak Admin:</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this example the Keycloak service runs on port <cite>8080</cite> while GeoServer runs on port <cite>8181</cite></p>
+</div>
+<ol class="arabic">
+<li><p>Create a <a class="reference external" href="http://www.keycloak.org/docs/3.3/authorization_services/topics/resource-server/create-client.html">new client</a> for GeoServer named <cite>geoserver-client</cite>.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_client001.png" src="../../_images/keycloak_client001.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Make sure to add the base URL of GeoServer to the list of acceptable redirect paths, and add also the Keycloak OIDC endpoint base URI.</p>
+<dl>
+<dt>eg:</dt><dd><blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="http://localhost:8181/geoserver*">http://localhost:8181/geoserver*</a></p></li>
+<li><p><a class="reference external" href="http://localhost:8080/auth/realms/demo/broker/keycloak-oidc/endpoint*">http://localhost:8080/auth/realms/demo/broker/keycloak-oidc/endpoint*</a></p></li>
+</ul>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="../../_images/keycloak_client002.png" src="../../_images/keycloak_client002.png" />
+</div>
+</dd>
+</dl>
+</li>
+<li><p>Set the <cite>access-type</cite> of client as appropriate. If your GeoServer instance is depending on another service for authentication (eg: NGINX auth plugin) then you should probably select <em>bearer-only</em>.
+Otherwise, you should select <em>confidential</em>.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_client003.png" src="../../_images/keycloak_client003.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Add the <em>ADMINISTRATOR</em> and <em>AUTHENTICATED</em> <a class="reference external" href="http://www.keycloak.org/docs/2.5/server_admin/topics/roles/client-roles.html">client-role</a> to the <cite>geoserver-client</cite> in Keycloak.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_client004.png" src="../../_images/keycloak_client004.png" />
+</div>
+</div></blockquote>
+<p>In this phase you will need to map GeoServer Roles to the <cite>geoserver-client</cite> ones in Keycloak.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_client005.png" src="../../_images/keycloak_client005.png" />
+</div>
+</div></blockquote>
+<p>Use the <em>AUTHENTICATED</em> one for generic users. Assign this role <em>ADMINISTRATOR</em> to the users/groups who should have administrative access to GeoServer.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_client006.png" src="../../_images/keycloak_client006.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Obtain the <a class="reference external" href="http://www.keycloak.org/docs/3.2/server_admin/topics/clients/installation.html">installation-configuration</a> for the <cite>geoserver-client</cite> in JSON, and provide this to the GeoServer Admin for the next steps.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_client007.png" src="../../_images/keycloak_client007.png" />
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p><strong>As the GeoServer Admin:</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this example the Keycloak service runs on port <cite>8080</cite> while GeoServer runs on port <cite>8181</cite></p>
+</div>
+<ol class="arabic">
+<li><p>Under the Authentication UI, add a new <cite>authentication-filter</cite>. Select <cite>Keycloak</cite> from the list of provided options, and name your new filter <em>keycloak_adapter</em>.
+Paste the installation-configuration from the Keycloak-server in the text area provided.</p>
+<p>If not present, be sure to add the following options before clicking <cite>Save</cite>:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;use-resource-role-mappings&quot;</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/keycloak_adapter001.png" src="../../_images/keycloak_adapter001.png" />
+</div>
+</div></blockquote>
+<p>The <span class="guilabel">Enable redirect to Keycloak Login page</span> checkbox should be checked if the desired behaviour is to authenticate on the web ui only through keycloak. Note that in this case the keycloak filter should be the only one available in the <code class="docutils literal notranslate"><span class="pre">/web</span></code> filter chain.
+On the contrary if the keycloak filter needs to coexists with other filters on the filter chain and reach  it must be unchecked.</p>
+<p>The <span class="guilabel">Role Source</span> drop down enable the selection of the desired role source for the user being authenticated through keycloak. If none is selected by default the <code class="docutils literal notranslate"><span class="pre">Active</span> <span class="pre">Role</span> <span class="pre">Service</span></code> will be used.</p>
+</li>
+<li><p>Add the <cite>keycloak_adapter</cite> to the <em>web</em> <cite>filter-chain</cite> if you want to protect the Admin GUI, as an instance. If you have checked <span class="guilabel">Enable redirect to Keycloak Login page</span> on the filter configuration to be redirected every time to Keycloak, then remove all of the others <cite>chain filters</cite> (basic, form, rememberme, anonymous).</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_adapter002.png" src="../../_images/keycloak_adapter002.png" />
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>3. Once done navigate to the GeoServer UI.
+If at filter configuration time the checkbox <code class="docutils literal notranslate"><span class="pre">Enable</span> <span class="pre">redirect</span> <span class="pre">to</span> <span class="pre">Keycloak</span> <span class="pre">Login</span> <span class="pre">page</span></code> was kept unchecked and the keycloak filter cohexists on the /web chain with the form and anonymous filter you will see a keycloak login button that allows the user to reach the keycloak login page.</p>
+<div class="figure align-center">
+<img alt="../../_images/keycloak_login.png" src="../../_images/keycloak_login.png" />
+</div>
+<p>Otherwise the user will be directly redirected to the Keycloak <cite>login-page</cite>, and after logging-in redirected back to the actual GeoServer UI page.</p>
+<blockquote>
+<div><blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_adapter003.png" src="../../_images/keycloak_adapter003.png" />
+</div>
+</div></blockquote>
+<p>You should verify that the message <cite>logged in as &lt;USERNAME&gt;</cite> is posted in the top right corner before continuing.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/keycloak_adapter004.png" src="../../_images/keycloak_adapter004.png" />
+</div>
+</div></blockquote>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Workaround in the event of a 403 unauthorized response after logging-in.</p>
+<p>Enforce the algorithm RS256 in the keycloak client.</p>
+<div class="figure align-center">
+<img alt="../../_images/keycloak_client008.png" src="../../_images/keycloak_client008.png" />
+</div>
+<p>Copy the public key for the RS256 algorithm from the Realm Settings into the adapter config as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;realm-public-key&quot;</span><span class="p">:</span> <span class="n">XXXXXXX</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/keycloak_client009.png" src="../../_images/keycloak_client009.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/keycloak_adapter005.png" src="../../_images/keycloak_adapter005.png" />
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="installation.html" title="previous chapter">Installing Keycloak</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="keycloak_role_service.html" title="next chapter">Keycloak Role Service</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Authentication with Keycloak</a><ul>
+<li><a class="reference internal" href="#configuration-instructions">Configuration Instructions</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="installation.html" title="previous chapter">Installing Keycloak</a></li>
+            <li>Next: <a href="keycloak_role_service.html" title="next chapter">Keycloak Role Service</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/keycloak/authentication.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

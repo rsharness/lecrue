@@ -1,0 +1,700 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskManager User Guide &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Developer’s Guide" href="developer.html" />
+    <link rel="prev" title="Basic Concepts" href="basic.html" /> 
+  </head><body class="community/taskmanager/user">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Geoserver Task Manager</a> &raquo;</li>
+    <li>TaskManager User Guide</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="developer.html" title="Developer’s Guide" accesskey="N">Next</a></li>
+  <li>
+    <a href="basic.html" title="Basic Concepts" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="taskmanager-user-guide">
+<h1><a class="toc-backref" href="#id17">TaskManager User Guide</a><a class="headerlink" href="#taskmanager-user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#taskmanager-user-guide" id="id17">TaskManager User Guide</a></p>
+<ul>
+<li><p><a class="reference internal" href="#installation" id="id18">Installation</a></p></li>
+<li><p><a class="reference internal" href="#server-configuration" id="id19">Server Configuration</a></p></li>
+<li><p><a class="reference internal" href="#security" id="id20">Security</a></p></li>
+<li><p><a class="reference internal" href="#graphical-user-interface" id="id21">Graphical User Interface</a></p></li>
+<li><p><a class="reference internal" href="#task-types" id="id22">Task Types</a></p></li>
+<li><p><a class="reference internal" href="#bulk-operations" id="id23">Bulk Operations</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="id24">Examples</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2><a class="toc-backref" href="#id18">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To install the GeoServer Task Manager extension:</p>
+<ol class="arabic simple">
+<li><p>Download the extension from the <a class="reference external" href="http://geoserver.org/download">GeoServer Download
+Page</a> release page: <a class="reference external" href="https://build.geoserver.org/geoserver/2.22.x/community-latest/geoserver-2.22.x-SNAPSHOT-taskmanager-core-plugin.zip">geoserver-2.22.4-taskmanager-core-plugin.zip</a>. For <a class="reference external" href="#s3-file-service">S3 support</a>, also
+install the plugin <a class="reference external" href="https://build.geoserver.org/geoserver/2.22.x/community-latest/geoserver-2.22.x-SNAPSHOT-taskmanager-s3-plugin.zip">geoserver-2.22.4-taskmanager-s3-plugin.zip</a></p></li>
+<li><p>Extract this file and place the JARs in <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code>.</p></li>
+<li><p>Perform any configuration required by your servlet container, and
+then restart. On startup, Task Manager will create a configuration
+directory <code class="file docutils literal notranslate"><span class="pre">taskmanager</span></code> in the GeoServer Data Directory. You will
+be able to see the Task Manager configuration pages from the
+GeoServer WebGUI menu.</p></li>
+</ol>
+</div>
+<div class="section" id="server-configuration">
+<h2><a class="toc-backref" href="#id19">Server Configuration</a><a class="headerlink" href="#server-configuration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="configuration-database-clustering">
+<h3>Configuration Database &amp; Clustering<a class="headerlink" href="#configuration-database-clustering" title="Permalink to this headline">¶</a></h3>
+<p>By default, Task Manager will create a H2 database in its configuration
+directory. This can be easily changed to any JDBC resource via the
+<code class="docutils literal notranslate"><span class="pre">taskmanager.properties</span></code> file.</p>
+<p>The configuration directory also contains a Spring configuration file
+called <code class="docutils literal notranslate"><span class="pre">taskManager-applicationContext.xml</span></code> which allows more advanced
+configuration.</p>
+<p>TaskManager uses <a class="reference external" href="http://www.quartz-scheduler.org">Quartz Scheduler</a>.
+If you are running Task Manager in a clustered environment, you must
+configure Quartz to use a database as well as Task Manager. See the
+commented block in the Spring configuration and the <a class="reference external" href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/configuration/ConfigJDBCJobStoreClustering.html">Quartz documentation</a>
+for further instructions. SQL Scripts to create the required database structures for Quartz can be found <a class="reference external" href="https://github.com/quartz-scheduler/quartz/tree/quartz-2.3.x/quartz-core/src/main/resources/org/quartz/impl/jdbcjobstore">here</a>. Task Manager can create its database automatically, or alternatively <a class="reference download internal" download="" href="../../_downloads/b741f5d6d1d06e32b2b66e38aec06c06/taskmanager.sql"><code class="xref download docutils literal notranslate"><span class="pre">this</span> <span class="pre">script</span></code></a> can be used (note: the script was made for postgresql. For any other DBMS, the script might need to be modified, or alternatively, the database could be automatically created in a development environment and then copied for a production environment). It is fine to use a single database both for Quartz and Task Manager.</p>
+<p>Furthermore, a property should be added to the
+<code class="docutils literal notranslate"><span class="pre">taskmanager.properties</span></code> file each of the nodes except for one:
+<code class="docutils literal notranslate"><span class="pre">batchJobService.init=false</span></code>. This is necessary because otherwise all
+of the nodes will attempt to load all of the same batches in to the
+clustered quartz database at the same time at start-up, which is likely
+to cause issues. This initialisation needs to happen only once for the
+entire cluster.</p>
+</div>
+<div class="section" id="databases">
+<h3>Databases<a class="headerlink" href="#databases" title="Permalink to this headline">¶</a></h3>
+<p>Task Manager allows any number of databases to be used both as sources
+and targets for data transfer operations. These are configured via the
+Spring configuration file. Currently only PostGIS is fully supported,
+either via JNDI or directly via JDBC.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span> <span class="na">value=</span><span class="s">&quot;mypostgisdb&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;host&quot;</span> <span class="na">value=</span><span class="s">&quot;hostname&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;db&quot;</span> <span class="na">value=</span><span class="s">&quot;dbname&quot;</span> <span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- optional --&gt;</span> <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;schema&quot;</span> <span class="na">value=</span><span class="s">&quot;schema&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="na">value=</span><span class="s">&quot;username&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">value=</span><span class="s">&quot;password&quot;</span> <span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- optional, for security purposes --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;roles&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;list&gt;</span>
+       <span class="nt">&lt;value&gt;</span>ROLE1<span class="nt">&lt;/value&gt;</span>
+       <span class="nt">&lt;value&gt;</span>ROLE2<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/list&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.taskmanager.external.impl.PostgisJndiDbSourceImpl&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span> <span class="na">value=</span><span class="s">&quot;mypostgisjndidb&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;jndiName&quot;</span> <span class="na">value=</span><span class="s">&quot;java:/comp/env/jdbc/my-jndi-source&quot;</span> <span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- optional --&gt;</span> <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;schema&quot;</span> <span class="na">value=</span><span class="s">&quot;schema&quot;</span> <span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- optional, if database has different jndi name on target geoserver servers --&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;targetJndiNames&quot;</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;map&gt;</span>
+        <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;mygs&quot;</span> <span class="na">value=</span><span class="s">&quot;java:/comp/env/jdbc/my-jndi-source-on-mygs&quot;</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;/map&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    <span class="c">&lt;!-- optional, for security purposes --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;roles&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;list&gt;</span>
+       <span class="nt">&lt;value&gt;</span>ROLE1<span class="nt">&lt;/value&gt;</span>
+       <span class="nt">&lt;value&gt;</span>ROLE2<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/list&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+<p>Roles can be specified for <a class="reference external" href="#security">security</a> purposes.</p>
+<p>There is also support for Informix, but it only works as a source
+database (not for publishing).</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.taskmanager.external.impl.InformixDbSourceImpl&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;driver&quot;</span> <span class="na">value=</span><span class="s">&quot;com.informix.jdbc.IfxDriver&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;connectionUrl&quot;</span> <span class="na">value=</span><span class="s">&quot;jdbc:informix-sqli://informix-server:1539&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="na">value=</span><span class="s">&quot;username&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">value=</span><span class="s">&quot;password&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="external-geoservers">
+<h3>External GeoServers<a class="headerlink" href="#external-geoservers" title="Permalink to this headline">¶</a></h3>
+<p>Task Manager allows any number of external geoservers to be used as
+targets for layer publications. These are configured via the Spring
+configuration file.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.taskmanager.external.impl.ExternalGSImpl&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span> <span class="na">value=</span><span class="s">&quot;mygs&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;url&quot;</span> <span class="na">value=</span><span class="s">&quot;http://my.geoserver/geoserver&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="na">value=</span><span class="s">&quot;admin&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">value=</span><span class="s">&quot;geoserver&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="file-services">
+<h3>File Services<a class="headerlink" href="#file-services" title="Permalink to this headline">¶</a></h3>
+<p>File Services are used to upload and access files such as raster layers or vector files.
+They are configured via the Spring configuration file.</p>
+<div class="section" id="regular-file-service">
+<h4>Regular File Service<a class="headerlink" href="#regular-file-service" title="Permalink to this headline">¶</a></h4>
+<p>Regular file services provide support for rasters and vector files that are stored on the
+hard drive.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.taskmanager.external.impl.FileServiceImpl&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;rootFolder&quot;</span> <span class="na">value=</span><span class="s">&quot;/tmp&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span> <span class="na">value=</span><span class="s">&quot;Temporary Directory&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;roles&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;list&gt;</span>
+       <span class="nt">&lt;value&gt;</span>ROLE1<span class="nt">&lt;/value&gt;</span>
+       <span class="nt">&lt;value&gt;</span>ROLE2<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/list&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+<p>Roles can be specified for <a class="reference external" href="#security">security</a> purposes.</p>
+<p>Non-absolute paths as rootFolder will be relative to the GeoServer Data Directory.</p>
+<p>Alternatively, it is also possible to use <code class="docutils literal notranslate"><span class="pre">ResourceFileServiceImpl</span></code> (same properties). This one only accepts relative paths and will use the data directory via the geoserver resource store, so that alternative implementations such as <a class="reference internal" href="../jdbcstore/index.html#community-jdbcstore"><span class="std std-ref">JDBC Store</span></a> can be used. This might be useful for <a class="reference internal" href="../../data/app-schema/index.html#app-schema"><span class="std std-ref">Application Schemas</span></a>, for example.</p>
+</div>
+<div class="section" id="s3-file-service">
+<h4>S3 File Service<a class="headerlink" href="#s3-file-service" title="Permalink to this headline">¶</a></h4>
+<p>S3 File Services provide support for rasters that are stored on an S3
+compatible server.</p>
+<p>They do not need to be configured via the application context, but are
+taken from the properties file provided via the property
+<code class="docutils literal notranslate"><span class="pre">s3.properties.location</span></code> (see <a class="reference external" href="https://github.com/geotools/geotools/tree/main/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services">S3
+DataStore</a>).</p>
+<p>A service will be created for each service and each bucket. We must add
+one line per alias to the <code class="docutils literal notranslate"><span class="pre">s3.properties</span></code> file:</p>
+<p><code class="docutils literal notranslate"><span class="pre">alias.s3.rootfolder=comma,separated,list,of,buckets</span></code></p>
+<p>The above example will create five s3 file services: alias-comma,
+alias-separated, alias-list, alias-of and alias-buckets.</p>
+<p>Roles can optionally be specified for <a class="reference external" href="#security">security</a> purposes as follows:</p>
+<p><code class="docutils literal notranslate"><span class="pre">alias.bucket.s3.roles=comma,separated,list,of,roles</span></code></p>
+</div>
+<div class="section" id="aws-file-service">
+<h4>AWS File Service<a class="headerlink" href="#aws-file-service" title="Permalink to this headline">¶</a></h4>
+<p>Amazon AWS S3 buckets are also supported.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.taskmanager.external.impl.AWSFileServiceImpl&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;rootFolder&quot;</span> <span class="na">value=</span><span class="s">&quot;/tmp&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;anonymous&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;awsRegion&quot;</span> <span class="na">value=</span><span class="s">&quot;us-west-1&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;roles&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;list&gt;</span>
+       <span class="nt">&lt;value&gt;</span>ROLE1<span class="nt">&lt;/value&gt;</span>
+       <span class="nt">&lt;value&gt;</span>ROLE2<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/list&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+<p>Unless anonymous is set to true, the <a class="reference external" href="https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#using-the-default-credential-provider-chain">default AWS client credential chain</a> is used.</p>
+</div>
+<div class="section" id="prepare-script">
+<h4>Prepare script<a class="headerlink" href="#prepare-script" title="Permalink to this headline">¶</a></h4>
+<p>The task manager GUI allows immediate upload of files
+to file services for local publication.
+It may be handy to perform some preprocessing tasks
+on the uploaded data before publication (such as GDAL commands).
+You may do this by creating a file in the taskmanager configuration
+directory named <cite>prepare.sh</cite>. If the user ticks the prepare checkbox
+in the upload dialog, this script will be run with the uploaded file
+as its first parameter.</p>
+</div>
+</div>
+</div>
+<div class="section" id="security">
+<h2><a class="toc-backref" href="#id20">Security</a><a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>Each configuration and each independent batch is associated with a
+workspace in GeoServer (when the workspace field is empty, it is
+automatically associated with the default workspace in geoserver). The
+configuration or batch takes its security permissions directly from this
+workspace.</p>
+<ul class="simple">
+<li><p>If the user has reading permissions on the workspace, they may view
+the configuration or batch.</p></li>
+<li><p>If the user has writing permissions on the workspace, they may run
+the batch or the batches in the configuration.</p></li>
+<li><p>If the user has administrative permissions on the workspace, they may
+edit the configuration/batch.</p></li>
+</ul>
+<p>Each Database or File Service may be associated with a list of roles.
+If you do so, only users with those roles will have access to the database
+or file service in question.  If you want to disable security restrictions,
+do not include the <code class="docutils literal notranslate"><span class="pre">roles</span></code> property at all (because an empty list will result
+in no access.)</p>
+</div>
+<div class="section" id="graphical-user-interface">
+<h2><a class="toc-backref" href="#id21">Graphical User Interface</a><a class="headerlink" href="#graphical-user-interface" title="Permalink to this headline">¶</a></h2>
+<p>Currently GeoServer Task Manager can only be configured and operated
+from the GeoServer WebGUI.</p>
+<div class="section" id="templates">
+<h3>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h3>
+<p>From the templates page, new templates can be created (or copied from
+existing templates), existing templates can be edited and removed.</p>
+<div class="figure align-default" id="id1">
+<img alt="templates" src="../../_images/templates.png" />
+<p class="caption"><span class="caption-text">templates</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Once you open a new or existing template, attributes, tasks and batches
+can be edited. The attribute table adjusts automatically based on the
+information in the tasks table; and only the values must be filled in.
+In the task table, the name and parameters of each task can be edited,
+and new tasks can be created. Batches can be created and edited from
+here as well, however the template must exist in order to be able to do
+that (in case of a new template, you must click <code class="docutils literal notranslate"><span class="pre">apply</span></code> once before
+you can create new batches). New tasks must also be saved (again, via
+the <code class="docutils literal notranslate"><span class="pre">apply</span></code> button) before they can be added to a batch.</p>
+<div class="figure align-default" id="id2">
+<img alt="template db workflow" src="../../_images/template-db-workflow.png" />
+<p class="caption"><span class="caption-text">template db workflow</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="configurations">
+<h3>Configurations<a class="headerlink" href="#configurations" title="Permalink to this headline">¶</a></h3>
+<p>From the <a class="reference external" href="basic.html#configurations">configurations</a> page, new
+configurations can be created from scratch or from templates (or copied
+from existing configurations), existing configurations can be edited and
+removed.</p>
+<div class="figure align-default" id="id3">
+<img alt="configurations" src="../../_images/configurations.png" />
+<p class="caption"><span class="caption-text">configurations</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>When removing a configuration, you have to option to do a <em>clean-up</em>,
+which will attempt to remove all resources (database tables, files,
+layers) that were created by (tasks of) this configuration. If this
+(partially) fails, the configuration will still be removed and the user
+will be notified.</p>
+<p>Once you open a new or existing configuration, attributes, tasks and
+batches can be edited.</p>
+<div class="figure align-default" id="id4">
+<img alt="workflow config 2" src="../../_images/template-db-workflow-config2.png" />
+<p class="caption"><span class="caption-text">workflow config 2</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>The attribute table adjusts automatically based on the information in
+the tasks table; and only the values must be filled in. In the task
+table, the name and parameters of each task can be edited, and new tasks
+can be created. Tasks can only be removed if they are not part of a
+batch any longer. Batches can only be removed if they are not running
+anywhere. When removing a task, you have to option to do a <em>clean-up</em>,
+which will attempt to remove all resources (database tables, files,
+layers) that were created by this task. If this (partially) fails, the
+task will still be removed and the user will be notified.</p>
+<p>Batches can be created and edited from here as well, however the
+configuration must exist in order to be able to do that (in case of a
+new configuration, you must click <code class="docutils literal notranslate"><span class="pre">apply</span></code> once before you can create
+new batches). New tasks must also be saved (again, via the <code class="docutils literal notranslate"><span class="pre">apply</span></code>
+button) before they can be added to a batch. In case that the
+<a class="reference external" href="basic.html#batches">conditions</a> are met, batch runs can be started,
+and the status/history of current and past batch runs can be displayed.
+Current batch runs can be interrupted (which is not guaranteed to happen
+immediately).</p>
+<div class="section" id="import-export">
+<h4>Import/Export<a class="headerlink" href="#import-export" title="Permalink to this headline">¶</a></h4>
+<p>It is also possible to import/export entire configurations to XML, for
+example to transfer them from one geoserver to another. The import button is
+on the configurations page, while the export button is on the page of a
+specific configuration. The user is responsible for making sure that the
+configuration is compatible with the other geoserver (available task extensions,
+attribute values,…).</p>
+</div>
+</div>
+<div class="section" id="batches">
+<h3>Batches<a class="headerlink" href="#batches" title="Permalink to this headline">¶</a></h3>
+<p>From the <a class="reference external" href="basic.html#batches">batches</a> page, new independent batches
+(not associated with a configuration) can be created, existing batches
+can be edited and removed. All existing batches - independent as well as
+belonging to a configuration - are shown, unless they are special (if
+they start with a <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>) or if the configuration has not yet been
+completed (see <a class="reference external" href="basic.html#initializing-templates">initializing
+templates</a>).</p>
+<div class="figure align-default" id="id5">
+<img alt="batches" src="../../_images/batches.png" />
+<p class="caption"><span class="caption-text">batches</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>In case that the <a class="reference external" href="basic.html#batches">conditions</a> are met, batch runs
+can be started, and the status/history of current and past batch runs
+can be displayed. Current batch runs can be interrupted (which is not
+guaranteed to happen immediately).</p>
+<div class="figure align-default" id="id6">
+<img alt="batchruns" src="../../_images/batchruns.png" />
+<p class="caption"><span class="caption-text">batchruns</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id7">
+<img alt="batchrun" src="../../_images/batchrun.png" />
+<p class="caption"><span class="caption-text">batchrun</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>Once you open a new or existing batch, one can add or remove tasks from
+it and change the order of the tasks. You can also enable/disable the
+batch (if disabled, the batch is not scheduled) and choose the
+scheduling time. The user can choose between a daily schedule (with
+time), weekly (with day of week and time), monthly (with day of month
+and time) or specify a custom <a class="reference external" href="http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html">cron
+expression</a>.</p>
+<div class="figure align-default" id="id8">
+<img alt="batch synchronize" src="../../_images/template-db-workflow-batch-sync.png" />
+<p class="caption"><span class="caption-text">batch synchronize</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="task-types">
+<h2><a class="toc-backref" href="#id22">Task Types</a><a class="headerlink" href="#task-types" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CopyTableTask</span></code> Copy a database table from one database to another.
+The user can specify a source database, source table name, target
+database and target table name. Supports commit/rollback by creating
+a temporary table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CreateViewTask</span></code> Create a view based on a single table. The user
+can specify the database, the table name, the selected fields and
+(optionally) a where condition. Supports commit/rollback by creating
+a temporary view.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CreateComplexViewTask</span></code> Create a view based on a multiple tables.
+The user can specify the database and a whole query, where it can use
+any other configuration attribute in the form of ‘${placeholder}’.
+Supports commit/rollback by creating a temporary view.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CopyFileTask</span></code> Copy a file from one file service to another.
+Commit/rollback is supported by a versioning system, where the
+version of the file is inserted into the file name. The location of
+the version number is specified in the path as <code class="docutils literal notranslate"><span class="pre">###</span></code> (or set
+auto-versioned to <code class="docutils literal notranslate"><span class="pre">true</span></code> to add the placeholder automatically
+before the extension dot). On commit,
+the older version is removed. On rollback, the newer version is
+removed. The publication tasks will automatically publish the latest
+version.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LocalDbPublicationTask</span></code> Publish a database layer locally. The user
+can specify database, table and a layer name. Supports
+commit/rollback by advertising or removing the layer it created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RemoteDbPublicationTask</span></code> Publish a database layer to another
+geoserver. The user can specify a target geoserver, a source layer
+and a target database. All information is taken from the source layer
+except for the target database which may be different. Supports
+commit/rollback through creating a temporary (unadvertised) layer.
+This task also supports the version place holder or auto-versioning,
+in order to combine with the <code class="docutils literal notranslate"><span class="pre">CopyFileTask</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LocalFilePublicationTask</span></code> Publish a file layer locally (raster or
+shapefile). The user can specify a file service, a file (which can be
+uploaded unto the service) and a layer name. Supports commit/rollback
+by advertising or removing the layer it created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RemoteFilePublicationTask</span></code> Publish a file layer locally (taster or
+shapefile). The user can specify a target geoserver, a source layer
+and a target file service and path (optional). All information is
+taken from the source layer except for the file service and path
+which may be different. Supports commit/rollback through creating a
+temporary (unadvertised) layer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MetaDataSyncTask</span></code> Synchronise the metadata between a local layer
+and a layer on another geoserver (without re-publishing). The user
+can specify a target geoserver, a local and a remote layer. Does not
+support commit/rollback.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ConfigureCachedLayer</span></code> Configure caching for a layer on a remote
+geoserver with internal GWC, synchronise the settings with the local
+geoserver. This task may turn caching on or off depending on local
+configuration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ClearCachedLayer</span></code> Clear (truncate) all tiles of a cached layer on
+a remote geoserver with internal GWC.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LocalAppSchemaPublicationTask</span></code> Publish an <a class="reference internal" href="../../data/app-schema/index.html#app-schema"><span class="std std-ref">Application Schema</span></a> layer locally.
+This is exactly the same as <code class="docutils literal notranslate"><span class="pre">LocalFilePublicationTask</span></code> with the Application Schema mapping file
+as the file being published, and two additional features.</p>
+<ul>
+<li><p>The mapping file may be provided as a template, with placeholders in the form of <code class="docutils literal notranslate"><span class="pre">${placeholder}</span></code>.
+The placeholders are replaced by the values of the connection parameters of the database
+that is provided as parameter to the task. This makes it possible to fill in the underlying source
+database for different geoservers.
+For example: specify <code class="docutils literal notranslate"><span class="pre">${jndiReferenceName}</span></code> as source database connection parameter in the mapping file.</p></li>
+<li><p>Multiple mapping files may be provided for a single layer (when the layer mapping uses included types), in the
+form of a ZIP file. The main mapping file and the ZIP file must have the same name before the extension.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RemoteAppSchemaPublicationTask</span></code> Publish an <a class="reference internal" href="../../data/app-schema/index.html#app-schema"><span class="std std-ref">Application Schema</span></a> layer remotely.
+This is exactly the same as <code class="docutils literal notranslate"><span class="pre">LocalFilePublicationTask</span></code> with the Application Schema mapping file
+as the file being published, and two additional features:</p>
+<ul>
+<li><p>The mapping file may be provided as a template, with placeholders in the form of <code class="docutils literal notranslate"><span class="pre">${placeholder}</span></code>.
+The placeholders are replaced by the values of the connection parameters of the database
+that is provided as parameter to the task. This makes it possible to fill in the underlying source
+database for different geoservers.
+For example: specify <code class="docutils literal notranslate"><span class="pre">${jndiReferenceName}</span></code> as source database connection parameter in the mapping file.</p></li>
+<li><p>Multiple mapping files may be provided for a single layer (when the layer mapping uses included types), in the
+form of a ZIP file. The main mapping file and the ZIP file must have the same name before the extension.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LayerSecuritySync</span></code> this task will synchronise all <a class="reference internal" href="../../security/layer.html#security-layer"><span class="std std-ref">data access security rules</span></a> associated with a layer to the external geoserver. Warning: the task assumes that the same roles exist on both geoservers. Does not support commit/rollback.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WorkspaceSecuritySync</span></code> this task will synchronise all <a class="reference internal" href="../../security/layer.html#security-layer"><span class="std std-ref">data access security rules</span></a> associated with a workspace to the external geoserver. Warning: the task assumes that the same roles exist on both geoservers. Does not support commit/rollback.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeStamp</span></code> update a time stamp in a layer’s metadata that represents
+the last time a layer’s data has been updated. Since the data timestamp
+is part of the metadata, a metadata timestamp can also be updated.
+The task must be configured through its Spring Bean properties
+<code class="docutils literal notranslate"><span class="pre">timeStampTaskType.dataTimestampProperty</span></code> and
+<code class="docutils literal notranslate"><span class="pre">timeStampTaskType.metadataTimestampProperty</span></code> which represent the key (or
+key path) in the layer’s resource metadata. If you are using the <a class="reference internal" href="../../extensions/metadata/index.html#community-metadata"><span class="std std-ref">Metadata Community Module</span></a>
+you should set <code class="docutils literal notranslate"><span class="pre">timeStampTaskType.metadataTimestampProperty=custom._timestamp</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MetadataTemplateSync</span></code> this task requires the <a class="reference internal" href="../../extensions/metadata/index.html#community-metadata"><span class="std std-ref">Metadata Community Module</span></a>
+and the <code class="docutils literal notranslate"><span class="pre">taskmanager-metadata</span></code> submodule. It will synchronize all metadata linked to a specific metadata template.
+Useful when you change the template.</p></li>
+</ul>
+</div>
+<div class="section" id="bulk-operations">
+<h2><a class="toc-backref" href="#id23">Bulk Operations</a><a class="headerlink" href="#bulk-operations" title="Permalink to this headline">¶</a></h2>
+<p>The task manager provides a number of bulk operation tools via an additional page in the GUI.
+The import tool is also available via a REST service.</p>
+<div class="section" id="run-batches">
+<h3>Run Batches<a class="headerlink" href="#run-batches" title="Permalink to this headline">¶</a></h3>
+<p>A whole series of batches may be scheduled all at once.
+You specify a workspace, configuration name and batch name pattern to select the series of batches you want to schedule.
+You may specify how long to wait before starting to execute the batches.
+You may specify how long to wait in between execution of each batch. This option is strongly recommended not to overload your software and cause failures.</p>
+<div class="figure align-default">
+<img alt="../../_images/bulk_runbatches.png" src="../../_images/bulk_runbatches.png" />
+</div>
+</div>
+<div class="section" id="import-configurations">
+<h3>Import Configurations<a class="headerlink" href="#import-configurations" title="Permalink to this headline">¶</a></h3>
+<p>The import tool allows bulk creation of an unlimited amount of
+configurations on the basis of a template and a CSV file with attribute
+values. Contrary to the rest of the configuration, this function is only
+exposed via a REST service and not via the GUI. The import tool will
+generate a new configuration for each line in the CSV file, except for
+the first. The first line must specify the attribute names which should
+all match attributes that exist in the template, plus <code class="docutils literal notranslate"><span class="pre">name</span></code> (required),
+<code class="docutils literal notranslate"><span class="pre">description</span></code> (optional) and <code class="docutils literal notranslate"><span class="pre">workspace</span></code> (optional) for the configuration
+metadata. The CSV file mustspecify a valid attribute value for each
+required attribute.</p>
+<p>Optionally, you may skip validation (at your own risk).</p>
+<p>As an alternative to using the GUI page, you may <code class="docutils literal notranslate"><span class="pre">POST</span></code> your CSV file to
+<code class="docutils literal notranslate"><span class="pre">http://{geoserver-host}/geoserver/taskmanager-import/{template}[validate=false]</span></code></p>
+<div class="figure align-default">
+<img alt="../../_images/bulk_import.png" src="../../_images/bulk_import.png" />
+</div>
+</div>
+<div class="section" id="initialize-configurations">
+<h3>Initialize Configurations<a class="headerlink" href="#initialize-configurations" title="Permalink to this headline">¶</a></h3>
+<p>If you have imported configurations in bulk based on an Initializing template, you
+may also want to initialize them in bulk. This works similarly to running batches in bulk.
+The configurations will be validated after initialization.</p>
+<div class="figure align-default">
+<img alt="../../_images/bulk_initialize.png" src="../../_images/bulk_initialize.png" />
+</div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2><a class="toc-backref" href="#id24">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Consider the following setup.</p>
+<p>Three geoservers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">work</span> <span class="pre">geoserver</span></code>: a geoserver only available in the local network,
+only used by administrators. New and updated data is published here
+as layers for the first time, to test both the validity of data and
+the publication configuration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">internal</span> <span class="pre">geoserver</span></code>: a geoserver only available in the local
+network, for internal users.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">geoserver</span></code>: a geoserver available on the internet, for the
+general public.</p></li>
+</ul>
+<p>Several databases:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">multiple</span> <span class="pre">source</span> <span class="pre">databases</span></code>: these are databases provided by
+partners that provide new and updated data. they are not used to
+directly publish on a geoserver.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">work</span> <span class="pre">database</span></code>: database used by the <code class="docutils literal notranslate"><span class="pre">work</span> <span class="pre">geoserver</span></code> where its
+vector data is stored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">internal</span> <span class="pre">database</span></code>: database used by the <code class="docutils literal notranslate"><span class="pre">internal</span> <span class="pre">geoserver</span></code>
+where its vector data is stored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">database</span></code>: database used by the <code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">geoserver</span></code> where
+its vector data is stored.</p></li>
+</ul>
+<p>A typical workflow for a new layer goes as follows:</p>
+<ol class="arabic simple">
+<li><p>A new table is copied from a <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">database</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">work</span> <span class="pre">database</span></code> and then published on the <code class="docutils literal notranslate"><span class="pre">work</span> <span class="pre">geoserver</span></code></p></li>
+<li><p>After testing, the table is either copied to the
+<code class="docutils literal notranslate"><span class="pre">internal</span> <span class="pre">database</span></code> and published on the <code class="docutils literal notranslate"><span class="pre">internal</span> <span class="pre">geoserver</span></code> or
+copied to the <code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">database</span></code> and published on the
+<code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">geoserver</span></code>.</p></li>
+<li><p>Every week, data is synchronised between the three databases and
+metadata is synchronised between the two geoservers.</p></li>
+</ol>
+<p>Taskmanager should be installed only on the <code class="docutils literal notranslate"><span class="pre">work</span> <span class="pre">geoserver</span></code>. Then we
+could make the following template:</p>
+<div class="figure align-default" id="id9">
+<img alt="template db workflow" src="../../_images/template-db-workflow.png" />
+<p class="caption"><span class="caption-text">template db workflow</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<p>with the following batches:</p>
+<div class="figure align-default" id="id10">
+<img alt="template db workflow batches" src="../../_images/template-db-workflow-batches.png" />
+<p class="caption"><span class="caption-text">template db workflow batches</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;Initialize</span></code> batch:</p>
+<div class="figure align-default" id="id11">
+<img alt="batch initialize" src="../../_images/template-db-workflow-batch-init.png" />
+<p class="caption"><span class="caption-text">batch initialize</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">PublishRemotely</span></code> batch:</p>
+<div class="figure align-default" id="id12">
+<img alt="batch publish remotely" src="../../_images/template-db-workflow-batch-pubrem.png" />
+<p class="caption"><span class="caption-text">batch publish remotely</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Synchronize</span></code> batch:</p>
+<div class="figure align-default" id="id13">
+<img alt="batch synchronize" src="../../_images/template-db-workflow-batch-sync.png" />
+<p class="caption"><span class="caption-text">batch synchronize</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+<p>When we now create a new configuration based on this template we choose
+a source database, table name and layer name:</p>
+<div class="figure align-default" id="id14">
+<img alt="workflow config" src="../../_images/template-db-workflow-config.png" />
+<p class="caption"><span class="caption-text">workflow config</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+<p>After clicking apply, the configuration is being initialized (the layer
+is created locally)…</p>
+<div class="figure align-default" id="id15">
+<img alt="initializing..." src="../../_images/template-db-workflow-initializing.png" />
+<p class="caption"><span class="caption-text">initializing…</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+<p>We can now fill in the rest of the details, save, and make the remote
+publication. The synchronization is scheduled weekly.</p>
+<div class="figure align-default" id="id16">
+<img alt="workflow config 2" src="../../_images/template-db-workflow-config2.png" />
+<p class="caption"><span class="caption-text">workflow config 2</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="basic.html" title="previous chapter">Basic Concepts</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="developer.html" title="next chapter">Developer’s Guide</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">TaskManager User Guide</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#server-configuration">Server Configuration</a><ul>
+<li><a class="reference internal" href="#configuration-database-clustering">Configuration Database &amp; Clustering</a></li>
+<li><a class="reference internal" href="#databases">Databases</a></li>
+<li><a class="reference internal" href="#external-geoservers">External GeoServers</a></li>
+<li><a class="reference internal" href="#file-services">File Services</a><ul>
+<li><a class="reference internal" href="#regular-file-service">Regular File Service</a></li>
+<li><a class="reference internal" href="#s3-file-service">S3 File Service</a></li>
+<li><a class="reference internal" href="#aws-file-service">AWS File Service</a></li>
+<li><a class="reference internal" href="#prepare-script">Prepare script</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#graphical-user-interface">Graphical User Interface</a><ul>
+<li><a class="reference internal" href="#templates">Templates</a></li>
+<li><a class="reference internal" href="#configurations">Configurations</a><ul>
+<li><a class="reference internal" href="#import-export">Import/Export</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#batches">Batches</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#task-types">Task Types</a></li>
+<li><a class="reference internal" href="#bulk-operations">Bulk Operations</a><ul>
+<li><a class="reference internal" href="#run-batches">Run Batches</a></li>
+<li><a class="reference internal" href="#import-configurations">Import Configurations</a></li>
+<li><a class="reference internal" href="#initialize-configurations">Initialize Configurations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="basic.html" title="previous chapter">Basic Concepts</a></li>
+            <li>Next: <a href="developer.html" title="next chapter">Developer’s Guide</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/taskmanager/user.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

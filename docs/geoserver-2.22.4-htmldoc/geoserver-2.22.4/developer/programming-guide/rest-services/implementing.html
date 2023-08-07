@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Implementing a RESTful Service &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Implementing a RESTful Service with Maps" href="implementing-map.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+  </head><body class="programming-guide/rest-services/implementing">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">REST Services</a> &raquo;</li>
+    <li>Implementing a RESTful Service</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="implementing-map.html" title="Implementing a RESTful Service with Maps" accesskey="N">Next</a></li>
+  <li>
+    <a href="overview.html" title="Overview" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="implementing-a-restful-service">
+<span id="rest-services-implementing"></span><h1>Implementing a RESTful Service<a class="headerlink" href="#implementing-a-restful-service" title="Permalink to this headline">¶</a></h1>
+<p>This section describes how to implement a restful service in GeoServer, using
+a “Hello World” example. The service will be extremely simple and will return
+the text “Hello World” from a GET request.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Before being able to proceed, GeoServer must be built on the local system. See
+the <a class="reference internal" href="../../source.html#source"><span class="std std-ref">Source Code</span></a> and <a class="reference internal" href="../../quickstart/index.html#quickstart"><span class="std std-ref">Quickstart</span></a> sections for details.</p>
+</div>
+<div class="section" id="create-a-new-module">
+<h2>Create a new module<a class="headerlink" href="#create-a-new-module" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Create a new module named <code class="docutils literal notranslate"><span class="pre">hello_rest</span></code> somewhere on the file system.</p></li>
+<li><p>Add the following <code class="docutils literal notranslate"><span class="pre">pom.xml</span></code> to the root of the new module:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span>
+   <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd &quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+  <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>hello_rest<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;name&gt;</span>hello_rest<span class="nt">&lt;/name&gt;</span>
+
+  <span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>gs-rest<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>2.8-SNAPSHOT<span class="nt">&lt;/version&gt;</span> <span class="c">&lt;!-- change this to the proper GeoServer version --&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>gs-main<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>2.8-SNAPSHOT<span class="nt">&lt;/version&gt;</span> <span class="c">&lt;!-- change this to the proper GeoServer version --&gt;</span>
+      <span class="nt">&lt;classifier&gt;</span>tests<span class="nt">&lt;/classifier&gt;</span>
+      <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>4.11<span class="nt">&lt;/version&gt;</span>
+      <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>com.mockrunner<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>mockrunner<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>0.3.6<span class="nt">&lt;/version&gt;</span>
+     <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+
+  <span class="nt">&lt;/dependencies&gt;</span>
+
+  <span class="nt">&lt;build&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+      <span class="nt">&lt;plugin&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;configuration&gt;</span>
+          <span class="nt">&lt;source&gt;</span>1.8<span class="nt">&lt;/source&gt;</span>
+          <span class="nt">&lt;target&gt;</span>1.8<span class="nt">&lt;/target&gt;</span>
+        <span class="nt">&lt;/configuration&gt;</span>
+     <span class="nt">&lt;/plugin&gt;</span>
+   <span class="nt">&lt;/plugins&gt;</span>
+  <span class="nt">&lt;/build&gt;</span>
+
+<span class="nt">&lt;/project&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Create the directory <code class="docutils literal notranslate"><span class="pre">src/main/java</span></code> under the root of the new module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_rest</span><span class="p">]</span><span class="o">%</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="create-the-resource-class">
+<h2>Create the resource class<a class="headerlink" href="#create-the-resource-class" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>The class <code class="docutils literal notranslate"><span class="pre">org.geoserver.rest.AbstractResource</span></code> is a convenient base
+class available when creating new resources. Create a new class called
+<code class="docutils literal notranslate"><span class="pre">HelloResource</span></code> in the package <code class="docutils literal notranslate"><span class="pre">org.geoserver.hellorest</span></code>, which
+extends from <code class="docutils literal notranslate"><span class="pre">AbstractResource</span></code>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.hellorest</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.geoserver.rest.AbstractResource</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.geoserver.rest.format.DataFormat</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.restlet.data.Request</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.restlet.data.Response</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloResource</span> <span class="kd">extends</span> <span class="n">AbstractResource</span> <span class="p">{</span>
+   <span class="nd">@Override</span>
+   <span class="kd">protected</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">DataFormat</span><span class="o">&gt;</span> <span class="nf">createSupportedFormats</span><span class="p">(</span><span class="n">Request</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The first method to implement is <code class="docutils literal notranslate"><span class="pre">createSupportedFormats()</span></code>. The purpose
+of this method is to create mapping from an extension, to a particular
+format. For now the goal will be to return the text “Hello World” when a
+“.txt” extension is requested by the client.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.geoserver.rest.format.StringFormat</span><span class="p">;</span>
+<span class="p">...</span>
+
+<span class="nd">@Override</span>
+<span class="kd">protected</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">DataFormat</span><span class="o">&gt;</span> <span class="nf">createSupportedFormats</span><span class="p">(</span><span class="n">Request</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+
+   <span class="n">List</span><span class="o">&lt;</span><span class="n">DataFormat</span><span class="o">&gt;</span> <span class="n">formats</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="p">();</span>
+   <span class="n">formats</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span> <span class="n">StringFormat</span><span class="p">(</span> <span class="n">MediaType</span><span class="p">.</span><span class="na">TEXT_PLAIN</span> <span class="p">));</span>
+
+   <span class="k">return</span> <span class="n">formats</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The next step is to override the <code class="docutils literal notranslate"><span class="pre">handleGet()</span></code> method. This method is
+called when a GET request is made for the resource.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleGet</span><span class="p">()</span> <span class="p">{</span>
+   <span class="c1">//get the appropriate format</span>
+   <span class="n">DataFormat</span> <span class="n">format</span> <span class="o">=</span> <span class="n">getFormatGet</span><span class="p">();</span>
+
+   <span class="c1">//transform the string &quot;Hello World&quot; to the appropriate response</span>
+   <span class="n">getResponse</span><span class="p">().</span><span class="na">setEntity</span><span class="p">(</span><span class="n">format</span><span class="p">.</span><span class="na">toRepresentation</span><span class="p">(</span><span class="s">&quot;Hello World&quot;</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The above makes use of the <code class="docutils literal notranslate"><span class="pre">getFormatGet()</span></code> method, whose purpose is
+to determine the extension being requested by the client, and look up
+the appropriate format for it. In this case when the client requests the
+“.txt” extension, the <code class="docutils literal notranslate"><span class="pre">StringFormat</span></code> setup in the previous step will be
+found.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="create-the-application-context">
+<h2>Create the application context<a class="headerlink" href="#create-the-application-context" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>The next step is to create an application context that tells GeoServer
+about the resource created in the previous section. Create the directory
+<code class="docutils literal notranslate"><span class="pre">src/main/resources</span></code> under the root of the <code class="docutils literal notranslate"><span class="pre">hello_rest</span></code> module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_rest</span><span class="p">]</span><span class="o">%</span> <span class="n">mkdir</span> <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">resources</span>
+</pre></div>
+</div>
+</li>
+<li><p>Add the following <code class="docutils literal notranslate"><span class="pre">applicationContext.xml</span></code> file to the <code class="docutils literal notranslate"><span class="pre">src/main/resources</span></code> directory under the root of the <code class="docutils literal notranslate"><span class="pre">hello_rest</span></code> module.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="cp">&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;</span>
+
+ <span class="nt">&lt;beans&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;hello&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.hellorest.HelloResource&quot;</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;helloMapping&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.rest.RESTMapping&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;routes&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;map&gt;</span>
+            <span class="nt">&lt;entry&gt;</span>
+              <span class="nt">&lt;key&gt;&lt;value&gt;</span>/hello.{format}<span class="nt">&lt;/value&gt;&lt;/key&gt;</span>
+              <span class="nt">&lt;value&gt;</span>hello<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/entry&gt;</span>
+         <span class="nt">&lt;/map&gt;</span>
+      <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+<span class="nt">&lt;/beans&gt;</span>
+</pre></div>
+</div>
+<p>There are two things to note above. The first is the <code class="docutils literal notranslate"><span class="pre">hello</span></code> bean which
+is an instance of the <code class="docutils literal notranslate"><span class="pre">HelloResource</span></code> class created in the previous
+section. The second is the <code class="docutils literal notranslate"><span class="pre">helloMapping</span></code> bean, which defines a template
+for the uri in which the resource will be accessed. The above mapping
+specifies that the resource will be located at <code class="docutils literal notranslate"><span class="pre">/rest/hello.{format}</span></code>
+where <code class="docutils literal notranslate"><span class="pre">format</span></code> is the representation being requested by the client. As
+implemented <code class="docutils literal notranslate"><span class="pre">hello.txt</span></code> is the only supported representation.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="test">
+<h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Create the directory <code class="docutils literal notranslate"><span class="pre">/src/test/java</span></code> under the root of the
+<code class="docutils literal notranslate"><span class="pre">hello_rest</span></code> module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_rest</span><span class="p">]</span><span class="o">%</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="n">src</span><span class="o">/</span><span class="n">test</span><span class="o">/</span><span class="n">java</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create a new test class called <code class="docutils literal notranslate"><span class="pre">HelloResourceTest</span></code> in the package
+<code class="docutils literal notranslate"><span class="pre">org.geoserver.hellorest</span></code>, which extends from
+<code class="docutils literal notranslate"><span class="pre">org.geoserver.test.GeoServerTestSupport</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.hellorest</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.geoserver.test.GeoServerTestSupport</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloResourceTest</span> <span class="kd">extends</span> <span class="n">GeoServerTestSupport</span> <span class="p">{</span>
+
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Add a statement which makes a GET request for <code class="docutils literal notranslate"><span class="pre">/rest/hello.txt</span></code> and
+asserts it is equal to the string “Hello World”:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+   <span class="n">assertEquals</span><span class="p">(</span> <span class="s">&quot;Hello World&quot;</span><span class="p">,</span> <span class="n">getAsString</span><span class="p">(</span><span class="s">&quot;/rest/hello.txt&quot;</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Build and test the <code class="docutils literal notranslate"><span class="pre">hello_test</span></code> module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_rest</span><span class="p">]</span><span class="o">%</span> <span class="n">mvn</span> <span class="n">install</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="overview.html" title="previous chapter">Overview</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="implementing-map.html" title="next chapter">Implementing a RESTful Service with Maps</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Implementing a RESTful Service</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#create-a-new-module">Create a new module</a></li>
+<li><a class="reference internal" href="#create-the-resource-class">Create the resource class</a></li>
+<li><a class="reference internal" href="#create-the-application-context">Create the application context</a></li>
+<li><a class="reference internal" href="#test">Test</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="overview.html" title="previous chapter">Overview</a></li>
+            <li>Next: <a href="implementing-map.html" title="next chapter">Implementing a RESTful Service with Maps</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/rest-services/implementing.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coordinate Reference System Configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Custom CRS Definitions" href="customcrs.html" />
+    <link rel="prev" title="Coordinate Reference System Handling" href="index.html" /> 
+  </head><body class="configuration/crshandling/configurecrs">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Server configuration</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Coordinate Reference System Handling</a> &raquo;</li>
+    <li>Coordinate Reference System Configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="customcrs.html" title="Custom CRS Definitions" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="Coordinate Reference System Handling" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="coordinate-reference-system-configuration">
+<span id="crs-configure"></span><h1>Coordinate Reference System Configuration<a class="headerlink" href="#coordinate-reference-system-configuration" title="Permalink to this headline">¶</a></h1>
+<p>When adding data, GeoServer tries to inspect data headers looking for an EPSG code:</p>
+<ul class="simple">
+<li><p>If the data has a CRS with an explicit EPSG code and the full CRS definition behind the code matches the one in GeoServer, the CRS will be already set for the data.</p></li>
+<li><p>If the data has a CRS but no EPSG code, you can use the <span class="guilabel">Find</span> option on the <a class="reference internal" href="../../data/webadmin/layers.html#data-webadmin-layers"><span class="std std-ref">Layers</span></a> page to make GeoServer perform a lookup operation where the data CRS is compared against every other known CRS. If this succeeds, an EPSG code will be selected. The common case for a CRS that has no EPSG code is shapefiles whose .PRJ file contains a valid WKT string without the EPSG identifiers (as these are optional).</p></li>
+</ul>
+<p>If an EPSG code cannot be found, then either the data has no CRS or it is unknown to GeoServer.  In this case, there are a few options:</p>
+<ul class="simple">
+<li><p>Force the declared CRS, ignoring the native one.  This is the best solution if the native CRS is known to be wrong.</p></li>
+<li><p>Reproject from the native to the declared CRS.  This is the best solution if the native CRS is correct, but cannot be matched to an EPSG number.  (An alternative is to add a custom EPSG code that matches exactly the native SRS.  See the section on <a class="reference internal" href="customcrs.html#crs-custom"><span class="std std-ref">Custom CRS Definitions</span></a> for more information.)</p></li>
+</ul>
+<p>If your data has no native CRS information, the only option is to specify/force an EPSG code.</p>
+<div class="section" id="increasing-comparison-tolerance">
+<h2>Increasing Comparison Tolerance<a class="headerlink" href="#increasing-comparison-tolerance" title="Permalink to this headline">¶</a></h2>
+<p>Decimal numbers comparisons are made using a comparison tolerance. This means, as an instance, that an ellipsoid’s semi_major axis
+equals a candidate EPSG’s ellipsoid semi_major axis only if their difference is within that tolerance.
+Default value is 10^-9 although it can be changed by setting a COMPARISON_TOLERANCE Java System property to your container’s JVM to specify a different value.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The default value should be changed only if you are aware of use cases which require a wider tolerance.
+Don’t change it unless really needed (See the following example).</p>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Your sample dataset is known to be a LambertConformalConic projection and the related EPSG code defines latitude_of_origin value = 25.0.</p></li>
+<li><p>The coverageStore plugin is exposing raster projection details through a third party library which provides projection parameter definitions as float numbers.</p></li>
+<li><p>Due to the underlying math computations occurring in that third party library, the exposed projection parameters are subject to some accuracy loss, so that the provided latitude_of_origin is something like 25.0000012 whilst all the other params match the EPSG definition.</p></li>
+<li><p>You notice that the native CRS isn’t properly recognized as the expected EPSG due to that small difference in latitude_of_origin</p></li>
+</ul>
+<p>In that case you could consider increasing a bit the tolerance.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">Coordinate Reference System Handling</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="customcrs.html" title="next chapter">Custom CRS Definitions</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Coordinate Reference System Configuration</a><ul>
+<li><a class="reference internal" href="#increasing-comparison-tolerance">Increasing Comparison Tolerance</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">Coordinate Reference System Handling</a></li>
+            <li>Next: <a href="customcrs.html" title="next chapter">Custom CRS Definitions</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/configuration/crshandling/configurecrs.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

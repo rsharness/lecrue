@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MongoDB Schemaless Support &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Smart Data Loader Extension" href="../../smart-data-loader/index.html" />
+    <link rel="prev" title="Installing the Schemaless Mongo module" href="../install.html" /> 
+  </head><body class="community/schemaless-features/schemaless-mongo/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Schemaless Features Plugin</a> &raquo;</li>
+    <li>MongoDB Schemaless Support</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../../smart-data-loader/index.html" title="Smart Data Loader Extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="../install.html" title="Installing the Schemaless Mongo module" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="mongodb-schemaless-support">
+<span id="schemaless-mongo"></span><h1>MongoDB Schemaless Support<a class="headerlink" href="#mongodb-schemaless-support" title="Permalink to this headline">¶</a></h1>
+<p>By clicking on MongoDB Schemaless we land on the store configuration page. The only needed parameters are the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> and the <code class="docutils literal notranslate"><span class="pre">MongoDBURI</span></code>. For a description of the available MongoDB URI format check <a class="reference external" href="https://docs.mongodb.com/manual/reference/connection-string">here</a> .</p>
+<div class="figure align-default">
+<img alt="../../../_images/schemaless-mongo-configuration-page.png" src="../../../_images/schemaless-mongo-configuration-page.png" />
+</div>
+<p>After saving, it will be possible to serve every MongoDB collection found in the database as a layer, by the layer configuration page.</p>
+<p>The default geometry can be defined by setting a geometry index on the desired geometry attribute in the MongoDB collection.</p>
+<p>As an example of the obtained output we will use the Stations use case. In the MongoDB collection we have the following document among the others being served:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>  <span class="p">{</span>
+ <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;$oid&quot;</span><span class="p">:</span> <span class="s2">&quot;58e5889ce4b02461ad5af080&quot;</span>
+ <span class="p">},</span>
+ <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;station 1&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;numericValue&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+ <span class="nt">&quot;contact&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;mail&quot;</span><span class="p">:</span> <span class="s2">&quot;station1@mail.com&quot;</span>
+ <span class="p">},</span>
+ <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span>
+     <span class="mi">50</span><span class="p">,</span>
+     <span class="mi">60</span>
+   <span class="p">],</span>
+   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Point&quot;</span>
+ <span class="p">},</span>
+ <span class="nt">&quot;measurements&quot;</span><span class="p">:</span> <span class="p">[</span>
+   <span class="p">{</span>
+     <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;temp&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;values&quot;</span><span class="p">:</span> <span class="p">[</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1482146800</span><span class="p">,</span>
+         <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">20</span>
+       <span class="p">}</span>
+     <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="p">{</span>
+     <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;wind&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;km/h&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;values&quot;</span><span class="p">:</span> <span class="p">[</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1482146833</span><span class="p">,</span>
+         <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">155</span>
+       <span class="p">}</span>
+     <span class="p">]</span>
+   <span class="p">}</span>
+ <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The GeoJSON output for that specific document will be the following feature:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;58e5889ce4b02461ad5af080&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span>
+     <span class="mi">50</span><span class="p">,</span>
+     <span class="mi">60</span>
+   <span class="p">]</span>
+ <span class="p">},</span>
+ <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;@featureType&quot;</span><span class="p">:</span> <span class="s2">&quot;stations&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;58e5889ce4b02461ad5af080&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;station 1&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;numericValue&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+   <span class="nt">&quot;contact&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;fid-3087ff95_17844d87c61_-7aad&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+     <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+       <span class="nt">&quot;@featureType&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+       <span class="nt">&quot;mail&quot;</span><span class="p">:</span> <span class="s2">&quot;station1@mail.com&quot;</span>
+     <span class="p">}</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;measurements&quot;</span><span class="p">:</span> <span class="p">[</span>
+     <span class="p">{</span>
+       <span class="nt">&quot;values&quot;</span><span class="p">:</span> <span class="p">[</span>
+         <span class="p">{</span>
+           <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+           <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1482146800</span>
+         <span class="p">}</span>
+       <span class="p">],</span>
+       <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;temp&quot;</span><span class="p">,</span>
+       <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+       <span class="nt">&quot;values&quot;</span><span class="p">:</span> <span class="p">[</span>
+         <span class="p">{</span>
+           <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">155</span><span class="p">,</span>
+           <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1482146833</span>
+         <span class="p">}</span>
+       <span class="p">],</span>
+       <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;wind&quot;</span><span class="p">,</span>
+       <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;km/h&quot;</span>
+     <span class="p">}</span>
+   <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As it is possible to see, the feature object is very close to the appearance of the corresponding MongoDB document.</p>
+<div class="section" id="simplified-property-access">
+<h2>Simplified Property Access<a class="headerlink" href="#simplified-property-access" title="Permalink to this headline">¶</a></h2>
+<p>Behind the scenes the module builds a complex feature schema on the fly automatically along with the complex features being served. Every array or object in the document is considered to be a nested feature. This might result in a hard time trying to foreseen the xpath needed to access a feature property for styling or filtering purpose, because the internal nested feature representation follows the GML object property model.</p>
+<p>To clarify this lets assume that we want to filter the stations features on a measurements value greater than 100.
+According to the above GeoJSON feature representation the whole filter will look like: <code class="docutils literal notranslate"><span class="pre">measurements.MeasurementsFeature.values.ValuesFeature.value</span> <span class="pre">&gt;</span> <span class="pre">100</span></code>.</p>
+<p>The property path needs to specify for each nested complex attribute the property name and the feature name. The former coincides with the original attribute name in the document, while the latter with that attribute name with the first letter upper cased and the <cite>Feature</cite> suffix.</p>
+<p>To avoid users needing to deal with this complexity, simplified property access support has been implemented. This allows referencing a property with a path that matches the GeoJSON output format or the document structure.</p>
+<p>The previously defined filter could then be: <code class="docutils literal notranslate"><span class="pre">measurements.values.value</span> <span class="pre">&gt;</span> <span class="pre">100</span></code>.</p>
+<p>As can be seen, the property path can be easily inferred both from the GeoJSON output and from the MongoDB document.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../install.html" title="previous chapter">Installing the Schemaless Mongo module</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../../smart-data-loader/index.html" title="next chapter">Smart Data Loader Extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">MongoDB Schemaless Support</a><ul>
+<li><a class="reference internal" href="#simplified-property-access">Simplified Property Access</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../install.html" title="previous chapter">Installing the Schemaless Mongo module</a></li>
+            <li>Next: <a href="../../smart-data-loader/index.html" title="next chapter">Smart Data Loader Extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/schemaless-features/schemaless-mongo/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interaction between user/group and role services &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Authentication" href="../auth/index.html" />
+    <link rel="prev" title="Role source and role calculation" href="rolesource.html" /> 
+  </head><body class="security/usergrouprole/interaction">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Security</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Role system</a> &raquo;</li>
+    <li>Interaction between user/group and role services</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../auth/index.html" title="Authentication" accesskey="N">Next</a></li>
+  <li>
+    <a href="rolesource.html" title="Role source and role calculation" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="interaction-between-user-group-and-role-services">
+<span id="security-rolesystem-interaction"></span><h1>Interaction between user/group and role services<a class="headerlink" href="#interaction-between-user-group-and-role-services" title="Permalink to this headline">¶</a></h1>
+<p>The following section describes the interaction between the <a class="reference internal" href="usergroupservices.html#security-rolesystem-usergroupservices"><span class="std std-ref">User/group services</span></a> and the <a class="reference internal" href="roleservices.html#security-rolesystem-roleservices"><span class="std std-ref">Role services</span></a>.</p>
+<div class="section" id="calculating-the-roles-of-a-user">
+<h2>Calculating the roles of a user<a class="headerlink" href="#calculating-the-roles-of-a-user" title="Permalink to this headline">¶</a></h2>
+<p>The diagram below illustrates how a user/group service and a role service interact to calculate user roles.</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/usergrouprole1.png" src="../../_images/usergrouprole1.png" />
+<p class="caption"><span class="caption-text"><em>User/group and role service interacting for role calculation</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>On fetching an enabled user from a user/group service, the roles(s) assigned to that user must be identified. The identification procedure is:</p>
+<ol class="arabic simple">
+<li><p>Fetch all enabled groups for the user. If a group is disabled, it is discarded.</p></li>
+<li><p>Fetch all roles associated with the user and add the roles to the result set.</p></li>
+<li><p>For each enabled group the user is a member of, fetch all roles associated with the group and add the roles to the result set.</p></li>
+<li><p>For each role in the result set, fetch all ancestor roles and add those roles to the result set.</p></li>
+<li><p>Personalize each role in the result set as required.</p></li>
+<li><p>If the result set contains the local admin role, add the role <code class="docutils literal notranslate"><span class="pre">ROLE_ADMINISTRATOR</span></code>.</p></li>
+<li><p>If the result set contains the local group admin role, add the role <code class="docutils literal notranslate"><span class="pre">ROLE_GROUP_ADMIN</span></code>.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Role personalization looks for role parameters (key/value pairs) for each role and checks if the user properties (key/value pairs) contain an identical key. If any matches are found, the value of the role parameter is replaced by the value of the user property.</p>
+</div>
+</div>
+<div class="section" id="authentication-of-user-credentials">
+<h2>Authentication of user credentials<a class="headerlink" href="#authentication-of-user-credentials" title="Permalink to this headline">¶</a></h2>
+<p>A user/group service is primarily used during authentication. An authentication provider in the <a class="reference internal" href="../auth/chain.html#security-auth-chain"><span class="std std-ref">Authentication chain</span></a> may use a user/group service to authenticate user credentials.</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/usergrouprole2.png" src="../../_images/usergrouprole2.png" />
+<p class="caption"><span class="caption-text"><em>Using a a user/group service for authentication</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="geoserver-defaults">
+<h2>GeoServer defaults<a class="headerlink" href="#geoserver-defaults" title="Permalink to this headline">¶</a></h2>
+<p>The following diagram illustrates the default user/group service, role service, and authentication provider in GeoServer:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/usergrouprole3.png" src="../../_images/usergrouprole3.png" />
+<p class="caption"><span class="caption-text"><em>Default GeoServer security configuration</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>Two authentication providers are configured—the <em>Root</em> provider and the <em>Username/password</em> provider. The <em>Root</em> provider authenticates for the GeoServer <a class="reference internal" href="../root.html#security-root"><span class="std std-ref">Root account</span></a> and does not use a user/group service. The <em>Username/password</em> provider is the default provider and relays username and password credentials to a user/group service.</p>
+<p>A single user/group service, which persist the user database as XML, is present. The database contains a single user named <code class="docutils literal notranslate"><span class="pre">admin</span></code> and no groups. Similarly, the role service persists the role database as XML. By default, this contains a single role named <code class="docutils literal notranslate"><span class="pre">ADMIN</span></code>, which is associated with the <code class="docutils literal notranslate"><span class="pre">admin</span></code> user. The <code class="docutils literal notranslate"><span class="pre">ADMIN</span></code> role is mapped to the <code class="docutils literal notranslate"><span class="pre">ROLE_ADMINISTRATOR</span></code> role and as a result, the <code class="docutils literal notranslate"><span class="pre">admin</span></code> user is associated with system administrator role during role calculation.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="rolesource.html" title="previous chapter">Role source and role calculation</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../auth/index.html" title="next chapter">Authentication</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Interaction between user/group and role services</a><ul>
+<li><a class="reference internal" href="#calculating-the-roles-of-a-user">Calculating the roles of a user</a></li>
+<li><a class="reference internal" href="#authentication-of-user-credentials">Authentication of user credentials</a></li>
+<li><a class="reference internal" href="#geoserver-defaults">GeoServer defaults</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="rolesource.html" title="previous chapter">Role source and role calculation</a></li>
+            <li>Next: <a href="../auth/index.html" title="next chapter">Authentication</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/usergrouprole/interaction.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Labeling &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="RasterSymbolizer" href="rastersymbolizer.html" />
+    <link rel="prev" title="TextSymbolizer" href="textsymbolizer.html" /> 
+  </head><body class="styling/sld/reference/labeling">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Reference</a> &raquo;</li>
+    <li>Labeling</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="rastersymbolizer.html" title="RasterSymbolizer" accesskey="N">Next</a></li>
+  <li>
+    <a href="textsymbolizer.html" title="TextSymbolizer" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="labeling">
+<span id="sld-reference-labeling"></span><h1>Labeling<a class="headerlink" href="#labeling" title="Permalink to this headline">¶</a></h1>
+<p>This section discusses the details of controlling label placement
+via the standard SLD options.
+It also describes a number of GeoServer enhanced options for label placement
+that provide better cartographic output.</p>
+<div class="section" id="labelplacement">
+<h2>LabelPlacement<a class="headerlink" href="#labelplacement" title="Permalink to this headline">¶</a></h2>
+<p>The SLD specification defines two alternative
+label placement strategies which can be used in the <code class="docutils literal notranslate"><span class="pre">&lt;LabelPlacement&gt;</span></code> element:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PointPlacement&gt;</span></code> places labels at a single point</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;LinePlacement&gt;</span></code> places labels along a line</p></li>
+</ul>
+</div>
+<div class="section" id="pointplacement">
+<h2>PointPlacement<a class="headerlink" href="#pointplacement" title="Permalink to this headline">¶</a></h2>
+<p>When <code class="docutils literal notranslate"><span class="pre">&lt;PointPlacement&gt;</span></code> is used the geometry is labelled at a single <strong>label point</strong>.
+For lines, this point lies at the middle of the visible portion of the line.
+For polygons, the point is the centroid of the visible portion of the polygon.
+The position of the label relative to the label point can be controlled by the following
+sub-elements:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Element</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;AnchorPoint&gt;</span></code></p></td>
+<td><p>Determines the placement of the label relative to the label point. Values given as decimals between 0-1.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;Displacement&gt;</span></code></p></td>
+<td><p>Offsets the label from the anchor point. Values given in pixels.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;Rotation&gt;</span></code></p></td>
+<td><p>Rotates the label clockwise by a given number of degrees.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The best way to explain these options is with examples.</p>
+<div class="section" id="anchorpoint">
+<h3>AnchorPoint<a class="headerlink" href="#anchorpoint" title="Permalink to this headline">¶</a></h3>
+<p>The anchor point determines where the label is placed relative to the label point.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;AnchorPoint&gt;</span>
+  <span class="nt">&lt;AnchorPointX&gt;</span>
+    0.5
+  <span class="nt">&lt;/AnchorPointX&gt;</span>
+  <span class="nt">&lt;AnchorPointY&gt;</span>
+    0.5
+  <span class="nt">&lt;/AnchorPointY&gt;</span>
+<span class="nt">&lt;/AnchorPoint&gt;</span>
+</pre></div>
+</div>
+<p>The anchor point values—listed here as (X, Y) ordered pairs—are specified relative to the bounding box of the label, with values from 0 to 1 inclusive. For example:</p>
+<ul class="simple">
+<li><p><em>(Default)</em> Bottom left of the box is (0, 0)</p></li>
+<li><p>Top right is (1, 1)</p></li>
+<li><p>Center is (0.5, 0.5)</p></li>
+</ul>
+<p>So to have the anchor location centered just below the label (label top-centered), use (0.5, 0):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;AnchorPoint&gt;</span>
+  <span class="nt">&lt;AnchorPointX&gt;</span>
+    0.5
+  <span class="nt">&lt;/AnchorPointX&gt;</span>
+  <span class="nt">&lt;AnchorPointY&gt;</span>
+    0
+  <span class="nt">&lt;/AnchorPointY&gt;</span>
+<span class="nt">&lt;/AnchorPoint&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../../../_images/label_bbox.png" src="../../../_images/label_bbox.png" />
+</div>
+<p>The following examples show how changing the anchor point affects the position of labels:</p>
+<div class="figure align-default" id="id1">
+<img alt="../../../_images/point_x0y0_5.png" src="../../../_images/point_x0y0_5.png" />
+<p class="caption"><span class="caption-text">(0, 0.5) places the label to the right of the label point</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id2">
+<img alt="../../../_images/point_x0_5y0_5.png" src="../../../_images/point_x0_5y0_5.png" />
+<p class="caption"><span class="caption-text">(0.5, 0.5) places the center of the label at the label point</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/point_x15y0_5.png" src="../../../_images/point_x15y0_5.png" />
+<p class="caption"><span class="caption-text">(1, 0.5) places the label to the left of the label point</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id4">
+<img alt="../../../_images/point_x0_5y0.png" src="../../../_images/point_x0_5y0.png" />
+<p class="caption"><span class="caption-text">(0.5, 0) places the label horizontally centered above the label point</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="displacement">
+<h3>Displacement<a class="headerlink" href="#displacement" title="Permalink to this headline">¶</a></h3>
+<p>Displacement allows fine control of the placement of the label.
+The displacement values offset the location of the label
+from the anchor point
+by a specified number of pixels.
+The element syntax is:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Displacement&gt;</span>
+  <span class="nt">&lt;DisplacementX&gt;</span>
+     10
+  <span class="nt">&lt;/DisplacementX&gt;</span>
+  <span class="nt">&lt;DisplacementY&gt;</span>
+      0
+  <span class="nt">&lt;/DisplacementY&gt;</span>
+<span class="nt">&lt;/Displacement&gt;</span>
+</pre></div>
+</div>
+<p>Examples:</p>
+<div class="figure align-center">
+<img alt="../../../_images/point_x0y0_5_displacex10.png" src="../../../_images/point_x0y0_5_displacex10.png" />
+</div>
+<p><em>Displacement of X=10 pixels (compare with default anchor point of (X=0, Y=0.5) shown above)</em></p>
+<div class="figure align-center">
+<img alt="../../../_images/point_x0y1_displacey10.png" src="../../../_images/point_x0y1_displacey10.png" />
+</div>
+<p><em>Displacement of Y=-10 pixels (compare with anchor point (X= 0.5, Y=1.0) - not shown)</em></p>
+</div>
+<div class="section" id="rotation">
+<h3>Rotation<a class="headerlink" href="#rotation" title="Permalink to this headline">¶</a></h3>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">&lt;Rotation&gt;</span></code> element specifies that labels should be rotated clockwise by a given number of degrees</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rotation&gt;</span>
+  45
+<span class="nt">&lt;/Rotation&gt;</span>
+</pre></div>
+</div>
+<p>The examples below show how the rotation interacts with anchor points and displacements.</p>
+<div class="figure align-default">
+<img alt="../../../_images/rot1.png" src="../../../_images/rot1.png" />
+</div>
+<p><em>45 degree rotation</em></p>
+<div class="figure align-default">
+<img alt="../../../_images/rot2.png" src="../../../_images/rot2.png" />
+</div>
+<p><em>45 degree rotation with anchor point (X=0.5, Y=0.5)</em></p>
+<div class="figure align-default">
+<img alt="../../../_images/rot3.png" src="../../../_images/rot3.png" />
+</div>
+<p><em>45 degree rotation with 40-pixel X displacement</em></p>
+<div class="figure align-default">
+<img alt="../../../_images/rot4.png" src="../../../_images/rot4.png" />
+</div>
+<p><em>45 degree rotation with 40-pixel Y displacement with anchor point (X=0.5, Y=0.5)</em></p>
+</div>
+</div>
+<div class="section" id="lineplacement">
+<h2>LinePlacement<a class="headerlink" href="#lineplacement" title="Permalink to this headline">¶</a></h2>
+<p>To label linear features (such as a road or river), the <code class="docutils literal notranslate"><span class="pre">&lt;LinePlacement&gt;</span></code> element can be specified.
+This indicates that the styler should determine the best placement and rotation for the labels
+along the lines.</p>
+<p>The standard SLD LinePlacement element provides one optional sub-element, <code class="docutils literal notranslate"><span class="pre">&lt;PerpendicularOffset&gt;</span></code>.
+GeoServer provides much more control over line label placement via vendor-specific options;
+see below for details.</p>
+<div class="section" id="perpendicularoffset">
+<h3>PerpendicularOffset<a class="headerlink" href="#perpendicularoffset" title="Permalink to this headline">¶</a></h3>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">&lt;PerpendicularOffset&gt;</span></code> element allows you to position a label above or below a line.
+(This is similar to the <code class="docutils literal notranslate"><span class="pre">&lt;DisplacementY&gt;</span></code> for label points described above.)
+The displacement value is specified in pixels.
+A positive value displaces upwards, a negative value downwards.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LabelPlacement&gt;</span>
+  <span class="nt">&lt;LinePlacement&gt;</span>
+    <span class="nt">&lt;PerpendicularOffset&gt;</span>
+       10
+    <span class="nt">&lt;/PerpendicularOffset&gt;</span>
+  <span class="nt">&lt;/LinePlacement&gt;</span>
+<span class="nt">&lt;/LabelPlacement&gt;</span>
+</pre></div>
+</div>
+<p>Examples:</p>
+<div class="figure align-default">
+<img alt="../../../_images/lp_1.png" src="../../../_images/lp_1.png" />
+</div>
+<p><em>PerpendicularOffset = 0 (default)</em></p>
+<div class="figure align-default">
+<img alt="../../../_images/lp_2.png" src="../../../_images/lp_2.png" />
+</div>
+<p><em>PerpendicularOffset = 10</em></p>
+</div>
+</div>
+<div class="section" id="composing-labels-from-multiple-attributes">
+<h2>Composing labels from multiple attributes<a class="headerlink" href="#composing-labels-from-multiple-attributes" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;Label&gt;</span></code> element in <cite>&lt;TextSymbolizer&gt;</cite> allows mixed content.
+This means its content can be a mixture of plain text and <a class="reference internal" href="pointsymbolizer.html#sld-reference-parameter-expressions"><span class="std std-ref">Filter Expressions</span></a>.
+The mix gets interepreted as a concatenation.
+You can leverage this to create complex labels out of multiple attributes.</p>
+<p>For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Label&gt;</span>
+  <span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_NAME<span class="nt">&lt;/ogc:PropertyName&gt;</span> (<span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_ABBR<span class="nt">&lt;/ogc:PropertyName&gt;</span>)
+<span class="nt">&lt;/Label&gt;</span>
+</pre></div>
+</div>
+<p>and you’ll get a label looking like <code class="docutils literal notranslate"><span class="pre">Texas</span> <span class="pre">(TX)</span></code>.</p>
+<p>If you need to add extra white space or newline, you’ll stumble into an XML oddity.
+The whitespace handling in the Label element is following a XML rule called “collapse”, in which all leading and trailing whitespaces have to be removed, whilst all whitespaces (and newlines) in the middle of the xml element are collapsed into a single whitespace.</p>
+<p>So, what if you need to insert a newline or a sequence of two or more spaces between your property names? Enter CDATA. CDATA is a special XML section that has to be returned to the interpreter as-is, without following any whitespace handling rule.
+So, for example, if you wanted to have the state abbreviation sitting on the next line you’d use the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Label&gt;</span>
+  <span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_NAME<span class="nt">&lt;/ogc:PropertyName&gt;</span><span class="cp">&lt;![CDATA[</span>
+<span class="cp">]]&gt;</span>(<span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_ABBR<span class="nt">&lt;/ogc:PropertyName&gt;</span>)
+<span class="nt">&lt;/Label&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="geoserver-enhanced-options">
+<h2>GeoServer Enhanced Options<a class="headerlink" href="#geoserver-enhanced-options" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer provides a number of label styling options as extensions to the SLD specification.
+Using these options gives more control over how the map looks,
+since the SLD standard isn’t expressive enough to provide all the options one might want.</p>
+<p>These options are specified as subelements of <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code>.</p>
+<div class="section" id="priority-labeling">
+<span id="labeling-priority"></span><h3>Priority Labeling<a class="headerlink" href="#priority-labeling" title="Permalink to this headline">¶</a></h3>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">&lt;Priority&gt;</span></code> element allows specifying label priority.
+This controls how conflicts (overlaps) between labels are resolved during rendering.
+The element content may be an <a class="reference internal" href="pointsymbolizer.html#sld-reference-parameter-expressions"><span class="std std-ref">expression</span></a>
+to retrieve or calculate a relative priority value for each feature in a layer.
+Alternatively, the content may be a constant value,
+to set the priority of a layer’s labels relative to other layers on a rendered map.</p>
+<p>The default priority for labels is 1000.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Standard SLD Conflict Resolution</strong></p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">&lt;Priority&gt;</span></code> element is not present, or if a group of labels all have the same priority,
+then standard SLD label conflict resolution is used.
+Under this strategy, the label to display out of a group of conflicting labels is chosen essentially at random.</p>
+</div>
+<p>For example, take the following dataset of cities:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">City</span> <span class="n">Name</span>   <span class="o">|</span> <span class="n">population</span>
+<span class="o">------------+------------</span>
+<span class="n">Yonkers</span>     <span class="o">|</span>     <span class="mi">197</span><span class="p">,</span><span class="mi">818</span>
+<span class="n">Jersey</span> <span class="n">City</span> <span class="o">|</span>     <span class="mi">237</span><span class="p">,</span><span class="mi">681</span>
+<span class="n">Newark</span>      <span class="o">|</span>     <span class="mi">280</span><span class="p">,</span><span class="mi">123</span>
+<span class="n">New</span> <span class="n">York</span>    <span class="o">|</span>   <span class="mi">8</span><span class="p">,</span><span class="mi">107</span><span class="p">,</span><span class="mi">916</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../../_images/priority_all.png" src="../../../_images/priority_all.png" />
+</div>
+<p><em>City locations (large scale map)</em></p>
+<p>More people know where New York City is than where Jersey City is.
+Thus we want to give the label “New York” priority so it will be visible when in conflict with (overlapping) “Jersey City”.
+To do this we include the following code in the <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Priority&gt;</span>
+    <span class="nt">&lt;ogc:PropertyName&gt;</span>population<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="nt">&lt;/Priority&gt;</span>
+</pre></div>
+</div>
+<p>This ensures that at small scales New York is labeled in preference to the less populous cities nearby:</p>
+<div class="figure align-center">
+<img alt="../../../_images/priority_some.png" src="../../../_images/priority_some.png" />
+</div>
+<p><em>City locations (small scale map)</em></p>
+<p>Without priority labeling, Jersey City could be labeled in preference to New York,
+making it difficult to interpret the map.
+At scales showing many features,
+priority labeling is essential to ensure that larger cities are more visible than smaller cities.</p>
+<div class="figure align-center">
+<img alt="../../../_images/priority_lots.png" src="../../../_images/priority_lots.png" />
+</div>
+</div>
+<div class="section" id="grouping-features-group">
+<span id="labeling-group"></span><h3>Grouping Features (group)<a class="headerlink" href="#grouping-features-group" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">group</span></code> option allows displaying a single label for multiple features
+in a logical group.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;group&quot;</span><span class="nt">&gt;</span>yes<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>Grouping works by collecting all features with the same label text,
+then choosing a representative geometry for the group,
+according to the following rules:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Geometry</strong></p></td>
+<td><p><strong>Label Point</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Point Set</p></td>
+<td><p>The first point inside the view rectangle is used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Line Set</p></td>
+<td><p>Lines are joined together, clipped to the view rectangle, and the longest path is used.</p></td>
+</tr>
+<tr class="row-even"><td><p>Polygon Set</p></td>
+<td><p>Polygons are clipped to the view rectangle, and the largest polygon is used.</p></td>
+</tr>
+</tbody>
+</table>
+<p>If desired the labeller can be forced to label every element in a group by specifying the <a class="reference internal" href="#labeling-all-group"><span class="std std-ref">labelAllGroup</span></a> option.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Be careful that the labels truly indicate features that should be grouped together.
+For example, grouping on city name alone might end up creating a group
+containing both <em>Paris</em> (France) and <em>Paris</em> (Texas).</p>
+</div>
+<p>Road data is a classic example to show why grouping is useful.
+It is usually desirable to display only a single label for all of “Main Street”,
+not a label for every block of “Main Street.”</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">group</span></code> option is off (the default), grouping is not performed and every block feature is labeled
+(subject to label deconfliction):</p>
+<div class="figure align-center">
+<img alt="../../../_images/group_not.png" src="../../../_images/group_not.png" />
+</div>
+<p>When the <code class="docutils literal notranslate"><span class="pre">group</span></code> option is used, geometries with the same label are grouped together
+and the label position is determined from the entire group.
+This produces a much less cluttered map:</p>
+<div class="figure align-center">
+<img alt="../../../_images/group_yes.png" src="../../../_images/group_yes.png" />
+</div>
+</div>
+<div class="section" id="labelallgroup">
+<span id="labeling-all-group"></span><h3>labelAllGroup<a class="headerlink" href="#labelallgroup" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">labelAllGroup</span></code> option can be used in conjunction with the <code class="docutils literal notranslate"><span class="pre">group</span></code> option (see <a class="reference internal" href="#labeling-group"><span class="std std-ref">Grouping Features (group)</span></a>).
+It causes <em>all</em> of the disjoint paths in a line group to be labeled, not just the longest one.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;labelAllGroup&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="overlapping-and-separating-labels-spacearound">
+<span id="labeling-space-around"></span><h3>Overlapping and Separating Labels (spaceAround)<a class="headerlink" href="#overlapping-and-separating-labels-spacearound" title="Permalink to this headline">¶</a></h3>
+<p>By default GeoServer will not render labels “on top of each other”.
+By using the <code class="docutils literal notranslate"><span class="pre">spaceAround</span></code> option you can either allow labels to overlap,
+or add extra space around labels.
+The value supplied for the option is a positive or negative size, in pixels.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;spaceAround&quot;</span><span class="nt">&gt;</span>10<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>Using the default value of 0, the bounding box of a label cannot overlap the bounding box of another label:</p>
+<div class="figure align-center">
+<img alt="../../../_images/space_0.png" src="../../../_images/space_0.png" />
+</div>
+<p>With a negative <code class="docutils literal notranslate"><span class="pre">spaceAround</span></code> value, overlapping is allowed:</p>
+<div class="figure align-center">
+<img alt="../../../_images/space_neg.png" src="../../../_images/space_neg.png" />
+</div>
+<p>With a positive <code class="docutils literal notranslate"><span class="pre">spaceAround</span></code> value of 10, each label is at least 20 pixels apart from others:</p>
+<div class="figure align-center">
+<img alt="../../../_images/space_10.png" src="../../../_images/space_10.png" />
+</div>
+<p>Positive <code class="docutils literal notranslate"><span class="pre">spaceAround</span></code> values actually provide twice the space that you might expect.
+This is because you can specify a spaceAround for one label as 5, and for another label (in another TextSymbolizer) as 3.
+The total distance between them is 8.
+Two labels in the first symbolizer (“5”) will each be 5 pixels apart from each other, for a total of 10 pixels.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Interaction between values in different TextSymbolizers</strong></p>
+<p>You can have multiple TextSymbolizers in your SLD file, each with a different <code class="docutils literal notranslate"><span class="pre">spaceAround</span></code> option. If all the <code class="docutils literal notranslate"><span class="pre">spaceAround</span></code> options are &gt;=0, this will do what you would normally expect. If you have negative values (‘allow overlap’) then these labels can overlap labels that you’ve said should not be overlapping. If you don’t like this behavior, it’s not difficult to change - feel free to submit a patch!</p>
+</div>
+</div>
+<div class="section" id="followline">
+<span id="labeling-follow-line"></span><h3>followLine<a class="headerlink" href="#followline" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">followLine</span></code> option forces a label to follow the curve of the line. To use this option add the following to the <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Straight Lines</strong></p>
+<p>You don’t need to use followLine for straight lines. GeoServer will automatically follow the orientation of the line. However in this case <code class="docutils literal notranslate"><span class="pre">followLine</span></code> can be used to ensure the text isn’t rendered if longer than the line.</p>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;followLine&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>It is required to use <code class="docutils literal notranslate"><span class="pre">&lt;LinePlacement&gt;</span></code> along with this option to ensure that labels are placed along lines:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LabelPlacement&gt;</span>
+  <span class="nt">&lt;LinePlacement/&gt;</span>
+<span class="nt">&lt;/LabelPlacement&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="maxdisplacement">
+<span id="labeling-max-displacement"></span><h3>maxDisplacement<a class="headerlink" href="#maxdisplacement" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">maxDisplacement</span></code> option controls the displacement of the label along a line, around a point and inside a polygon.</p>
+<p>For lines, normally GeoServer labels a line at its center point only. If this label conflicts with another one it may not be displayed at all. When this option is enabled the labeller will attempt to avoid conflic by using an alternate location within <strong>maxDisplacement</strong> pixels along the line from the pre-computed label point.</p>
+<p>If used in conjunction with <a class="reference internal" href="#labeling-repeat"><span class="std std-ref">repeat</span></a>, the value for <code class="docutils literal notranslate"><span class="pre">maxDisplacement</span></code> should always be <strong>lower</strong> than the value for <code class="docutils literal notranslate"><span class="pre">repeat</span></code>.</p>
+<p>For points this causes the renderer to start circling around the point in search of a empty stop to place the label, step by step increasing the size of the circle until the max displacement is reached. The same happens for polygons, around the polygon labelling point (normally the centroid).</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;maxDisplacement&quot;</span><span class="nt">&gt;</span>10<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="repeat">
+<span id="labeling-repeat"></span><h3>repeat<a class="headerlink" href="#repeat" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">repeat</span></code> option determines how often GeoServer displays labels along a line.
+Normally GeoServer labels each line only once, regardless of length.
+Specifying a positive value for this option makes the labeller attempt to draw the label every <strong>repeat</strong> pixels.
+For long or complex lines (such as contour lines) this makes labeling more informative.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;repeat&quot;</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="maxangledelta">
+<span id="labeling-max-angle-delta"></span><h3>maxAngleDelta<a class="headerlink" href="#maxangledelta" title="Permalink to this headline">¶</a></h3>
+<p>When used in conjunction with <a class="reference internal" href="#labeling-follow-line"><span class="std std-ref">followLine</span></a>, the <code class="docutils literal notranslate"><span class="pre">maxAngleDelta</span></code> option sets the maximum angle, in degrees, between two subsequent characters in a curved label. Large angles create either visually disconnected words or overlapping characters. It is advised not to use angles larger than 30.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;maxAngleDelta&quot;</span><span class="nt">&gt;</span>15<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="autowrap">
+<span id="labeling-autowrap"></span><h3>autoWrap<a class="headerlink" href="#autowrap" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">autoWrap</span></code> option wraps labels when they exceed the given width (in pixels).
+The size should be wide enough to accommodate the longest word, otherwise single words will be split over multiple lines.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;autoWrap&quot;</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../../../_images/label_autoWrap.png" src="../../../_images/label_autoWrap.png" />
+</div>
+<p><em>Labeling with autoWrap enabled</em></p>
+</div>
+<div class="section" id="forcelefttoright">
+<span id="labeling-force-left-to-right"></span><h3>forceLeftToRight<a class="headerlink" href="#forcelefttoright" title="Permalink to this headline">¶</a></h3>
+<p>The renderer tries to draw labels along lines so that the text is upright, for maximum legibility.
+This means a label may not follow the line orientation, but instead may be rotated 180° to display the text the right way up.
+In some cases altering the orientation of the label is not desired; for example, if the label is a directional arrow showing the orientation of the line.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">forceLeftToRight</span></code> option can be set to <code class="docutils literal notranslate"><span class="pre">false</span></code> to disable label flipping, making the label always follow the inherent orientation of the line being labelled:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;forceLeftToRight&quot;</span><span class="nt">&gt;</span>false<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="conflictresolution">
+<span id="labeling-conflict-resolution"></span><h3>conflictResolution<a class="headerlink" href="#conflictresolution" title="Permalink to this headline">¶</a></h3>
+<p>By default labels are subject to <strong>conflict resolution</strong>, meaning the renderer will not allow any label to overlap with a label that has been already drawn.
+Setting the <code class="docutils literal notranslate"><span class="pre">conflictResolution</span></code> option to <code class="docutils literal notranslate"><span class="pre">false</span></code> causes this label to bypass conflict resolution.
+This means the label will be drawn even if it overlaps with other labels, and other labels drawn after it may overlap it.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;conflictResolution&quot;</span><span class="nt">&gt;</span>false<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="goodnessoffit">
+<span id="labeling-goodness-of-fit"></span><h3>goodnessOfFit<a class="headerlink" href="#goodnessoffit" title="Permalink to this headline">¶</a></h3>
+<p>GeoServer will remove labels if they are a particularly bad fit for the geometry they are labeling.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Geometry</strong></p></td>
+<td><p><strong>Goodness of Fit Algorithm</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Point</p></td>
+<td><p>Always returns 1.0 since the label is at the point</p></td>
+</tr>
+<tr class="row-odd"><td><p>Line</p></td>
+<td><p>Always returns 1.0 since the label is always placed on the line.</p></td>
+</tr>
+<tr class="row-even"><td><p>Polygon</p></td>
+<td><p>The label is sampled approximately at every letter. The distance from these points to the polygon is determined and each sample votes based on how close it is to the polygon. (see LabelCacheDefault#goodnessOfFit())</p></td>
+</tr>
+</tbody>
+</table>
+<p>The default value is 0.5, but it can be modified using:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;goodnessOfFit&quot;</span><span class="nt">&gt;</span>0.3<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="polygonalign">
+<h3>polygonAlign<a class="headerlink" href="#polygonalign" title="Permalink to this headline">¶</a></h3>
+<p>GeoServer normally tries to place labels horizontally within a polygon, and gives up if the label position is busy or if the label does not fit enough in the polygon.
+This option allows GeoServer to try alternate rotations for the labels.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;polygonAlign&quot;</span><span class="nt">&gt;</span>mbr<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">manual</span></code></p></td>
+<td><p>The default value. Only a rotation manually specified in the <code class="docutils literal notranslate"><span class="pre">&lt;Rotation&gt;</span></code> tag will be used</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ortho</span></code></p></td>
+<td><p>If the label does not fit horizontally and the polygon is taller than wider then vertical alignment will also be tried</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mbr</span></code></p></td>
+<td><p>If the label does not fit horizontally the minimum bounding rectangle will be computed and a label aligned to it will be tried out as well</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="graphic-resize">
+<span id="labeling-graphic-resize"></span><h3>graphic-resize<a class="headerlink" href="#graphic-resize" title="Permalink to this headline">¶</a></h3>
+<p>When a <code class="docutils literal notranslate"><span class="pre">&lt;Graphic&gt;</span></code> is specified for a label by default it is displayed at its native size
+and aspect ratio.
+The <code class="docutils literal notranslate"><span class="pre">graphic-resize</span></code> option instructs the renderer to magnify or stretch the graphic to fully contain the text of the label.
+If this option is used the <code class="docutils literal notranslate"><span class="pre">graphic-margin</span></code> option may also be specified.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;graphic-resize&quot;</span><span class="nt">&gt;</span>stretch<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">none</span></code></p></td>
+<td><p>Graphic is displayed at its native size (default)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">proportional</span></code></p></td>
+<td><p>Graphic size is increased uniformly to contain the label text</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stretch</span></code></p></td>
+<td><p>Graphic size is increased anisotropically to contain the label text</p></td>
+</tr>
+</tbody>
+</table>
+<div class="no-border figure align-default">
+<img alt="../../../_images/label_graphic-resize_none.png" src="../../../_images/label_graphic-resize_none.png" />
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/label_graphic-resize_stretch.png" src="../../../_images/label_graphic-resize_stretch.png" />
+</div>
+<p><em>Labeling with a Graphic Mark “square” - L) at native size; R) with “graphic-resize”=stretch and “graphic-margin”=3</em></p>
+</div>
+<div class="section" id="graphic-margin">
+<span id="labeling-graphic-margin"></span><h3>graphic-margin<a class="headerlink" href="#graphic-margin" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">graphic-margin</span></code> options specifies a margin (in pixels) to use around the label text
+when the <code class="docutils literal notranslate"><span class="pre">graphic-resize</span></code> option is specified.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;graphic-margin&quot;</span><span class="nt">&gt;</span>margin<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="partials">
+<h3>partials<a class="headerlink" href="#partials" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">partials</span></code> options instructs the renderer to render labels that cross the map extent, which
+are normally not painted since there is no guarantee that a map put on the side of the current one
+(tiled rendering) will contain the other half of the label. By enabling “partials” the style editor
+takes responsibility for the other half being there (maybe because the label points have been
+placed by hand and are assured not to conflict with each other, at all zoom levels).</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;partials&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="underlinetext">
+<span id="labeling-underline-text"></span><h3>underlineText<a class="headerlink" href="#underlinetext" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">underlineText</span></code> option instruct the renderer to underline labels. The underline will work like a typical word processor text underline. The thickness and position of the underline will be defined by the font and color will be the same as the text. Spaces will also be underlined.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;underlineText&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>Some underlines examples:</p>
+<div class="figure align-center">
+<img alt="../../../_images/label_underlines.png" src="../../../_images/label_underlines.png" />
+</div>
+</div>
+<div class="section" id="strikethroughtext">
+<span id="labeling-strikethrough-text"></span><h3>strikethroughText<a class="headerlink" href="#strikethroughtext" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">strikethroughText</span></code> option instruct the renderer to strikethrough labels. The strikethrough will work like a typical word processor text strikethrough. The thickness and position of the line will be defined by the font and color will be the same as the text. Spaces will also be stroken.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;strikethroughText&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>Some strikethrough examples:</p>
+<div class="figure align-center">
+<img alt="../../../_images/label_strikethrough.png" src="../../../_images/label_strikethrough.png" />
+</div>
+</div>
+<div class="section" id="charspacing">
+<h3>charSpacing<a class="headerlink" href="#charspacing" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">charSpacing</span></code> option controls the amount of space between characters, a positive value increases it, a negative value shrinks it (and will eventually make characters overlap).
+The value is specified in pixels.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;charSpacing&quot;</span><span class="nt">&gt;</span>3<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>Example of adding 3 extra pixels of space between chars on road names:</p>
+<div class="figure align-center">
+<img alt="../../../_images/charSpacing.png" src="../../../_images/charSpacing.png" />
+</div>
+</div>
+<div class="section" id="wordspacing">
+<h3>wordSpacing<a class="headerlink" href="#wordspacing" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">wordSpacing</span></code> option controls the amount of space between words, for this option only positive values (or zero) are accepted.
+The value is specified in pixels.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;wordSpacing&quot;</span><span class="nt">&gt;</span>5<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>Example of adding 5 extra pixels of space between words on road names:</p>
+<div class="figure align-center">
+<img alt="../../../_images/wordSpacing.png" src="../../../_images/wordSpacing.png" />
+</div>
+</div>
+<div class="section" id="displacementmode">
+<h3>displacementMode<a class="headerlink" href="#displacementmode" title="Permalink to this headline">¶</a></h3>
+<p>Comma separated list of label displacement directions for point/polygon labels (used along with maxDisplacement).
+The indicated directions will be tried in turn.
+Valid values are cardinal directions abbreviations, in particular, <code class="docutils literal notranslate"><span class="pre">N,</span> <span class="pre">W,</span> <span class="pre">E,</span> <span class="pre">S,</span> <span class="pre">NW,</span> <span class="pre">NE,</span> <span class="pre">SW,</span> <span class="pre">SE</span></code>.</p>
+<p>The following example sets the typical “diagonal displacement” typically used for points:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;displacementMode&quot;</span><span class="nt">&gt;</span>NE, NW, SW, SE<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>While this one allows displacement only in the vertical direction:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;displacementMode&quot;</span><span class="nt">&gt;</span>N, S<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="textsymbolizer.html" title="previous chapter">TextSymbolizer</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="rastersymbolizer.html" title="next chapter">RasterSymbolizer</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Labeling</a><ul>
+<li><a class="reference internal" href="#labelplacement">LabelPlacement</a></li>
+<li><a class="reference internal" href="#pointplacement">PointPlacement</a><ul>
+<li><a class="reference internal" href="#anchorpoint">AnchorPoint</a></li>
+<li><a class="reference internal" href="#displacement">Displacement</a></li>
+<li><a class="reference internal" href="#rotation">Rotation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lineplacement">LinePlacement</a><ul>
+<li><a class="reference internal" href="#perpendicularoffset">PerpendicularOffset</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#composing-labels-from-multiple-attributes">Composing labels from multiple attributes</a></li>
+<li><a class="reference internal" href="#geoserver-enhanced-options">GeoServer Enhanced Options</a><ul>
+<li><a class="reference internal" href="#priority-labeling">Priority Labeling</a></li>
+<li><a class="reference internal" href="#grouping-features-group">Grouping Features (group)</a></li>
+<li><a class="reference internal" href="#labelallgroup">labelAllGroup</a></li>
+<li><a class="reference internal" href="#overlapping-and-separating-labels-spacearound">Overlapping and Separating Labels (spaceAround)</a></li>
+<li><a class="reference internal" href="#followline">followLine</a></li>
+<li><a class="reference internal" href="#maxdisplacement">maxDisplacement</a></li>
+<li><a class="reference internal" href="#repeat">repeat</a></li>
+<li><a class="reference internal" href="#maxangledelta">maxAngleDelta</a></li>
+<li><a class="reference internal" href="#autowrap">autoWrap</a></li>
+<li><a class="reference internal" href="#forcelefttoright">forceLeftToRight</a></li>
+<li><a class="reference internal" href="#conflictresolution">conflictResolution</a></li>
+<li><a class="reference internal" href="#goodnessoffit">goodnessOfFit</a></li>
+<li><a class="reference internal" href="#polygonalign">polygonAlign</a></li>
+<li><a class="reference internal" href="#graphic-resize">graphic-resize</a></li>
+<li><a class="reference internal" href="#graphic-margin">graphic-margin</a></li>
+<li><a class="reference internal" href="#partials">partials</a></li>
+<li><a class="reference internal" href="#underlinetext">underlineText</a></li>
+<li><a class="reference internal" href="#strikethroughtext">strikethroughText</a></li>
+<li><a class="reference internal" href="#charspacing">charSpacing</a></li>
+<li><a class="reference internal" href="#wordspacing">wordSpacing</a></li>
+<li><a class="reference internal" href="#displacementmode">displacementMode</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="textsymbolizer.html" title="previous chapter">TextSymbolizer</a></li>
+            <li>Next: <a href="rastersymbolizer.html" title="next chapter">RasterSymbolizer</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/reference/labeling.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

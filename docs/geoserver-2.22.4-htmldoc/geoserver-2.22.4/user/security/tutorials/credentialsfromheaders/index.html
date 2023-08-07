@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuring Apache HTTPD Session Integration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Authentication with CAS" href="../cas/index.html" />
+    <link rel="prev" title="Configuring HTTP Header Proxy Authentication" href="../httpheaderproxy/index.html" /> 
+  </head><body class="security/tutorials/credentialsfromheaders/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Security</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Configuring Apache HTTPD Session Integration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../cas/index.html" title="Authentication with CAS" accesskey="N">Next</a></li>
+  <li>
+    <a href="../httpheaderproxy/index.html" title="Configuring HTTP Header Proxy Authentication" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="configuring-apache-httpd-session-integration">
+<span id="security-tutorials-credentialsfromheaders"></span><h1>Configuring Apache HTTPD Session Integration<a class="headerlink" href="#configuring-apache-httpd-session-integration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>When using Apache HTTPD as a proxy frontend for GeoServer, it is possible to share
+authentication with a proper configuration of both.</p>
+<p>This requires enabling Session for the GeoServer location in Apache HTTPD and adding
+a custom Request Header with the session content, so that the GeoServer security system
+can receive user credentials and use them to authenticate the user with its internal
+filters.</p>
+<p>To properly parse the received credentials we need to use the <cite>Credentials From Request Headers</cite>
+Authentication Filter.</p>
+<p>Please note that the header containing the password is not sent back and forth to the
+user browser, but only from Apache HTTPD to GeoServer, so the password is not sent in
+clear through the public network.</p>
+<p>This tutorial shows how to configure GeoServer to read user credentials
+from the Apache HTTPD Session and use them for authentication purposes.</p>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial uses the <a class="reference external" href="http://curl.haxx.se/">curl</a> utility to issue HTTP
+request that test authentication. Install curl before proceeding.</p>
+</div>
+<div class="section" id="configure-the-credentials-from-request-headers-filter">
+<h2>Configure the Credentials From Request Headers filter<a class="headerlink" href="#configure-the-credentials-from-request-headers-filter" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Start GeoServer and login to the web admin interface as the <code class="docutils literal notranslate"><span class="pre">admin</span></code> user.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Authentication</span></code> link located under the <code class="docutils literal notranslate"><span class="pre">Security</span></code> section of
+the navigation sidebar.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/digest1.jpg" src="../../../_images/digest1.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Scroll down to the <code class="docutils literal notranslate"><span class="pre">Authentication</span> <span class="pre">Filters</span></code> panel and click the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">new</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/digest2.jpg" src="../../../_images/digest2.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Credentials</span> <span class="pre">From</span> <span class="pre">Headers</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/digest3.jpg" src="../../../_images/digest3.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Fill in the fields of the settings form as follows:</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Name</span></code> to “apachessesion”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Username</span> <span class="pre">Header</span></code> to “X-Credentials”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Regular</span> <span class="pre">Expression</span> <span class="pre">for</span> <span class="pre">Username</span></code> to “private-user=([^&amp;]*)”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Password</span> <span class="pre">Header</span></code> to “X-Credentials”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Regular</span> <span class="pre">Expression</span> <span class="pre">for</span> <span class="pre">Password</span></code> to “private-pw=([^&amp;]*)”</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../../_images/digest4.jpg" src="../../../_images/digest4.jpg" />
+</div>
+</li>
+<li><p>Save.</p></li>
+<li><p>Back on the authentication page scroll down to the <code class="docutils literal notranslate"><span class="pre">Filter</span> <span class="pre">Chains</span></code> panel.</p></li>
+<li><p>Click on “default” in the chain grid.</p></li>
+<li><p>Scroll down and remove all filters from the <code class="docutils literal notranslate"><span class="pre">Selected</span></code> list and add the <code class="docutils literal notranslate"><span class="pre">apachessesion</span></code> filter.</p>
+<div class="figure align-center">
+<img alt="../../../_images/digest5.jpg" src="../../../_images/digest5.jpg" />
+</div>
+</li>
+<li><p>Close.</p></li>
+<li><p>Save.</p></li>
+</ol>
+</div>
+<div class="section" id="test-a-login">
+<h2>Test a login<a class="headerlink" href="#test-a-login" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Execute the following curl command (with a wrong password):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;X-Credentials: private-user=admin&amp;private-pw=wrong&quot;</span> <span class="s2">&quot;http://localhost:8080/geoserver/wms?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities&quot;</span>
+</pre></div>
+</div>
+<p>The result should be a 403 response signaling that access is denied. The output
+should look something like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>* About to connect() to localhost port 8080 (#0)
+*   Trying ::1... connected
+&gt; GET /geoserver/wfs?request=getcapabilities HTTP/1.1
+&gt; User-Agent: curl/7.22.0 (x86_64-pc-linux-gnu) libcurl/7.22.0 OpenSSL/1.0.1 zlib/1.2.3.4 libidn/1.23 librtmp/2.3
+&gt; Host: localhost:8080
+&gt; Accept: */*
+&gt;
+&lt; HTTP/1.1 403 Access Denied
+&lt; Content-Type: text/html; charset=iso-8859-1
+&lt; Content-Length: 1407
+&lt; Server: Jetty(6.1.8)
+&lt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=ISO-8859-1&quot;/&gt;
+&lt;title&gt;Error 403 Access Denied&lt;/title&gt;
+&lt;/head&gt;
+...
+</pre></div>
+</div>
+</li>
+<li><p>Execute the same command but specify the right password.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;X-Credentials: private-user=admin&amp;private-pw=geoserver&quot;</span> <span class="s2">&quot;http://localhost:8080/geoserver/wms?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities&quot;</span>
+</pre></div>
+</div>
+<p>The result should be a successful authentication and contain the normal WMS capabilities response.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="configure-apache-httpd-to-forward-an-header-with-authentication-credentials">
+<h2>Configure Apache HTTPD to forward an Header with authentication credentials<a class="headerlink" href="#configure-apache-httpd-to-forward-an-header-with-authentication-credentials" title="Permalink to this headline">¶</a></h2>
+<p>This can be done with an HTTPD configuration that looks like the following:</p>
+<blockquote>
+<div><div class="highlight-apacheconf notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Location</span>  <span class="s">/geoserver</span><span class="nt">&gt;</span>
+        <span class="nb">Session</span> <span class="k">On</span>
+        <span class="nb">SessionEnv</span> <span class="k">On</span>
+        <span class="nb">SessionHeader</span> X-Replace-Session
+        <span class="nb">SessionCookieName</span> session path=/
+        <span class="nb">SessionCryptoPassphrase</span> secret
+        <span class="nb">RequestHeader</span> set X-Credentials <span class="s2">&quot;%{HTTP_SESSION}e&quot;</span>
+<span class="nt">&lt;/Location&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>This configuration adds a new <cite>X-Credentials</cite> Request Header to each GeoServer request.
+The request header will contain the HTTPD Session information in a special format.</p>
+<p>An example of the Session content is the following:</p>
+<blockquote>
+<div><p>X-Credentials: private-user=admin&amp;private-pw=geoserver</p>
+</div></blockquote>
+<p>As you can see it contains both the username and password of the user, so the data can
+be used to authenticate the user in GeoServer.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../httpheaderproxy/index.html" title="previous chapter">Configuring HTTP Header Proxy Authentication</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../cas/index.html" title="next chapter">Authentication with CAS</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Configuring Apache HTTPD Session Integration</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#configure-the-credentials-from-request-headers-filter">Configure the Credentials From Request Headers filter</a></li>
+<li><a class="reference internal" href="#test-a-login">Test a login</a></li>
+<li><a class="reference internal" href="#configure-apache-httpd-to-forward-an-header-with-authentication-credentials">Configure Apache HTTPD to forward an Header with authentication credentials</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../httpheaderproxy/index.html" title="previous chapter">Configuring HTTP Header Proxy Authentication</a></li>
+            <li>Next: <a href="../cas/index.html" title="next chapter">Authentication with CAS</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/tutorials/credentialsfromheaders/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

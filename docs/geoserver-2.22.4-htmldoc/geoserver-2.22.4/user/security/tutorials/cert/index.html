@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuring X.509 Certificate Authentication &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Configuring J2EE Authentication" href="../j2ee/index.html" />
+    <link rel="prev" title="Configuring Digest Authentication" href="../digest/index.html" /> 
+  </head><body class="security/tutorials/cert/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Security</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Configuring X.509 Certificate Authentication</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../j2ee/index.html" title="Configuring J2EE Authentication" accesskey="N">Next</a></li>
+  <li>
+    <a href="../digest/index.html" title="Configuring Digest Authentication" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="configuring-x-509-certificate-authentication">
+<span id="security-tutorials-cert"></span><h1>Configuring X.509 Certificate Authentication<a class="headerlink" href="#configuring-x-509-certificate-authentication" title="Permalink to this headline">¶</a></h1>
+<p>Certificate authentication involves the usage of public/private keys to identify oneself. This represents a much more secure alternative to basic username and password schemes.</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/X.509">X.509</a> is a well defined standard for the format of public key certificates. This tutorial walks through the process of setting up X.509 certificate authentication.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial assumes the following:</p>
+<ul class="simple">
+<li><p>A web browser that supports the usage of client certificates for authentication, also referred to as “two-way SSL”. This tutorial uses <strong>Firefox</strong>.</p></li>
+<li><p>An SSL-capable servlet container. This tutorial uses <strong>Tomcat</strong>.</p></li>
+<li><p>GeoServer is deployed in Tomcat.</p></li>
+</ul>
+</div>
+<div class="section" id="configure-the-user-group-service">
+<h2>Configure the user/group service<a class="headerlink" href="#configure-the-user-group-service" title="Permalink to this headline">¶</a></h2>
+<p>Users authenticated via a X.509 certificate must be configured in GeoServer. For this a new user/group service will be added.</p>
+<ol class="arabic">
+<li><p>Login to the web admin interface as the <code class="docutils literal notranslate"><span class="pre">admin</span></code> user.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Users,</span> <span class="pre">Groups,</span> <span class="pre">and</span> <span class="pre">Roles</span></code> link located under the <code class="docutils literal notranslate"><span class="pre">Security</span></code> section of
+the navigation sidebar.</p>
+<div class="figure align-default">
+<img alt="../../../_images/cert1.jpg" src="../../../_images/cert1.jpg" />
+</div>
+</li>
+<li><p>Scroll down to the <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Group</span> <span class="pre">Services</span></code> panel and click the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">new</span></code> link.</p></li>
+<li><p>Create a new user/group service named <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">cert</kbd>-<kbd class="kbd docutils literal notranslate">ugs</kbd></kbd> and fill out the settings form as follows:</p>
+<ul class="simple">
+<li><p>Set <span class="guilabel">Password encryption</span> to <kbd class="kbd docutils literal notranslate">Empty</kbd> since users will not authenticate via password.</p></li>
+<li><p>Set <span class="guilabel">Password policy</span> to <kbd class="kbd docutils literal notranslate">default</kbd>.</p></li>
+</ul>
+<div class="figure align-default">
+<img alt="../../../_images/cert2.jpg" src="../../../_images/cert2.jpg" />
+</div>
+</li>
+<li><p>Click <span class="guilabel">Save</span>.</p></li>
+<li><p>Back on the <code class="docutils literal notranslate"><span class="pre">Users,</span> <span class="pre">Groups,</span> <span class="pre">and</span> <span class="pre">Roles</span></code> page, click the <span class="guilabel">cert-ugs</span> link.</p>
+<div class="figure align-default">
+<img alt="../../../_images/cert3.jpg" src="../../../_images/cert3.jpg" />
+</div>
+</li>
+<li><p>Select the <span class="guilabel">Users</span> tab and click the <span class="guilabel">Add new user</span> link.</p>
+<div class="figure align-default">
+<img alt="../../../_images/cert4.jpg" src="../../../_images/cert4.jpg" />
+</div>
+</li>
+<li><p>Add a new user named <kbd class="kbd docutils literal notranslate">rod</kbd> the and assign the <code class="docutils literal notranslate"><span class="pre">ADMIN</span></code> role.</p>
+<div class="figure align-default">
+<img alt="../../../_images/cert5.jpg" src="../../../_images/cert5.jpg" />
+</div>
+</li>
+<li><p>Click <span class="guilabel">Save</span>.</p></li>
+<li><p>Click the <span class="guilabel">Authentication</span> link located under the <span class="guilabel">Security</span> section of the navigation sidebar.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../../_images/cert6.jpg" src="../../../_images/cert6.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Scroll down to the <span class="guilabel">Authentication Filters</span> panel and click the <span class="guilabel">Add new</span> link.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../../_images/cert7.jpg" src="../../../_images/cert7.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click the <span class="guilabel">X.509</span> link and fill out form as follows:</p>
+<ul class="simple">
+<li><p>Set <span class="guilabel">Name</span> to “cert”</p></li>
+<li><p>Set <span class="guilabel">Role source</span> to <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">User</kbd> <kbd class="kbd docutils literal notranslate">group</kbd> <kbd class="kbd docutils literal notranslate">service</kbd></kbd> and set the associated drop-down to <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">cert</kbd>-<kbd class="kbd docutils literal notranslate">ugs</kbd></kbd></p></li>
+</ul>
+<div class="figure align-default">
+<img alt="../../../_images/cert8.jpg" src="../../../_images/cert8.jpg" />
+</div>
+</li>
+<li><p>Click <span class="guilabel">Save</span>.</p></li>
+<li><p>Back on the authentication page, scroll down to the <span class="guilabel">Filter Chains</span> panel.</p></li>
+<li><p>Click <span class="guilabel">web</span> in the <span class="guilabel">Name</span> column.</p></li>
+<li><p>Select the <span class="guilabel">cert</span> filter and position it after the <span class="guilabel">rememberme</span> filter.</p>
+<div class="figure align-default">
+<img alt="../../../_images/cert9.jpg" src="../../../_images/cert9.jpg" />
+</div>
+</li>
+<li><p>Click <span class="guilabel">Close</span>.</p></li>
+<li><p>You will be returned to the previous page. Click <span class="guilabel">Save</span>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This last change requires both <span class="guilabel">Close</span> and then <span class="guilabel">Save</span> to be clicked. You may wish to return to the <span class="guilabel">web</span> dialog to verify that the change was made.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="download-sample-certificate-files">
+<h2>Download sample certificate files<a class="headerlink" href="#download-sample-certificate-files" title="Permalink to this headline">¶</a></h2>
+<p>Rather than demonstrate how to create or obtain valid certificates, which is beyond the scope of this tutorial, sample files available as part of the spring security <a class="reference external" href="https://github.com/SpringSource/spring-security/tree/master/samples/certificates">sample applications</a> will be used.</p>
+<p>Download and unpack the <a class="reference download internal" download="" href="../../../_downloads/142f1e2837639d2011c5423726bb10f3/sample_certs.zip"><code class="xref download docutils literal notranslate"><span class="pre">sample</span> <span class="pre">certificate</span> <span class="pre">files</span></code></a>. This archive contains the following files:</p>
+<ul class="simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">ca.pem</span></code> is the certificate authority (CA) certificate issued by the “Spring Security Test CA” certificate authority. This file is used to sign the server and client certificates.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">server.jks</span></code> is the Java keystore containing the server certificate and private key used by Tomcat and presented to the user during the setup of the SSL connection.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">rod.p12</span></code> contains the client certificate / key combination used to perform client authentication via the web browser.</p></li>
+</ul>
+</div>
+<div class="section" id="configure-tomcat-for-ssl">
+<h2>Configure Tomcat for SSL<a class="headerlink" href="#configure-tomcat-for-ssl" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Copy the <code class="file docutils literal notranslate"><span class="pre">server.jks</span></code> file into the <code class="file docutils literal notranslate"><span class="pre">conf</span></code> directory under the root of the Tomcat installation.</p></li>
+<li><p>Edit the Tomcat <code class="file docutils literal notranslate"><span class="pre">conf/server.xml</span></code> and add an SSL connector:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Connector</span> <span class="na">port=</span><span class="s">&quot;8443&quot;</span> <span class="na">protocol=</span><span class="s">&quot;HTTP/1.1&quot;</span> <span class="na">SSLEnabled=</span><span class="s">&quot;true&quot;</span> <span class="na">scheme=</span><span class="s">&quot;https&quot;</span> <span class="na">secure=</span><span class="s">&quot;true&quot;</span>
+     <span class="na">clientAuth=</span><span class="s">&quot;true&quot;</span> <span class="na">sslProtocol=</span><span class="s">&quot;TLS&quot;</span>
+     <span class="na">keystoreFile=</span><span class="s">&quot;${catalina.home}/conf/server.jks&quot;</span>
+     <span class="na">keystoreType=</span><span class="s">&quot;JKS&quot;</span> <span class="na">keystorePass=</span><span class="s">&quot;password&quot;</span>
+     <span class="na">truststoreFile=</span><span class="s">&quot;${catalina.home}/conf/server.jks&quot;</span>
+     <span class="na">truststoreType=</span><span class="s">&quot;JKS&quot;</span> <span class="na">truststorePass=</span><span class="s">&quot;password&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>This enables SSL on port 8443.</p>
+</li>
+<li><p>By default, Tomcat has APR enabled. To disable it so the above configuration can work, remove or comment out the following line in the server.xml configuration file</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Listener</span> <span class="na">className=</span><span class="s">&quot;org.apache.catalina.core.AprLifecycleListener&quot;</span> <span class="na">SSLEngine=</span><span class="s">&quot;on&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Restart Tomcat.</p></li>
+</ol>
+</div>
+<div class="section" id="install-the-client-certificate">
+<h2>Install the client certificate<a class="headerlink" href="#install-the-client-certificate" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>In Firefox, select <span class="guilabel">Preferences</span> (or <span class="menuselection">Tools ‣ Options</span>) and navigate to the <span class="guilabel">Advanced</span> panel.</p></li>
+<li><p>Select the <span class="guilabel">Encryption</span> tab (or the <span class="guilabel">Certificates</span> tab, depending on your version) and click the <span class="guilabel">View Certificates</span> button.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../../_images/cert10.jpg" src="../../../_images/cert10.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>On the <span class="guilabel">Your Certificates</span> panel click the <span class="guilabel">Import</span> button and select the <code class="file docutils literal notranslate"><span class="pre">rod.p12</span></code> file.</p></li>
+<li><p>When prompted enter in the password <kbd class="kbd docutils literal notranslate">password</kbd>.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../../_images/cert11.jpg" src="../../../_images/cert11.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click <span class="guilabel">OK</span> and close the Firefox Preferences.</p></li>
+</ol>
+</div>
+<div class="section" id="test-certificate-login">
+<h2>Test certificate login<a class="headerlink" href="#test-certificate-login" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Navigate to the GeoServer admin on port “8443” using HTTPS: <a class="reference external" href="https://localhost:8443/geoserver/web">https://localhost:8443/geoserver/web</a></p></li>
+<li><p>You will be prompted for a certificate. Select the <span class="guilabel">rod</span> certificate for identification.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../../_images/cert12.jpg" src="../../../_images/cert12.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>When warned about the self-signed server certificate, click <span class="guilabel">Add Exception</span> to add a security exception.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../../_images/cert13.jpg" src="../../../_images/cert13.jpg" />
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>The result is that the user <code class="docutils literal notranslate"><span class="pre">rod</span></code> is now logged into the GeoServer admin interface.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../../_images/cert14.jpg" src="../../../_images/cert14.jpg" />
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Starting with version 31, Firefox implements a new mechanism for using certificates, which will cause a <em>Issuer certificate is invalid error (sec_error_ca_cert_invalid)</em> error when trying to use a self-signed repository such as the one proposed. To avoid that, you can disable this mechanism by browsing to <strong>about:config</strong> and setting the <strong>security.use_mozillapkix_verification</strong> parameter to <strong>false</strong>.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../../_images/mozilla_pki.jpg" src="../../../_images/mozilla_pki.jpg" />
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../digest/index.html" title="previous chapter">Configuring Digest Authentication</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../j2ee/index.html" title="next chapter">Configuring J2EE Authentication</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Configuring X.509 Certificate Authentication</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#configure-the-user-group-service">Configure the user/group service</a></li>
+<li><a class="reference internal" href="#download-sample-certificate-files">Download sample certificate files</a></li>
+<li><a class="reference internal" href="#configure-tomcat-for-ssl">Configure Tomcat for SSL</a></li>
+<li><a class="reference internal" href="#install-the-client-certificate">Install the client certificate</a></li>
+<li><a class="reference internal" href="#test-certificate-login">Test certificate login</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../digest/index.html" title="previous chapter">Configuring Digest Authentication</a></li>
+            <li>Next: <a href="../j2ee/index.html" title="next chapter">Configuring J2EE Authentication</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/tutorials/cert/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

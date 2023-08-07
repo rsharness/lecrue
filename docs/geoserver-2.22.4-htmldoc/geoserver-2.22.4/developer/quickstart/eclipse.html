@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maven Eclipse Plugin Quickstart &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Eclipse M2 Quickstart" href="eclipse_m2.html" />
+    <link rel="prev" title="IntelliJ QuickStart" href="intellij.html" /> 
+  </head><body class="quickstart/eclipse">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Quickstart</a> &raquo;</li>
+    <li>Maven Eclipse Plugin Quickstart</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="eclipse_m2.html" title="Eclipse M2 Quickstart" accesskey="N">Next</a></li>
+  <li>
+    <a href="intellij.html" title="IntelliJ QuickStart" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="maven-eclipse-plugin-quickstart">
+<span id="quickstart-eclipse"></span><h1>Maven Eclipse Plugin Quickstart<a class="headerlink" href="#maven-eclipse-plugin-quickstart" title="Permalink to this headline">¶</a></h1>
+<p>This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the <a class="reference internal" href="../eclipse-guide/index.html#eclipse-guide"><span class="std std-ref">Eclipse Guide</span></a>.</p>
+<div class="section" id="check-out-source-code">
+<h2>Check out source code<a class="headerlink" href="#check-out-source-code" title="Permalink to this headline">¶</a></h2>
+<p>Check out the source code from the git repository.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">geoserver</span><span class="o">.</span><span class="n">git</span> <span class="n">geoserver</span>
+</pre></div>
+</div>
+<p>To list the available branches.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">branch</span>
+   <span class="mf">2.15</span><span class="o">.</span><span class="n">x</span>
+   <span class="mf">2.16</span><span class="o">.</span><span class="n">x</span>
+ <span class="o">*</span> <span class="n">main</span>
+</pre></div>
+</div>
+<p>Choose <code class="docutils literal notranslate"><span class="pre">main</span></code> for the latest development.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+</pre></div>
+</div>
+<p>Or chose a stable branch for versions less likely to change often:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="mf">2.16</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+<p>In this example we will pretend that your source code is in a directory
+called <code class="docutils literal notranslate"><span class="pre">geoserver</span></code>, but a more descriptive name is recommended.</p>
+</div>
+<div class="section" id="generate-eclipse-project-files-with-maven">
+<h2>Generate Eclipse project files with Maven<a class="headerlink" href="#generate-eclipse-project-files-with-maven" title="Permalink to this headline">¶</a></h2>
+<p>Generate the eclipse <code class="docutils literal notranslate"><span class="pre">.project</span></code> and  <code class="docutils literal notranslate"><span class="pre">.classpath</span></code> files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">eclipse</span><span class="p">:</span><span class="n">eclipse</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="import-modules-into-eclipse">
+<h2>Import modules into Eclipse<a class="headerlink" href="#import-modules-into-eclipse" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Run the Eclipse IDE</p></li>
+<li><p>Open the Eclipse <code class="docutils literal notranslate"><span class="pre">Preferences</span></code></p></li>
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">Java</span></code>, <code class="docutils literal notranslate"><span class="pre">Build</span> <span class="pre">Path</span></code>, <code class="docutils literal notranslate"><span class="pre">Classpath</span> <span class="pre">Variables</span></code> and click
+<code class="docutils literal notranslate"><span class="pre">New...</span></code></p>
+<img alt="../_images/eclipse_m2repo1.jpg" src="../_images/eclipse_m2repo1.jpg" />
+</li>
+<li><p>Create a classpath variable named “M2_REPO” and set the value to the location
+of the local Maven repository, and click <code class="docutils literal notranslate"><span class="pre">Ok</span></code></p>
+<img alt="../_images/eclipse_m2repo2.jpg" src="../_images/eclipse_m2repo2.jpg" />
+</li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Ok</span></code> to apply the new Eclipse preferences</p></li>
+<li><p>Right-click in the <code class="docutils literal notranslate"><span class="pre">Package</span> <span class="pre">Explorer</span></code> and click <code class="docutils literal notranslate"><span class="pre">Import...</span></code></p>
+<a class="reference internal image-reference" href="../_images/eclipse_import1.jpg"><img alt="../_images/eclipse_import1.jpg" src="../_images/eclipse_import1.jpg" style="width: 300px;" /></a>
+</li>
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">Existing</span> <span class="pre">Projects</span> <span class="pre">into</span> <span class="pre">Workspace</span></code> and click <code class="docutils literal notranslate"><span class="pre">Next</span></code></p>
+<a class="reference internal image-reference" href="../_images/eclipse_import2.jpg"><img alt="../_images/eclipse_import2.jpg" src="../_images/eclipse_import2.jpg" style="width: 400px;" /></a>
+</li>
+<li><p>Navigate to the <code class="docutils literal notranslate"><span class="pre">geoserver/src</span></code> directory</p></li>
+<li><p>Ensure all modules are selected and click <code class="docutils literal notranslate"><span class="pre">Finish</span></code></p>
+<a class="reference internal image-reference" href="../_images/eclipse_import3.jpg"><img alt="../_images/eclipse_import3.jpg" src="../_images/eclipse_import3.jpg" style="width: 350px;" /></a>
+</li>
+</ol>
+</div>
+<div class="section" id="run-geoserver-from-eclipse">
+<h2>Run GeoServer from Eclipse<a class="headerlink" href="#run-geoserver-from-eclipse" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>From the <code class="docutils literal notranslate"><span class="pre">Package</span> <span class="pre">Explorer</span></code> select the <code class="docutils literal notranslate"><span class="pre">web-app</span></code> module</p></li>
+<li><p>Navigate to the <code class="docutils literal notranslate"><span class="pre">org.geoserver.web</span></code> package</p></li>
+<li><p>Right-click the <code class="docutils literal notranslate"><span class="pre">Start</span></code> class and navigate to <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">as</span></code>, <code class="docutils literal notranslate"><span class="pre">Java</span> <span class="pre">Application</span></code></p>
+<a class="reference internal image-reference" href="../_images/eclipse_run1.jpg"><img alt="../_images/eclipse_run1.jpg" src="../_images/eclipse_run1.jpg" style="width: 600px;" /></a>
+</li>
+<li><p>After running the first time you can return to the <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Configurations</span></code> dialog
+to fine tune your launch environment (including setting a GEOSERVER_DATA_DIR).</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you already have a server running on localhost:8080 see the <a class="reference internal" href="../eclipse-guide/index.html#eclipse-guide"><span class="std std-ref">Eclipse Guide</span></a> for instructions on changing to a different port.</p>
+</div>
+<div class="section" id="run-geoserver-with-extensions">
+<h3>Run GeoServer with Extensions<a class="headerlink" href="#run-geoserver-with-extensions" title="Permalink to this headline">¶</a></h3>
+<p>The above instructions assume you want to run GeoServer without any extensions enabled. In cases where you do need certain extensions, the <code class="docutils literal notranslate"><span class="pre">web-app</span></code> module declares a number of profiles that will enable specific extensions when running <code class="docutils literal notranslate"><span class="pre">Start</span></code>. To enable an extension, re-generate the root eclipse profile with the appropriate maven profile(s) enabled:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">mvn</span> <span class="n">eclipse</span><span class="p">:</span><span class="n">eclipse</span> <span class="o">-</span><span class="n">P</span> <span class="n">wps</span>
+</pre></div>
+</div>
+<p>The full list of supported profiles can be found in <code class="docutils literal notranslate"><span class="pre">src/web/app/pom.xml</span></code>.</p>
+</div>
+</div>
+<div class="section" id="access-geoserver-front-page">
+<h2>Access GeoServer front page<a class="headerlink" href="#access-geoserver-front-page" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>After a few seconds, GeoServer should be accessible at: <a class="reference external" href="http://localhost:8080/geoserver">http://localhost:8080/geoserver</a></p></li>
+<li><p>The default <code class="docutils literal notranslate"><span class="pre">admin</span></code> password is <code class="docutils literal notranslate"><span class="pre">geoserver</span></code>.</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="intellij.html" title="previous chapter">IntelliJ QuickStart</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="eclipse_m2.html" title="next chapter">Eclipse M2 Quickstart</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Maven Eclipse Plugin Quickstart</a><ul>
+<li><a class="reference internal" href="#check-out-source-code">Check out source code</a></li>
+<li><a class="reference internal" href="#generate-eclipse-project-files-with-maven">Generate Eclipse project files with Maven</a></li>
+<li><a class="reference internal" href="#import-modules-into-eclipse">Import modules into Eclipse</a></li>
+<li><a class="reference internal" href="#run-geoserver-from-eclipse">Run GeoServer from Eclipse</a><ul>
+<li><a class="reference internal" href="#run-geoserver-with-extensions">Run GeoServer with Extensions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#access-geoserver-front-page">Access GeoServer front page</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="intellij.html" title="previous chapter">IntelliJ QuickStart</a></li>
+            <li>Next: <a href="eclipse_m2.html" title="next chapter">Eclipse M2 Quickstart</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/quickstart/eclipse.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

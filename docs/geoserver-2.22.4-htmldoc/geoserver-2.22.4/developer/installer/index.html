@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Build Windows installer &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Service Providers" href="../policies/service_providers.html" /> 
+  </head><body class="installer/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+    <li>Build Windows installer</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <liclass="first">
+    <a href="../policies/service_providers.html" title="Service Providers" accesskey="P">Previous</a>
+  </li>
+</ul>
+          
+  <div class="section" id="build-windows-installer">
+<h1>Build Windows installer<a class="headerlink" href="#build-windows-installer" title="Permalink to this headline">¶</a></h1>
+<p>At the time the GeoServer project does not have financial resources and man power to stand up a Windows build server (if you can help with this, please contact the developer list).
+However you can create your own installer (using a Windows machine).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This step requires a Windows machine.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A community provided Powershell script that automates the following steps is available <a class="reference external" href="https://github.com/geoserver/geoserver/edit/main/src/release/installer/win/win-installer-builder.ps1">here</a>.</p>
+</div>
+<ol class="arabic">
+<li><p>Download and install <a class="reference external" href="http://nsis.sourceforge.net/">NSIS</a>.</p></li>
+<li><p>Install the <a class="reference external" href="http://nsis.sourceforge.net/AccessControl_plug-in">NSIS Access Control plugin</a>.  The simplest way to do this is to download the zip, extract the .DLL files (<code class="file docutils literal notranslate"><span class="pre">AccessControl.dll</span></code>) and copy it to the NSIS plugins directory (usually <code class="file docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\NSIS\Plugins\x86-ansi</span></code>).</p></li>
+<li><p>Download and unzip the binary GeoServer package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">unzip</span> <span class="n">geoserver</span><span class="o">-</span><span class="p">[</span><span class="n">VERSION</span><span class="p">]</span><span class="o">-</span><span class="nb">bin</span><span class="o">.</span><span class="n">zip</span>
+</pre></div>
+</div>
+</li>
+<li><p>Download and unzip the source GeoServer package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">unzip</span> <span class="n">geoserver</span><span class="o">-</span><span class="p">[</span><span class="n">VERSION</span><span class="p">]</span><span class="o">.</span><span class="n">zip</span>
+</pre></div>
+</div>
+</li>
+<li><p>Copy the files <code class="file docutils literal notranslate"><span class="pre">LICENSE.txt</span></code>, <code class="file docutils literal notranslate"><span class="pre">src/release/GPL.txt</span></code> and the following files from <code class="file docutils literal notranslate"><span class="pre">src/release/installer/win</span></code> from the Geoserver source GeoServer package to the root of the unpacked archive (the same directory level as the <code class="file docutils literal notranslate"><span class="pre">start.jar</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GeoServerEXE</span><span class="o">.</span><span class="n">nsi</span>
+<span class="n">gs</span><span class="o">.</span><span class="n">ico</span>
+<span class="n">header</span><span class="o">.</span><span class="n">bmp</span>
+<span class="n">side_left</span><span class="o">.</span><span class="n">bmp</span>
+<span class="n">splash</span><span class="o">.</span><span class="n">bmp</span>
+<span class="n">wrapper</span><span class="o">.</span><span class="n">conf</span>
+<span class="n">wrapper</span><span class="o">.</span><span class="n">dll</span>
+<span class="n">wrapper</span><span class="o">.</span><span class="n">exe</span>
+<span class="n">wrapper</span><span class="o">.</span><span class="n">jar</span>
+<span class="n">wrapper</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">license</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../_images/win-installer1.png" src="../_images/win-installer1.png" />
+</div>
+</li>
+<li><p>Right-click on the installer script <code class="file docutils literal notranslate"><span class="pre">GeoServerEXE.nsi</span></code> and select <strong class="command">Compile Script</strong>.</p>
+<div class="figure align-center">
+<img alt="../_images/win-installer2.png" src="../_images/win-installer2.png" />
+</div>
+</li>
+<li><p>After successfully compiling the script, an installer named <code class="file docutils literal notranslate"><span class="pre">geoserver-[VERSION].exe</span></code> will be located in the root of the unpacked archive.</p>
+<div class="figure align-center">
+<img alt="../_images/win-installer3.png" src="../_images/win-installer3.png" />
+</div>
+</li>
+</ol>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../policies/service_providers.html" title="previous chapter">Service Providers</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../policies/service_providers.html" title="previous chapter">Service Providers</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/installer/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

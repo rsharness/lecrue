@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitor Configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Audit Logging" href="audit.html" />
+    <link rel="prev" title="Data Reference" href="reference.html" /> 
+  </head><body class="extensions/monitoring/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Monitoring</a> &raquo;</li>
+    <li>Monitor Configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="audit.html" title="Audit Logging" accesskey="N">Next</a></li>
+  <li>
+    <a href="reference.html" title="Data Reference" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="monitor-configuration">
+<span id="id1"></span><h1>Monitor Configuration<a class="headerlink" href="#monitor-configuration" title="Permalink to this headline">¶</a></h1>
+<p>Many aspects of the monitor extension are configurable. All configuration files
+are stored in the data directory under the <code class="docutils literal notranslate"><span class="pre">monitoring</span></code> directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">data_directory</span><span class="o">&gt;</span>
+    <span class="n">monitoring</span><span class="o">/</span>
+        <span class="nb">filter</span><span class="o">.</span><span class="n">properties</span>
+        <span class="n">monitor</span><span class="o">.</span><span class="n">properties</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code> file is the main configuration file whose contents are
+described in the following sections. The <code class="docutils literal notranslate"><span class="pre">filter.properties</span></code>
+allows for <a class="reference internal" href="#request-filters"><span class="std std-ref">filtering</span></a> out those requests from being monitored.</p>
+<p>Database persistence with hibernate is described in more detail in the <a class="reference internal" href="../../community/monitor-hibernate/db.html#monitor-db"><span class="std std-ref">Database Persistence</span></a> section.</p>
+<div class="section" id="monitor-storage">
+<span id="id2"></span><h2>Monitor Storage<a class="headerlink" href="#monitor-storage" title="Permalink to this headline">¶</a></h2>
+<p>How request data is persisted is configurable via the <code class="docutils literal notranslate"><span class="pre">storage</span></code> property defined in the
+<code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code> file. The following values are supported for the <code class="docutils literal notranslate"><span class="pre">storage</span></code> property:</p>
+<ul class="simple">
+<li><p><strong>memory</strong> - Request data is to be persisted in memory alone.</p></li>
+</ul>
+<p>The default value is <code class="docutils literal notranslate"><span class="pre">memory</span></code>.</p>
+<p>The “monitor hibernate” community module allows to also store the requests in a relational database.</p>
+<div class="section" id="memory-storage">
+<h3>Memory Storage<a class="headerlink" href="#memory-storage" title="Permalink to this headline">¶</a></h3>
+<p>With memory storage only the most recent 100 requests are stored. And by definition this
+storage is volatile in that if the GeoServer instance is restarted, shutdown, or crashes
+this data is lost.</p>
+</div>
+</div>
+<div class="section" id="monitor-mode">
+<span id="id3"></span><h2>Monitor Mode<a class="headerlink" href="#monitor-mode" title="Permalink to this headline">¶</a></h2>
+<p>The monitor extension supports different “monitoring modes” that control how
+request data is captured. Currently two modes are supported:</p>
+<ul class="simple">
+<li><p><strong>history</strong> <em>(Default)</em> - Request information updated post request only. No
+live information made available.</p></li>
+<li><p><strong>live</strong> - Information about a request is captured and updated in real time.</p></li>
+</ul>
+<p>The monitor mode is set with the <code class="docutils literal notranslate"><span class="pre">mode</span></code> property in the <code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code> file.
+The default value is <code class="docutils literal notranslate"><span class="pre">history</span></code>.</p>
+<div class="section" id="history-mode">
+<h3>History Mode<a class="headerlink" href="#history-mode" title="Permalink to this headline">¶</a></h3>
+<p>History mode persists information (sending it to storage) about a request after
+a request has completed. This mode is appropriate in cases where a user is most
+interested in analyzing request data after the fact and doesn’t require real time
+updates.</p>
+</div>
+<div class="section" id="live-mode">
+<h3>Live Mode<a class="headerlink" href="#live-mode" title="Permalink to this headline">¶</a></h3>
+<p>Live mode updates request data (sending it to storage) in real time as it
+changes. This mode is suitable for users who care about what a service is doing now.</p>
+</div>
+</div>
+<div class="section" id="bounding-box">
+<h2>Bounding Box<a class="headerlink" href="#bounding-box" title="Permalink to this headline">¶</a></h2>
+<p>When applicable one of the attributes the monitor extension can capture is the request
+bounding box. In some cases, such as WMS and WCS requests, capturing the bounding box
+is easy. However in other cases  such as WFS it is not always possible to 100% reliably
+capture the bounding box. An example being a WFS request with a complex filter element.</p>
+<p>How the bounding box is captured is controlled by the <code class="docutils literal notranslate"><span class="pre">bboxMode</span></code> property in the
+<code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code> file. It can have one of the following values.</p>
+<ul class="simple">
+<li><p><strong>none</strong> - No bounding box information is captured.</p></li>
+<li><p><strong>full</strong> - Bounding box information is captured and heuristics are applied for WFS
+requests.</p></li>
+<li><p><strong>no_wfs</strong> - Bounding box information is captured except for WFS requests.</p></li>
+</ul>
+<p>Part of a bounding box is a coordinate reference system (crs).Similar to the WFS case it
+is not always straight forward to determine what the crs is. For this reason the <code class="docutils literal notranslate"><span class="pre">bboxCrs</span></code>
+property is used to configure a default crs to be used. The default value for the property is
+“EPSG:4326” and will be used in cases where all lookup heuristics fail to determine a crs for
+the bounding box.</p>
+</div>
+<div class="section" id="request-body-size">
+<h2>Request Body Size<a class="headerlink" href="#request-body-size" title="Permalink to this headline">¶</a></h2>
+<p>The monitor extension will capture the contents of the request body when a body is
+specified as is common with a PUT or POST request. However since a request body can
+be large the extension limits the amount captured to the first 1024 bytes by default.</p>
+<p>A value of <code class="docutils literal notranslate"><span class="pre">0</span></code> indicates that no data from the request body should be captured. A
+value of <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates that no limit should be placed on the capture and the entire
+body content should be stored.</p>
+<p>This limit is configurable with the <code class="docutils literal notranslate"><span class="pre">maxBodySize</span></code> property of the <code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code>
+file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using database persistence it is important to ensure that the size of the body
+field in the database can accommodate the <code class="docutils literal notranslate"><span class="pre">maxBodySize</span></code> property.</p>
+</div>
+</div>
+<div class="section" id="ignore-post-processors">
+<h2>Ignore Post Processors<a class="headerlink" href="#ignore-post-processors" title="Permalink to this headline">¶</a></h2>
+<p>The monitor passes request information through post processors which enrich the request
+information with DNS lookup, Location using IP database etc. It is possible to disable
+these post processors if some enrichments are not required with <code class="docutils literal notranslate"><span class="pre">ignorePostProcessors</span></code>
+property of the <code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code> file.</p>
+<p>This parameter takes comma separated names of known post processors.
+The valid values are <code class="docutils literal notranslate"><span class="pre">reverseDNS,geoIp,layerNameNormalizer</span></code></p>
+</div>
+<div class="section" id="request-filters">
+<span id="id4"></span><h2>Request Filters<a class="headerlink" href="#request-filters" title="Permalink to this headline">¶</a></h2>
+<p>By default not all requests are monitored. Those requests excluded include any web admin requests or any <a class="reference internal" href="query.html#monitor-query-api"><span class="std std-ref">Monitor Query API</span></a> requests. These exclusions are configured in the <code class="docutils literal notranslate"><span class="pre">filter.properties</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">monitor</span><span class="o">/**</span>
+<span class="o">/</span><span class="n">web</span><span class="o">/**</span>
+</pre></div>
+</div>
+<p>These default filters can be changed or extended to filter more types of
+requests. For example to filter out all WFS requests the following entry
+is added:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">wfs</span>
+</pre></div>
+</div>
+<div class="section" id="how-to-determine-the-filter-path">
+<h3>How to determine the filter path<a class="headerlink" href="#how-to-determine-the-filter-path" title="Permalink to this headline">¶</a></h3>
+<p>The contents of <code class="docutils literal notranslate"><span class="pre">filter.properties</span></code> are a series of ant-style patterns that
+are applied to the <em>path</em> of the request. Consider the following request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms?request=getcapabilities
+</pre></div>
+</div>
+<p>The path of the above request is <code class="docutils literal notranslate"><span class="pre">/wms</span></code>. In the following request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">topp</span><span class="o">/</span><span class="n">datastores</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<p>The path is <code class="docutils literal notranslate"><span class="pre">/rest/workspaces/topp/datastores.xml</span></code>.</p>
+<p>In general, the path used in filters is comprised of the portion of the URL
+after <code class="docutils literal notranslate"><span class="pre">/geoserver</span></code> (including the preceding <code class="docutils literal notranslate"><span class="pre">/</span></code>) and before the query string <code class="docutils literal notranslate"><span class="pre">?</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://&lt;host&gt;:&lt;port&gt;/geoserver/&lt;path&gt;?&lt;queryString&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information about ant-style pattern matching, see the <a class="reference external" href="http://ant.apache.org/manual/dirtasks.html">Apache Ant manual</a>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="samples">
+<h2>Samples<a class="headerlink" href="#samples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="monitor-properties">
+<h3>monitor.properties<a class="headerlink" href="#monitor-properties" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># storage and mode</span>
+<span class="n">storage</span><span class="o">=</span><span class="n">memory</span>
+<span class="n">mode</span><span class="o">=</span><span class="n">history</span>
+
+<span class="c1"># request body capture</span>
+<span class="n">maxBodySize</span><span class="o">=</span><span class="mi">1024</span>
+
+<span class="c1"># bounding box capture</span>
+<span class="n">bboxMode</span><span class="o">=</span><span class="n">no_wfs</span>
+<span class="n">bboxCrs</span><span class="o">=</span><span class="n">EPSG</span><span class="p">:</span><span class="mi">4326</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="filter-properties">
+<h3>filter.properties<a class="headerlink" href="#filter-properties" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># filter out monitor query api requests</span>
+<span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">monitor</span><span class="o">/**</span>
+
+<span class="c1"># filter out all web requests</span>
+<span class="o">/</span><span class="n">web</span>
+<span class="o">/</span><span class="n">web</span><span class="o">/**</span>
+
+<span class="c1"># filter out requests for WCS service</span>
+<span class="o">/</span><span class="n">wcs</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="reference.html" title="previous chapter">Data Reference</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="audit.html" title="next chapter">Audit Logging</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Monitor Configuration</a><ul>
+<li><a class="reference internal" href="#monitor-storage">Monitor Storage</a><ul>
+<li><a class="reference internal" href="#memory-storage">Memory Storage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#monitor-mode">Monitor Mode</a><ul>
+<li><a class="reference internal" href="#history-mode">History Mode</a></li>
+<li><a class="reference internal" href="#live-mode">Live Mode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bounding-box">Bounding Box</a></li>
+<li><a class="reference internal" href="#request-body-size">Request Body Size</a></li>
+<li><a class="reference internal" href="#ignore-post-processors">Ignore Post Processors</a></li>
+<li><a class="reference internal" href="#request-filters">Request Filters</a><ul>
+<li><a class="reference internal" href="#how-to-determine-the-filter-path">How to determine the filter path</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#samples">Samples</a><ul>
+<li><a class="reference internal" href="#monitor-properties">monitor.properties</a></li>
+<li><a class="reference internal" href="#filter-properties">filter.properties</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="reference.html" title="previous chapter">Data Reference</a></li>
+            <li>Next: <a href="audit.html" title="next chapter">Audit Logging</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/monitoring/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

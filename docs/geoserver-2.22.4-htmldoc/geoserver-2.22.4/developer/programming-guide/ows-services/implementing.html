@@ -1,0 +1,482 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Implementing a simple OWS service &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="REST Services" href="../rest-services/index.html" />
+    <link rel="prev" title="OWS Services Overview" href="overview.html" /> 
+  </head><body class="programming-guide/ows-services/implementing">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">OWS Services</a> &raquo;</li>
+    <li>Implementing a simple OWS service</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../rest-services/index.html" title="REST Services" accesskey="N">Next</a></li>
+  <li>
+    <a href="overview.html" title="OWS Services Overview" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="implementing-a-simple-ows-service">
+<span id="ows-services-implementing"></span><h1><a class="toc-backref" href="#id1">Implementing a simple OWS service</a><a class="headerlink" href="#implementing-a-simple-ows-service" title="Permalink to this headline">¶</a></h1>
+<p>This section explains How to Create a Simple GeoServer OWS service for GeoServer using the following scenario. The service should supply a capabilities document which advertises a single operation called “sayHello”. The result of a sayHello operation is the simple string “Hello World”.</p>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#implementing-a-simple-ows-service" id="id1">Implementing a simple OWS service</a></p>
+<ul>
+<li><p><a class="reference internal" href="#setup" id="id2">Setup</a></p></li>
+<li><p><a class="reference internal" href="#creating-the-plug-in" id="id3">Creating the Plug-in</a></p></li>
+<li><p><a class="reference internal" href="#trying-it-out" id="id4">Trying it Out</a></p></li>
+<li><p><a class="reference internal" href="#bundling-with-web-module" id="id5">Bundling with Web Module</a></p></li>
+<li><p><a class="reference internal" href="#running-from-source" id="id6">Running from Source</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="setup">
+<h2><a class="toc-backref" href="#id2">Setup</a><a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>The first step in creating our plug-in is setting up a maven project for it. The project will be called “hello”.</p>
+<ol class="arabic simple">
+<li><p>Create a new directory called <code class="file docutils literal notranslate"><span class="pre">hello</span></code> anywhere on your file system.</p></li>
+<li><p>Add a maven pom called <code class="file docutils literal notranslate"><span class="pre">pom.xml</span></code> to the <code class="file docutils literal notranslate"><span class="pre">hello</span></code> directory:</p></li>
+</ol>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</span><span class="nt">&gt;</span>
+
+<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+<span class="c">&lt;!-- set parent pom to community pom --&gt;</span>
+<span class="nt">&lt;parent&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>community<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.22.4<span class="nt">&lt;/version&gt;</span> <span class="c">&lt;!-- change this to the proper GeoServer version --&gt;</span>
+<span class="nt">&lt;/parent&gt;</span>  
+
+<span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+<span class="nt">&lt;artifactId&gt;</span>hello<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+<span class="nt">&lt;version&gt;</span>1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;name&gt;</span>Hello World Service Module<span class="nt">&lt;/name&gt;</span>
+
+<span class="c">&lt;!-- declare dependency on geoserver main --&gt;</span>
+<span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>gs-main<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>2.22.4<span class="nt">&lt;/version&gt;</span> <span class="c">&lt;!-- change this to the proper GeoServer version --&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+
+<span class="nt">&lt;repositories&gt;</span>
+    <span class="nt">&lt;repository&gt;</span>
+        <span class="nt">&lt;id&gt;</span>boundless<span class="nt">&lt;/id&gt;</span>
+        <span class="nt">&lt;name&gt;</span>Boundless Maven Repository<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;url&gt;</span>https://repo.boundlessgeo.com/snapshot<span class="nt">&lt;/url&gt;</span>
+        <span class="nt">&lt;snapshots&gt;</span>
+            <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+        <span class="nt">&lt;/snapshots&gt;</span>
+    <span class="nt">&lt;/repository&gt;</span>
+<span class="nt">&lt;/repositories&gt;</span>
+
+<span class="nt">&lt;/project&gt;</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p>Create a java source directory, <code class="file docutils literal notranslate"><span class="pre">src/main/java</span></code> under the <code class="file docutils literal notranslate"><span class="pre">hello</span></code> directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello</span><span class="o">/</span>
+  <span class="o">+</span> <span class="n">pom</span><span class="o">.</span><span class="n">xml</span>
+  <span class="o">+</span> <span class="n">src</span><span class="o">/</span>
+    <span class="o">+</span> <span class="n">main</span><span class="o">/</span>
+      <span class="o">+</span> <span class="n">java</span><span class="o">/</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="creating-the-plug-in">
+<h2><a class="toc-backref" href="#id3">Creating the Plug-in</a><a class="headerlink" href="#creating-the-plug-in" title="Permalink to this headline">¶</a></h2>
+<p>A plug-in is a collection of extensions realized as spring beans. In this example the extension point of interest is a HelloWorld POJO (Plain Old Java Object).</p>
+<ol class="arabic simple">
+<li><p>Create a class called <strong>HelloWorld</strong>:</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="p">{</span>
+
+    <span class="kd">public</span> <span class="nf">HelloWorld</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Do nothing</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sayHello</span><span class="p">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="p">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="p">)</span>
+            <span class="kd">throws</span> <span class="n">ServletException</span><span class="p">,</span> <span class="n">IOException</span> <span class="p">{</span>
+        <span class="n">response</span><span class="p">.</span><span class="na">getOutputStream</span><span class="p">().</span><span class="na">write</span><span class="p">(</span><span class="s">&quot;Hello World&quot;</span><span class="p">.</span><span class="na">getBytes</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The service is relatively simple. It provides a method sayHello(..) which takes a HttpServletRequest, and a HttpServletResponse. The parameter list for this function is automatically discovered by the org.geoserver.ows.Dispatcher.</p>
+<ol class="arabic simple">
+<li><p>Create an <code class="file docutils literal notranslate"><span class="pre">applicationContext.xml</span></code> declaring the above class as a bean.</p></li>
+</ol>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;</span>
+
+<span class="nt">&lt;beans&gt;</span>
+    <span class="c">&lt;!-- Spring will reference the instance of the HelloWorld class</span>
+<span class="c">            by the id name &quot;helloService&quot; --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;helloService&quot;</span> <span class="na">class=</span><span class="s">&quot;HelloWorld&quot;</span><span class="nt">/&gt;</span>
+
+    <span class="c">&lt;!-- This creates a Service descriptor, which allows the org.geoserver.ows.Dispatcher</span>
+<span class="c">        to locate it. --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;helloService-1.0.0&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.platform.Service&quot;</span><span class="nt">&gt;</span>
+    
+        <span class="c">&lt;!-- used to reference the service in the URL --&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&quot;0&quot;</span> <span class="na">value=</span><span class="s">&quot;hello&quot;</span><span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- our actual service POJO defined previously --&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&quot;1&quot;</span> <span class="na">ref=</span><span class="s">&quot;helloService&quot;</span><span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- a version number for this service --&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&quot;2&quot;</span> <span class="na">value=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">/&gt;</span>
+            
+        <span class="c">&lt;!-- a list of functions for this service --&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&quot;3&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;list&gt;</span>
+                <span class="nt">&lt;value&gt;</span>sayHello<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/list&gt;</span>
+        <span class="nt">&lt;/constructor-arg&gt;</span>
+        
+    <span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;/beans&gt;</span>
+</pre></div>
+</div>
+<p>At this point the hello project should look like the following:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hello/
+  + pom.xml
+  + src/
+    + main/
+      + java/
+        + HelloWorld.java
+        + applicationContext.xml
+</pre></div>
+</div>
+</div>
+<div class="section" id="trying-it-out">
+<h2><a class="toc-backref" href="#id4">Trying it Out</a><a class="headerlink" href="#trying-it-out" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Install the <code class="file docutils literal notranslate"><span class="pre">hello</span></code> module:</p></li>
+</ol>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>hello<span class="o">]</span>% mvn install
+</pre></div>
+</div>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>INFO<span class="o">]</span> Scanning <span class="k">for</span> projects...
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+<span class="o">[</span>INFO<span class="o">]</span> Building Hello World Service Module <span class="m">1</span>.0
+<span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-clean-plugin:2.5:clean <span class="o">(</span>default-clean<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> Deleting /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- cobertura-maven-plugin:2.6:clean <span class="o">(</span>default<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- git-commit-id-plugin:2.0.4:revision <span class="o">(</span>default<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> <span class="o">[</span>GitCommitIdMojo<span class="o">]</span> .git directory could not be found, skipping execution
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-resources-plugin:2.6:resources <span class="o">(</span>default-resources<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> Using <span class="s1">&#39;UTF-8&#39;</span> encoding to copy filtered resources.
+<span class="o">[</span>INFO<span class="o">]</span> Copying <span class="m">1</span> resource
+<span class="o">[</span>INFO<span class="o">]</span> skip non existing resourceDirectory /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/src/main/resources
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-compiler-plugin:2.3.2:compile <span class="o">(</span>default-compile<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> Compiling <span class="m">1</span> <span class="nb">source</span> file to /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/classes
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-resources-plugin:2.6:testResources <span class="o">(</span>default-testResources<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> Using <span class="s1">&#39;UTF-8&#39;</span> encoding to copy filtered resources.
+<span class="o">[</span>INFO<span class="o">]</span> skip non existing resourceDirectory /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/src/test/java
+<span class="o">[</span>INFO<span class="o">]</span> skip non existing resourceDirectory /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/src/test/resources
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-compiler-plugin:2.3.2:testCompile <span class="o">(</span>default-testCompile<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> No sources to compile
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-surefire-plugin:2.12.3:test <span class="o">(</span>default-test<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> No tests to run.
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-jar-plugin:2.4:jar <span class="o">(</span>default-jar<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> Building jar: /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0.jar
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-jar-plugin:2.4:test-jar <span class="o">(</span>default<span class="o">)</span> @ hello ---
+<span class="o">[</span>WARNING<span class="o">]</span> JAR will be empty - no content was marked <span class="k">for</span> inclusion!
+<span class="o">[</span>INFO<span class="o">]</span> Building jar: /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0-tests.jar
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> &gt;&gt;&gt; maven-source-plugin:2.2.1:jar <span class="o">(</span>attach-sources<span class="o">)</span> &gt; generate-sources @ hello &gt;&gt;&gt;
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- git-commit-id-plugin:2.0.4:revision <span class="o">(</span>default<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> <span class="o">[</span>GitCommitIdMojo<span class="o">]</span> .git directory could not be found, skipping execution
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> <span class="o">&lt;&lt;&lt;</span> maven-source-plugin:2.2.1:jar <span class="o">(</span>attach-sources<span class="o">)</span> &lt; generate-sources @ hello <span class="o">&lt;&lt;&lt;</span>
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-source-plugin:2.2.1:jar <span class="o">(</span>attach-sources<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> Building jar: /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0-sources.jar
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> &gt;&gt;&gt; maven-source-plugin:2.2.1:test-jar <span class="o">(</span>attach-sources<span class="o">)</span> &gt; generate-sources @ hello &gt;&gt;&gt;
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- git-commit-id-plugin:2.0.4:revision <span class="o">(</span>default<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> <span class="o">[</span>GitCommitIdMojo<span class="o">]</span> .git directory could not be found, skipping execution
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> <span class="o">&lt;&lt;&lt;</span> maven-source-plugin:2.2.1:test-jar <span class="o">(</span>attach-sources<span class="o">)</span> &lt; generate-sources @ hello <span class="o">&lt;&lt;&lt;</span>
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-source-plugin:2.2.1:test-jar <span class="o">(</span>attach-sources<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> No sources in project. Archive not created.
+<span class="o">[</span>INFO<span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span> --- maven-install-plugin:2.4:install <span class="o">(</span>default-install<span class="o">)</span> @ hello ---
+<span class="o">[</span>INFO<span class="o">]</span> Installing /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0.jar to /home/bradh/.m2/repository/org/geoserver/hello/1.0/hello-1.0.jar
+<span class="o">[</span>INFO<span class="o">]</span> Installing /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/pom.xml to /home/bradh/.m2/repository/org/geoserver/hello/1.0/hello-1.0.pom
+<span class="o">[</span>INFO<span class="o">]</span> Installing /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0-tests.jar to /home/bradh/.m2/repository/org/geoserver/hello/1.0/hello-1.0-tests.jar
+<span class="o">[</span>INFO<span class="o">]</span> Installing /home/bradh/devel/geoserver/doc/en/developer/source/programming-guide/ows-services/hello/target/hello-1.0-sources.jar to /home/bradh/.m2/repository/org/geoserver/hello/1.0/hello-1.0-sources.jar
+<span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+<span class="o">[</span>INFO<span class="o">]</span> BUILD SUCCESS
+<span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+<span class="o">[</span>INFO<span class="o">]</span> Total time: <span class="m">2</span>.473 s
+<span class="o">[</span>INFO<span class="o">]</span> Finished at: <span class="m">2015</span>-10-20T10:14:16+11:00
+<span class="o">[</span>INFO<span class="o">]</span> Final Memory: 23M/589M
+<span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p>Next we need to make sure <code class="file docutils literal notranslate"><span class="pre">hello-1.0.jar</span></code> is included when we run GeoServer:</p>
+<ul>
+<li><p>If you are running a GeoServer in Tomcat, copy <code class="file docutils literal notranslate"><span class="pre">target/hello-1.0.jar</span></code> into <code class="file docutils literal notranslate"><span class="pre">webapps/geoserver/WEB-INF/lib</span></code> (just like we manually install extensions or community modules).</p>
+<p>Restart GeoServer to pick up the change.</p>
+</li>
+<li><p>If running with <strong class="command">Eclipse</strong> using maven eclipse plugin, the easiest approach is edit the <code class="file docutils literal notranslate"><span class="pre">web-app/pom.xml</span></code> with the following dependency:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>hello<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+<p>After editing <code class="file docutils literal notranslate"><span class="pre">webapps/pom.xml</span></code> we need run <cite>mvn eclipse:eclipse</cite>, and then from <strong class="command">Eclipse</strong> right click on web-app project and <span class="guilabel">Refresh</span> for the IDE to notice the change.</p>
+</div></blockquote>
+</li>
+<li><p>If and IDE like IntellJ, Eclipse M2 Maven plugin or NetBeans refresh the project so it picks up the changes to <code class="file docutils literal notranslate"><span class="pre">pom.xml</span></code></p></li>
+</ul>
+</li>
+<li><p>Restart GeoServer and visit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://&lt;host&gt;/geoserver/ows?request=sayHello&amp;service=hello&amp;version=1.0.0
+</pre></div>
+</div>
+<dl class="simple">
+<dt>request</dt><dd><p>the method we defined in our service</p>
+</dd>
+<dt>service</dt><dd><p>the name we passed to the Service descriptor in the applicationContext.xml</p>
+</dd>
+<dt>version</dt><dd><p>the version we passed to the Service descriptor in the applicationContext.xml</p>
+</dd>
+</dl>
+</li>
+</ol>
+<div class="figure align-center">
+<img alt="../../_images/firefox_helloworld.png" src="../../_images/firefox_helloworld.png" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A common pitfall is to bundle an extension without the
+<code class="file docutils literal notranslate"><span class="pre">applicationContext.xml</span></code> file. If you receive the error message
+“No service: ( hello )” this is potentially the case. To ensure the file is
+present inspect the contents of the hello jar present in the <code class="file docutils literal notranslate"><span class="pre">target</span></code>
+directory of the hello module.</p>
+</div>
+</div>
+<div class="section" id="bundling-with-web-module">
+<h2><a class="toc-backref" href="#id5">Bundling with Web Module</a><a class="headerlink" href="#bundling-with-web-module" title="Permalink to this headline">¶</a></h2>
+<p>An alternative to plugging into an existing installation is to build a complete
+GeoServer war that includes the custom hello plugin. To achieve this a new
+dependency is declared from the core <strong>web/app</strong> module on the new plugin
+project. This requires building GeoServer from sources.</p>
+<ol class="arabic">
+<li><p>Build GeoServer from sources as described <a class="reference internal" href="../../maven-guide/index.html#maven-guide"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>Install the <code class="file docutils literal notranslate"><span class="pre">hello</span></code> module as above.</p></li>
+<li><p>Edit <code class="file docutils literal notranslate"><span class="pre">web/app/pom.xml</span></code> and add the following dependency:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>hello<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install the <code class="file docutils literal notranslate"><span class="pre">web/app</span></code> module</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>web/app<span class="o">]</span> mvn install
+</pre></div>
+</div>
+</div></blockquote>
+<p>A GeoServer war including the hello extension should now be present in the
+<code class="file docutils literal notranslate"><span class="pre">target</span></code> directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To verify the plugin was bundled properly unpack <code class="file docutils literal notranslate"><span class="pre">geoserver.war</span></code> and
+inspect the contents of the <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory and ensure the
+hello jar is present.</p>
+</div>
+</div>
+<div class="section" id="running-from-source">
+<h2><a class="toc-backref" href="#id6">Running from Source</a><a class="headerlink" href="#running-from-source" title="Permalink to this headline">¶</a></h2>
+<p>During development the most convenient way to work with the extension is to run
+it directly from sources.</p>
+<ol class="arabic">
+<li><p>Setup GeoServer in eclipse as described <a class="reference internal" href="../../eclipse-guide/index.html#eclipse-guide"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>Move the hello module into the GeoServer source tree under the <code class="docutils literal notranslate"><span class="pre">community</span></code>
+root module.</p></li>
+<li><p>Edit the <code class="file docutils literal notranslate"><span class="pre">community/pom.xml</span></code> and add a new profile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">profile</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">hello</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">modules</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="n">hello</span><span class="o">&lt;/</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">modules</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">profile</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>If not already done, edit <code class="file docutils literal notranslate"><span class="pre">web/app/pom.xml</span></code> and add the following
+dependency:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>hello<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>From the root of the GeoServer source tree run the following maven command:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>src<span class="o">]</span> mvn -P hello eclipse:eclipse
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>In eclipse import the new hello module and refresh all modules.</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">web-app</span></code> module run the <code class="docutils literal notranslate"><span class="pre">Start.java</span></code> main class to start
+GeoServer.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ensure that the <code class="docutils literal notranslate"><span class="pre">web-app</span></code> module in eclipse depends on the newly imported
+<code class="docutils literal notranslate"><span class="pre">hello</span></code> module. This can be done by inspecting the <code class="docutils literal notranslate"><span class="pre">web-app</span></code> module
+properties and ensuring the <code class="docutils literal notranslate"><span class="pre">hello</span></code> module is a project dependency.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="overview.html" title="previous chapter">OWS Services Overview</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../rest-services/index.html" title="next chapter">REST Services</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Implementing a simple OWS service</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#creating-the-plug-in">Creating the Plug-in</a></li>
+<li><a class="reference internal" href="#trying-it-out">Trying it Out</a></li>
+<li><a class="reference internal" href="#bundling-with-web-module">Bundling with Web Module</a></li>
+<li><a class="reference internal" href="#running-from-source">Running from Source</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="overview.html" title="previous chapter">OWS Services Overview</a></li>
+            <li>Next: <a href="../rest-services/index.html" title="next chapter">REST Services</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/ows-services/implementing.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

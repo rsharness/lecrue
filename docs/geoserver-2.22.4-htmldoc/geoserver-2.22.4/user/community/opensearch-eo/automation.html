@@ -1,0 +1,382 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Automation with the administration REST API &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="The STAC extension" href="STAC.html" />
+    <link rel="prev" title="The JDBC store database structure" href="database.html" /> 
+  </head><body class="community/opensearch-eo/automation">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">OpenSearch for EO</a> &raquo;</li>
+    <li>Automation with the administration REST API</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="STAC.html" title="The STAC extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="database.html" title="The JDBC store database structure" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="automation-with-the-administration-rest-api">
+<span id="opensearch-automation"></span><h1>Automation with the administration REST API<a class="headerlink" href="#automation-with-the-administration-rest-api" title="Permalink to this headline">¶</a></h1>
+<p>The OpenSearch module supports full automation REST API that can be used to
+create collections, ingest products and eventually their granules.
+The full API is available at this URL:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://docs.geoserver.org/latest/en/api/#1.0.0/opensearch-eo.yaml">/oseo</a></p></li>
+</ul>
+<p>In general terms, one would:</p>
+<ul class="simple">
+<li><p>Create a collection, along with thumbnail, OGC links</p></li>
+<li><p>Then create a product, along with thumbnail, OGC links</p></li>
+<li><p>Finally, and optionally, specify the granules composing the product (actually needed only
+if the OpenSearch subsystem is meant to be used for publishing OGC services layers too,
+instead of being a simple search engine.</p></li>
+</ul>
+<div class="section" id="understanding-the-zip-file-uploads">
+<h2>Understanding the zip file uploads<a class="headerlink" href="#understanding-the-zip-file-uploads" title="Permalink to this headline">¶</a></h2>
+<p>The description of a collection and product is normally made of various components, in order to expedite
+data creation and reduce protocol chattines, it is possible to bulk-upload all files composing
+the description of collections and products as a single zip file.</p>
+<div class="section" id="collection-components">
+<h3>Collection components<a class="headerlink" href="#collection-components" title="Permalink to this headline">¶</a></h3>
+<p>A collection.zip, sent as a PUT request to <code class="docutils literal notranslate"><span class="pre">rest/collections</span></code> would contain the following files:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Optional</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>collection.json</p></td>
+<td><p>N</p></td>
+<td><p>The collection attributes, matching the database structure (the prefixes are
+separated with a colon in this document)</p></td>
+</tr>
+<tr class="row-odd"><td><p>description.html</p></td>
+<td><p>Y</p></td>
+<td><p>The HTML description for the collection</p></td>
+</tr>
+<tr class="row-even"><td><p>thumbnail.png, thumbnail.jpg or thumbnail.jpeg</p></td>
+<td><p>Y</p></td>
+<td><p>The collection thumbnail</p></td>
+</tr>
+<tr class="row-odd"><td><p>owsLinks.json</p></td>
+<td><p>Y</p></td>
+<td><p>The list of OWS links to OGC services providing access to the collection contents
+(typically as a time enabled layer)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="product-components">
+<h3>Product components<a class="headerlink" href="#product-components" title="Permalink to this headline">¶</a></h3>
+<p>A product.zip, sent as a POST request to <code class="docutils literal notranslate"><span class="pre">rest/collections/&lt;theCollection&gt;/products</span></code> would contain the following files:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Optional</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>product.json</p></td>
+<td><p>N</p></td>
+<td><p>The product attributes, matching the database structure (the prefixes are
+separated with a colon in this JSON document)</p></td>
+</tr>
+<tr class="row-odd"><td><p>description.html</p></td>
+<td><p>Y</p></td>
+<td><p>The HTML description for the product</p></td>
+</tr>
+<tr class="row-even"><td><p>thumbnail.png, thumbnail.jpg or thumbnail.jpeg</p></td>
+<td><p>Y</p></td>
+<td><p>The collection thumbnail</p></td>
+</tr>
+<tr class="row-odd"><td><p>owsLinks.json</p></td>
+<td><p>Y</p></td>
+<td><p>The list of OWS links to OGC services providing access to the product contents
+(typically, a specific time slice in the collection layer, but other organizations are possible too)</p></td>
+</tr>
+<tr class="row-even"><td><p>granules.json</p></td>
+<td><p>Y</p></td>
+<td><p>The list of actual files making up the product, along with their bounding boxes, file location
+and eventual band name, for products splitting bands in different files.
+Could be a single file, a list of files split by area, or a list of files representing the
+various bands of a multispectral product.</p></td>
+</tr>
+</tbody>
+</table>
+<p>It is also possible to send the zip file on the <code class="docutils literal notranslate"><span class="pre">rest/collections/&lt;theCollection&gt;/products/&lt;theProduct&gt;</span></code>
+resource as a PUT request, it will update an existing product by replacing the parts contained
+in the file. Parts missing from the file will be kept unchanged, to remove them run an explicit
+DELETE request on their respective REST resources.</p>
+</div>
+</div>
+<div class="section" id="usage-of-the-api-for-search-and-integrated-ogc-service-publishing">
+<h2>Usage of the API for search and integrated OGC service publishing<a class="headerlink" href="#usage-of-the-api-for-search-and-integrated-ogc-service-publishing" title="Permalink to this headline">¶</a></h2>
+<p>In this case the user intend to both use the OpenSearch module for search
+purposes, but also to publish actual mosaics for each collection.</p>
+<p>In this case the following approach should is recommended:</p>
+<ul class="simple">
+<li><p>Create a collection via the REST API, using the ZIP file POST upload</p></li>
+<li><p>Create at least one product in the collection in the REST API, using the
+ZIP file POST upload and providing a full <code class="docutils literal notranslate"><span class="pre">granules.json</span></code> content with all
+the granules of said product</p></li>
+<li><p>Post a layer publishing description file to <code class="docutils literal notranslate"><span class="pre">/oseo/collection/{COLLECTION}/layers</span></code>
+to have the module setup a set of mosaic configuration files, store, layer with
+eventual coverage view and style</p></li>
+</ul>
+<p>A collection can have multiple layers:</p>
+<ul class="simple">
+<li><p>Getting the <code class="docutils literal notranslate"><span class="pre">/oseo/collection/{COLLECTION}/layers</span></code> resource returns a list of the available ones</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/oseo/collection/{COLLECTION}/layers/{layer}</span></code> returns the specific configuration (PUT can be used to modify it, and DELETE to remove it).</p></li>
+<li><p>Creation of a layer configuration can be done either by post-ing to <code class="docutils literal notranslate"><span class="pre">/oseo/collection/{COLLECTION}/layers</span></code> or by put-int to <code class="docutils literal notranslate"><span class="pre">/oseo/collection/{COLLECTION}/layers/{layer}</span></code>.</p></li>
+</ul>
+<p>The layer configuration fields are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>workspace</p></td>
+<td><p>The workspace that will contain the store and layer to be published</p></td>
+</tr>
+<tr class="row-odd"><td><p>layer</p></td>
+<td><p>The name of the layer that will be created</p></td>
+</tr>
+<tr class="row-even"><td><p>separateBands</p></td>
+<td><p>A boolean value, true if the underlying granule table has the “band” column populated with values, meaning the
+product bands are split among different files, false if a single product is stored in a single file</p></td>
+</tr>
+<tr class="row-odd"><td><p>heterogeneousCRS</p></td>
+<td><p>A boolean value, indicating if the products in the collection share the same CRS (false) or are expressed in different CRSses (true)</p></td>
+</tr>
+<tr class="row-even"><td><p>timeRanges</p></td>
+<td><p>A boolean value, indicating if the products are associated to a single time (false) or have have a time range of validity (true)</p></td>
+</tr>
+<tr class="row-odd"><td><p>bands</p></td>
+<td><p>The list of bands used in this layer (to be specified only if “separateBands” is used)</p></td>
+</tr>
+<tr class="row-even"><td><p>browseBands</p></td>
+<td><p>An array of 1 or 3 band names used to create the default display for the layer</p></td>
+</tr>
+<tr class="row-odd"><td><p>mosaicCRS</p></td>
+<td><p>The identifier of the CRS used by the mosaic (must match the granules table one)</p></td>
+</tr>
+<tr class="row-even"><td><p>defaultLayer</p></td>
+<td><p>A flag indicating if the layer is considered the default one for the collection  (thus also appearing at <code class="docutils literal notranslate"><span class="pre">/oseo/collection/{COLLECTION}/layer</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The layer configuration specification will have different contents depending on the collection structure:</p>
+<ul>
+<li><p>Single CRS, non band split, RGB or RGBA files, time configured as an “instant” (only <code class="docutils literal notranslate"><span class="pre">timeStart</span></code> used):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="s2">&quot;gs&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;layer&quot;</span><span class="p">:</span> <span class="s2">&quot;test123&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;separateBands&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;heterogeneousCRS&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;timeRanges&quot;</span><span class="p">:</span> <span class="kc">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Single CRS, multiband in single file, with a gray browse style, product time configured as a range between <code class="docutils literal notranslate"><span class="pre">timeStart</span></code> and <code class="docutils literal notranslate"><span class="pre">timeEnd</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="s2">&quot;gs&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;layer&quot;</span><span class="p">:</span> <span class="s2">&quot;test123&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;separateBands&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;browseBands&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;test123[0]&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;heterogeneousCRS&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;timeRanges&quot;</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Heterogeneous CRS, multi-band split across files, with a RGB browse style (“timeRanges” not specified, implying it’s handled as an instant):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="s2">&quot;gs&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;layer&quot;</span><span class="p">:</span> <span class="s2">&quot;test123&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;separateBands&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&quot;bands&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;VNIR&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QUALITY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CLOUDSHADOW&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;HAZE&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;SNOW&quot;</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;browseBands&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;VNIR[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;VNIR[1]&quot;</span><span class="p">,</span> <span class="s2">&quot;SNOW&quot;</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;heterogeneousCRS&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&quot;mosaicCRS&quot;</span><span class="p">:</span> <span class="s2">&quot;EPSG:4326&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>In terms of band naming the “bands” parameter contains coverage names as used in the “band” column
+of the granules table, in case a granule contains multiple bands, they can be referred by either
+using the full name, in which case they will be all picked, or by using zero-based indexes like
+<code class="docutils literal notranslate"><span class="pre">BANDNAME[INDEX]</span></code>, which allows to pick a particular band.</p>
+<p>The same syntax is meant to be used in the <code class="docutils literal notranslate"><span class="pre">browseBands</span></code> property. In case the source is not
+split band, the <code class="docutils literal notranslate"><span class="pre">browseBands</span></code> can still be used to select specific bands, using the layer
+name as the coverage name, e.g. “test123[0]” to select the first band of the coverage.</p>
+<div class="section" id="cog-mosaic-creation">
+<h3>COG Mosaic creation<a class="headerlink" href="#cog-mosaic-creation" title="Permalink to this headline">¶</a></h3>
+<p>It’s also possible to configure a layer on top of a COG ImageMosaic, provided that the <a class="reference internal" href="../cog/cog.html#cog-plugin"><span class="std std-ref">COG (Cloud Optimized GeoTIFF) Support</span></a> plugin has been installed in GeoServer.</p>
+<p>Additional fields for the layer configuration are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cog</p></td>
+<td><p>Set it to true to specify the layer is made of COG datasets</p></td>
+</tr>
+<tr class="row-odd"><td><p>cogUser</p></td>
+<td><p>(Optional) Credential to be set whenever basic HTTP authentication is needed to access the COG Datasets or an S3 Access KeyID is required</p></td>
+</tr>
+<tr class="row-even"><td><p>cogPassword</p></td>
+<td><p>(Optional) Password for the above user OR Secret Access Key for the above S3 KeyId.</p></td>
+</tr>
+<tr class="row-odd"><td><p>cogRangeReader</p></td>
+<td><p>(Optional) Specify the desired RangeReader implementation. (default is HTTP based)</p></td>
+</tr>
+</tbody>
+</table>
+<p>See <a class="reference internal" href="../cog/cog.html#cog-plugin-rangereader"><span class="std std-ref">COG RangeReader</span></a> from the COG plugin documentation, for the list of supported RangeReader implementations.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="database.html" title="previous chapter">The JDBC store database structure</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="STAC.html" title="next chapter">The STAC extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Automation with the administration REST API</a><ul>
+<li><a class="reference internal" href="#understanding-the-zip-file-uploads">Understanding the zip file uploads</a><ul>
+<li><a class="reference internal" href="#collection-components">Collection components</a></li>
+<li><a class="reference internal" href="#product-components">Product components</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage-of-the-api-for-search-and-integrated-ogc-service-publishing">Usage of the API for search and integrated OGC service publishing</a><ul>
+<li><a class="reference internal" href="#cog-mosaic-creation">COG Mosaic creation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="database.html" title="previous chapter">The JDBC store database structure</a></li>
+            <li>Next: <a href="STAC.html" title="next chapter">The STAC extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/opensearch-eo/automation.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

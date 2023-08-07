@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MBTiles Output Format &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Monitoring Hibernate storage" href="../monitor-hibernate/index.html" />
+    <link rel="prev" title="MBTiles Raster and Vector Data Stores" href="input.html" /> 
+  </head><body class="community/mbtiles/output">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">MBTiles Extension</a> &raquo;</li>
+    <li>MBTiles Output Format</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../monitor-hibernate/index.html" title="Monitoring Hibernate storage" accesskey="N">Next</a></li>
+  <li>
+    <a href="input.html" title="MBTiles Raster and Vector Data Stores" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="mbtiles-output-format">
+<h1>MBTiles Output Format<a class="headerlink" href="#mbtiles-output-format" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mbtiles-wms-output-format">
+<h2>MBTiles WMS Output Format<a class="headerlink" href="#mbtiles-wms-output-format" title="Permalink to this headline">¶</a></h2>
+<p>Any WMS <a class="reference internal" href="../../services/wms/reference.html#wms-getmap"><span class="std std-ref">GetMap</span></a> request can be returned in the form of a Geopackage by specifying <code class="docutils literal notranslate"><span class="pre">format=mbtiles</span></code> as output format (see <a class="reference internal" href="../../services/wms/outputformats.html#wms-output-formats"><span class="std std-ref">WMS output formats</span></a>). The returned result will be an MBTiles file with a single tile layer.</p>
+<dl class="simple">
+<dt>The following additional parameters can be passed on using <a class="reference internal" href="../../services/wms/vendor.html#format-options"><span class="std std-ref">format_options</span></a>:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tileset_name</span></code>: name to be used for tileset in mbtiles file (default is name of layer(s)).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min_zoom</span></code>, <code class="docutils literal notranslate"><span class="pre">max_zoom</span></code>, <code class="docutils literal notranslate"><span class="pre">min_column</span></code>, <code class="docutils literal notranslate"><span class="pre">max_column</span></code>, <code class="docutils literal notranslate"><span class="pre">min_row</span></code>, <code class="docutils literal notranslate"><span class="pre">max_row</span></code>: set the minimum and maximum zoom level, column, and rows</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gridset</span></code>: name of gridset to use (otherwise default for CRS is used)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The GetMap request won’t be subject to any execution time limit, a client can thus make request that will takes very long times to execute by providing a high max_zoom value.</p>
+</div>
+</div>
+<div class="section" id="mbtiles-wps-process">
+<h2>MBTiles WPS Process<a class="headerlink" href="#mbtiles-wps-process" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to generate an <code class="docutils literal notranslate"><span class="pre">mbtiles</span></code> file by calling the WPS process <code class="docutils literal notranslate"><span class="pre">gs:MBTiles</span></code>. This process requires the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layername</span></code>: Name of the input layer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">format</span></code> : format of the final images composing the file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minZoom</span></code>, <code class="docutils literal notranslate"><span class="pre">maxZoom</span></code>, <code class="docutils literal notranslate"><span class="pre">minColumn</span></code>, <code class="docutils literal notranslate"><span class="pre">maxColumn</span></code>, <code class="docutils literal notranslate"><span class="pre">minRow</span></code>, <code class="docutils literal notranslate"><span class="pre">maxRow</span></code>: <em>(Optional)</em> set the minimum and maximum zoom level, column, and rows.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boundingbox</span></code>: <em>(Optional)</em> Bounding box of the final mbtiles. If CRS is not set, the layer native one is used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: <em>(Optional)</em> name of the mbtiles file created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bgColor</span></code>: <em>(Optional)</em> value associated to the background colour.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">transparency</span></code>: <em>(Optional)</em> parameter indicating if the transparency must be present.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stylename</span></code>, <code class="docutils literal notranslate"><span class="pre">stylepath</span></code>, <code class="docutils literal notranslate"><span class="pre">stylebody</span></code>: <em>(Optional)</em> style to associate to the layer. Only one of these 3 parameters can be used.</p></li>
+</ul>
+</div></blockquote>
+<p>The process returns an URL containing the path of the generated file.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The process implementation does not currently support cancellation, a client can thus make request that will takes very long times to execute by providing a high max_zoom value.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="input.html" title="previous chapter">MBTiles Raster and Vector Data Stores</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../monitor-hibernate/index.html" title="next chapter">Monitoring Hibernate storage</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">MBTiles Output Format</a><ul>
+<li><a class="reference internal" href="#mbtiles-wms-output-format">MBTiles WMS Output Format</a></li>
+<li><a class="reference internal" href="#mbtiles-wps-process">MBTiles WPS Process</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="input.html" title="previous chapter">MBTiles Raster and Vector Data Stores</a></li>
+            <li>Next: <a href="../monitor-hibernate/index.html" title="next chapter">Monitoring Hibernate storage</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/mbtiles/output.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

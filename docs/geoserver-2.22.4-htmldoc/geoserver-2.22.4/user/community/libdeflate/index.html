@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Libdeflate &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tutorials" href="../../tutorials/index.html" />
+    <link rel="prev" title="HTTP Based Authorization configuration" href="../web-service-auth/configuration.html" /> 
+  </head><body class="community/libdeflate/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>Libdeflate</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../../tutorials/index.html" title="Tutorials" accesskey="N">Next</a></li>
+  <li>
+    <a href="../web-service-auth/configuration.html" title="HTTP Based Authorization configuration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="libdeflate">
+<span id="id1"></span><h1>Libdeflate<a class="headerlink" href="#libdeflate" title="Permalink to this headline">¶</a></h1>
+<p>Support for alternative Deflate encoder/decoder provided through <a class="reference external" href="https://github.com/astei/libdeflate-java">libdeflate JNI bindings for Java</a> which provides better performance.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Reading can be 10% - 20% faster</p></li>
+<li><p>Writing can be 40% - 60% faster</p></li>
+</ul>
+<p>(Tests have been made on deflate input data stored on SSD disk so neither Disk I/O, nor Network transfer was the bottleneck)</p>
+</div></blockquote>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>As a community module, the package needs to be downloaded from the <a class="reference external" href="https://build.geoserver.org/geoserver/">nightly builds</a>,
+picking the community folder of the corresponding GeoServer series (e.g. if working on the GeoServer main development branch nightly
+builds, pick the zip file form <code class="docutils literal notranslate"><span class="pre">main/community-latest</span></code>).</p>
+<p>To install the module, unpack the zip file contents into the GeoServer <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory and restart GeoServer.</p>
+<p>When the community module is not installed, the TIFF Deflate compression/decompression goes through ZLIB based <a class="reference external" href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/Deflater.html">ZIP Deflater</a> and Inflater counterpart.
+Once the community module plugin is installed, TIFF Deflate compression/decompression goes through libdeflate by default. This can be however customized, by changing the plugin priority in the Global Settings page of GeoServer.</p>
+</div>
+<div class="section" id="global-settings">
+<h2>Global Settings<a class="headerlink" href="#global-settings" title="Permalink to this headline">¶</a></h2>
+<p>Default ZIP Deflater compression plugin has priority 50. Libdeflate compression plugin has default priority 80 for both compression and decompression.
+Is it possible to fallback to the old plugin for either compression, decompression or both. Go to the Global Settings and set the priority to a value lower than 50.</p>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/libdeflate-settings.png" src="../../_images/libdeflate-settings.png" />
+<p class="caption"><span class="caption-text">Default Libdeflate compression Settings</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>Finally, during testing phases, we found that, at compression level 9, the old plugin is faster than the new one.
+By default, when priority is higher, the Libdeflate compression will be only used for compression levels in the range 1 to 8. These settings can be modified in the above Global Settings too.</p>
+</div>
+<div class="section" id="current-limitations">
+<h2>Current limitations<a class="headerlink" href="#current-limitations" title="Permalink to this headline">¶</a></h2>
+<p>The current available version is 0.1.0-beta which only contains linux libraries.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../web-service-auth/configuration.html" title="previous chapter">HTTP Based Authorization configuration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../../tutorials/index.html" title="next chapter">Tutorials</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Libdeflate</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#global-settings">Global Settings</a></li>
+<li><a class="reference internal" href="#current-limitations">Current limitations</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../web-service-auth/configuration.html" title="previous chapter">HTTP Based Authorization configuration</a></li>
+            <li>Next: <a href="../../tutorials/index.html" title="next chapter">Tutorials</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/libdeflate/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

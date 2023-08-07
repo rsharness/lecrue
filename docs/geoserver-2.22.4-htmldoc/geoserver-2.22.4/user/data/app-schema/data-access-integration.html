@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Access Integration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WMS Support" href="wms-support.html" />
+    <link rel="prev" title="Polymorphism" href="polymorphism.html" /> 
+  </head><body class="data/app-schema/data-access-integration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Data Access Integration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="wms-support.html" title="WMS Support" accesskey="N">Next</a></li>
+  <li>
+    <a href="polymorphism.html" title="Polymorphism" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="data-access-integration">
+<span id="app-schema-data-access-integration"></span><h1>Data Access Integration<a class="headerlink" href="#data-access-integration" title="Permalink to this headline">¶</a></h1>
+<p>This page assumes prior knowledge of <a class="reference internal" href="index.html#app-schema"><span class="std std-ref">Application schemas</span></a> and <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a>.
+To use feature chaining, the nested features can come from any complex feature data access, as long as:</p>
+<ul class="simple">
+<li><p>it has valid data referred by the “container” feature type,</p></li>
+<li><p>the data access is registered via DataAccessRegistry,</p></li>
+<li><p>if FEATURE_LINK is used as the link field, the feature types were created via ComplexFeatureTypeFactoryImpl</p></li>
+</ul>
+<p>However, the “container” features must come from an application schema data access. The rest of this article describes how we can create an application data access from an existing non-application schema data access, in order to “chain” features.
+The input data access referred in this article is assumed to be the non-application schema data access.</p>
+<div class="section" id="how-to-connect-to-the-input-data-access">
+<h2>How to connect to the input data access<a class="headerlink" href="#how-to-connect-to-the-input-data-access" title="Permalink to this headline">¶</a></h2>
+<p>Configure the data store connection in “sourceDataStores” tag as usual, but also specify the additional “isDataAccess” tag.
+This flag marks that we want to get the registered complex feature source of the specified “sourceType”, when processing the source data store.
+This assumes that the input data access is registered in DataAccessRegistry upon creation, for the system to find it.</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">sourceDataStores</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">DataStore</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">EarthResource</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">parameters</span><span class="o">&gt;</span>
+         <span class="o">&lt;</span><span class="n">Parameter</span><span class="o">&gt;</span>
+           <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">directory</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+           <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">file</span><span class="p">:</span><span class="o">./&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+         <span class="o">&lt;/</span><span class="n">Parameter</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">parameters</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">isDataAccess</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isDataAccess</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">DataStore</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">sourceDataStores</span><span class="o">&gt;</span>
+<span class="o">...</span>
+<span class="o">&lt;</span><span class="n">typeMappings</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">FeatureTypeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceDataStore</span><span class="o">&gt;</span><span class="n">EarthResource</span><span class="o">&lt;/</span><span class="n">sourceDataStore</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceType</span><span class="o">&gt;</span><span class="n">EarthResource</span><span class="o">&lt;/</span><span class="n">sourceType</span><span class="o">&gt;</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-to-configure-the-mapping">
+<h2>How to configure the mapping<a class="headerlink" href="#how-to-configure-the-mapping" title="Permalink to this headline">¶</a></h2>
+<p>Use “inputAttribute” in place of “OCQL” tag inside “sourceExpression”, to specify the input XPath expressions.</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">classifier</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">ControlledConcept</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">preferredName</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">inputAttribute</span><span class="o">&gt;</span><span class="n">mo</span><span class="p">:</span><span class="n">classification</span><span class="o">/</span><span class="n">mo</span><span class="p">:</span><span class="n">MineralDepositModel</span><span class="o">/</span><span class="n">mo</span><span class="p">:</span><span class="n">mineralDepositGroup</span><span class="o">&lt;/</span><span class="n">inputAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-to-chain-features">
+<h2>How to chain features<a class="headerlink" href="#how-to-chain-features" title="Permalink to this headline">¶</a></h2>
+<p>Feature chaining works both ways for the re-mapped complex features. You can chain other features inside these features, and vice-versa.
+The only difference is to use “inputAttribute” for the input XPath expressions, instead of “OCQL” as mentioned above.</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">occurence</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">inputAttribute</span><span class="o">&gt;</span><span class="n">mo</span><span class="p">:</span><span class="n">commodityDescription</span><span class="o">&lt;/</span><span class="n">inputAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-to-use-filters">
+<h2>How to use filters<a class="headerlink" href="#how-to-use-filters" title="Permalink to this headline">¶</a></h2>
+<p>From the user point of view, filters are configured as per normal, using the mapped/output target attribute XPath expressions.
+However, when one or more attributes in the expression is a multi-valued property, we need to specify a function such as “contains_text” in the filter.
+This is because when multiple values are returned, comparing them to a single value would only return true if there is only one value returned, and it is the same value.
+Please note that the “contains_text” function used in the following example is not available in GeoServer API, but defined in the database.</p>
+<p><strong>Example:</strong></p>
+<p>Composition is a multi-valued property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Filter</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyIsEqualTo</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;contains_text&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyName</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">composition</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">CompositionPart</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">proportion</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyName</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">Olivine</span> <span class="n">basalt</span><span class="p">,</span> <span class="n">tuff</span><span class="p">,</span> <span class="n">microgabbro</span><span class="p">,</span> <span class="n">minor</span> <span class="n">sedimentary</span> <span class="n">rocks</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyIsEqualTo</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Filter</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="polymorphism.html" title="previous chapter">Polymorphism</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="wms-support.html" title="next chapter">WMS Support</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Data Access Integration</a><ul>
+<li><a class="reference internal" href="#how-to-connect-to-the-input-data-access">How to connect to the input data access</a></li>
+<li><a class="reference internal" href="#how-to-configure-the-mapping">How to configure the mapping</a></li>
+<li><a class="reference internal" href="#how-to-chain-features">How to chain features</a></li>
+<li><a class="reference internal" href="#how-to-use-filters">How to use filters</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="polymorphism.html" title="previous chapter">Polymorphism</a></li>
+            <li>Next: <a href="wms-support.html" title="next chapter">WMS Support</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/data-access-integration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

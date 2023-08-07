@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Styling using Transformation Functions &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="i18N in SLD" href="../language.html" />
+    <link rel="prev" title="Styling mixed geometry types" href="mixed-geometries.html" /> 
+  </head><body class="styling/sld/tipstricks/transformation-func">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Tips and Tricks</a> &raquo;</li>
+    <li>Styling using Transformation Functions</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../language.html" title="i18N in SLD" accesskey="N">Next</a></li>
+  <li>
+    <a href="mixed-geometries.html" title="Styling mixed geometry types" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="styling-using-transformation-functions">
+<span id="transformation-func"></span><h1>Styling using Transformation Functions<a class="headerlink" href="#styling-using-transformation-functions" title="Permalink to this headline">¶</a></h1>
+<p>The Symbology Encoding 1.1 specification defines the following <strong>transformation functions</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Recode</span></code> transforms a set of discrete attribute values into another set of values</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Categorize</span></code> transforms a continuous-valued attribute into a set of discrete values</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Interpolate</span></code> transforms a continuous-valued attribute into another continuous range of values</p></li>
+</ul>
+<p>These functions provide a concise way to compute styling parameters from feature attribute values.
+GeoServer implements them as <a class="reference internal" href="../../../filter/function.html#filter-function"><span class="std std-ref">Filter functions</span></a> with the same names.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The GeoServer function syntax is slightly different to the SE 1.1 definition,
+since the specification defines extra syntax elements
+which are not available in GeoServer functions.</p>
+</div>
+<p>These functions can make style documents more concise,
+since they express logic which would otherwise require
+many separate rules or complex Filter expressions,
+They even allow logic which is impossible to express any other way.
+A further advantage is that they often provide superior performance
+to explicit rules.</p>
+<p>One disadvantage of using these functions for styling is that
+they are not displayed in WMS legend graphics.</p>
+<div class="section" id="recode">
+<h2>Recode<a class="headerlink" href="#recode" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Recode</span></code> filter function transforms a set of discrete values for an attribute
+into another set of values.
+The function can be used within SLD styling parameters
+to convert the value of a feature attribute
+into specific values for a parameter such as color, size, width, opacity, etc.</p>
+<p>The recoding is defined by a set of <em>(input, output)</em> value pairs.</p>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>Consider a chloropleth map of the US states dataset
+using the fill color to indicate the topographic regions for the states.
+The dataset has an attribute <code class="docutils literal notranslate"><span class="pre">SUB_REGION</span></code> containing the region code for each state.
+The <code class="docutils literal notranslate"><span class="pre">Recode</span></code> function is used to map each region code into a different color.</p>
+<p>The symbolizer for this style is:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;Fill&gt;</span>
+     <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;Recode&quot;</span><span class="nt">&gt;</span>
+         <span class="c">&lt;!-- Value to transform --&gt;</span>
+         <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;strTrim&quot;</span><span class="nt">&gt;</span>
+           <span class="nt">&lt;ogc:PropertyName&gt;</span>SUB_REGION<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+         <span class="nt">&lt;/ogc:Function&gt;</span>
+
+         <span class="c">&lt;!-- Map of input to output values --&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>N Eng<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#6495ED<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>Mid Atl<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#B0C4DE<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>S Atl<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#00FFFF<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>E N Cen<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#9ACD32<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>E S Cen<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#00FA9A<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>W N Cen<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#FFF8DC<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>W S Cen<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#F5DEB3<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>Mtn<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#F4A460<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>Pacific<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#87CEEB<span class="nt">&lt;/ogc:Literal&gt;</span>
+       <span class="nt">&lt;/ogc:Function&gt;</span>
+     <span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Fill&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>This style produces the following output:</p>
+<div class="figure align-default">
+<img alt="../../../_images/recode_usa_region.png" src="../../../_images/recode_usa_region.png" />
+</div>
+</div>
+</div>
+<div class="section" id="categorize">
+<h2>Categorize<a class="headerlink" href="#categorize" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Categorize</span></code> filter function transforms a continuous-valued attribute
+into a set of discrete values.
+The function can be used within SLD styling parameters
+to convert the value of a feature attribute
+into specific values for a parameter such as color, size, width, opacity, etc.</p>
+<p>The categorization is defined by a list of alternating output values
+and data thresholds.
+The threshold values define the breaks between the input ranges.
+Inputs are converted into output values depending on which range they fall in.</p>
+<div class="section" id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Consider a chloropleth map of the US states dataset
+using the fill color to indicate a categorization of the states by population.
+The dataset has attributes <code class="docutils literal notranslate"><span class="pre">PERSONS</span></code> and <code class="docutils literal notranslate"><span class="pre">LAND_KM</span></code> from which the population density
+is computed using the <code class="docutils literal notranslate"><span class="pre">Div</span></code> operator.
+This value is input to the <code class="docutils literal notranslate"><span class="pre">Categorize</span></code> function,
+which is used to assign different colors
+to the density ranges [ &lt;= 20], [20 - 100], and [ &gt; 100].</p>
+<p>The symbolizer for this style is:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;Fill&gt;</span>
+     <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;Categorize&quot;</span><span class="nt">&gt;</span>
+         <span class="c">&lt;!-- Value to transform --&gt;</span>
+         <span class="nt">&lt;ogc:Div&gt;</span>
+           <span class="nt">&lt;ogc:PropertyName&gt;</span>PERSONS<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+           <span class="nt">&lt;ogc:PropertyName&gt;</span>LAND_KM<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+         <span class="nt">&lt;/ogc:Div&gt;</span>
+
+         <span class="c">&lt;!-- Output values and thresholds --&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#87CEEB<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>20<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#FFFACD<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>100<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#F08080<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+       <span class="nt">&lt;/ogc:Function&gt;</span>
+     <span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Fill&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>This style produces the following output:</p>
+<div class="figure align-default">
+<img alt="../../../_images/categorize_usa_popdensity.png" src="../../../_images/categorize_usa_popdensity.png" />
+</div>
+</div>
+</div>
+<div class="section" id="interpolate">
+<h2>Interpolate<a class="headerlink" href="#interpolate" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Interpolate</span></code> filter function transforms a continuous-valued attribute
+into another continuous range of values.
+The function can be used within SLD styling parameters
+to convert the value of a feature attribute
+into a continuous-valued parameter
+such as color, size, width, opacity, etc.</p>
+<p>The transformation is defined by a set of <em>(input, output)</em> control points
+chosen along a desired mapping curve.
+Piecewise interpolation along the curve is used
+to compute an output value for any input value.</p>
+<p>The function is able to compute either numeric or color values as output.
+This is known as the <strong>interpolation method</strong>,
+and is specified by an optional parameter with a value of <code class="docutils literal notranslate"><span class="pre">numeric</span></code> (the default) or <code class="docutils literal notranslate"><span class="pre">color</span></code>.</p>
+<p>The <em>shape</em> of the mapping curve between control points is specified by the <strong>interpolation mode</strong>,
+which is an optional parameter with values of
+<code class="docutils literal notranslate"><span class="pre">linear</span></code> (the default), <code class="docutils literal notranslate"><span class="pre">cubic</span></code>, or <code class="docutils literal notranslate"><span class="pre">cosine</span></code>.</p>
+<div class="section" id="id2">
+<h3>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Interpolating over color ranges allows concise definition of
+continuously-varying colors for chloropleth (thematic) maps.
+As an example, consider a map of the US states dataset
+using the fill color to indicate the population of the states.
+The dataset has an attribute <code class="docutils literal notranslate"><span class="pre">PERSONS</span></code> containing the population of each state.
+The population values lie in the range 0 to around 30,000,000.
+The interpolation curve is defined by three control points which assign colors to the
+population levels 0, 9,000,000 and 23,000,000.
+The colors for population values are computed by
+piecewise linear interpolation along this curve.
+For example, a state with a population of
+16,000,000 is displayed with a color midway between the ones
+for the middle and upper control points.
+States with populations greater than 23,000,000 are displayed with the last color.</p>
+<p>Because the interpolation is being performed over color values,
+the method parameter is supplied, with a value of <code class="docutils literal notranslate"><span class="pre">color</span></code>.
+Since the default linear interpolation is used,
+no interpolation mode is supplied,</p>
+<p>The symbolizer for this style is:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;Fill&gt;</span>
+     <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;Interpolate&quot;</span><span class="nt">&gt;</span>
+         <span class="c">&lt;!-- Property to transform --&gt;</span>
+         <span class="nt">&lt;ogc:PropertyName&gt;</span>PERSONS<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+
+         <span class="c">&lt;!-- Mapping curve definition pairs (input, output) --&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>0<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#fefeee<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>9000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#00ff00<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="nt">&lt;ogc:Literal&gt;</span>23000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>#ff0000<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="c">&lt;!-- Interpolation method --&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>color<span class="nt">&lt;/ogc:Literal&gt;</span>
+
+         <span class="c">&lt;!-- Interpolation mode - defaults to linear --&gt;</span>
+       <span class="nt">&lt;/ogc:Function&gt;</span>
+     <span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Fill&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>This symbolizer produces the following output:</p>
+<div class="figure align-default">
+<img alt="../../../_images/interpolate_usa_pop.png" src="../../../_images/interpolate_usa_pop.png" />
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="mixed-geometries.html" title="previous chapter">Styling mixed geometry types</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../language.html" title="next chapter">i18N in SLD</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Styling using Transformation Functions</a><ul>
+<li><a class="reference internal" href="#recode">Recode</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#categorize">Categorize</a><ul>
+<li><a class="reference internal" href="#id1">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#interpolate">Interpolate</a><ul>
+<li><a class="reference internal" href="#id2">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="mixed-geometries.html" title="previous chapter">Styling mixed geometry types</a></li>
+            <li>Next: <a href="../language.html" title="next chapter">i18N in SLD</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/tipstricks/transformation-func.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

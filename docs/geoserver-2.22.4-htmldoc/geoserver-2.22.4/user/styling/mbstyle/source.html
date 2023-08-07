@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Publishing a GeoServer Layer for use with Mapbox Styles &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MBStyle references" href="reference/index.html" />
+    <link rel="prev" title="Installing the GeoServer MBStyle extension" href="installing.html" /> 
+  </head><body class="styling/mbstyle/source">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">MBStyle Styling</a> &raquo;</li>
+    <li>Publishing a GeoServer Layer for use with Mapbox Styles</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="reference/index.html" title="MBStyle references" accesskey="N">Next</a></li>
+  <li>
+    <a href="installing.html" title="Installing the GeoServer MBStyle extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="publishing-a-geoserver-layer-for-use-with-mapbox-styles">
+<span id="mbstyle-source"></span><h1>Publishing a GeoServer Layer for use with Mapbox Styles<a class="headerlink" href="#publishing-a-geoserver-layer-for-use-with-mapbox-styles" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer can be configured to serve layers as vector tiles to be used as sources for Mapbox styles rendered by client-side applications such as OpenLayers.</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../../production/container.html#production-container-enable-cors"><span class="std std-ref">Enable CORS</span></a> in GeoServer.</p></li>
+<li><p>Install the <a class="reference internal" href="../../extensions/vectortiles/install.html#vectortiles-install"><span class="std std-ref">Vector Tiles</span></a> extension.</p></li>
+<li><p>Follow the <a class="reference internal" href="../../extensions/vectortiles/tutorial.html#vectortiles-tutorial"><span class="std std-ref">Vector tiles tutorial</span></a> to publish your layers in <code class="docutils literal notranslate"><span class="pre">application/vnd.mapbox-vector-tile</span></code> format (You only need to do the “Publish vector tiles in GeoWebCache” step).</p></li>
+</ol>
+<p>Once these steps are complete, you will be able to use your GeoServer layers in any Mapbox-compatible client application that can access your GeoServer.</p>
+<div class="section" id="source">
+<h2>Source<a class="headerlink" href="#source" title="Permalink to this headline">¶</a></h2>
+<p>The source syntax to use these GeoServer layers in your MapBox Style is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;&lt;source-name&gt;&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;tiles&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&amp;SERVICE=WMTS</span>
+        <span class="o">&amp;</span><span class="n">VERSION</span><span class="o">=</span><span class="mf">1.0</span><span class="o">.</span><span class="mi">0</span><span class="o">&amp;</span><span class="n">LAYER</span><span class="o">=&lt;</span><span class="n">workspace</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;&amp;</span><span class="n">STYLE</span><span class="o">=&amp;</span><span class="n">TILEMATRIX</span><span class="o">=</span><span class="n">EPSG</span><span class="p">:</span><span class="mi">900913</span><span class="p">:{</span><span class="n">z</span><span class="p">}</span>
+        <span class="o">&amp;</span><span class="n">TILEMATRIXSET</span><span class="o">=</span><span class="n">EPSG</span><span class="p">:</span><span class="mi">900913</span><span class="o">&amp;</span><span class="n">FORMAT</span><span class="o">=</span><span class="n">application</span><span class="o">/</span><span class="n">vnd</span><span class="o">.</span><span class="n">mapbox</span><span class="o">-</span><span class="n">vector</span><span class="o">-</span><span class="n">tile</span>
+        <span class="o">&amp;</span><span class="n">TILECOL</span><span class="o">=</span><span class="p">{</span><span class="n">x</span><span class="p">}</span><span class="o">&amp;</span><span class="n">TILEROW</span><span class="o">=</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="s2">&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;minZoom&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;maxZoom&quot;</span><span class="p">:</span> <span class="mi">14</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;workspace&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;layer&gt;</span></code> should be replaced by the workspace and name of the layer in question. <code class="docutils literal notranslate"><span class="pre">{x}</span></code>, <code class="docutils literal notranslate"><span class="pre">{y}</span></code>, and <code class="docutils literal notranslate"><span class="pre">{z}</span></code> are placeholder values for the tile indices and should be preserved as written.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;source-name&gt;</span></code> should be replaced by a source name of your choice. It will be used to refer to the source when defining a layer in the Mapbox Style.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If geoserver is not being served from <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>, update the domain accordingly.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="installing.html" title="previous chapter">Installing the GeoServer MBStyle extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="reference/index.html" title="next chapter">MBStyle references</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Publishing a GeoServer Layer for use with Mapbox Styles</a><ul>
+<li><a class="reference internal" href="#source">Source</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="installing.html" title="previous chapter">Installing the GeoServer MBStyle extension</a></li>
+            <li>Next: <a href="reference/index.html" title="next chapter">MBStyle references</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/mbstyle/source.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

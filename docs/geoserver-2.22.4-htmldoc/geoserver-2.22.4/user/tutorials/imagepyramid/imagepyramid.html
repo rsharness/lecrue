@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Building and using an image pyramid &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Using the GeoTools feature-pregeneralized module" href="../feature-pregeneralized/feature-pregeneralized_tutorial.html" />
+    <link rel="prev" title="Using the ImageMosaic plugin with footprint management" href="../imagemosaic_footprint/imagemosaic_footprint.html" /> 
+  </head><body class="tutorials/imagepyramid/imagepyramid">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Building and using an image pyramid</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../feature-pregeneralized/feature-pregeneralized_tutorial.html" title="Using the GeoTools feature-pregeneralized module" accesskey="N">Next</a></li>
+  <li>
+    <a href="../imagemosaic_footprint/imagemosaic_footprint.html" title="Using the ImageMosaic plugin with footprint management" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="building-and-using-an-image-pyramid">
+<span id="tutorials-imagepyramid"></span><h1>Building and using an image pyramid<a class="headerlink" href="#building-and-using-an-image-pyramid" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer can efficiently deal with large TIFF with overviews, as long as the TIFF is below the 2GB size limit.</p>
+<p>Once the image size goes beyond such limit it’s time to start considering an image pyramid instead.</p>
+<p>An image pyramid builds multiple mosaics of images, each one at a different zoom level, making it so that each tile is stored in a separate file. This comes with a composition overhead to bring back the tiles into a single image, but can speed up image handling as each overview is tiled, and thus a sub-set of it can be accessed efficiently (as opposed to a single GeoTIFF, where the base level can be tiled, but the overviews never are).</p>
+<p>This tutorial shows how to build an image pyramid with open source utilities and how to load it into GeoServer. The tutorial assumes you’re running at least GeoServer 2.0.2.</p>
+<div class="section" id="building-a-pyramid">
+<h2>Building a pyramid<a class="headerlink" href="#building-a-pyramid" title="Permalink to this headline">¶</a></h2>
+<p>For this tutorial we have prepared a <a class="reference external" href="http://data.opengeo.org/bmreduced.tiff">sample BlueMarble TNG subset</a> in GeoTIFF form. The image is tiled and JPEG compressed, without overviews. Not exactly what you’d want to use for high performance data serving, but good for redistribution and as a starting point to build a pyramid.</p>
+<p>In order to build the pyramid we’ll use the <a class="reference external" href="http://www.gdal.org/gdal_retile.html">gdal_retile.py</a> utility, part of the GDAL command line utilities and available for various operating systems (if you’re using Microsoft Windows look for <a class="reference external" href="http://fwtools.maptools.org/">FWTools</a>).</p>
+<p>The following commands will build a pyramid on disk:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">bmpyramid</span>
+<span class="n">gdal_retile</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">r</span> <span class="n">bilinear</span> <span class="o">-</span><span class="n">levels</span> <span class="mi">4</span> <span class="o">-</span><span class="n">ps</span> <span class="mi">2048</span> <span class="mi">2048</span> <span class="o">-</span><span class="n">co</span> <span class="s2">&quot;TILED=YES&quot;</span> <span class="o">-</span><span class="n">co</span> <span class="s2">&quot;COMPRESS=JPEG&quot;</span> <span class="o">-</span><span class="n">targetDir</span> <span class="n">bmpyramid</span> <span class="n">bmreduced</span><span class="o">.</span><span class="n">tiff</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="http://www.gdal.org/gdal_retile.html">gdal_retile.py</a> user guide provides a detailed explanation for all the possible parameters, here is a description of the ones used in the command line above:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>-v</cite>: verbose output, allows the user to see each file creation scroll by, thus knowing progress is being made (a big pyramid construction can take hours)</p></li>
+<li><p><cite>-r bilinear</cite>: use bilinear interpolation when building the lower resolution levels. This is key to get good image quality without asking GeoServer to perform expensive interpolations in memory</p></li>
+<li><p><cite>-levels 4</cite>: the number of levels in the pyramid</p></li>
+<li><p><cite>-ps 2048 2048</cite>: each tile in the pyramid will be a 2048x2048 GeoTIFF</p></li>
+<li><p><cite>-co “TILED=YES”</cite>: each GeoTIFF tile in the pyramid will be inner tiled</p></li>
+<li><p><cite>-co “COMPRESS=JPEG”</cite>: each GeoTIFF tile in the pyramid will be JPEG compressed (trades small size for higher performance, try out it without this parameter too)</p></li>
+<li><p><cite>-targetDir bmpyramid</cite>: build the pyramid in the bmpyramid directory. The target directory must exist and be empty</p></li>
+<li><p><cite>bmreduced.tiff</cite>: the source file</p></li>
+</ul>
+</div></blockquote>
+<p>This will produce a number of TIFF files in bmpyramid along with the sub-directories <cite>1</cite>, <cite>2,</cite> <cite>3</cite>, and <cite>4</cite>.</p>
+<p>Once that is done, and assuming the GeoServer image pyramid plug-in is already installed, it’s possible to create the coverage store by pointing at the directory containing the pyramid and clicking save:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/configureStore.png" src="../../_images/configureStore.png" />
+<p class="caption"><span class="caption-text"><em>Configuring a image pyramid store</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>When clicking save the store will look into the directory, recognize a <cite>gdal_retile</cite> generated structure and perform some background operations:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>move all tiff files in the root to a newly create directory <cite>0</cite></p></li>
+<li><p>create an image mosaic in all sub-directories (shapefile index plus property file)</p></li>
+<li><p>create the root property file describing the whole pyramid structure</p></li>
+</ul>
+</div></blockquote>
+<p>Once that is done the user will be asked to choose a coverage, which will be named after the pyramid root directory:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/chooseLayer.png" src="../../_images/chooseLayer.png" />
+<p class="caption"><span class="caption-text"><em>Choosing the coverage for publishing</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>Publish the layer, and then setup the layer parameter <cite>USE_JAI_IMAGEREAD</cite> to <cite>false</cite> to get better scalability:</p>
+<div class="figure align-center" id="id4">
+<img alt="../../_images/layerParams.png" src="../../_images/layerParams.png" />
+<p class="caption"><span class="caption-text"><em>Tuning the pyramid parameters</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>Submit and go to the preview, the pyramid should be ready to use:</p>
+<div class="figure align-center" id="id5">
+<img alt="../../_images/preview2.png" src="../../_images/preview2.png" />
+<p class="caption"><span class="caption-text"><em>Previewing the pyramid</em></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="notes-on-big-pyramids">
+<h2>Notes on big pyramids<a class="headerlink" href="#notes-on-big-pyramids" title="Permalink to this headline">¶</a></h2>
+<p>The code that is auto-creating the pyramid indexes and metadata files might take time to run, especially if:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>the pyramid zero level is composed of many thousands of files</p></li>
+<li><p>the system is busy with the disk already and that results in higher times to move all the files to the <cite>0</cite> directory</p></li>
+</ul>
+</div></blockquote>
+<p>If the delay is too high the request to create the store will time out and might break the pyramid creation.
+So, in case of very big pyramids consider loosing some of the comfort and creating the <cite>0</cite> directory and moving the files by hand:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">bmpyramid</span>
+<span class="n">mkdir</span> <span class="mi">0</span>
+<span class="n">mv</span> <span class="o">*.</span><span class="n">tiff</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../imagemosaic_footprint/imagemosaic_footprint.html" title="previous chapter">Using the ImageMosaic plugin with footprint management</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../feature-pregeneralized/feature-pregeneralized_tutorial.html" title="next chapter">Using the GeoTools feature-pregeneralized module</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Building and using an image pyramid</a><ul>
+<li><a class="reference internal" href="#building-a-pyramid">Building a pyramid</a></li>
+<li><a class="reference internal" href="#notes-on-big-pyramids">Notes on big pyramids</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../imagemosaic_footprint/imagemosaic_footprint.html" title="previous chapter">Using the ImageMosaic plugin with footprint management</a></li>
+            <li>Next: <a href="../feature-pregeneralized/feature-pregeneralized_tutorial.html" title="next chapter">Using the GeoTools feature-pregeneralized module</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/imagepyramid/imagepyramid.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

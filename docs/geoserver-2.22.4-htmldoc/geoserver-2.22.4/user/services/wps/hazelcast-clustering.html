@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hazelcast based process status clustering &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Catalog Services for the Web (CSW)" href="../csw/index.html" />
+    <link rel="prev" title="Process chaining" href="processes/chaining.html" /> 
+  </head><body class="services/wps/hazelcast-clustering">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Processing Service (WPS)</a> &raquo;</li>
+    <li>Hazelcast based process status clustering</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../csw/index.html" title="Catalog Services for the Web (CSW)" accesskey="N">Next</a></li>
+  <li>
+    <a href="processes/chaining.html" title="Process chaining" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="hazelcast-based-process-status-clustering">
+<span id="hazelcast-clustering"></span><h1>Hazelcast based process status clustering<a class="headerlink" href="#hazelcast-based-process-status-clustering" title="Permalink to this headline">¶</a></h1>
+<p>Starting with version 2.7.0 GeoServer has a new WPS extension point allowing GeoServer nodes
+in the same cluster to share the status of current WPS requests.
+This is particularly important for asynchronous ones, as the client polling for the progress/results
+might not be hitting the same node that’s currently running the requests.</p>
+<p>The Hazelcast based status sharing module leverages the Hazelcast library to share the information
+about the current process status using a replicated map.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The installation of the module follows the usual process for most extensions:</p>
+<ul class="simple">
+<li><p>Stop GeoServer</p></li>
+<li><p>Unpack the contents of gs-wps-hazelcast-status.zip into the <code class="docutils literal notranslate"><span class="pre">geoserver/WEB-INF/lib</span></code> folder</p></li>
+<li><p>Restart GeoServer</p></li>
+</ul>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>The module does not require any configuration in case the default behavior is suitable for the
+deploy environment.</p>
+<p>By default, the module will use multicast messages to locate other nodes in the same cluster
+and will automatically start sharing information about the process status with them.</p>
+<p>In case this is not satisfactory, a <code class="docutils literal notranslate"><span class="pre">hazelcast.xml</span></code> file can be created/edited in the
+root of the GeoServer data directory to modify the network connection methods.</p>
+<p>The file is not using a GeoServer specific syntax, it’s instead a regular
+<a class="reference external" href="http://docs.hazelcast.org/docs/3.3/manual/html-single/hazelcast-documentation.html#configuring-hazelcast">Hazelcast configuration</a>
+file with a simple distributed map declaration:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;hazelcast</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.hazelcast.com/schema/config</span>
+<span class="s">                               http://www.hazelcast.com/schema/config/hazelcast-config-3.3.xsd&quot;</span>
+  <span class="na">xmlns=</span><span class="s">&quot;http://www.hazelcast.com/schema/config&quot;</span><span class="nt">&gt;</span>
+
+  <span class="c">&lt;!-- Protecting against accidental cluster joining --&gt;</span>
+  <span class="nt">&lt;group&gt;</span>
+    <span class="nt">&lt;name&gt;</span>geoserver<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;password&gt;</span>geoserver<span class="nt">&lt;/password&gt;</span>
+  <span class="nt">&lt;/group&gt;</span>
+
+  <span class="c">&lt;!--</span>
+<span class="c">     Make Hazelcast use log4j just like GeoServer. Remember to add:</span>
+<span class="c">       log4j.category.com.hazelcast=INFO</span>
+<span class="c">     in the geoserver logging configuration to see Hazelcast log messages</span>
+<span class="c">  --&gt;</span>
+  <span class="nt">&lt;properties&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;hazelcast.logging.type&quot;</span><span class="nt">&gt;</span>log4j<span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;/properties&gt;</span>
+
+  <span class="c">&lt;!-- Network section, by default it enables multicast, tune it to use tcp in case</span>
+<span class="c">    multicast is not allowed, and list the nodes that make up a reasonable core of the</span>
+<span class="c">    cluster (e.g., machines that will never be all down at the same time) --&gt;</span>
+  <span class="nt">&lt;network&gt;</span>
+    <span class="nt">&lt;port</span> <span class="na">auto-increment=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>5701<span class="nt">&lt;/port&gt;</span>
+    <span class="nt">&lt;join&gt;</span>
+      <span class="nt">&lt;multicast</span> <span class="na">enabled=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;multicast-group&gt;</span>224.2.2.3<span class="nt">&lt;/multicast-group&gt;</span>
+        <span class="nt">&lt;multicast-port&gt;</span>54327<span class="nt">&lt;/multicast-port&gt;</span>
+      <span class="nt">&lt;/multicast&gt;</span>
+      <span class="nt">&lt;tcp-ip</span> <span class="na">enabled=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;interface&gt;</span>127.0.0.1<span class="nt">&lt;/interface&gt;</span>
+      <span class="nt">&lt;/tcp-ip&gt;</span>
+      <span class="nt">&lt;aws</span> <span class="na">enabled=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;access-key&gt;</span>my-access-key<span class="nt">&lt;/access-key&gt;</span>
+        <span class="nt">&lt;secret-key&gt;</span>my-secret-key<span class="nt">&lt;/secret-key&gt;</span>
+        <span class="nt">&lt;region&gt;</span>us-east-1<span class="nt">&lt;/region&gt;</span>
+      <span class="nt">&lt;/aws&gt;</span>
+    <span class="nt">&lt;/join&gt;</span>
+  <span class="nt">&lt;/network&gt;</span>
+
+
+
+  <span class="c">&lt;!-- The WPS status map --&gt;</span>
+  <span class="nt">&lt;map</span> <span class="na">name=</span><span class="s">&quot;wpsExecutionStatusMap&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;indexes&gt;</span>
+      <span class="c">&lt;!-- Add indexes to support the two most common queries --&gt;</span>
+      <span class="nt">&lt;index</span> <span class="na">ordered=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>executionId<span class="nt">&lt;/index&gt;</span>
+      <span class="nt">&lt;index</span> <span class="na">ordered=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>completionTime<span class="nt">&lt;/index&gt;</span>
+    <span class="nt">&lt;/indexes&gt;</span>
+  <span class="nt">&lt;/map&gt;</span>
+<span class="nt">&lt;/hazelcast&gt;</span>
+</pre></div>
+</div>
+<p>In case a TCP based configuration is desired, one just needs to disable the multicast one,
+enable the tcp-ip one, and add a list of interface addresses in it that will form the core
+of the cluster.
+Not all nodes in the cluster need to be listed in said section, but a list long enough to ensure
+that not all the nodes in the list might go down at the same time: as long as at least one
+of said nodes lives, the cluster will maintain its integrity.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="processes/chaining.html" title="previous chapter">Process chaining</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../csw/index.html" title="next chapter">Catalog Services for the Web (CSW)</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Hazelcast based process status clustering</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="processes/chaining.html" title="previous chapter">Process chaining</a></li>
+            <li>Next: <a href="../csw/index.html" title="next chapter">Catalog Services for the Web (CSW)</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wps/hazelcast-clustering.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

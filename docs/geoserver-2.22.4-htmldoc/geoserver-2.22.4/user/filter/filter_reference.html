@@ -1,0 +1,594 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filter Encoding Reference &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ECQL Reference" href="ecql_reference.html" />
+    <link rel="prev" title="Supported filter languages" href="syntax.html" /> 
+  </head><body class="filter/filter_reference">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Filtering</a> &raquo;</li>
+    <li>Filter Encoding Reference</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="ecql_reference.html" title="ECQL Reference" accesskey="N">Next</a></li>
+  <li>
+    <a href="syntax.html" title="Supported filter languages" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="filter-encoding-reference">
+<span id="filter-fe-reference"></span><h1>Filter Encoding Reference<a class="headerlink" href="#filter-encoding-reference" title="Permalink to this headline">¶</a></h1>
+<p>This is a reference for the <strong>Filter Encoding</strong> language
+implemented in GeoServer.
+The Filter Encoding language uses an XML-based syntax.
+It is defined by the <a class="reference external" href="http://www.opengeospatial.org/standards/filter">OGC Filter Encoding standard</a>.</p>
+<p>Filters are used to select features or other objects from the context in which they are evaluated.
+They are similar in functionality to the SQL “WHERE” clause.
+A filter is specified using a <strong>condition</strong>.</p>
+<div class="section" id="condition">
+<span id="filter-condition"></span><h2>Condition<a class="headerlink" href="#condition" title="Permalink to this headline">¶</a></h2>
+<p>A condition is a single <a class="reference internal" href="#filter-predicate"><span class="std std-ref">Predicate</span></a> element,
+or a combination of conditions by <a class="reference internal" href="#filter-logical"><span class="std std-ref">Logical operators</span></a>.</p>
+</div>
+<div class="section" id="predicate">
+<span id="filter-predicate"></span><h2>Predicate<a class="headerlink" href="#predicate" title="Permalink to this headline">¶</a></h2>
+<p>Predicates are boolean-valued expressions which compute relationships between values.
+A predicate is specified by using a <strong>comparison operator</strong> or a <strong>spatial operator</strong>.
+The operators are used to compare properties of the features being filtered
+to other feature properties or to literal data.</p>
+<div class="section" id="comparison-operators">
+<h3>Comparison operators<a class="headerlink" href="#comparison-operators" title="Permalink to this headline">¶</a></h3>
+<p>Comparison operators are used to specify conditions on non-spatial attributes.</p>
+<div class="section" id="binary-comparison-operators">
+<h4>Binary Comparison operators<a class="headerlink" href="#binary-comparison-operators" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>binary comparison operators</strong> are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsEqualTo&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsNotEqualTo&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLessThan&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLessThanOrEqualTo&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsGreaterThan&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsGreaterThanOrEqualTo&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>They contain the elements:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Element</strong></p></td>
+<td><p><strong>Required?</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#filter-expression"><span class="std std-ref">Expression</span></a></p></td>
+<td><p>Yes</p></td>
+<td><p>The first value to compare.
+Often a <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#filter-expression"><span class="std std-ref">Expression</span></a></p></td>
+<td><p>Yes</p></td>
+<td><p>The second value to compare</p></td>
+</tr>
+</tbody>
+</table>
+<p>Binary comparison operator elements may include an optional <code class="docutils literal notranslate"><span class="pre">matchCase</span></code> attribute,
+with the value <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>.
+If this attribute is <code class="docutils literal notranslate"><span class="pre">true</span></code> (the default), string comparisons are case-sensitive.
+If the attribute is <code class="docutils literal notranslate"><span class="pre">false</span></code> strings comparisons do not check case.</p>
+</div>
+<div class="section" id="propertyislike-operator">
+<h4>PropertyIsLike operator<a class="headerlink" href="#propertyislike-operator" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLike&gt;</span></code> operator matches a string property value against a text <strong>pattern</strong>.
+It contains the elements:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Element</strong></p></td>
+<td><p><strong>Required?</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Contains a string specifying the name of the property to test</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;Literal&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Contains a pattern string to be matched</p></td>
+</tr>
+</tbody>
+</table>
+<p>The pattern is specified by a sequence of regular characters and
+three special pattern characters.
+The pattern characters are defined by the following <em>required</em> attributes of the <code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLike&gt;</span></code> element:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wildCard</span></code> specifies the pattern character which matches any sequence of zero or more string characters</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">singleChar</span></code> specifies the pattern character which matches any single string character</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">escapeChar</span></code> specifies the escape character which can be used to escape the pattern characters</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="propertyisnull-operator">
+<h4>PropertyIsNull operator<a class="headerlink" href="#propertyisnull-operator" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsNull&gt;</span></code> operator tests whether a property value is null.
+It contains the element:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Element</strong></p></td>
+<td><p><strong>Required?</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>contains a string specifying the name of the property to be tested</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="propertyisbetweeen-operator">
+<h4>PropertyIsBetweeen operator<a class="headerlink" href="#propertyisbetweeen-operator" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsBetween&gt;</span></code> operator tests whether an expression value lies within a range
+given by a lower and upper bound (inclusive).
+It contains the elements:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Element</strong></p></td>
+<td><p><strong>Required?</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#filter-expression"><span class="std std-ref">Expression</span></a></p></td>
+<td><p>Yes</p></td>
+<td><p>The value to test</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;LowerBoundary&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Contains an <a class="reference internal" href="#filter-expression"><span class="std std-ref">Expression</span></a> giving the lower bound of the range</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;UpperBoundary&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Contains an <a class="reference internal" href="#filter-expression"><span class="std std-ref">Expression</span></a> giving the upper bound of the range</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="spatial-operators">
+<h3>Spatial operators<a class="headerlink" href="#spatial-operators" title="Permalink to this headline">¶</a></h3>
+<p>Spatial operators are used to specify conditions on the geometric attributes of a feature.
+The following spatial operators are available:</p>
+<div class="section" id="topological-operators">
+<h4>Topological operators<a class="headerlink" href="#topological-operators" title="Permalink to this headline">¶</a></h4>
+<p>These operators test topological spatial relationships using the standard OGC Simple Features predicates:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Intersects&gt;</span></code> - Tests whether two geometries intersect</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Disjoint&gt;</span></code> - Tests whether two geometries are disjoint (do not interact)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Contains&gt;</span></code> - Tests whether a geometry contains another one</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Within&gt;</span></code> - Tests whether a geometry is within another one</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Touches&gt;</span></code> - Tests whether two geometries touch</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Crosses&gt;</span></code> - Tests whether two geometries cross</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Overlaps&gt;</span></code> - Tests whether two geometries overlap</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Equals&gt;</span></code> - Tests whether two geometries are topologically equal</p></li>
+</ul>
+</div></blockquote>
+<p>These contains the elements:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Element</strong></p></td>
+<td><p><strong>Required?</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Contains a string specifying the name of the geometry-valued property to be tested.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>GML Geometry</em></p></td>
+<td><p>Yes</p></td>
+<td><p>A GML literal value specifying the geometry to test against</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="distance-operators">
+<h4>Distance operators<a class="headerlink" href="#distance-operators" title="Permalink to this headline">¶</a></h4>
+<p>These operators test distance relationships between a geometry property and a geometry literal:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;DWithin&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Beyond&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>They contain the elements:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Element</strong></p></td>
+<td><p><strong>Required?</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Contains a string specifying the name of the property to be tested.
+If omitted, the <em>default geometry attribute</em> is assumed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>GML Geometry</em></p></td>
+<td><p>Yes</p></td>
+<td><p>A literal value specifying a geometry to compute the distance to.
+This may be either a geometry or an envelope in GML 3 format</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;Distance&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Contains the numeric value for the distance tolerance.
+The element may include an optional <code class="docutils literal notranslate"><span class="pre">units</span></code> attribute.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="bounding-box-operator">
+<h4>Bounding Box operator<a class="headerlink" href="#bounding-box-operator" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;BBOX&gt;</span></code> operator tests whether a geometry-valued property intersects a fixed bounding box.
+It contains the elements:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Element</strong></p></td>
+<td><p><strong>Required?</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Contains a string specifying the name of the property to be tested.
+If omitted, the <em>default geometry attribute</em> is assumed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;gml:Box&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>A GML Box literal value specifying the bounding box to test against</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>This filter selects features with a geometry that intersects the point (1,1).</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Intersects&gt;</span>
+  <span class="nt">&lt;PropertyName&gt;</span>GEOMETRY<span class="nt">&lt;/PropertyName&gt;</span>
+  <span class="nt">&lt;gml:Point&gt;</span>
+    <span class="nt">&lt;gml:coordinates&gt;</span>1 1<span class="nt">&lt;/gml:coordinates&gt;</span>
+  <span class="nt">&lt;/gml:Point&gt;</span>
+<span class="nt">&lt;/Intersects&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This filter selects features with a geometry that overlaps a polygon.</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Overlaps&gt;</span>
+  <span class="nt">&lt;PropertyName&gt;</span>Geometry<span class="nt">&lt;/PropertyName&gt;</span>
+  <span class="nt">&lt;gml:Polygon</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#63266405&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;gml:outerBoundaryIs&gt;</span>
+      <span class="nt">&lt;gml:LinearRing&gt;</span>
+         <span class="nt">&lt;gml:posList&gt;</span> ... <span class="nt">&lt;/gml:posList&gt;</span>
+      <span class="nt">&lt;/gml:LinearRing&gt;</span>
+    <span class="nt">&lt;/gml:outerBoundaryIs&gt;</span>
+  <span class="nt">&lt;/gml:Polygon&gt;</span>
+ <span class="nt">&lt;/Overlaps&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This filter selects features with a geometry that intersects
+the geographic extent [-10,0 : 10,10].</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;BBOX&gt;</span>
+  <span class="nt">&lt;PropertyName&gt;</span>GEOMETRY<span class="nt">&lt;/PropertyName&gt;</span>
+  <span class="nt">&lt;gml:Box</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;gml:coord&gt;</span>
+      <span class="nt">&lt;gml:X&gt;</span>-10<span class="nt">&lt;/gml:X&gt;</span> <span class="nt">&lt;gml:Y&gt;</span>0<span class="nt">&lt;/gml:Y&gt;</span>
+    <span class="nt">&lt;/gml:coord&gt;</span>
+    <span class="nt">&lt;gml:coord&gt;</span>
+      <span class="nt">&lt;gml:X&gt;</span>10<span class="nt">&lt;/gml:X&gt;</span> <span class="nt">&lt;gml:Y&gt;</span>10<span class="nt">&lt;/gml:Y&gt;</span>
+    <span class="nt">&lt;/gml:coord&gt;</span>
+  <span class="nt">&lt;/gml:Box&gt;</span>
+<span class="nt">&lt;/BBOX&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="logical-operators">
+<span id="filter-logical"></span><h2>Logical operators<a class="headerlink" href="#logical-operators" title="Permalink to this headline">¶</a></h2>
+<p>Logical operators are used to specify
+logical combinations of <a class="reference internal" href="#filter-condition"><span class="std std-ref">Condition</span></a> elements
+(which may be either <a class="reference internal" href="#filter-predicate"><span class="std std-ref">Predicate</span></a> elements or other <strong>logical operators</strong>).
+They may be nested to any depth.</p>
+<p>The following logical operators are available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;And&gt;</span></code> - computes the logical conjunction of the operands</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Or&gt;</span></code> - computes the logical disjunction of the operands</p></li>
+</ul>
+</div></blockquote>
+<p>The content for <code class="docutils literal notranslate"><span class="pre">&lt;And&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;Or&gt;</span></code> is two operands given by <a class="reference internal" href="#filter-condition"><span class="std std-ref">Condition</span></a> elements.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Not&gt;</span></code> - computes the logical negation of the operand</p></li>
+</ul>
+</div></blockquote>
+<p>The content for <code class="docutils literal notranslate"><span class="pre">&lt;Not&gt;</span></code> is a single operand given by a <a class="reference internal" href="#filter-condition"><span class="std std-ref">Condition</span></a> element.</p>
+<div class="section" id="id1">
+<h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>This filter uses <code class="docutils literal notranslate"><span class="pre">&lt;And&gt;</span></code> to combine a comparison predicate and a spatial predicate:</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;And&gt;</span>
+   <span class="nt">&lt;PropertyIsEqualTo&gt;</span>
+      <span class="nt">&lt;PropertyName&gt;</span>NAME<span class="nt">&lt;/PropertyName&gt;</span>
+      <span class="nt">&lt;Literal&gt;</span>New York<span class="nt">&lt;/Literal&gt;</span>
+   <span class="nt">&lt;/PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;Intersects&gt;</span>
+      <span class="nt">&lt;PropertyName&gt;</span>GEOMETRY<span class="nt">&lt;/PropertyName&gt;</span>
+      <span class="nt">&lt;Literal&gt;</span>
+         <span class="nt">&lt;gml:Point&gt;</span>
+             <span class="nt">&lt;gml:coordinates&gt;</span>1 1<span class="nt">&lt;/gml:coordinates&gt;</span>
+         <span class="nt">&lt;/gml:Point&gt;</span>
+      <span class="nt">&lt;/Literal&gt;</span>
+   <span class="nt">&lt;/Intersects&gt;</span>
+<span class="nt">&lt;/And&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="expression">
+<span id="filter-expression"></span><h2>Expression<a class="headerlink" href="#expression" title="Permalink to this headline">¶</a></h2>
+<p><strong>Filter expressions</strong> specify constant, variable or computed data values.
+An expression is formed from one of the following elements
+(some of which contain sub-expressions,
+meaning that expressions may be of arbitrary depth):</p>
+<div class="section" id="arithmetic-operators">
+<h3>Arithmetic operators<a class="headerlink" href="#arithmetic-operators" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>arithmetic operator</strong> elements compute arithmetic operations on numeric values.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Add&gt;</span></code> - adds the two operands</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Sub&gt;</span></code> - subtracts the second operand from the first</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Mul&gt;</span></code> - multiplies the two operands</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Div&gt;</span></code> - divides the first operand by the second</p></li>
+</ul>
+</div></blockquote>
+<p>Each arithmetic operator element contains two <a class="reference internal" href="#filter-expression"><span class="std std-ref">Expression</span></a> elements
+providing the operands.</p>
+</div>
+<div class="section" id="function">
+<h3>Function<a class="headerlink" href="#function" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;Function&gt;</span></code> element specifies a filter function to be evaluated.
+The required <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute gives the function name.
+The element contains a sequence of zero or more
+<a class="reference internal" href="#filter-expression"><span class="std std-ref">Expression</span></a> elements providing the values of the function arguments.</p>
+<p>See the <a class="reference internal" href="function_reference.html#filter-function-reference"><span class="std std-ref">Filter Function Reference</span></a> for details of the functions provided by GeoServer.</p>
+</div>
+<div class="section" id="property-value">
+<h3>Property Value<a class="headerlink" href="#property-value" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code> element refers to the value of a feature attribute.
+It contains a <strong>string</strong> or an <strong>XPath expression</strong> specifying the attribute name.</p>
+</div>
+<div class="section" id="literal">
+<h3>Literal<a class="headerlink" href="#literal" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;Literal&gt;</span></code> element specifies a constant value.
+It contains data of one of the following types:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Type</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Numeric</p></td>
+<td><p>A string representing a numeric value (integer or decimal).</p></td>
+</tr>
+<tr class="row-odd"><td><p>Boolean</p></td>
+<td><p>A boolean value of <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>String</p></td>
+<td><p>A string value.
+XML-incompatible text may be included by using
+<strong>character entities</strong> or <code class="docutils literal notranslate"><span class="pre">&lt;![CDATA[</span></code> <code class="docutils literal notranslate"><span class="pre">]]&gt;</span></code> delimiters.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Date</p></td>
+<td><p>A string representing a date.</p></td>
+</tr>
+<tr class="row-even"><td><p>Geometry</p></td>
+<td><p>An element specifying a geometry in GML3 format.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="wfs-2-0-namespaces">
+<h2>WFS 2.0 namespaces<a class="headerlink" href="#wfs-2-0-namespaces" title="Permalink to this headline">¶</a></h2>
+<p>WFS 2.0 does not depend on any one GML version and thus requires an explicit namespace and schemaLocation for GML.
+In a GET request, namespaces can be placed on a Filter element (that is, <code class="docutils literal notranslate"><span class="pre">filter=</span></code> the block below, URL-encoded):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;fes:Filter</span>
+        <span class="na">xmlns:fes=</span><span class="s">&quot;http://www.opengis.net/fes/2.0&quot;</span>
+        <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fes:Not&gt;</span>
+        <span class="nt">&lt;fes:Disjoint&gt;</span>
+            <span class="nt">&lt;fes:ValueReference&gt;</span>sf:the_geom<span class="nt">&lt;/fes:ValueReference&gt;</span>
+            <span class="nt">&lt;gml:Polygon</span>
+                    <span class="na">gml:id=</span><span class="s">&quot;polygon.1&quot;</span>
+                    <span class="na">srsName=</span><span class="s">&#39;http://www.opengis.net/def/crs/EPSG/0/26713&#39;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;gml:exterior&gt;</span>
+                    <span class="nt">&lt;gml:LinearRing&gt;</span>
+                        <span class="nt">&lt;gml:posList&gt;</span>590431 4915204 590430
+                            4915205 590429 4915204 590430
+                            4915203 590431 4915204<span class="nt">&lt;/gml:posList&gt;</span>
+                    <span class="nt">&lt;/gml:LinearRing&gt;</span>
+                <span class="nt">&lt;/gml:exterior&gt;</span>
+            <span class="nt">&lt;/gml:Polygon&gt;</span>
+        <span class="nt">&lt;/fes:Disjoint&gt;</span>
+    <span class="nt">&lt;/fes:Not&gt;</span>
+<span class="nt">&lt;/fes:Filter&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="syntax.html" title="previous chapter">Supported filter languages</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="ecql_reference.html" title="next chapter">ECQL Reference</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Filter Encoding Reference</a><ul>
+<li><a class="reference internal" href="#condition">Condition</a></li>
+<li><a class="reference internal" href="#predicate">Predicate</a><ul>
+<li><a class="reference internal" href="#comparison-operators">Comparison operators</a><ul>
+<li><a class="reference internal" href="#binary-comparison-operators">Binary Comparison operators</a></li>
+<li><a class="reference internal" href="#propertyislike-operator">PropertyIsLike operator</a></li>
+<li><a class="reference internal" href="#propertyisnull-operator">PropertyIsNull operator</a></li>
+<li><a class="reference internal" href="#propertyisbetweeen-operator">PropertyIsBetweeen operator</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#spatial-operators">Spatial operators</a><ul>
+<li><a class="reference internal" href="#topological-operators">Topological operators</a></li>
+<li><a class="reference internal" href="#distance-operators">Distance operators</a></li>
+<li><a class="reference internal" href="#bounding-box-operator">Bounding Box operator</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logical-operators">Logical operators</a><ul>
+<li><a class="reference internal" href="#id1">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#expression">Expression</a><ul>
+<li><a class="reference internal" href="#arithmetic-operators">Arithmetic operators</a></li>
+<li><a class="reference internal" href="#function">Function</a></li>
+<li><a class="reference internal" href="#property-value">Property Value</a></li>
+<li><a class="reference internal" href="#literal">Literal</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#wfs-2-0-namespaces">WFS 2.0 namespaces</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="syntax.html" title="previous chapter">Supported filter languages</a></li>
+            <li>Next: <a href="ecql_reference.html" title="next chapter">ECQL Reference</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/filter/filter_reference.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

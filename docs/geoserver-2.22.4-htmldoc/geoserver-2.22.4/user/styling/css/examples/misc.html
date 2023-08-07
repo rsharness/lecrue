@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Miscellaneous &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="YSLD Styling" href="../../ysld/index.html" />
+    <link rel="prev" title="KML" href="kml.html" /> 
+  </head><body class="styling/css/examples/misc">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">CSS Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Styling examples</a> &raquo;</li>
+    <li>Miscellaneous</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../../ysld/index.html" title="YSLD Styling" accesskey="N">Next</a></li>
+  <li>
+    <a href="kml.html" title="KML" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="miscellaneous">
+<span id="css-example-misc"></span><h1>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="markers-sized-by-an-attribute-value">
+<h2>Markers sized by an attribute value<a class="headerlink" href="#markers-sized-by-an-attribute-value" title="Permalink to this headline">¶</a></h2>
+<p>The following produces square markers at each point, but these are sized such that the area of each marker is proportional to the <code class="docutils literal notranslate"><span class="pre">REPORTS</span></code> attribute.
+When zoomed in (when there are less points in view) the size of the markers is doubled to make the smaller points more noticeable.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">mark</span><span class="p">:</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">square</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="p">@</span><span class="k">sd</span> <span class="o">&gt;</span> <span class="nt">1M</span><span class="o">]</span> <span class="p">:</span><span class="nd">mark</span> <span class="p">{</span>
+  <span class="nt">size</span><span class="o">:</span> <span class="o">[</span><span class="nt">sqrt</span><span class="o">(</span><span class="nt">REPORTS</span><span class="o">)];</span>
+<span class="p">}</span>
+
+<span class="c">/* So that single-report points can be more easily seen */</span>
+<span class="o">[</span><span class="p">@</span><span class="k">sd</span> <span class="o">&lt;</span> <span class="nt">1M</span><span class="o">]</span> <span class="p">:</span><span class="nd">mark</span> <span class="p">{</span>
+  <span class="nt">size</span><span class="o">:</span> <span class="o">[</span><span class="nt">sqrt</span><span class="o">(</span><span class="nt">REPORTS</span><span class="o">)*</span><span class="nt">2</span><span class="o">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This example uses the <code class="docutils literal notranslate"><span class="pre">sqrt</span></code> function.
+There are many functions available for use in CSS and SLD.
+For more details read - <a class="reference internal" href="../../../filter/function_reference.html"><span class="doc">Filter Function Reference</span></a></p>
+</div>
+<div class="section" id="specifying-a-geometry-attribute">
+<h2>Specifying a geometry attribute<a class="headerlink" href="#specifying-a-geometry-attribute" title="Permalink to this headline">¶</a></h2>
+<p>In some cases, typically when using a database table with multiple geometry columns, it’s necessary to specify which geometry to use.
+For example, let’s suppose you have a table containing routes <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> both containing point geometries.
+The following CSS will style the start with a triangle mark, and the end with a square.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+    <span class="n">geometry</span><span class="p">:</span> <span class="p">[</span><span class="kc">start</span><span class="p">],</span>          <span class="p">[</span><span class="kc">end</span><span class="p">];</span>
+    <span class="n">mark</span><span class="p">:</span>     <span class="nf">symbol</span><span class="p">(</span><span class="kc">triangle</span><span class="p">),</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">square</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-a-geometry-geometry-transformations">
+<h2>Generating a geometry (Geometry Transformations)<a class="headerlink" href="#generating-a-geometry-geometry-transformations" title="Permalink to this headline">¶</a></h2>
+<p>Taking the previous example a bit further, we can also perform computations on-the-fly to generate the geometries that will be drawn.
+Any operation that is available for GeoServer <a class="reference internal" href="../../sld/extensions/geometry-transformations.html#geometry-transformations"><span class="std std-ref">Geometry transformations in SLD</span></a> is also available in CSS styles.
+To use them, we simply provide a more complex expression in the <code class="docutils literal notranslate"><span class="pre">geometry</span></code> property.
+For example, we could mark the start and end points of all the paths in a line layer (you can test this example out with any line layer, such as the <code class="docutils literal notranslate"><span class="pre">sf:streams</span></code> layer that is included in GeoServer’s default data directory.)</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+    <span class="n">geometry</span><span class="p">:</span> <span class="p">[</span><span class="nf">startPoint</span><span class="p">(</span><span class="n">the_geom</span><span class="p">)],</span> <span class="p">[</span><span class="nf">endPoint</span><span class="p">(</span><span class="n">the_geom</span><span class="p">)];</span>
+    <span class="n">mark</span><span class="p">:</span>     <span class="nf">symbol</span><span class="p">(</span><span class="kc">triangle</span><span class="p">),</span>       <span class="nf">symbol</span><span class="p">(</span><span class="kc">square</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="rendering-different-geometry-types-lines-points-with-a-single-style">
+<h2>Rendering different geometry types (lines/points) with a single style<a class="headerlink" href="#rendering-different-geometry-types-lines-points-with-a-single-style" title="Permalink to this headline">¶</a></h2>
+<p>As one more riff on the geometry examples, we’ll show how to render both the original line and the start/endpoints in a single style.
+This is accomplished by using <code class="docutils literal notranslate"><span class="pre">stroke-geometry</span></code> and <code class="docutils literal notranslate"><span class="pre">mark-geometry</span></code> to specify that different geometry expressions should be used for symbols compared with strokes.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+    <span class="n">stroke-geometry</span><span class="p">:</span> <span class="p">[</span><span class="n">the_geom</span><span class="p">];</span>
+    <span class="n">stroke</span><span class="p">:</span>          <span class="kc">blue</span><span class="p">;</span>
+    <span class="n">mark-geometry</span><span class="p">:</span> <span class="p">[</span><span class="nf">startPoint</span><span class="p">(</span><span class="n">the_geom</span><span class="p">)],</span> <span class="p">[</span><span class="nf">endPoint</span><span class="p">(</span><span class="n">the_geom</span><span class="p">)];</span>
+    <span class="n">mark</span><span class="p">:</span>          <span class="nf">symbol</span><span class="p">(</span><span class="kc">triangle</span><span class="p">),</span>       <span class="nf">symbol</span><span class="p">(</span><span class="kc">square</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="kml.html" title="previous chapter">KML</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../../ysld/index.html" title="next chapter">YSLD Styling</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Miscellaneous</a><ul>
+<li><a class="reference internal" href="#markers-sized-by-an-attribute-value">Markers sized by an attribute value</a></li>
+<li><a class="reference internal" href="#specifying-a-geometry-attribute">Specifying a geometry attribute</a></li>
+<li><a class="reference internal" href="#generating-a-geometry-geometry-transformations">Generating a geometry (Geometry Transformations)</a></li>
+<li><a class="reference internal" href="#rendering-different-geometry-types-lines-points-with-a-single-style">Rendering different geometry types (lines/points) with a single style</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="kml.html" title="previous chapter">KML</a></li>
+            <li>Next: <a href="../../ysld/index.html" title="next chapter">YSLD Styling</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/css/examples/misc.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

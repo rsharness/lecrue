@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maven Guide &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Eclipse Guide" href="../eclipse-guide/index.html" />
+    <link rel="prev" title="Eclipse M2 Quickstart" href="../quickstart/eclipse_m2.html" /> 
+  </head><body class="maven-guide/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+    <li>Maven Guide</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../eclipse-guide/index.html" title="Eclipse Guide" accesskey="N">Next</a></li>
+  <li>
+    <a href="../quickstart/eclipse_m2.html" title="Eclipse M2 Quickstart" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="maven-guide">
+<span id="id1"></span><h1>Maven Guide<a class="headerlink" href="#maven-guide" title="Permalink to this headline">¶</a></h1>
+<p>A reference for building GeoServer with Maven.</p>
+<div class="section" id="installing-maven">
+<h2>Installing Maven<a class="headerlink" href="#installing-maven" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="../tools.html#tools"><span class="std std-ref">Tools</span></a>.</p>
+</div>
+<div class="section" id="running-maven">
+<h2>Running Maven<a class="headerlink" href="#running-maven" title="Permalink to this headline">¶</a></h2>
+<p>Maven provides a wide range of commands used to do everything from compiling a
+module to generating test coverage reports. Most maven commands can be run from
+the root the source tree, or from a particular module.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When attempting to run a maven command from the root of the source tree
+remember to change directory from the root the checkout into the <code class="docutils literal notranslate"><span class="pre">src</span></code>
+directory.</p>
+</div>
+</div></blockquote>
+<p>When running a command from the root of the source tree, or from a directory
+that contains other modules the command will be run for all modules. When
+running the command from a single module, it is run only for that module.</p>
+</div>
+<div class="section" id="building">
+<h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<p>The most commonly maven command used with GeoServer is the install command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">clean</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>While the <code class="docutils literal notranslate"><span class="pre">clean</span></code> command is not necessary, it is recommended. Running this
+command does the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>compiles source code</p></li>
+<li><p>runs unit tests</p></li>
+<li><p>installs artifacts into the local maven repository</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="skipping-tests">
+<h2>Skipping tests<a class="headerlink" href="#skipping-tests" title="Permalink to this headline">¶</a></h2>
+<p>Often it is useful to skip unit tests when performing a build. Adding the flag
+<code class="docutils literal notranslate"><span class="pre">-DskipTests</span></code> to the build command will only compile unit tests, but not run
+them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="o">-</span><span class="n">DskipTests</span> <span class="n">clean</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-offline">
+<h2>Building offline<a class="headerlink" href="#building-offline" title="Permalink to this headline">¶</a></h2>
+<p>Maven automatically downloads dependencies declared by
+modules being built. In the case of SNAPSHOT dependencies,
+Maven downloads updates each time it performs the first build of the day.</p>
+<p>GeoServer depends on SNAPSHOT versions of the GeoTools library.
+The automatic download can result in lengthy build time
+while Maven downloads updated GeoTools modules.
+If GeoTools was built locally, these downloads are not necessary.</p>
+<p>Also, if GeoTools is being modified locally, then the local versions
+rather than SNAPSHOT versions of modules should be used.</p>
+<p>This can be remedied by running maven in “offline mode”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="o">-</span><span class="n">o</span> <span class="n">clean</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>In offline mode Maven will not download external dependencies,
+and will not update SNAPSHOT dependencies.</p>
+</div>
+<div class="section" id="building-extensions">
+<h2>Building extensions<a class="headerlink" href="#building-extensions" title="Permalink to this headline">¶</a></h2>
+<p>By default, extensions are not included in the build. They are added to the
+build explicitly via <a class="reference internal" href="#profiles"><span class="std std-ref">profiles</span></a>. For example the following
+command adds the <code class="docutils literal notranslate"><span class="pre">restconfig</span></code> extension to the build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">clean</span> <span class="n">install</span> <span class="o">-</span><span class="n">P</span> <span class="n">restconfig</span>
+</pre></div>
+</div>
+<p>Multiple extensions can be enabled simultaneously:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">clean</span> <span class="n">install</span> <span class="o">-</span><span class="n">P</span> <span class="n">restconfig</span><span class="p">,</span><span class="n">oracle</span>
+</pre></div>
+</div>
+<p>A special profile named <code class="docutils literal notranslate"><span class="pre">allExtensions</span></code> enables all extensions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">clean</span> <span class="n">install</span> <span class="o">-</span><span class="n">P</span> <span class="n">allExtensions</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="recover-build">
+<span id="profiles"></span><h2>Recover Build<a class="headerlink" href="#recover-build" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>After fixing a test failure; you can “resume” from a specific point in the build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">install</span> <span class="o">-</span><span class="n">rf</span> <span class="n">extension</span><span class="o">/</span><span class="n">wps</span>
+</pre></div>
+</div>
+</li>
+<li><p>Recover from a 301 Redirect</p>
+<p>A long standing bug in Maven from 2.0.10 handling of 301 errors when an artifact has been moved.
+The work around is to run Maven with the option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">install</span> <span class="o">-</span><span class="n">Dmaven</span><span class="o">.</span><span class="n">wagon</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">http</span><span class="o">=</span><span class="n">httpclient</span>
+</pre></div>
+</div>
+<p>This is not a common issue.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>Profiles<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Additional profiles are defined in the pom.xml files providing optional build steps. Profiles are directly enabled with the -P flag, others are automatically activated based on platform used or a -D property being defined.</p>
+<p>To build the release module as part of your build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Drelease</span>
+</pre></div>
+</div>
+<p>To include remote tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">PremoteOwsTests</span>
+</pre></div>
+</div>
+<p>Profiles are also used manage optional extensions community plugins:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Pproxy</span>
+<span class="o">-</span><span class="n">Poracle</span>
+<span class="o">-</span><span class="n">Pupload</span>
+<span class="o">-</span><span class="n">Pwps</span>
+</pre></div>
+</div>
+<p>Additional profiles are defined in the pom.xml files providing optional build steps. Profiles are directly enabled with the -P flag, others are automatically activated based on platform used or a -D property being defined.</p>
+<p>To build javadocs with UML graph:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Duml</span>
+</pre></div>
+</div>
+<p>To build the release module as part of your build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Drelease</span>
+</pre></div>
+</div>
+<p>To include the legacy modules:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Plegacy</span>
+</pre></div>
+</div>
+<p>To include remote tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">PremoteOwsTests</span>
+</pre></div>
+</div>
+<p>Profiles are also used manage several of the optional community plugins:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Pupload</span>
+<span class="o">-</span><span class="n">Pwps</span>
+<span class="o">-</span><span class="n">Pproxy</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-test-coverage-reports">
+<h2>Generating test coverage reports<a class="headerlink" href="#generating-test-coverage-reports" title="Permalink to this headline">¶</a></h2>
+<p>Test coverage reports can be generated by running tests with the <cite>jacoco</cite> profile enabled:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">test</span> <span class="o">-</span><span class="n">Pjacoco</span>
+</pre></div>
+</div>
+<p>Coverage reports are generated in the <cite>target/site/jacoco</cite> directory of each module.</p>
+</div>
+<div class="section" id="running-the-web-module-with-jetty">
+<h2>Running the web module with Jetty<a class="headerlink" href="#running-the-web-module-with-jetty" title="Permalink to this headline">¶</a></h2>
+<p>The maven jetty plugin can be used to run modules which are web based in an
+embedded Jetty container:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">geoserver_2</span><span class="o">.</span><span class="mf">0.</span><span class="n">x</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">web</span><span class="o">/</span><span class="n">app</span>
+<span class="n">mvn</span> <span class="n">jetty</span><span class="p">:</span><span class="n">run</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This command must be run from the web/app module, it will fail if run from
+elsewhere.</p>
+</div>
+<p>The above command will run GeoServer with the built in data directory. To
+specify a different data directory the <code class="docutils literal notranslate"><span class="pre">GEOSERVER_DATA_DIR</span></code> flag is used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="o">-</span><span class="n">DGEOSERVER_DATA_DIR</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">datadir</span> <span class="n">jetty</span><span class="p">:</span><span class="n">run</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-the-web-module">
+<h2>Building the web module<a class="headerlink" href="#building-the-web-module" title="Permalink to this headline">¶</a></h2>
+<p>When the <code class="docutils literal notranslate"><span class="pre">web</span></code> module is installed, it does so with a particular configuration
+built in. By default this is the <code class="docutils literal notranslate"><span class="pre">minimal</span></code> configuration. However this can be
+customized to build in any configuration via the <code class="docutils literal notranslate"><span class="pre">configId</span></code> and
+<code class="docutils literal notranslate"><span class="pre">configDirectory</span></code> flags. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">clean</span> <span class="n">install</span> <span class="o">-</span><span class="n">DconfigId</span><span class="o">=</span><span class="n">release</span> <span class="o">-</span><span class="n">DconfigDirectory</span><span class="o">=../../../</span><span class="n">data</span><span class="o">/</span><span class="n">release</span>
+</pre></div>
+</div>
+<p>The above command builds the web module against the release configuration that
+is shipped with GeoServer. The <code class="docutils literal notranslate"><span class="pre">configId</span></code> is the name of the configuration
+directory to include, and the <code class="docutils literal notranslate"><span class="pre">configDirectory</span></code> is the parent directory of the
+configuration directory to include.</p>
+<p>This can also be used when running the local jetty application server:</p>
+<blockquote>
+<div><p>mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release</p>
+</div></blockquote>
+<p>You may also use an absolute path, if you have a custom data directory you would like to use.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../quickstart/eclipse_m2.html" title="previous chapter">Eclipse M2 Quickstart</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../eclipse-guide/index.html" title="next chapter">Eclipse Guide</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Maven Guide</a><ul>
+<li><a class="reference internal" href="#installing-maven">Installing Maven</a></li>
+<li><a class="reference internal" href="#running-maven">Running Maven</a></li>
+<li><a class="reference internal" href="#building">Building</a></li>
+<li><a class="reference internal" href="#skipping-tests">Skipping tests</a></li>
+<li><a class="reference internal" href="#building-offline">Building offline</a></li>
+<li><a class="reference internal" href="#building-extensions">Building extensions</a></li>
+<li><a class="reference internal" href="#recover-build">Recover Build</a></li>
+<li><a class="reference internal" href="#id2">Profiles</a></li>
+<li><a class="reference internal" href="#generating-test-coverage-reports">Generating test coverage reports</a></li>
+<li><a class="reference internal" href="#running-the-web-module-with-jetty">Running the web module with Jetty</a></li>
+<li><a class="reference internal" href="#building-the-web-module">Building the web module</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../quickstart/eclipse_m2.html" title="previous chapter">Eclipse M2 Quickstart</a></li>
+            <li>Next: <a href="../eclipse-guide/index.html" title="next chapter">Eclipse Guide</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/maven-guide/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

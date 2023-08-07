@@ -1,0 +1,1195 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Importer REST API examples &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="INSPIRE" href="../inspire/index.html" />
+    <link rel="prev" title="REST API" href="rest_reference.html" /> 
+  </head><body class="extensions/importer/rest_examples">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Importer</a> &raquo;</li>
+    <li>Importer REST API examples</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../inspire/index.html" title="INSPIRE" accesskey="N">Next</a></li>
+  <li>
+    <a href="rest_reference.html" title="REST API" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="importer-rest-api-examples">
+<span id="importer-rest-examples"></span><h1>Importer REST API examples<a class="headerlink" href="#importer-rest-api-examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mass-configuring-a-directory-of-shapefiles">
+<h2>Mass configuring a directory of shapefiles<a class="headerlink" href="#mass-configuring-a-directory-of-shapefiles" title="Permalink to this headline">¶</a></h2>
+<p>In order to initiate an import of the <code class="docutils literal notranslate"><span class="pre">c:\data\tasmania</span></code> directory into the existing <code class="docutils literal notranslate"><span class="pre">tasmania</span></code> workspace:</p>
+<ol class="arabic">
+<li><p>The following JSON will be POSTed to GeoServer.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">import.json</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>  <span class="p">{</span>
+     <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+           <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania&quot;</span>
+           <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;directory&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;C:/data/tasmania&quot;</span>
+        <span class="p">}</span>
+     <span class="p">}</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>This curl command can be used for the purpose:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @import.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports&quot;</span>
+</pre></div>
+</div>
+<p>The importer will locate the files to be imported, and automatically prepare the tasks, returning the following response:</p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;PENDING&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;directory&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;Shapefile&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;C:\\data\\tasmania&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/data&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/tasks/0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;READY&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/tasks/1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;READY&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/tasks/2&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;READY&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/tasks/3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;READY&quot;</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic" start="3">
+<li><p>After checking every task is ready, the import can be initiated by executing a POST on the import resource:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST <span class="se">\</span>
+   <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>The resource can then be monitored for progress, and eventually final results:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XGET <span class="se">\</span>
+   <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9&quot;</span>
+</pre></div>
+</div>
+<p>Which in case of successful import will look like:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;directory&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;Shapefile&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;C:\\data\\tasmania&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/data&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/tasks/0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETE&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/tasks/1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETE&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/tasks/2&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETE&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/9/tasks/3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETE&quot;</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="configuring-a-shapefile-with-no-projection-information">
+<h2>Configuring a shapefile with no projection information<a class="headerlink" href="#configuring-a-shapefile-with-no-projection-information" title="Permalink to this headline">¶</a></h2>
+<p>In this case, let’s assume we have a single shapefile, <code class="file docutils literal notranslate"><span class="pre">tasmania_cities.shp`</span></code>, that does not have the <code class="file docutils literal notranslate"><span class="pre">.prj</span></code> sidecar file
+(the example is equally good for any case where the <code class="file docutils literal notranslate"><span class="pre">prj</span></code> file contents cannot be matched to an official EPSG code).</p>
+<ol class="arabic">
+<li><p>We are going to post the following import definition:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">import.json</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania&quot;</span>
+         <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;C:/data/tasmania/tasmania_cities.shp&quot;</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>With the cURL POST command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+   -d @import.json <span class="se">\</span>
+   <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports&quot;</span>
+</pre></div>
+</div>
+<p>The response in case the CRS is missing will be:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;PENDING&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;Shapefile&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania_cities.shp&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13/tasks/0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;NO_CRS&quot;</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Drilling into the task layer:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XGET -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+     http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer
+</pre></div>
+</div>
+<p>We can see the srs information is missing:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;layer&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania_cities&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania_cities&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;originalName&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania_cities&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;nativeName&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania_cities&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;bbox&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;minx&quot;</span><span class="p">:</span> <span class="mf">146.2910004483</span><span class="p">,</span>
+      <span class="nt">&quot;miny&quot;</span><span class="p">:</span> <span class="mf">-43.85100181689</span><span class="p">,</span>
+      <span class="nt">&quot;maxx&quot;</span><span class="p">:</span> <span class="mf">148.2910004483</span><span class="p">,</span>
+      <span class="nt">&quot;maxy&quot;</span><span class="p">:</span> <span class="mf">-41.85100181689</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;the_geom&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;org.locationtech.jts.geom.MultiPoint&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;CITY_NAME&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.String&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ADMIN_NAME&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.String&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;CNTRY_NAME&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.String&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.String&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;POP_CLASS&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.String&quot;</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;style&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania_tasmania_cities2&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer/style&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Use the following json snippet to update the SRS:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">layerUpdate.json</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span> <span class="o">{</span>
+    layer : <span class="o">{</span>
+       srs: <span class="s2">&quot;EPSG:4326&quot;</span>
+    <span class="o">}</span>
+ <span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<p>Using cURL PUT command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPUT -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @layerUpdate.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13/tasks/0/layer/&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Getting the import definition again:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XGET -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+     http://localhost:8080/geoserver/rest/imports/13/tasks/0
+</pre></div>
+</div>
+<p>The import is now ready to execute:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;PENDING&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;Shapefile&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania_cities.shp&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13/tasks/0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;READY&quot;</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>A POST request will execute the import:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13&quot;</span>
+</pre></div>
+</div>
+<p>With a successful import marking the task as <code class="docutils literal notranslate"><span class="pre">COMPLETE</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;Shapefile&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;tasmania_cities.shp&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/13/tasks/0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETE&quot;</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="uploading-a-shapefile-to-postgis">
+<h2>Uploading a Shapefile to PostGIS<a class="headerlink" href="#uploading-a-shapefile-to-postgis" title="Permalink to this headline">¶</a></h2>
+<p>This example shows the process for uploading a Shapefile (in a zip file) to an existing PostGIS datastore (cite:postgis).</p>
+<ol class="arabic">
+<li><p>Setup <code class="docutils literal notranslate"><span class="pre">cite:postgis</span></code> datastore:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">postgis.json</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;postgis&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;PostGIS&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;cite&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;connectionParameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;entry&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;schema&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;public&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;database&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;postgres&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;host&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;port&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;5432&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;passwd&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;postgres&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;dbtype&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;postgis&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;postgres&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;Estimated extends&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;encode functions&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;Loose bbox&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;Method used to simplify geometries&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;PRESERVETOPOLOGY&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;Support on the fly geometry simplification&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;validate connections&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;Connection timeout&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;20&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;min connections&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;max connections&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;Evictor tests per run&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;Test while idle&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="nt">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;Max connection idle time&quot;</span><span class="p">,</span><span class="nt">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;300&quot;</span><span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;_default&quot;</span><span class="p">:</span> <span class="kc">true</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Using curl POST:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl  -u admin:geoserver -XPOST -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @postgis.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/workspaces/cite/datastores.json&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the import definition:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">import.json</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;cite&quot;</span>
+         <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;targetStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;postgis&quot;</span>
+         <span class="p">}</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>POST this definition to /geoserver/rest/imports:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @import.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports&quot;</span>
+</pre></div>
+</div>
+<p>The response will contain the import ID.</p>
+</li>
+<li><p>We now have an empty import with no tasks. To add a task, POST the shapefile to the list of tasks:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver <span class="se">\</span>
+  -F <span class="nv">name</span><span class="o">=</span>myshapefile.zip -F <span class="nv">filedata</span><span class="o">=</span>@myshapefile.zip <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/14/tasks&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Since we sent a shapefile, importer assumes the target will be a shapefile store. To import to PostGIS, we will need to reset it.</p>
+<p>Create the following JSON file:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">target.json</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;postgis&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>PUT this file to /geoserver/rest/imports/14/tasks/0/target:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPUT -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @target.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/14/tasks/0/target&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Finally, we execute the import by sending a POST to /geoserver/rest/imports/14:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/14&quot;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="uploading-a-csv-file-to-postgis-while-transforming-it">
+<h2>Uploading a CSV file to PostGIS while transforming it<a class="headerlink" href="#uploading-a-csv-file-to-postgis-while-transforming-it" title="Permalink to this headline">¶</a></h2>
+<p>A remote sensing tool is generating CSV files with some locations and measurements, that we want to upload
+into PostGIS as a new spatial table.</p>
+<ol class="arabic">
+<li><p>First, we are going to create a empty import with an existing postgis store as the target:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @import.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports&quot;</span>
+</pre></div>
+</div>
+<p>Where <code class="file docutils literal notranslate"><span class="pre">import.json</span></code> is:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">import.json</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;cite&quot;</span>
+         <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;targetStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;postgis&quot;</span>
+         <span class="p">}</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Then, we are going to POST the csv file to the tasks list.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">values.csv</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>AssetID, SampleTime, Lat, Lon, Value
+1, 2015-01-01T10:00:00, 10.00, 62.00, 15.2
+1, 2015-01-01T11:00:00, 10.10, 62.11, 30.25
+1, 2015-01-01T12:00:00, 10.20, 62.22, 41.2
+1, 2015-01-01T13:00:00, 10.31, 62.33, 27.6
+1, 2015-01-01T14:00:00, 10.41, 62.45, 12
+</pre></div>
+</div>
+</div>
+<p>In order to create an import task for it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -F <span class="nv">name</span><span class="o">=</span><span class="nb">test</span> -F <span class="nv">filedata</span><span class="o">=</span>@values.csv <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks&quot;</span>
+</pre></div>
+</div>
+<p>And we are going to get back a new task definition, with a notification that the CRS is missing:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;task&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;NO_CRS&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;updateMode&quot;</span><span class="p">:</span> <span class="s2">&quot;CREATE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;CSV&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;values.csv&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;target&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/target&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;postgis&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;PostGIS&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;progress&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/progress&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;layer&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;transformChain&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;transforms&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Force the CRS by updating the layer:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">layerUpdate.json</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;layer&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;srs&quot;</span><span class="p">:</span> <span class="s2">&quot;EPSG:4326&quot;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Using PUT to update task layer:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPUT -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @layerUpdate.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer/&quot;</span>
+</pre></div>
+</div>
+<p>Updating the srs:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;layer&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;originalName&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;nativeName&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;srs&quot;</span><span class="p">:</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;bbox&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;minx&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;miny&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;maxx&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
+      <span class="nt">&quot;maxy&quot;</span><span class="p">:</span> <span class="mi">-1</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AssetID&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.Integer&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SampleTime&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.String&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Lat&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.Double&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Lon&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.Double&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.Double&quot;</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;style&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;point&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer/style&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Then, we are going to create a transformation mapping the Lat/Lon columns to a point:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">toPoint.json</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;AttributesToPointGeometryTransform&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;latField&quot;</span><span class="p">:</span> <span class="s2">&quot;Lat&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;lngField&quot;</span><span class="p">:</span> <span class="s2">&quot;Lon&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>The above will be uploaded task transforms:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @toPoint.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Now the import is ready to run, and we’ll execute it using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>The new layer is created in PostGIS and registered in GeoServer as a new layer.</p>
+<p>In case the features in the CSV need to be appended to an existing layer a PUT request against the task might be performed, changing its
+updateMode from “CREATE” to “APPEND”. Changing it to “REPLACE” instead will preserve the layer, but remove the old contents and replace
+them with the newly uploaded ones.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="replacing-postgis-table-using-the-contents-of-a-csv-file">
+<h2>Replacing PostGIS table using the contents of a CSV file<a class="headerlink" href="#replacing-postgis-table-using-the-contents-of-a-csv-file" title="Permalink to this headline">¶</a></h2>
+<p>To update the <code class="docutils literal notranslate"><span class="pre">values</span></code> layer with new content:</p>
+<ol class="arabic">
+<li><p>Create a new import into <code class="docutils literal notranslate"><span class="pre">cite:postgis</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @import.json <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports&quot;</span>
+</pre></div>
+</div>
+<p>Using:</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">import.json</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;cite&quot;</span>
+         <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;targetStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;postgis&quot;</span>
+         <span class="p">}</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Use <code class="file docutils literal notranslate"><span class="pre">replace.csv</span></code> to create a new task:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST <span class="se">\</span>
+  -F <span class="nv">filedata</span><span class="o">=</span>@replace.csv <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/1/tasks&quot;</span>
+</pre></div>
+</div>
+<p>The csv file has an additional column:</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">replace.csv</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>AssetID, SampleTime, Lat, Lon, Value, Status
+1, 2015-01-01T10:00:00, 10.00, 62.00, 15.2, ready
+1, 2015-01-01T11:00:00, 10.10, 62.11, 30.25, recording
+1, 2015-01-01T12:00:00, 10.20, 62.22, 41.2, recording
+1, 2015-01-01T13:00:00, 10.31, 62.33, 27.6, recording
+1, 2015-01-01T14:00:00, 10.41, 62.45, 12, complete
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Update task with as a “REPLACE” and supply srs information:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPUT -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @taskUpdate.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/1/tasks/0&quot;</span>
+</pre></div>
+</div>
+<p>Using:</p>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">taskUpdate.json</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;task&quot;</span><span class="p">:</span> <span class="p">{</span>
+       <span class="nt">&quot;updateMode&quot;</span><span class="p">:</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">,</span>
+       <span class="nt">&quot;layer&quot;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;nativeName&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;srs&quot;</span><span class="p">:</span> <span class="s2">&quot;EPSG:4326&quot;</span>
+       <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Update transform to supply a geometry column:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST -H <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="se">\</span>
+  -d @toPoint.json <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/1/tasks/0/transforms&quot;</span>
+</pre></div>
+</div>
+<p>Using:</p>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">toPoint.json</span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;AttributesToPointGeometryTransform&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;latField&quot;</span><span class="p">:</span> <span class="s2">&quot;Lat&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;lngField&quot;</span><span class="p">:</span> <span class="s2">&quot;Lon&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Double check import:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XGET <span class="se">\</span>
+  http://localhost:8080/geoserver/rest/imports/1.json
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/1&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;PENDING&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;cite&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;isolated&quot;</span><span class="p">:</span> <span class="kc">false</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;targetStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="hll">        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;postgis&quot;</span><span class="p">,</span>
+</span>        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;PostGIS&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/1/tasks/0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;READY&quot;</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Task:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XGET <span class="se">\</span>
+  http://localhost:8080/geoserver/rest/imports/1/tasks/0.json
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;task&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/2/tasks/0&quot;</span><span class="p">,</span>
+<span class="hll">    <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;READY&quot;</span><span class="p">,</span>
+</span>    <span class="nt">&quot;updateMode&quot;</span><span class="p">:</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;CSV&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;replace.csv&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;target&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/2/tasks/0/target&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;postgis&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;PostGIS&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;progress&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/2/tasks/0/progress&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;layer&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/2/tasks/0/layer&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;transformChain&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;transforms&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;AttributesToPointGeometryTransform&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/2/tasks/0/transforms/0&quot;</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Check layer to ensure <code class="docutils literal notranslate"><span class="pre">name</span></code> indicates layer to replace, and <code class="docutils literal notranslate"><span class="pre">nativeName</span></code> indicates
+the table contents to replace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XGET <span class="se">\</span>
+  http://localhost:8080/geoserver/rest/imports/1/tasks/0/layer.json
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;layer&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="hll">    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+</span>    <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/1/tasks/0/layer&quot;</span><span class="p">,</span>
+<span class="hll">    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+</span><span class="hll">    <span class="nt">&quot;originalName&quot;</span><span class="p">:</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span>
+</span><span class="hll">    <span class="nt">&quot;nativeName&quot;</span><span class="p">:</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span>
+</span>    <span class="nt">&quot;srs&quot;</span><span class="p">:</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;bbox&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;minx&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;miny&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;maxx&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
+      <span class="nt">&quot;maxy&quot;</span><span class="p">:</span> <span class="mi">-1</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AssetID&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.Integer&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SampleTime&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.String&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Lat&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.Double&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Lon&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.Double&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;binding&quot;</span><span class="p">:</span> <span class="s2">&quot;java.lang.Integer&quot;</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;style&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;point&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/1/tasks/0/layer/style&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Transform:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XGET <span class="se">\</span>
+  http://localhost:8080/geoserver/rest/imports/1/tasks/0/transforms/0.json
+</pre></div>
+</div>
+</li>
+<li><p>To run the import:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPOST <span class="se">\</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/1&quot;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="uploading-and-optimizing-a-geotiff-with-ground-control-points">
+<h2>Uploading and optimizing a GeoTiff with ground control points<a class="headerlink" href="#uploading-and-optimizing-a-geotiff-with-ground-control-points" title="Permalink to this headline">¶</a></h2>
+<p>A data supplier is periodically providing GeoTiffs that we need to configure in GeoServer.
+The GeoTIFF is referenced via Ground Control Points, is organized by stripes, and has no overviews.
+The objective is to rectify, optimize and publish it via the importer.</p>
+<p>First, we are going to create a empty import with no store as the target:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@import</span><span class="o">.</span><span class="n">json</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports&quot;</span>
+</pre></div>
+</div>
+<p>Where import.json is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s2">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;sf&quot;</span>
+         <span class="p">}</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then, we are going to POST the GeoTiff file to the tasks list, in order to create an import task for it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">F</span> <span class="n">name</span><span class="o">=</span><span class="n">test</span> <span class="o">-</span><span class="n">F</span> <span class="n">filedata</span><span class="o">=</span><span class="nd">@box_gcp_fixed</span><span class="o">.</span><span class="n">tif</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks&quot;</span>
+</pre></div>
+</div>
+<p>We are then going to append the transformations to rectify (gdalwarp), retile (gdal_translate) and add overviews (gdaladdo) to it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@warp</span><span class="o">.</span><span class="n">json</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms&quot;</span>
+<span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@gtx</span><span class="o">.</span><span class="n">json</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms&quot;</span>
+<span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@gad</span><span class="o">.</span><span class="n">json</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">warp.json</span></code> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GdalWarpTransform&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;-t_srs&quot;</span><span class="p">,</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gtx.json</span></code> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GdalTranslateTransform&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;-co&quot;</span><span class="p">,</span> <span class="s2">&quot;TILED=YES&quot;</span><span class="p">,</span> <span class="s2">&quot;-co&quot;</span><span class="p">,</span> <span class="s2">&quot;BLOCKXSIZE=512&quot;</span><span class="p">,</span> <span class="s2">&quot;-co&quot;</span><span class="p">,</span> <span class="s2">&quot;BLOCKYSIZE=512&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gad.json</span></code> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GdalAddoTransform&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;-r&quot;</span><span class="p">,</span> <span class="s2">&quot;average&quot;</span><span class="p">],</span>
+  <span class="s2">&quot;levels&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now the import is ready to run, and we’ll execute it using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0&quot;</span>
+</pre></div>
+</div>
+<p>A new layer <code class="docutils literal notranslate"><span class="pre">box_gcp_fixed</span></code> layer will appear in GeoServer, with an underlying GeoTiff file ready
+for web serving.</p>
+</div>
+<div class="section" id="adding-a-new-granule-into-an-existing-mosaic">
+<h2>Adding a new granule into an existing mosaic<a class="headerlink" href="#adding-a-new-granule-into-an-existing-mosaic" title="Permalink to this headline">¶</a></h2>
+<p>A data supplier is periodically providing new time based imagery that we need to add into an existing mosaic
+in GeoServer.
+The imagery is in GeoTiff format, and lacks a good internal structure, which needs to be aligned with
+the one into the other images.</p>
+<p>First, we are going to create a import with an indication of where the granule is located, and
+the target store:</p>
+<blockquote>
+<div><p>curl -u admin:geoserver -XPOST -H “Content-type: application/json” -d &#64;import.json “http://localhost:8080/geoserver/rest/imports”</p>
+</div></blockquote>
+<p>Where import.json is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s2">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;topp&quot;</span>
+         <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/aaime/devel/gisData/ndimensional/data/world/world.200407.3x5400x2700.tiff&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;targetStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s2">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bluemarble&quot;</span>
+         <span class="p">}</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We are then going to append the transformations to harmonize the file with the rest of the mosaic:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@gtx</span><span class="o">.</span><span class="n">json</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms&quot;</span>
+<span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@gad</span><span class="o">.</span><span class="n">json</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gtx.json</span></code> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GdalTranslateTransform&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;-co&quot;</span><span class="p">,</span> <span class="s2">&quot;TILED=YES&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gad.json</span></code> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GdalAddoTransform&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;-r&quot;</span><span class="p">,</span> <span class="s2">&quot;average&quot;</span><span class="p">],</span>
+  <span class="s2">&quot;levels&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now the import is ready to run, and we’ll execute it using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0&quot;</span>
+</pre></div>
+</div>
+<p>The new granule will be ingested into the mosaic, and will thus be available for time based requests.</p>
+</div>
+<div class="section" id="asynchronously-fetching-and-importing-data-from-a-remote-server">
+<h2>Asynchronously fetching and importing data from a remote server<a class="headerlink" href="#asynchronously-fetching-and-importing-data-from-a-remote-server" title="Permalink to this headline">¶</a></h2>
+<p>We assume a remote FTP server contains multiple shapefiles that we need to import in GeoServer
+as new layers. The files are large, and the server has much better bandwidth than the client,
+so it’s best if GeoServer performs the data fetching on its own.</p>
+<p>In this case a asynchronous request using <code class="docutils literal notranslate"><span class="pre">remote</span></code> data will be the best fit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@import</span><span class="o">.</span><span class="n">json</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports?async=true&quot;</span>
+</pre></div>
+</div>
+<p>Where import.json is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s2">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;topp&quot;</span>
+         <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;remote&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;ftp://myserver/data/bc_shapefiles&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;dan&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;secret&quot;</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The request will return immediately with an import context in “INIT” state, and it will remain in such
+state until the data is fetched and the tasks created.
+Once the state switches to “PENDING” the import will be ready for execution. Since there is
+a lot of shapefiles to process, also the import run will be done in asynchronous mode:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports/0?async=true&quot;</span>
+</pre></div>
+</div>
+<p>The response will return immediately in this case as well, and the progress can be followed as the
+tasks in the import switch state.</p>
+</div>
+<div class="section" id="importing-and-optimizing-a-large-image-with-a-single-request">
+<h2>Importing and optimizing a large image with a single request<a class="headerlink" href="#importing-and-optimizing-a-large-image-with-a-single-request" title="Permalink to this headline">¶</a></h2>
+<p>A large image appears every now and then on a mounted disk share, the image needs to be
+optimized and imported into GeoServer as a new layer.
+Since the source is large and we need to copy it on the local disk where the data dir resides,
+a “remote” data is the right tool for the job, an asynchronous execution is also recommended
+to avoid waiting on a possibly large command.
+In this case the request will also contains the “exec=true” parameter to force the importer
+an immediate execution of the command.</p>
+<p>The request will then look as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/json&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@import</span><span class="o">.</span><span class="n">json</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/imports?async=true&amp;exec=true&quot;</span>
+</pre></div>
+</div>
+<p>Where import.json is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;import&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;targetWorkspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;topp&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;remote&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;\/mnt\/remoteDisk\/bluemarble.tiff&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;transforms&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GdalTranslateTransform&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="s2">&quot;-co&quot;</span><span class="p">,</span> <span class="s2">&quot;TILED=YES&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;-co&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPRESS=JPEG&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;-co&quot;</span><span class="p">,</span> <span class="s2">&quot;JPEG_QUALITY=85&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;-co&quot;</span><span class="p">,</span> <span class="s2">&quot;PHOTOMETRIC=YCBCR&quot;</span>
+        <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GdalAddoTransform&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;average&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPRESS_OVERVIEW&quot;</span><span class="p">,</span> <span class="s2">&quot;JPEG&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="s2">&quot;PHOTOMETRIC_OVERVIEW&quot;</span><span class="p">,</span> <span class="s2">&quot;YCBCR&quot;</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;levels&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span> <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Given the request is asynchronous, the client will have to poll the server in order to check
+if the initialization and execution have succeeded.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="rest_reference.html" title="previous chapter">REST API</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../inspire/index.html" title="next chapter">INSPIRE</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Importer REST API examples</a><ul>
+<li><a class="reference internal" href="#mass-configuring-a-directory-of-shapefiles">Mass configuring a directory of shapefiles</a></li>
+<li><a class="reference internal" href="#configuring-a-shapefile-with-no-projection-information">Configuring a shapefile with no projection information</a></li>
+<li><a class="reference internal" href="#uploading-a-shapefile-to-postgis">Uploading a Shapefile to PostGIS</a></li>
+<li><a class="reference internal" href="#uploading-a-csv-file-to-postgis-while-transforming-it">Uploading a CSV file to PostGIS while transforming it</a></li>
+<li><a class="reference internal" href="#replacing-postgis-table-using-the-contents-of-a-csv-file">Replacing PostGIS table using the contents of a CSV file</a></li>
+<li><a class="reference internal" href="#uploading-and-optimizing-a-geotiff-with-ground-control-points">Uploading and optimizing a GeoTiff with ground control points</a></li>
+<li><a class="reference internal" href="#adding-a-new-granule-into-an-existing-mosaic">Adding a new granule into an existing mosaic</a></li>
+<li><a class="reference internal" href="#asynchronously-fetching-and-importing-data-from-a-remote-server">Asynchronously fetching and importing data from a remote server</a></li>
+<li><a class="reference internal" href="#importing-and-optimizing-a-large-image-with-a-single-request">Importing and optimizing a large image with a single request</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="rest_reference.html" title="previous chapter">REST API</a></li>
+            <li>Next: <a href="../inspire/index.html" title="next chapter">INSPIRE</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/importer/rest_examples.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

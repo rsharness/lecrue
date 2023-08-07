@@ -1,0 +1,605 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tutorial: Styling data with CSS &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Filter syntax" href="filters.html" />
+    <link rel="prev" title="Installing the GeoServer CSS extension" href="install.html" /> 
+  </head><body class="styling/css/tutorial">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">CSS Styling</a> &raquo;</li>
+    <li>Tutorial: Styling data with CSS</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="filters.html" title="Filter syntax" accesskey="N">Next</a></li>
+  <li>
+    <a href="install.html" title="Installing the GeoServer CSS extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="tutorial-styling-data-with-css">
+<span id="css-tutorial"></span><h1>Tutorial: Styling data with CSS<a class="headerlink" href="#tutorial-styling-data-with-css" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will show using CSS to style a layer, along with the equivalent SLD code.</p>
+<p>To use this tutorial, you will need the <a class="reference internal" href="install.html#css-install"><span class="std std-ref">CSS extension</span></a> as well as the <code class="docutils literal notranslate"><span class="pre">states</span></code> layer from the <a class="reference external" href="https://github.com/geoserver/geoserver/tree/main/data/release/data/shapefiles">default GeoServer configuration</a>.</p>
+<div class="section" id="creating-a-style-for-the-states-layer">
+<h2>Creating a style for the states layer<a class="headerlink" href="#creating-a-style-for-the-states-layer" title="Permalink to this headline">¶</a></h2>
+<p>The SLD file for the default <code class="docutils literal notranslate"><span class="pre">states</span></code> layer looks like this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="nt">&lt;StyledLayerDescriptor</span>
+  <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+  <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span>
+  <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+  <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+  <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+  <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld</span>
+<span class="s">    http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd</span>
+<span class="s">&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;NamedLayer&gt;</span>
+    <span class="nt">&lt;Name&gt;</span>USA states population<span class="nt">&lt;/Name&gt;</span>
+    <span class="nt">&lt;UserStyle&gt;</span>
+      <span class="nt">&lt;Name&gt;</span>population<span class="nt">&lt;/Name&gt;</span>
+      <span class="nt">&lt;Title&gt;</span>Population in the United States<span class="nt">&lt;/Title&gt;</span>
+      <span class="nt">&lt;Abstract&gt;</span>A sample filter that filters the United States into three
+        categories of population, drawn in different colors<span class="nt">&lt;/Abstract&gt;</span>
+      <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+        <span class="nt">&lt;Rule&gt;</span>
+          <span class="nt">&lt;Title&gt;</span><span class="ni">&amp;lt;</span> 2M<span class="nt">&lt;/Title&gt;</span>
+          <span class="nt">&lt;ogc:Filter&gt;</span>
+            <span class="nt">&lt;ogc:PropertyIsLessThan&gt;</span>
+             <span class="nt">&lt;ogc:PropertyName&gt;</span>PERSONS<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+             <span class="nt">&lt;ogc:Literal&gt;</span>2000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+            <span class="nt">&lt;/ogc:PropertyIsLessThan&gt;</span>
+          <span class="nt">&lt;/ogc:Filter&gt;</span>
+          <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+             <span class="nt">&lt;Fill&gt;</span>
+                <span class="c">&lt;!-- CssParameters allowed are fill (the color) and fill-opacity --&gt;</span>
+                <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#4DFF4D<span class="nt">&lt;/CssParameter&gt;</span>
+                <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.7<span class="nt">&lt;/CssParameter&gt;</span>
+             <span class="nt">&lt;/Fill&gt;</span>
+          <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+        <span class="nt">&lt;/Rule&gt;</span>
+        <span class="nt">&lt;Rule&gt;</span>
+          <span class="nt">&lt;Title&gt;</span>2M - 4M<span class="nt">&lt;/Title&gt;</span>
+          <span class="nt">&lt;ogc:Filter&gt;</span>
+            <span class="nt">&lt;ogc:PropertyIsBetween&gt;</span>
+              <span class="nt">&lt;ogc:PropertyName&gt;</span>PERSONS<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+              <span class="nt">&lt;ogc:LowerBoundary&gt;</span>
+                <span class="nt">&lt;ogc:Literal&gt;</span>2000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+              <span class="nt">&lt;/ogc:LowerBoundary&gt;</span>
+              <span class="nt">&lt;ogc:UpperBoundary&gt;</span>
+                <span class="nt">&lt;ogc:Literal&gt;</span>4000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+              <span class="nt">&lt;/ogc:UpperBoundary&gt;</span>
+            <span class="nt">&lt;/ogc:PropertyIsBetween&gt;</span>
+          <span class="nt">&lt;/ogc:Filter&gt;</span>
+          <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+             <span class="nt">&lt;Fill&gt;</span>
+                <span class="c">&lt;!-- CssParameters allowed are fill (the color) and fill-opacity --&gt;</span>
+                <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FF4D4D<span class="nt">&lt;/CssParameter&gt;</span>
+                <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.7<span class="nt">&lt;/CssParameter&gt;</span>
+             <span class="nt">&lt;/Fill&gt;</span>
+          <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+        <span class="nt">&lt;/Rule&gt;</span>
+        <span class="nt">&lt;Rule&gt;</span>
+          <span class="nt">&lt;Title&gt;</span><span class="ni">&amp;gt;</span> 4M<span class="nt">&lt;/Title&gt;</span>
+          <span class="c">&lt;!-- like a linesymbolizer but with a fill too --&gt;</span>
+          <span class="nt">&lt;ogc:Filter&gt;</span>
+            <span class="nt">&lt;ogc:PropertyIsGreaterThan&gt;</span>
+             <span class="nt">&lt;ogc:PropertyName&gt;</span>PERSONS<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+             <span class="nt">&lt;ogc:Literal&gt;</span>4000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+            <span class="nt">&lt;/ogc:PropertyIsGreaterThan&gt;</span>
+          <span class="nt">&lt;/ogc:Filter&gt;</span>
+          <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+             <span class="nt">&lt;Fill&gt;</span>
+                <span class="c">&lt;!-- CssParameters allowed are fill (the color) and fill-opacity --&gt;</span>
+                <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#4D4DFF<span class="nt">&lt;/CssParameter&gt;</span>
+                <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.7<span class="nt">&lt;/CssParameter&gt;</span>
+             <span class="nt">&lt;/Fill&gt;</span>
+          <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+        <span class="nt">&lt;/Rule&gt;</span>
+        <span class="nt">&lt;Rule&gt;</span>
+          <span class="nt">&lt;Title&gt;</span>Boundary<span class="nt">&lt;/Title&gt;</span>
+          <span class="nt">&lt;LineSymbolizer&gt;</span>
+            <span class="nt">&lt;Stroke&gt;</span>
+              <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>0.2<span class="nt">&lt;/CssParameter&gt;</span>
+            <span class="nt">&lt;/Stroke&gt;</span>
+          <span class="nt">&lt;/LineSymbolizer&gt;</span>
+          <span class="nt">&lt;TextSymbolizer&gt;</span>
+            <span class="nt">&lt;Label&gt;</span>
+              <span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_ABBR<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+            <span class="nt">&lt;/Label&gt;</span>
+            <span class="nt">&lt;Font&gt;</span>
+              <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-family&quot;</span><span class="nt">&gt;</span>Times New Roman<span class="nt">&lt;/CssParameter&gt;</span>
+              <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-style&quot;</span><span class="nt">&gt;</span>Normal<span class="nt">&lt;/CssParameter&gt;</span>
+              <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-size&quot;</span><span class="nt">&gt;</span>14<span class="nt">&lt;/CssParameter&gt;</span>
+            <span class="nt">&lt;/Font&gt;</span>
+            <span class="nt">&lt;LabelPlacement&gt;</span>
+              <span class="nt">&lt;PointPlacement&gt;</span>
+                <span class="nt">&lt;AnchorPoint&gt;</span>
+                  <span class="nt">&lt;AnchorPointX&gt;</span>0.5<span class="nt">&lt;/AnchorPointX&gt;</span>
+                  <span class="nt">&lt;AnchorPointY&gt;</span>0.5<span class="nt">&lt;/AnchorPointY&gt;</span>
+                <span class="nt">&lt;/AnchorPoint&gt;</span>
+              <span class="nt">&lt;/PointPlacement&gt;</span>
+            <span class="nt">&lt;/LabelPlacement&gt;</span>
+          <span class="nt">&lt;/TextSymbolizer&gt;</span>
+        <span class="nt">&lt;/Rule&gt;</span>
+     <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+    <span class="nt">&lt;/UserStyle&gt;</span>
+    <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+<p>Now, let’s start on a CSS file that accomplishes the same thing.</p>
+<p>First, got to the styles page and click on <span class="guilabel">Add a new style</span> link to start a new style. In the “New style” page, do the following:</p>
+<ul class="simple">
+<li><p>Name the new style anything you’d like, such as <code class="docutils literal notranslate"><span class="pre">csstutorial</span></code></p></li>
+<li><p>Choose <code class="docutils literal notranslate"><span class="pre">CSS</span></code> as the format</p></li>
+<li><p>In the <span class="guilabel">Generate a default style</span> dropdown choose <code class="docutils literal notranslate"><span class="pre">Polygon</span></code> and click on <span class="guilabel">Generate…</span></p></li>
+</ul>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/tutorial_new_style.png" src="../../_images/tutorial_new_style.png" />
+<p class="caption"><span class="caption-text">Creating a new CSS style</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>This creates an example style with a source similar to this one (the colors may differ):</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="c">/* @title cyan polygon */</span>
+<span class="o">*</span> <span class="p">{</span>
+    <span class="n">stroke</span><span class="p">:</span> <span class="mh">#000000</span><span class="p">;</span>
+    <span class="n">stroke-width</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">;</span>
+    <span class="n">fill</span><span class="p">:</span> <span class="mh">#0099cc</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This demonstrates the basic elements of a CSS style:</p>
+<p>A <strong>selector</strong> that identifies some part of the data to style. Here, the selector is <code class="docutils literal notranslate"><span class="pre">*</span></code>, indicating that all data should use the style properties.</p>
+<p><strong>Properties</strong> inside curly braces (<code class="docutils literal notranslate"><span class="pre">{}</span></code>) which specify how the affected features should be styled. Properties consist of name/value pairs separated by colons (<code class="docutils literal notranslate"><span class="pre">:</span></code>).</p>
+<p>We can also see the basics for styling a polygon (<code class="docutils literal notranslate"><span class="pre">fill</span></code>), and its outline (<code class="docutils literal notranslate"><span class="pre">stroke</span></code>).</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The <a class="reference internal" href="filters.html#css-filters"><span class="std std-ref">Filter syntax</span></a> and <a class="reference internal" href="properties.html#css-properties"><span class="std std-ref">Property listing</span></a> pages provide more information about the options available in CSS styles.</p>
+</div>
+<p>Before moving on, let’s save the style and preview it with the states layer:</p>
+<ul class="simple">
+<li><p>Click on “Apply” to save the layer and enable the style preview</p></li>
+<li><p>Now on the “Style Editor page”, switch to the “layer preview” tab and click on the “previewing on layer” link, then choose the “states” layer in the dialog</p></li>
+<li><p>The style editor should now show the states layer filled and stroked</p></li>
+</ul>
+<div class="figure align-default" id="id3">
+<img alt="../../_images/tutorial_preview.png" src="../../_images/tutorial_preview.png" />
+<p class="caption"><span class="caption-text">Previewing the CSS style with the state layer</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>Let’s use these basics to start translating the states style. The first rule in the SLD applies to states where the <code class="docutils literal notranslate"><span class="pre">PERSONS</span></code> field is less than two million:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rule&gt;</span>
+  <span class="nt">&lt;Title&gt;</span><span class="ni">&amp;lt;</span> 2M<span class="nt">&lt;/Title&gt;</span>
+  <span class="nt">&lt;ogc:Filter&gt;</span>
+    <span class="nt">&lt;ogc:PropertyIsLessThan&gt;</span>
+     <span class="nt">&lt;ogc:PropertyName&gt;</span>PERSONS<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+     <span class="nt">&lt;ogc:Literal&gt;</span>2000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+    <span class="nt">&lt;/ogc:PropertyIsLessThan&gt;</span>
+  <span class="nt">&lt;/ogc:Filter&gt;</span>
+  <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+     <span class="nt">&lt;Fill&gt;</span>
+        <span class="c">&lt;!-- CssParameters allowed are fill (the color) and fill-opacity --&gt;</span>
+        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#4DFF4D<span class="nt">&lt;/CssParameter&gt;</span>
+        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.7<span class="nt">&lt;/CssParameter&gt;</span>
+     <span class="nt">&lt;/Fill&gt;</span>
+  <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+</pre></div>
+</div>
+<p>Using a <a class="reference internal" href="../../tutorials/cql/cql_tutorial.html"><span class="doc">CQL</span></a>-based selector, and copying the names and values of the CssParameters over, we get:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">2000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="n">fill</span><span class="p">:</span> <span class="mh">#4DFF4D</span><span class="p">;</span>
+  <span class="n">fill-opacity</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For the second style, we have a <code class="docutils literal notranslate"><span class="pre">PropertyIsBetween</span></code> filter, which doesn’t directly translate to CSS:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rule&gt;</span>
+  <span class="nt">&lt;Title&gt;</span>2M - 4M<span class="nt">&lt;/Title&gt;</span>
+  <span class="nt">&lt;ogc:Filter&gt;</span>
+    <span class="nt">&lt;ogc:PropertyIsBetween&gt;</span>
+      <span class="nt">&lt;ogc:PropertyName&gt;</span>PERSONS<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+      <span class="nt">&lt;ogc:LowerBoundary&gt;</span>
+        <span class="nt">&lt;ogc:Literal&gt;</span>2000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+      <span class="nt">&lt;/ogc:LowerBoundary&gt;</span>
+      <span class="nt">&lt;ogc:UpperBoundary&gt;</span>
+        <span class="nt">&lt;ogc:Literal&gt;</span>4000000<span class="nt">&lt;/ogc:Literal&gt;</span>
+      <span class="nt">&lt;/ogc:UpperBoundary&gt;</span>
+    <span class="nt">&lt;/ogc:PropertyIsBetween&gt;</span>
+  <span class="nt">&lt;/ogc:Filter&gt;</span>
+  <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+     <span class="nt">&lt;Fill&gt;</span>
+        <span class="c">&lt;!-- CssParameters allowed are fill (the color) and fill-opacity --&gt;</span>
+        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FF4D4D<span class="nt">&lt;/CssParameter&gt;</span>
+        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.7<span class="nt">&lt;/CssParameter&gt;</span>
+     <span class="nt">&lt;/Fill&gt;</span>
+  <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+</pre></div>
+</div>
+<p>However, <code class="docutils literal notranslate"><span class="pre">PropertyIsBetween</span></code> can easily be replaced by a combination of two comparison selectors. In CSS, you can apply multiple selectors to a rule by simply placing them one after the other. Selectors separated by only blank-space must all be satisfied for a style to apply. Multiple such groups can be attached to a rule by separating them with commas (<code class="docutils literal notranslate"><span class="pre">,</span></code>). If a feature matches any of the comma-separated groups for a rule then that style is applied. Thus, the CSS equivalent of the second rule is:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;=</span> <span class="nt">2000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="n">fill</span><span class="p">:</span> <span class="mh">#FF4D4D</span><span class="p">;</span>
+  <span class="n">fill-opacity</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The third rule can be handled in much the same manner as the first:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;=</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="n">fill</span><span class="p">:</span> <span class="mh">#4D4DFF</span><span class="p">;</span>
+  <span class="n">fill-opacity</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The fourth and final rule is a bit different. It applies a label and outline to all the states:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rule&gt;</span>
+  <span class="nt">&lt;Title&gt;</span>Boundary<span class="nt">&lt;/Title&gt;</span>
+  <span class="nt">&lt;LineSymbolizer&gt;</span>
+    <span class="nt">&lt;Stroke&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>0.2<span class="nt">&lt;/CssParameter&gt;</span>
+    <span class="nt">&lt;/Stroke&gt;</span>
+  <span class="nt">&lt;/LineSymbolizer&gt;</span>
+  <span class="nt">&lt;TextSymbolizer&gt;</span>
+    <span class="nt">&lt;Label&gt;</span>
+      <span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_ABBR<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+    <span class="nt">&lt;/Label&gt;</span>
+    <span class="nt">&lt;Font&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-family&quot;</span><span class="nt">&gt;</span>Times New Roman<span class="nt">&lt;/CssParameter&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-style&quot;</span><span class="nt">&gt;</span>Normal<span class="nt">&lt;/CssParameter&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-size&quot;</span><span class="nt">&gt;</span>14<span class="nt">&lt;/CssParameter&gt;</span>
+    <span class="nt">&lt;/Font&gt;</span>
+    <span class="nt">&lt;LabelPlacement&gt;</span>
+      <span class="nt">&lt;PointPlacement&gt;</span>
+        <span class="nt">&lt;AnchorPoint&gt;</span>
+          <span class="nt">&lt;AnchorPointX&gt;</span>0.5<span class="nt">&lt;/AnchorPointX&gt;</span>
+          <span class="nt">&lt;AnchorPointY&gt;</span>0.5<span class="nt">&lt;/AnchorPointY&gt;</span>
+        <span class="nt">&lt;/AnchorPoint&gt;</span>
+      <span class="nt">&lt;/PointPlacement&gt;</span>
+    <span class="nt">&lt;/LabelPlacement&gt;</span>
+  <span class="nt">&lt;/TextSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+</pre></div>
+</div>
+<p>This introduces the idea of rendering an extracted value (<code class="docutils literal notranslate"><span class="pre">STATE_ABBR</span></code>) directly into the map, unlike all of the rules thus far. For this, you can use a CQL expression wrapped in square braces (<code class="docutils literal notranslate"><span class="pre">[]</span></code>) as the value of a CSS property. It is also necessary to surround values containing blank-space, such as <code class="docutils literal notranslate"><span class="pre">Times</span> <span class="pre">New</span> <span class="pre">Roman</span></code>, with single- or double-quotes (<code class="docutils literal notranslate"><span class="pre">&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">'</span></code>). With these details in mind, let’s write the rule:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="nt">stroke-width</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.2</span><span class="o">;</span>
+  <span class="nt">label</span><span class="nd">:</span> <span class="o">[</span><span class="nt">STATE_ABBR</span><span class="o">];</span>
+  <span class="nt">label-anchor</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.5</span> <span class="nt">0</span><span class="nc">.5</span><span class="o">;</span>
+  <span class="nt">font-family</span><span class="nd">:</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="o">;</span>
+  <span class="nt">font-fill</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">font-style</span><span class="nd">:</span> <span class="nt">normal</span><span class="o">;</span>
+  <span class="nt">font-size</span><span class="nd">:</span> <span class="nt">14</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Putting it all together, you should now have a style that looks like:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">2000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#4DFF4D</span><span class="o">;</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;=</span> <span class="nt">2000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#FF4D4D</span><span class="o">;</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;=</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#4D4DFF</span><span class="o">;</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">*</span> <span class="p">{</span>
+  <span class="nt">stroke-width</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.2</span><span class="o">;</span>
+  <span class="nt">label</span><span class="nd">:</span> <span class="o">[</span><span class="nt">STATE_ABBR</span><span class="o">];</span>
+  <span class="nt">label-anchor</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.5</span> <span class="nt">0</span><span class="nc">.5</span><span class="o">;</span>
+  <span class="nt">font-family</span><span class="nd">:</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="o">;</span>
+  <span class="nt">font-fill</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">font-style</span><span class="nd">:</span> <span class="nt">normal</span><span class="o">;</span>
+  <span class="nt">font-size</span><span class="nd">:</span> <span class="nt">14</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Click the <span class="guilabel">Apply</span> button at the bottom of the form to save your changes.</p>
+<div class="figure align-default" id="id4">
+<img alt="../../_images/tutorial_noborder.png" src="../../_images/tutorial_noborder.png" />
+<p class="caption"><span class="caption-text">CSS style applied to the <code class="docutils literal notranslate"><span class="pre">states</span></code> layer</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>You will see that the borders are missing! In the GeoServer CSS module, each type of symbolizer has a “key” property which controls whether it is applied. Without these “key” properties, subordinate properties are ignored. These “key” properties are:</p>
+<ul class="simple">
+<li><p><strong>fill</strong>, which controls whether or not Polygon fills are applied. This specified the color or graphic to use for the fill.</p></li>
+<li><p><strong>stroke</strong>, which controls whether or not Line and Polygon outline strokes are applied. This specifies the color (or graphic fill) of the stroke.</p></li>
+<li><p><strong>mark</strong>, which controls whether or not point markers are drawn. This identifies a Well-Known Mark or image URL to use.</p></li>
+<li><p><strong>label</strong>, which controls whether or not to draw labels on the map. This identifies the text to use for labelling the map, usually as a CQL expression.</p></li>
+<li><p><strong>halo-radius</strong>, which controls whether or not to draw a halo around labels. This specifies how large such halos should be.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The <a class="reference internal" href="properties.html#css-properties"><span class="std std-ref">Property listing</span></a> page for information about the other properties.</p>
+</div>
+<p>Since we don’t specify a <code class="docutils literal notranslate"><span class="pre">stroke</span></code> color, no stroke is applied. Let’s add it, replacing the final rule so that it will now look like this:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">stroke-width</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.2</span><span class="o">;</span>
+  <span class="nt">label</span><span class="nd">:</span> <span class="o">[</span><span class="nt">STATE_ABBR</span><span class="o">];</span>
+  <span class="nt">label-anchor</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.5</span> <span class="nt">0</span><span class="nc">.5</span><span class="o">;</span>
+  <span class="nt">font-family</span><span class="nd">:</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="o">;</span>
+  <span class="nt">font-fill</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">font-style</span><span class="nd">:</span> <span class="nt">normal</span><span class="o">;</span>
+  <span class="nt">font-size</span><span class="nd">:</span> <span class="nt">14</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id5">
+<img alt="../../_images/tutorial_border.png" src="../../_images/tutorial_border.png" />
+<p class="caption"><span class="caption-text">Border added to style</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="refining-the-style">
+<h2>Refining the style<a class="headerlink" href="#refining-the-style" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="removing-duplicated-properties">
+<h3>Removing duplicated properties<a class="headerlink" href="#removing-duplicated-properties" title="Permalink to this headline">¶</a></h3>
+<p>The style that we have right now is only 23 lines, a nice improvement over the 103 lines of XML that we started with. However, we are still repeating the <code class="docutils literal notranslate"><span class="pre">fill-opacity</span></code> attribute everywhere.</p>
+<p>We can move it into the <code class="docutils literal notranslate"><span class="pre">*</span></code> rule and have it applied everywhere. This works because the GeoServer CSS module emulates <em>cascading</em>: While SLD uses a “painter’s model” where each rule is processed independently, a cascading style allows you to provide general style properties and override only specific properties for particular features.</p>
+<p>This brings the style down to only 21 lines:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">2000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#4DFF4D</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;</span> <span class="nt">2000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#FF4D4D</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#4D4DFF</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">*</span> <span class="p">{</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+  <span class="nt">stroke-width</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.2</span><span class="o">;</span>
+  <span class="nt">label</span><span class="nd">:</span> <span class="o">[</span><span class="nt">STATE_ABBR</span><span class="o">];</span>
+  <span class="nt">label-anchor</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.5</span> <span class="nt">0</span><span class="nc">.5</span><span class="o">;</span>
+  <span class="nt">font-family</span><span class="nd">:</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="o">;</span>
+  <span class="nt">font-fill</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">font-style</span><span class="nd">:</span> <span class="nt">normal</span><span class="o">;</span>
+  <span class="nt">font-size</span><span class="nd">:</span> <span class="nt">14</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="scale-dependent-styles">
+<h3>Scale-dependent styles<a class="headerlink" href="#scale-dependent-styles" title="Permalink to this headline">¶</a></h3>
+<p>The labels for this style are nice, but at lower zoom levels they seem a little crowded. We can easily move the labels to a rule that doesn’t activate until the scale denominator is below 2000000. We do want to keep the stroke and fill-opacity at all zoom levels, so we can separate them from the label properties.</p>
+<p>Keep the following properties in the main (<code class="docutils literal notranslate"><span class="pre">*</span></code>) rule:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+  <span class="nt">stroke-width</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.2</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Remove all the rest, moving them into a new rule:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">[@</span><span class="nt">sd</span> <span class="o">&lt;</span> <span class="nt">20M</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">label</span><span class="nd">:</span> <span class="o">[</span><span class="nt">STATE_ABBR</span><span class="o">];</span>
+  <span class="nt">label-anchor</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.5</span> <span class="nt">0</span><span class="nc">.5</span><span class="o">;</span>
+  <span class="nt">font-family</span><span class="nd">:</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="o">;</span>
+  <span class="nt">font-fill</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">font-style</span><span class="nd">:</span> <span class="nt">normal</span><span class="o">;</span>
+  <span class="nt">font-size</span><span class="nd">:</span> <span class="nt">14</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-titles-for-the-legend">
+<h3>Setting titles for the legend<a class="headerlink" href="#setting-titles-for-the-legend" title="Permalink to this headline">¶</a></h3>
+<p>So far, we haven’t set titles for any of the style rules. This doesn’t really cause any problems while viewing maps, but GeoServer uses the title in auto-generating legend graphics. Without the titles, GeoServer falls back on the names, which in the CSS module are generated from the filters for each rule. Titles are not normally a part of CSS, so GeoServer looks for them in specially formatted comments before each rule. We can add titles like this:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="cm">/* @title Population &lt; 2M */</span>
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">2000000</span><span class="o">]</span> <span class="p">{</span>
+
+  <span class="nc">...</span>
+
+<span class="o">/*</span> <span class="o">@</span><span class="nt">title</span> <span class="nt">2M</span> <span class="o">&lt;</span> <span class="nt">Population</span> <span class="o">&lt;</span> <span class="nt">4M</span> <span class="o">*/</span>
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;</span> <span class="nt">2000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+
+  <span class="nc">...</span>
+
+<span class="o">/*</span> <span class="o">@</span><span class="nt">title</span> <span class="nt">Population</span> <span class="o">&gt;</span> <span class="nt">4M</span> <span class="o">*/</span>
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+
+  <span class="nc">...</span>
+
+
+<span class="o">/*</span> <span class="o">@</span><span class="nt">title</span> <span class="nt">Boundaries</span> <span class="o">*/</span>
+<span class="o">*</span> <span class="p">{</span>
+
+  <span class="nc">...</span>
+</pre></div>
+</div>
+<p>Because of the way that CSS is translated to SLD, each SLD rule is a combination of several CSS rules. This is handled by combining the titles with the word “with”. If the title is omitted for a rule, then it is simply not included in the SLD output.</p>
+<p>The final CSS should look like this:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="cm">/* @title Population &lt; 2M */</span>
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">2000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#4DFF4D</span><span class="o">;</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* @title 2M &lt; Population &lt; 4M */</span>
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;=</span> <span class="nt">2000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#FF4D4D</span><span class="o">;</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* @title Population &gt; 4M */</span>
+<span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;=</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#4D4DFF</span><span class="o">;</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+<span class="p">}</span>
+
+
+<span class="cm">/* @title Boundaries */</span>
+<span class="o">*</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">stroke-width</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.2</span><span class="o">;</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">[@</span><span class="nt">sd</span> <span class="o">&lt;</span> <span class="nt">20M</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">label</span><span class="nd">:</span> <span class="o">[</span><span class="nt">STATE_ABBR</span><span class="o">];</span>
+  <span class="nt">label-anchor</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.5</span> <span class="nt">0</span><span class="nc">.5</span><span class="o">;</span>
+  <span class="nt">font-family</span><span class="nd">:</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="o">;</span>
+  <span class="nt">font-fill</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">font-style</span><span class="nd">:</span> <span class="nt">normal</span><span class="o">;</span>
+  <span class="nt">font-size</span><span class="nd">:</span> <span class="nt">14</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id6">
+<img alt="../../_images/tutorial_finalstyle.png" src="../../_images/tutorial_finalstyle.png" />
+<p class="caption"><span class="caption-text">Final style with rule names</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="applying-rule-nesting">
+<h3>Applying rule nesting<a class="headerlink" href="#applying-rule-nesting" title="Permalink to this headline">¶</a></h3>
+<p>As a final variation, the style can be made more compact by leveraging rule nesting:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">stroke-width</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.2</span><span class="o">;</span>
+  <span class="nt">fill-opacity</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.7</span><span class="o">;</span>
+
+  <span class="o">/*</span> <span class="o">@</span><span class="nt">title</span> <span class="nt">Population</span> <span class="o">&lt;</span> <span class="nt">2M</span> <span class="o">*/</span>
+  <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">2000000</span><span class="o">]</span> <span class="p">{</span>
+    <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#4DFF4D</span><span class="o">;</span>
+  <span class="p">}</span><span class="o">;</span>
+  <span class="o">/*</span> <span class="o">@</span><span class="nt">title</span> <span class="nt">2M</span> <span class="o">&lt;</span> <span class="nt">Population</span> <span class="o">&lt;</span> <span class="nt">4M</span> <span class="o">*/</span>
+  <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;=</span> <span class="nt">2000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&lt;</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+    <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#FF4D4D</span><span class="o">;</span>
+  <span class="p">}</span><span class="o">;</span>
+  <span class="o">/*</span> <span class="o">@</span><span class="nt">title</span> <span class="nt">Population</span> <span class="o">&gt;</span> <span class="nt">4M</span> <span class="o">*/</span>
+  <span class="o">[</span><span class="nt">PERSONS</span> <span class="o">&gt;=</span> <span class="nt">4000000</span><span class="o">]</span> <span class="p">{</span>
+    <span class="nt">fill</span><span class="nd">:</span> <span class="nn">#4D4DFF</span><span class="o">;</span>
+  <span class="p">}</span><span class="o">;</span>
+
+  <span class="o">/*</span> <span class="nt">Labelling</span> <span class="o">*/</span>
+  <span class="o">[@</span><span class="nt">sd</span> <span class="o">&lt;</span> <span class="nt">20M</span><span class="o">]</span> <span class="p">{</span>
+    <span class="nt">label</span><span class="nd">:</span> <span class="o">[</span><span class="nt">STATE_ABBR</span><span class="o">];</span>
+    <span class="nt">label-anchor</span><span class="nd">:</span> <span class="nt">0</span><span class="nc">.5</span> <span class="nt">0</span><span class="nc">.5</span><span class="o">;</span>
+    <span class="nt">font-family</span><span class="nd">:</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="o">;</span>
+    <span class="nt">font-fill</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
+    <span class="nt">font-style</span><span class="nd">:</span> <span class="nt">normal</span><span class="o">;</span>
+    <span class="nt">font-size</span><span class="nd">:</span> <span class="nt">14</span><span class="o">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="css-workshop">
+<h3>CSS Workshop<a class="headerlink" href="#css-workshop" title="Permalink to this headline">¶</a></h3>
+<p>For more details, visit the next section, the <a class="reference external" href="../workshop/index.html">CSS workshop</a>. This workshop has been used in the past for classroom settings to teach the CSS extension and has been ported to the user documentation.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install.html" title="previous chapter">Installing the GeoServer CSS extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="filters.html" title="next chapter">Filter syntax</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Tutorial: Styling data with CSS</a><ul>
+<li><a class="reference internal" href="#creating-a-style-for-the-states-layer">Creating a style for the states layer</a></li>
+<li><a class="reference internal" href="#refining-the-style">Refining the style</a><ul>
+<li><a class="reference internal" href="#removing-duplicated-properties">Removing duplicated properties</a></li>
+<li><a class="reference internal" href="#scale-dependent-styles">Scale-dependent styles</a></li>
+<li><a class="reference internal" href="#setting-titles-for-the-legend">Setting titles for the legend</a></li>
+<li><a class="reference internal" href="#applying-rule-nesting">Applying rule nesting</a></li>
+<li><a class="reference internal" href="#css-workshop">CSS Workshop</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install.html" title="previous chapter">Installing the GeoServer CSS extension</a></li>
+            <li>Next: <a href="filters.html" title="next chapter">Filter syntax</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/css/tutorial.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

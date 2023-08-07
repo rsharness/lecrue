@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>External Web Map Tile Server &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Application schemas" href="../app-schema/index.html" />
+    <link rel="prev" title="External Web Map Server" href="wms.html" /> 
+  </head><body class="data/cascaded/wmts">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Cascaded service data</a> &raquo;</li>
+    <li>External Web Map Tile Server</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../app-schema/index.html" title="Application schemas" accesskey="N">Next</a></li>
+  <li>
+    <a href="wms.html" title="External Web Map Server" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="external-web-map-tile-server">
+<span id="data-external-wmts"></span><h1>External Web Map Tile Server<a class="headerlink" href="#external-web-map-tile-server" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer has the ability to proxy a remote Web Map Tile Service (WMTS).  This process is sometimes known as <strong>Cascading WMTS</strong>,
+even if the incoming requests follow the WMS protocol and the backing service follows the WMTS one; the WMTS cascading
+functionality is more like a “protocol translator”, where the different handled data (capabilities documents, images) are
+translated by the “WMTS cascading” logic.</p>
+<p>Loading a remote WMTS is useful for many reasons.  If you don’t manage or have access to the remote WMTS, you can now manage its output as if it were local.  Even if you don’t have any control on the remote WMTS, you can use GeoServer features to treat its output (watermarking, decoration, printing, etc).</p>
+<p>To access a remote WMTS, it is necessary to load it as a store in GeoServer.  GeoServer must be able to access the capabilities document of the remote WMTS for the store to be successfully loaded.</p>
+<div class="section" id="adding-an-external-wmts">
+<h2>Adding an external WMTS<a class="headerlink" href="#adding-an-external-wmts" title="Permalink to this headline">¶</a></h2>
+<p>To connect to an external WMTS, it is necessary to load it as a new store.  To start, in the <a class="reference internal" href="../../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>, navigate to <span class="menuselection">Stores ‣ Add a new store ‣ WMTS</span>.  The option is listed under <span class="guilabel">Other Data Sources</span>.</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/wmtsaddnew.png" src="../../_images/wmtsaddnew.png" />
+<p class="caption"><span class="caption-text"><em>Adding an external WMTS as a store</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/wmtsconfigure.png" src="../../_images/wmtsconfigure.png" />
+<p class="caption"><span class="caption-text"><em>Configuring a new external WTMS store</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">Workspace</span></p></td>
+<td><p>Name of the workspace to contain the store.  This will also be the prefix of all of the layer names published from the store.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">Data Source Name</span></p></td>
+<td><p>Name of the store as known to GeoServer.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">Description</span></p></td>
+<td><p>Description of the store.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">Enabled</span></p></td>
+<td><p>Enables the store.  If disabled, no data from the remote WMTS will be served.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">Capabilities URL</span></p></td>
+<td><p>The full URL to access the capabilities document of the remote WMTS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">User Name</span></p></td>
+<td><p>If the WMTS requires authentication, the user name to connect as.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">Password</span></p></td>
+<td><p>If the WMTS requires authentication, the password to connect with.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">HTTP header name</span></p></td>
+<td><p>If the WMTS requires a custom HTTP header, the header name.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">HTTP header value</span></p></td>
+<td><p>If the WMTS requires a custom HTTP header, the header value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">Max concurrent connections</span></p></td>
+<td><p>The maximum number of persistent connections to keep for this WMTS.</p></td>
+</tr>
+</tbody>
+</table>
+<p>When finished, click <span class="guilabel">Save</span>.</p>
+</div>
+<div class="section" id="configuring-external-wmts-layers">
+<h2>Configuring external WMTS layers<a class="headerlink" href="#configuring-external-wmts-layers" title="Permalink to this headline">¶</a></h2>
+<p>When properly loaded, all layers served by the external WMTS will be available to GeoServer.  Before they can be served, however, they will need to be individually configured (published) as new layers.  See the section on <a class="reference internal" href="../webadmin/layers.html#data-webadmin-layers"><span class="std std-ref">Layers</span></a> for how to add and edit new layers.  Once published, these layers will show up in the <a class="reference internal" href="../webadmin/layerpreview.html#layerpreview"><span class="std std-ref">Layer Preview</span></a> and as part of the WMS capabilities document. If the WMTS layer has additional dimensions (e.g. time), related info will be reported on the WMS capabilities as well.</p>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<p>Connecting a remote WMTS allows for the following features:</p>
+<ul class="simple">
+<li><p><strong>Dynamic reprojection</strong>.  While the default projection for a layer is cascaded, it is possible to pass the SRS parameter through to the remote WMS.  Should that SRS not be valid on the remote server, GeoServer will dynamically reproject the tiles sent to it from the remote WMTS.</p></li>
+<li><p>Full <strong>REST Configuration</strong>. See the <a class="reference internal" href="../../rest/index.html#rest"><span class="std std-ref">REST</span></a> section for more information about the GeoServer REST interface.</p></li>
+</ul>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<p>Layers served through an external WMTS have some, but not all of the functionality of a local layer.</p>
+<ul class="simple">
+<li><p>Layers cannot be styled with SLD.</p></li>
+<li><p>Alternate (local) styles cannot be used.</p></li>
+<li><p>GetFeatureInfo requests aren’t supported.</p></li>
+<li><p>GetLegendGraphic requests aren’t supported.</p></li>
+<li><p>Image format cannot be specified.  GeoServer will attempt to request PNG images, and if that fails will use the remote server’s default image format.</p></li>
+</ul>
+</div>
+<div class="section" id="images-output-discrepancies-in-a-cascaded-wmts-layer">
+<h2>Images output discrepancies in a cascaded WMTS Layer<a class="headerlink" href="#images-output-discrepancies-in-a-cascaded-wmts-layer" title="Permalink to this headline">¶</a></h2>
+<p>WMTS it is a service that serves tiles and they have been generated for a concrete resolution/scale denominator. Asking a WMTS cascaded layer to generate WMS GetMap images or other WMTS tiles, with other scale denominators, will require image re-sampling:</p>
+<ul class="simple">
+<li><p>If the image is stretched (scaled out) and the scale difference is notable, the borders, lines, and labels that appear in it could be blurred.</p></li>
+<li><p>On the other hand if shrunk, the same object and shape could appear smaller than the original size and will be similarly appear blurred.</p></li>
+</ul>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/cascaded_wmts.png" src="../../_images/cascaded_wmts.png" />
+<p class="caption"><span class="caption-text"><em>This figure compares the resulting image from a WMTS to a cascaded layer which has been slightly stretched or scaled out</em>
+<em>Left image shows a original wmts layer at its defined zoom level 4 which scale denominator is about 4M</em>
+<em>Right image shows a cascaded wmts layer as wms layer with at different scale denominator (the closest to its homologous cascaded layer) which is about 5M</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="wms.html" title="previous chapter">External Web Map Server</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../app-schema/index.html" title="next chapter">Application schemas</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">External Web Map Tile Server</a><ul>
+<li><a class="reference internal" href="#adding-an-external-wmts">Adding an external WMTS</a></li>
+<li><a class="reference internal" href="#configuring-external-wmts-layers">Configuring external WMTS layers</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#images-output-discrepancies-in-a-cascaded-wmts-layer">Images output discrepancies in a cascaded WMTS Layer</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="wms.html" title="previous chapter">External Web Map Server</a></li>
+            <li>Next: <a href="../app-schema/index.html" title="next chapter">Application schemas</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/cascaded/wmts.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

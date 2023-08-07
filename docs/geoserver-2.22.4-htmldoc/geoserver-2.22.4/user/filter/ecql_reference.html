@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ECQL Reference &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Filter functions" href="function.html" />
+    <link rel="prev" title="Filter Encoding Reference" href="filter_reference.html" /> 
+  </head><body class="filter/ecql_reference">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Filtering</a> &raquo;</li>
+    <li>ECQL Reference</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="function.html" title="Filter functions" accesskey="N">Next</a></li>
+  <li>
+    <a href="filter_reference.html" title="Filter Encoding Reference" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="ecql-reference">
+<span id="filter-ecql-reference"></span><h1>ECQL Reference<a class="headerlink" href="#ecql-reference" title="Permalink to this headline">¶</a></h1>
+<p>This section provides a reference for the syntax of the ECQL language.
+The full language grammar is documented in the GeoTools <a class="reference external" href="https://github.com/geotools/geotools/blob/main/modules/library/cql/ECQL.md">ECQL BNF definition</a></p>
+<div class="section" id="syntax-notes">
+<h2>Syntax Notes<a class="headerlink" href="#syntax-notes" title="Permalink to this headline">¶</a></h2>
+<p>The sections below describe the major language constructs.
+Each construct lists all syntax options for it.
+Each option is defined as a sequence of other constructs, or recursively in terms of itself.</p>
+<ul class="simple">
+<li><p>Symbols which are part of the ECQL language are shown in <code class="docutils literal notranslate"><span class="pre">code</span> <span class="pre">font</span></code>.
+All other symbols are part of the grammar description.</p></li>
+<li><p>ECQL keywords are not case-sensitive.</p></li>
+<li><p>A vertical bar symbol ‘<strong>|</strong>’ indicates that a choice of keyword can be made.</p></li>
+<li><p>Brackets ‘<strong>[</strong> … <strong>]</strong>’ delimit syntax that is optional.</p></li>
+<li><p>Braces ‘<strong>{</strong> … <strong>}</strong>’ delimit syntax that may be present zero or more times.</p></li>
+</ul>
+</div>
+<div class="section" id="condition">
+<span id="ecql-cond"></span><h2>Condition<a class="headerlink" href="#condition" title="Permalink to this headline">¶</a></h2>
+<p>A filter condition is a single predicate, or a logical combination of other conditions.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Syntax</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-pred"><span class="std std-ref">Predicate</span></a></p></td>
+<td><p>Single predicate expression</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ecql-cond"><span class="std std-ref">Condition</span></a> <code class="docutils literal notranslate"><span class="pre">AND</span></code> | <code class="docutils literal notranslate"><span class="pre">OR</span></code> <a class="reference internal" href="#ecql-cond"><span class="std std-ref">Condition</span></a></p></td>
+<td><p>Conjunction or disjunction of conditions</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">NOT</span></code> <a class="reference internal" href="#ecql-cond"><span class="std std-ref">Condition</span></a></p></td>
+<td><p>Negation of a condition</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">(</span></code> | <code class="docutils literal notranslate"><span class="pre">[</span></code> <a class="reference internal" href="#ecql-cond"><span class="std std-ref">Condition</span></a> <code class="docutils literal notranslate"><span class="pre">]</span></code> | <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Bracketing with <code class="docutils literal notranslate"><span class="pre">(</span></code> or <code class="docutils literal notranslate"><span class="pre">[</span></code> controls evaluation order</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="predicate">
+<span id="ecql-pred"></span><h2>Predicate<a class="headerlink" href="#predicate" title="Permalink to this headline">¶</a></h2>
+<p>Predicates are boolean-valued expressions which specify relationships between values.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Syntax</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <code class="docutils literal notranslate"><span class="pre">=</span></code> | <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> | <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> | <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> | <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> | <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a></p></td>
+<td><p>Comparison operations</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <strong>[</strong> <code class="docutils literal notranslate"><span class="pre">NOT</span></code> <strong>]</strong> <code class="docutils literal notranslate"><span class="pre">BETWEEN</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">AND</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a></p></td>
+<td><p>Tests whether a value lies in or outside a range (inclusive)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <strong>[</strong> <code class="docutils literal notranslate"><span class="pre">NOT</span></code> <strong>]</strong> <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> | <code class="docutils literal notranslate"><span class="pre">ILIKE</span></code> <em>like-pattern</em></p></td>
+<td><p>Simple pattern matching.
+<em>like-pattern</em> uses the <code class="docutils literal notranslate"><span class="pre">%</span></code> character as a wild-card for any number of characters.
+<code class="docutils literal notranslate"><span class="pre">ILIKE</span></code> does case-insensitive matching.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ecql-attr"><span class="std std-ref">Attribute</span></a> <strong>[</strong> <code class="docutils literal notranslate"><span class="pre">NOT</span></code> <strong>]</strong> <code class="docutils literal notranslate"><span class="pre">IN</span> <span class="pre">(</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <strong>{</strong> <code class="docutils literal notranslate"><span class="pre">,</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <strong>}</strong>  <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether an expression value is (not) in a set of values</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IN</span> <span class="pre">(</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Literal</span></a>  <strong>{</strong> <code class="docutils literal notranslate"><span class="pre">,</span></code><a class="reference internal" href="#ecql-literal"><span class="std std-ref">Literal</span></a>  <strong>}</strong>  <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether a feature ID value is in a given set. ID values are integers or string literals</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">IS</span></code> <strong>[</strong> <code class="docutils literal notranslate"><span class="pre">NOT</span></code> <strong>]</strong> <code class="docutils literal notranslate"><span class="pre">NULL</span></code></p></td>
+<td><p>Tests whether a value is (non-)null</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-attr"><span class="std std-ref">Attribute</span></a> <code class="docutils literal notranslate"><span class="pre">EXISTS</span></code> <strong>|</strong> <code class="docutils literal notranslate"><span class="pre">DOES-NOT-EXIST</span></code></p></td>
+<td><p>Tests whether a featuretype does (not) have a given attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">INCLUDE</span></code> | <code class="docutils literal notranslate"><span class="pre">EXCLUDE</span></code></p></td>
+<td><p>Always include (exclude) features to which this filter is applied</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="temporal-predicate">
+<span id="ecql-temp"></span><h3>Temporal Predicate<a class="headerlink" href="#temporal-predicate" title="Permalink to this headline">¶</a></h3>
+<p>Temporal predicates specify the relationship of a time-valued expression to a time or time period.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Syntax</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <code class="docutils literal notranslate"><span class="pre">BEFORE</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Time</span></a></p></td>
+<td><p>Tests whether a time value is before a point in time</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <code class="docutils literal notranslate"><span class="pre">BEFORE</span> <span class="pre">OR</span> <span class="pre">DURING</span></code> <a class="reference internal" href="#ecql-period"><span class="std std-ref">Time Period</span></a></p></td>
+<td><p>Tests whether a time value is before or during a time period</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <code class="docutils literal notranslate"><span class="pre">DURING</span></code> <a class="reference internal" href="#ecql-period"><span class="std std-ref">Time Period</span></a></p></td>
+<td><p>Tests whether a time value is during a time period</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <code class="docutils literal notranslate"><span class="pre">DURING</span> <span class="pre">OR</span> <span class="pre">AFTER</span></code> <a class="reference internal" href="#ecql-period"><span class="std std-ref">Time Period</span></a></p></td>
+<td><p>Tests whether a time value is during or after a time period</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <code class="docutils literal notranslate"><span class="pre">AFTER</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Time</span></a></p></td>
+<td><p>Tests whether a time value is after a point in time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="spatial-predicate">
+<span id="ecql-spat"></span><h3>Spatial Predicate<a class="headerlink" href="#spatial-predicate" title="Permalink to this headline">¶</a></h3>
+<p>Spatial predicates specify the relationship between geometric values.
+Topological spatial predicates
+(<code class="docutils literal notranslate"><span class="pre">INTERSECTS</span></code>, <code class="docutils literal notranslate"><span class="pre">DISJOINT</span></code>, <code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code>, <code class="docutils literal notranslate"><span class="pre">WITHIN</span></code>,
+<code class="docutils literal notranslate"><span class="pre">TOUCHES</span></code> <code class="docutils literal notranslate"><span class="pre">CROSSES</span></code>, <code class="docutils literal notranslate"><span class="pre">OVERLAPS</span></code> and <code class="docutils literal notranslate"><span class="pre">RELATE</span></code>)
+are defined in terms of the DE-9IM model described in the
+OGC <a class="reference external" href="http://www.opengeospatial.org/standards/sfs">Simple Features for SQL</a> specification.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Syntax</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">INTERSECTS(</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether two geometries intersect.
+The converse of <code class="docutils literal notranslate"><span class="pre">DISJOINT</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DISJOINT(</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether two geometries are disjoint.
+The converse of <code class="docutils literal notranslate"><span class="pre">INTERSECTS</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CONTAINS(</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether the first geometry topologically contains the second.
+The converse of  <code class="docutils literal notranslate"><span class="pre">WITHIN</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WITHIN(</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether the first geometry is topologically within the second.
+The converse of <code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TOUCHES(</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether two geometries touch.
+Geometries touch if they have at least one point in common, but their interiors do not intersect.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CROSSES(</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether two geometries cross.
+Geometries cross if they have some but not all interior points in common</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OVERLAPS(</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether two geometries overlap.
+Geometries overlap if they have the same dimension, have at least one point each not shared by the other, and the intersection of the interiors of the two geometries has the same dimension as the geometries themselves</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EQUALS(</span></code><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether two geometries are topologically equal</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RELATE(</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <em>pattern</em> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether geometries have the spatial relationship specified by a DE-9IM matrix <em>pattern</em>.
+A DE-9IM pattern is a string of length 9 specified using the characters <code class="docutils literal notranslate"><span class="pre">*TF012</span></code>.
+Example: <code class="docutils literal notranslate"><span class="pre">'1*T***T**'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DWITHIN(</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <em>distance</em> <code class="docutils literal notranslate"><span class="pre">,</span></code> <em>units</em> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether the distance between two geometries is no more than the specified distance.
+<em>distance</em> is an unsigned numeric value for the distance tolerance.
+<em>units</em> is one of <code class="docutils literal notranslate"><span class="pre">feet</span></code>, <code class="docutils literal notranslate"><span class="pre">meters</span></code>, <code class="docutils literal notranslate"><span class="pre">statute</span> <span class="pre">miles</span></code>, <code class="docutils literal notranslate"><span class="pre">nautical</span> <span class="pre">miles</span></code>, <code class="docutils literal notranslate"><span class="pre">kilometers</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BEYOND(</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <em>distance</em> <code class="docutils literal notranslate"><span class="pre">,</span></code> <em>units</em> <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Similar to <code class="docutils literal notranslate"><span class="pre">DWITHIN</span></code>, but tests whether the distance between two geometries is greater than the given distance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BBOX</span> <span class="pre">(</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code>
+<a class="reference internal" href="#ecql-literal"><span class="std std-ref">Number</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Number</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Number</span></a> <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Number</span></a>
+[ <code class="docutils literal notranslate"><span class="pre">,</span></code> <em>CRS</em> ] <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Tests whether a geometry intersects a bounding box
+specified by its minimum and maximum X and Y values.
+The optional <em>CRS</em> is a string containing an SRS code
+(For example, <code class="docutils literal notranslate"><span class="pre">'EPSG:1234'</span></code>.
+The default is to use the CRS of the queried layer)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="expression">
+<span id="ecql-expr"></span><h2>Expression<a class="headerlink" href="#expression" title="Permalink to this headline">¶</a></h2>
+<p>An expression specifies a attribute, literal, or computed value.
+The type of the value is determined by the nature of the expression.
+The standard <a class="reference external" href="http://en.wikipedia.org/wiki/Order_of_operations#Mnemonics">PEMDAS</a>
+order of evaluation is used.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Syntax</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-attr"><span class="std std-ref">Attribute</span></a></p></td>
+<td><p>Name of a feature attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ecql-literal"><span class="std std-ref">Literal</span></a></p></td>
+<td><p>Literal value</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a>  <code class="docutils literal notranslate"><span class="pre">+</span></code> | <code class="docutils literal notranslate"><span class="pre">-</span></code> | <code class="docutils literal notranslate"><span class="pre">*</span></code> | <code class="docutils literal notranslate"><span class="pre">/</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a></p></td>
+<td><p>Arithmetic operations</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>function</em>  <code class="docutils literal notranslate"><span class="pre">(</span></code> [ <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> { <code class="docutils literal notranslate"><span class="pre">,</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> } ] <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Value computed by evaluation of a <a class="reference internal" href="function_reference.html#filter-function-reference"><span class="std std-ref">filter function</span></a>
+with zero or more arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(</span></code> | <code class="docutils literal notranslate"><span class="pre">[</span></code> <a class="reference internal" href="#ecql-expr"><span class="std std-ref">Expression</span></a> <code class="docutils literal notranslate"><span class="pre">]</span></code> | <code class="docutils literal notranslate"><span class="pre">)</span></code></p></td>
+<td><p>Bracketing with <code class="docutils literal notranslate"><span class="pre">(</span></code> or <code class="docutils literal notranslate"><span class="pre">[</span></code> controls evaluation order</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attribute">
+<span id="ecql-attr"></span><h2>Attribute<a class="headerlink" href="#attribute" title="Permalink to this headline">¶</a></h2>
+<p>An attribute name denotes the value of a feature attribute.</p>
+<ul class="simple">
+<li><p>Simple attribute names are sequences of letters and numbers,</p></li>
+<li><p>Attribute names quoted with double-quotes may be any sequence of characters.</p></li>
+</ul>
+</div>
+<div class="section" id="literal">
+<span id="ecql-literal"></span><h2>Literal<a class="headerlink" href="#literal" title="Permalink to this headline">¶</a></h2>
+<p>Literals specify constant values of various types.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Type</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><em>Number</em></p></td>
+<td><p>Integer or floating-point number. Scientific notation is supported.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>Boolean</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TRUE</span></code> or <code class="docutils literal notranslate"><span class="pre">FALSE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><em>String</em></p></td>
+<td><p>String literal delimited by single quotes.  To include a single quote in the
+string use two single-quotes: <code class="docutils literal notranslate"><span class="pre">''</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>Geometry</em></p></td>
+<td><p>Geometry in WKT or EWKT format.
+WKT is defined in the OGC <a class="reference external" href="http://www.opengeospatial.org/standards/sfs">Simple Features for SQL</a> specification.
+All standard geometry types are supported:
+<code class="docutils literal notranslate"><span class="pre">POINT</span></code>, <code class="docutils literal notranslate"><span class="pre">LINESTRING</span></code>, <code class="docutils literal notranslate"><span class="pre">POLYGON</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MULTIPOINT</span></code>, <code class="docutils literal notranslate"><span class="pre">MULTILINESTRING</span></code>, <code class="docutils literal notranslate"><span class="pre">MULTIPOLYGON</span></code>, <code class="docutils literal notranslate"><span class="pre">GEOMETRYCOLLECTION</span></code>.
+EWKT allows specifying a geometry spatial reference system by prefixing it with a numerical code, in the form <code class="docutils literal notranslate"><span class="pre">SRID=number;WKT</span></code>, for example, <code class="docutils literal notranslate"><span class="pre">SRID=4326;POINT</span> <span class="pre">(1</span> <span class="pre">2)</span></code>.
+A custom type of Envelope is also supported with syntax <code class="docutils literal notranslate"><span class="pre">ENVELOPE</span> <span class="pre">(</span></code> <em>x1</em> <em>x2</em> <em>y1</em> <em>y2</em> <code class="docutils literal notranslate"><span class="pre">)</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><em>Time</em></p></td>
+<td><p>A UTC date/time value in the format <code class="docutils literal notranslate"><span class="pre">yyyy-mm-hhThh:mm:ss</span></code>.
+The seconds value may have a decimal fraction.
+The time zone may be specified as <code class="docutils literal notranslate"><span class="pre">Z</span></code> or <code class="docutils literal notranslate"><span class="pre">+/-hh:mm</span></code>.
+Example: <code class="docutils literal notranslate"><span class="pre">2006-11-30T00:30:00Z</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>Duration</em></p></td>
+<td><p>A time duration specified as <code class="docutils literal notranslate"><span class="pre">P</span></code> <strong>[</strong> y <code class="docutils literal notranslate"><span class="pre">Y</span></code> m <code class="docutils literal notranslate"><span class="pre">M</span></code> d <code class="docutils literal notranslate"><span class="pre">D</span></code> <strong>]</strong> <code class="docutils literal notranslate"><span class="pre">T</span></code> <strong>[</strong> h <code class="docutils literal notranslate"><span class="pre">H</span></code> m <code class="docutils literal notranslate"><span class="pre">M</span></code> s <code class="docutils literal notranslate"><span class="pre">S</span></code> <strong>]</strong>.
+The duration can be specified to any desired precision by including
+only the required year, month, day, hour, minute and second components.
+Examples:
+<code class="docutils literal notranslate"><span class="pre">P1Y2M</span></code>,
+<code class="docutils literal notranslate"><span class="pre">P4Y2M20D</span></code>,
+<code class="docutils literal notranslate"><span class="pre">P4Y2M1DT20H3M36S</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="time-period">
+<span id="ecql-period"></span><h3>Time Period<a class="headerlink" href="#time-period" title="Permalink to this headline">¶</a></h3>
+<p>Specifies a period of time, in several different formats.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Syntax</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-literal"><span class="std std-ref">Time</span></a> <code class="docutils literal notranslate"><span class="pre">/</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Time</span></a></p></td>
+<td><p>Period specified by a start and end time</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ecql-literal"><span class="std std-ref">Duration</span></a> <code class="docutils literal notranslate"><span class="pre">/</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Time</span></a></p></td>
+<td><p>Period specified by a duration before a given time</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ecql-literal"><span class="std std-ref">Time</span></a> <code class="docutils literal notranslate"><span class="pre">/</span></code> <a class="reference internal" href="#ecql-literal"><span class="std std-ref">Duration</span></a></p></td>
+<td><p>Period specified by a duration after a given time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="filter_reference.html" title="previous chapter">Filter Encoding Reference</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="function.html" title="next chapter">Filter functions</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">ECQL Reference</a><ul>
+<li><a class="reference internal" href="#syntax-notes">Syntax Notes</a></li>
+<li><a class="reference internal" href="#condition">Condition</a></li>
+<li><a class="reference internal" href="#predicate">Predicate</a><ul>
+<li><a class="reference internal" href="#temporal-predicate">Temporal Predicate</a></li>
+<li><a class="reference internal" href="#spatial-predicate">Spatial Predicate</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#expression">Expression</a></li>
+<li><a class="reference internal" href="#attribute">Attribute</a></li>
+<li><a class="reference internal" href="#literal">Literal</a><ul>
+<li><a class="reference internal" href="#time-period">Time Period</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="filter_reference.html" title="previous chapter">Filter Encoding Reference</a></li>
+            <li>Next: <a href="function.html" title="next chapter">Filter functions</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/filter/ecql_reference.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

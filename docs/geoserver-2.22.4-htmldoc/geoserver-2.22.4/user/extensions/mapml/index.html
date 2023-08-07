@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MapML &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Catalog Services for the Web (CSW) - ISO Metadata Profile" href="../csw-iso/index.html" />
+    <link rel="prev" title="WPS JDBC" href="../wps-jdbc/index.html" /> 
+  </head><body class="extensions/mapml/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+    <li>MapML</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../csw-iso/index.html" title="Catalog Services for the Web (CSW) - ISO Metadata Profile" accesskey="N">Next</a></li>
+  <li>
+    <a href="../wps-jdbc/index.html" title="WPS JDBC" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="mapml">
+<span id="id1"></span><h1>MapML<a class="headerlink" href="#mapml" title="Permalink to this headline">¶</a></h1>
+<p>Map Markup Language (MapML) is a text-based format which allows map authors to encode map information as hypertext documents exchanged over the Uniform Interface of the Web. The format definition is still a work-in-progress by the Maps for HTML W3C Community Group, but various tools to work with the format already exist, including a Leaflet-based map viewer. For more information on MapML refer to the <cite>Maps for HTML Community Group &lt;https://maps4html.org/&gt;</cite>.</p>
+<p>The MapML module for GeoServer adds new MapML resources to access WMS and WFS services configured in Geoserver. The MapML modules includes support for styles, tiling, querying, sharding, and dimensions options for WMS layers, and also provides a MapML outputFormat for WMS GetFeatureInfo and WFS GetFeatures requests. See below for information on installing and configuring the MapML module.</p>
+<blockquote>
+<div><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>MapML is an experimental proposed extension of HTML for the Web. The objective of the format is to standardize map, layer and feature semantics in HTML.  As the format progresses towards a Web standard, it may change.  Always use the latest version of this extension, and follow the project’s progress at <a class="reference external" href="https://maps4html.org">https://maps4html.org</a>.</p>
+</div>
+</div></blockquote>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Visit the <a class="reference external" href="http://geoserver.org/download">website download</a> page, locate your release, and download:  <a class="reference external" href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.22.4/extensions/geoserver-2.22.4-mapml-plugin.zip">geoserver-2.22.4-mapml-plugin.zip</a></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure to match the version of the extension (for example 2.22.4 above) to the version of the GeoServer instance!</p>
+</div>
+</li>
+<li><p>Extract the contents of the archive into the <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory of the GeoServer installation.</p></li>
+<li><p>Restart GeoServer.</p></li>
+</ol>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Configuration can be done using the Geoserver administrator GUI. The MapML configuration is accessible in the <em>MapML Settings</em> section under the <em>Publishing</em> tab of the Layer or Layer Group Configuration page for the layer or layer group being configured. Here is the MapML Settings section, with some example values filled in:</p>
+<div class="figure align-default">
+<img alt="../../_images/mapml_config_ui.png" src="../../_images/mapml_config_ui.png" />
+</div>
+<div class="section" id="license-info">
+<h3>License Info<a class="headerlink" href="#license-info" title="Permalink to this headline">¶</a></h3>
+<p>Together these two attributes allow the administrator to define the contents of the <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=license&gt;</span></code> element in the MapML header. Here is an example of the resulting XML:</p>
+<blockquote>
+<div><p>&lt;link href=”<a class="reference external" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>” rel=”license” title=”Attribution 4.0 International (CC BY 4.0)”/&gt;</p>
+</div></blockquote>
+<dl class="simple">
+<dt><strong>License Title</strong></dt><dd><p>The License Title will be included as the value of <code class="docutils literal notranslate"><span class="pre">title</span></code> attribute of the <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=license&gt;</span></code> element in the MapML header.</p>
+</dd>
+<dt><strong>License Link</strong></dt><dd><p>The License Link will be included as the value of <code class="docutils literal notranslate"><span class="pre">href</span></code> attribute of the <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=license&gt;</span></code> element in the MapML header, and should be a valid URL referencing the license document.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="tile-settings">
+<h3>Tile Settings<a class="headerlink" href="#tile-settings" title="Permalink to this headline">¶</a></h3>
+<p>Using tiles to access the layer can increase the performance of your web map. This is especially true if there is a tile cache mechanism in use between GeoServer and the browser client.</p>
+<dl class="simple">
+<dt><strong>Use Tiles</strong></dt><dd><p>If the “Use Tiles” checkbox is checked, by default the output MapML will define a tile-based reference to the WMS server. Otherwise, an image-based reference will be used.  If one or more of the MapML-defined GridSets is referenced by the layer or layer group in its “Tile Caching” profile, GeoServer will generate tile references instead of generating WMS GetMap URLs in the MapML document body.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="tile-caching">
+<h3>Tile Caching<a class="headerlink" href="#tile-caching" title="Permalink to this headline">¶</a></h3>
+<p>In the Tile Caching tab panel of the Edit Layer or Edit Layer Group page, at the bottom of the page you will see the table of GridSets that are assigned to the layer or layer group.  The values “WGS84” and “OSMTILE” are equivalent to the EPSG:4326 and EPSG:900913 built in GeoWebCache GridSets. However, for the MapML module to recognize these GridSets, you must select and use the MapML names.   For new layers or layer groups, or newly created grid subsets for a layer or layer group, the MapML values are selected by default.  For existing layers that you wish to enable the use of cached tile references by the MapML service, you will have to select and add those values you wish to support from the dropdown of available GridSets.  The set of recognized values for MapML is “WGS84” (equivalent to EPSG:4326), “OSMTILE” (equivalent to EPSG:900913), “CBMTILE” (Canada Base Map) and “APSTILE” (Alaska Polar Stereographic).</p>
+<div class="figure align-default">
+<img alt="../../_images/mapml_tile_caching_panel_ui.png" src="../../_images/mapml_tile_caching_panel_ui.png" />
+</div>
+</div>
+<div class="section" id="sharding-config">
+<h3>Sharding Config<a class="headerlink" href="#sharding-config" title="Permalink to this headline">¶</a></h3>
+<p>The Sharding Config options are intended to allow for parallel access to tiles via different server names. The actual server names must be configured in the DNS to refer to either the same server or different servers with the same GeSserver layer configuration. In the example above, the mapML client would alternate between the servers a.geoserver.org, b.geoserver.org, and c.geoserver.org to access the map images. The values in the example above would result in the following MapML:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;s&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">shard</span><span class="o">=</span><span class="s">&quot;true&quot;</span> <span class="na">list</span><span class="o">=</span><span class="s">&quot;servers&quot;</span> <span class="na">min</span><span class="o">=</span><span class="s">&quot;0.0&quot;</span> <span class="na">max</span><span class="o">=</span><span class="s">&quot;0.0&quot;</span><span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">datalist</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;servers&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;a&quot;</span><span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;b&quot;</span><span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">option</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;c&quot;</span><span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">datalist</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">tref</span><span class="o">=</span><span class="s">&quot;http://{s}.geoserver.org:8080/geoserver/test/wms?version=1.3.0&amp;amp;service=WMS&amp;amp;request=GetMap&amp;amp;crs=EPSG:3857&amp;amp;layers=cntry00&amp;amp;styles=&amp;amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;amp;format=image/png&amp;amp;transparent=false&amp;amp;width={w}&amp;amp;height={h}&quot;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;image&quot;</span><span class="p">/&gt;</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt><strong>Enable Sharding</strong></dt><dd><p>If Enable Sharding is checked, and values are provided for the Shard List and Shard Server Pattern fields, then a hidden shard list input will be included in the MapML.</p>
+</dd>
+<dt><strong>Shard List</strong></dt><dd><p>If Enable Sharding is checked, the Shard List should be populated with a comma-separated list of shard names which will be used to populate the shard data list element.</p>
+</dd>
+<dt><strong>Shard Server Pattern</strong></dt><dd><p>The Shard Server Pattern should be a valid DNS name including the special placeholder string {s} which will be replace with the Shard Names from the Shard List in requests to the server. This pattern should not include any slashes, the protocol string (<a class="reference external" href="http://">http://</a>) or the port number (:80), as these are all determined automatically from the URL used to access the MapML resource.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="dimension-config">
+<h3>Dimension Config<a class="headerlink" href="#dimension-config" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><strong>Dimension</strong></dt><dd><p>The selected dimension (if any) is advertised in the mapml as an input with the appropriate value options or ranges, as configured in the <em>Dimension</em> tab of the Layer Configuration page. Only dimensions enabled in the <em>Dimension</em> tab are available as options.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="attribute-to-featurecaption-mapping">
+<h3>Attribute to &lt;featurecaption&gt; mapping<a class="headerlink" href="#attribute-to-featurecaption-mapping" title="Permalink to this headline">¶</a></h3>
+<p><strong>List of attributes</strong>
+The list allows you to read the names of the layer attributes, it doesn’t really do more than that.</p>
+<p><strong>Feature Caption Template String</strong></p>
+<p>To cause an attribute to be serialized in MapML vector content as the &lt;featurecaption&gt; element value,
+you must enter its name as a ${placeholder} in the text box immediately below the attributes list. You can also add (a small amount of) plain text that will be
+copied verbatim into the &lt;featurecaption&gt; content.  &lt;featurecaption&gt; is used as the accessible name of features by screen reader software, which will often
+read out this value without the user having to expand a popup; in other words, it will be used as a visual and audible tooltip when the
+feature is focused.</p>
+</div>
+</div>
+<div class="section" id="mapml-resources">
+<h2>MapML Resources<a class="headerlink" href="#mapml-resources" title="Permalink to this headline">¶</a></h2>
+<p>MapML resources will be published for any published WMS layers. The MapML resources will be available at:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://{serverName}/geoserver/mapml/{layerName}/{projectionName}?style={styleName}&amp;transparent={true|false}&amp;format={wmsFormat}
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">{layerName}</span></code> is the WMS layer name, and the <code class="docutils literal notranslate"><span class="pre">{serverName}</span></code> is the name or IP address of the server on which Geoserver is running. The <code class="docutils literal notranslate"><span class="pre">{projectionName}</span></code> must be one of the projections supported by MapML:</p>
+<ul class="simple">
+<li><p>OSMTILE</p></li>
+<li><p>CBMTILE</p></li>
+<li><p>APSTILE</p></li>
+<li><p>WGS84</p></li>
+</ul>
+<p>Each of the URL query string parameters are optional, but if provided they are effectively passed-through to the underlying WMS service call. Here are some details on the parameters:</p>
+<dl class="simple">
+<dt><strong>style</strong></dt><dd><p>If provided, the specified <code class="docutils literal notranslate"><span class="pre">{styleName}</span></code> must correspond to an available WMS style to use for the layer.</p>
+</dd>
+<dt><strong>transparent</strong></dt><dd><p>If provided, must be either <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>. The same value is passed through to the underlying WMS service. If not provided, it defaults to the inverse of the “opaque” WMS publishing layer setting.</p>
+</dd>
+<dt><strong>format</strong></dt><dd><p>If provided, must be a valid WMS format specifier. If not provided, it defaults to <code class="docutils literal notranslate"><span class="pre">image/png</span></code>.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="mapml-visualization">
+<h2>MapML Visualization<a class="headerlink" href="#mapml-visualization" title="Permalink to this headline">¶</a></h2>
+<p>With the MapML Community Module installed, the GeoServer Layer Preview page is modified to add a link to the MapML resources for each layer and layer group.  The MapML link in the Layer Preview table intercepted by the MapML module, and an HTML Web map page is created on the fly which refers to the MapML resource:</p>
+<div class="figure align-default">
+<img alt="../../_images/mapml_preview_ui.png" src="../../_images/mapml_preview_ui.png" />
+</div>
+<p>You can add layers to the map as you like, by dragging the link URL from the Layer Preview table and dropping it onto another layer’s MapML preview.  If all goes well, you should see the layers stacked on the map and in the layer control.</p>
+<p>MapML visualization is supported by the Web-Map-Custom-Element project. The MapML viewer is built into the GeoServer layer and layer group preview facility.  You can find out more about the Web-Map-Custom-Element at the project <cite>website &lt;https://maps4html.org/web-map-doc/&gt;</cite>. Here is a simple, self-contained example of an HTML page that uses the &lt;mapml-viewer&gt; and &lt;layer-&gt; elements:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span> <span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>MapML Test Map<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;module&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;http://localhost:8080/geoserver/mapml/viewer/widget/mapml-viewer.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+      <span class="nt">html</span><span class="o">,</span> <span class="nt">body</span> <span class="p">{</span> <span class="k">height</span><span class="p">:</span> <span class="mi">100</span><span class="kt">%</span><span class="p">;</span> <span class="p">}</span>
+      <span class="o">*</span> <span class="p">{</span> <span class="k">margin</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span> <span class="k">padding</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
+      <span class="nt">mapml-viewer</span><span class="p">:</span><span class="nd">defined</span> <span class="p">{</span> <span class="k">max-width</span><span class="p">:</span> <span class="mi">100</span><span class="kt">%</span><span class="p">;</span> <span class="k">width</span><span class="p">:</span> <span class="mi">100</span><span class="kt">%</span><span class="p">;</span> <span class="k">height</span><span class="p">:</span> <span class="mi">100</span><span class="kt">%</span><span class="p">;</span> <span class="p">}</span>
+      <span class="nt">mapml-viewer</span><span class="p">:</span><span class="nd">not</span><span class="o">(</span><span class="p">:</span><span class="nd">defined</span><span class="o">)</span> <span class="o">&gt;</span> <span class="o">*</span> <span class="p">{</span> <span class="k">display</span><span class="p">:</span> <span class="kc">none</span><span class="p">;</span> <span class="p">}</span> <span class="nt">layer-</span> <span class="p">{</span> <span class="k">display</span><span class="p">:</span> <span class="kc">none</span><span class="p">;</span> <span class="p">}</span>
+    <span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">mapml-viewer</span> <span class="na">projection</span><span class="o">=</span><span class="s">&quot;osmtile&quot;</span> <span class="na">zoom</span><span class="o">=</span><span class="s">&quot;2&quot;</span> <span class="na">lat</span><span class="o">=</span><span class="s">&quot;61.209125&quot;</span> <span class="na">lon</span><span class="o">=</span><span class="s">&quot;-90.850837&quot;</span> <span class="na">controls</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">layer-</span> <span class="na">label</span><span class="o">=</span><span class="s">&quot;US States&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population&quot;</span> <span class="na">checked</span><span class="p">&gt;&lt;/</span><span class="nt">layer-</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">mapml-viewer</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>In the above example, the place-holders <code class="docutils literal notranslate"><span class="pre">topp:states</span></code>, <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>, <code class="docutils literal notranslate"><span class="pre">osmtile</span></code>, and <code class="docutils literal notranslate"><span class="pre">population</span></code> would need to be replaced with the appropriate values, and/or the <code class="docutils literal notranslate"><span class="pre">style</span></code> parameter could be removed entirely from the URL if not needed.  You may also like to “View Source” on the preview page to see what the markup looks like for any layer.  This code can be copied and pasted without harm, and you should try it and see what works and what the limitations are.  For further information about MapML, and the Maps for HTML Community Group, please visit <a class="reference external" href="http://maps4html.org">http://maps4html.org</a>.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../wps-jdbc/index.html" title="previous chapter">WPS JDBC</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../csw-iso/index.html" title="next chapter">Catalog Services for the Web (CSW) - ISO Metadata Profile</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">MapML</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#license-info">License Info</a></li>
+<li><a class="reference internal" href="#tile-settings">Tile Settings</a></li>
+<li><a class="reference internal" href="#tile-caching">Tile Caching</a></li>
+<li><a class="reference internal" href="#sharding-config">Sharding Config</a></li>
+<li><a class="reference internal" href="#dimension-config">Dimension Config</a></li>
+<li><a class="reference internal" href="#attribute-to-featurecaption-mapping">Attribute to &lt;featurecaption&gt; mapping</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mapml-resources">MapML Resources</a></li>
+<li><a class="reference internal" href="#mapml-visualization">MapML Visualization</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../wps-jdbc/index.html" title="previous chapter">WPS JDBC</a></li>
+            <li>Next: <a href="../csw-iso/index.html" title="next chapter">Catalog Services for the Web (CSW) - ISO Metadata Profile</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/mapml/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

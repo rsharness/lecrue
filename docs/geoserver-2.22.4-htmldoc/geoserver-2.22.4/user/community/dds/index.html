@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DDS/BIL(World Wind Data Formats) Extension &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Elasticsearch data store" href="../elasticsearch/index.html" />
+    <link rel="prev" title="CoverageJSON output format" href="../cov-json/index.html" /> 
+  </head><body class="community/dds/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>DDS/BIL(World Wind Data Formats) Extension</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../elasticsearch/index.html" title="Elasticsearch data store" accesskey="N">Next</a></li>
+  <li>
+    <a href="../cov-json/index.html" title="CoverageJSON output format" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="dds-bil-world-wind-data-formats-extension">
+<span id="community-dds"></span><h1>DDS/BIL(World Wind Data Formats) Extension<a class="headerlink" href="#dds-bil-world-wind-data-formats-extension" title="Permalink to this headline">¶</a></h1>
+<p>This output module allows GeoServer to output imagery and terrain in formats
+understood by <a class="reference external" href="http://worldwind.arc.nasa.gov/java/">NASA World Wind</a>. The
+mime-types supported are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Direct Draw Surface (DDS) - image/dds. This format allows efficient loading of textures to the GPU and takes the task off the WorldWind client CPU in converting downloaded PNG, JPEG or TIFF tiles. The DDS compression is done using <a class="reference external" href="http://en.wikipedia.org/wiki/S3_Texture_Compression">DXT3</a> with help from the worldwind library on server side.</p></li>
+<li><p>Binary Interleaved by Line(BIL) - image/bil. This is actually a very simple raw binary format produced using the <a class="reference external" href="http://www.java2s.com/Open-Source/Java-Document/6.0-JDK-Modules/Java-Advanced-Imaging/com/sun/media/imageioimpl/plugins/raw/RawImageWriterSpi.java.java-doc.htm">RAW Image Writer</a>. The supplied GridCoverage2D undergoes appropriate subsampling, reprojection and bit-depth conversion. The output can be requested as 16bit Int or 32bit Float.</p></li>
+</ol>
+</div></blockquote>
+<div class="section" id="installing-the-dds-bil-extension">
+<h2>Installing the DDS/BIL extension<a class="headerlink" href="#installing-the-dds-bil-extension" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Download the DDS/BIL extension from the <a class="reference external" href="https://build.geoserver.org/geoserver/main/community-latest/">nightly GeoServer community module builds</a>. A prebuilt version for GeoServer 2.0.x can be found on Jira - <a class="reference external" href="https://osgeo-org.atlassian.net/browse/GEOS-3586">GEOS-3586</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure to match the version of the extension to the version of the GeoServer instance!</p>
+</div>
+</li>
+<li><p>Extract the contents of the archive into the <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory of the GeoServer installation.</p></li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="checking-if-the-extension-is-enabled">
+<h2>Checking if the extension is enabled<a class="headerlink" href="#checking-if-the-extension-is-enabled" title="Permalink to this headline">¶</a></h2>
+<p>Once the extension is installed, the provided mime-types should appear in the layer preview dropbox as shown:</p>
+<div class="figure align-center">
+<img alt="../../_images/bil_dds.jpg" src="../../_images/bil_dds.jpg" />
+</div>
+<p>The mime-types will also be listed in the <code class="docutils literal notranslate"><span class="pre">GetCapabilities</span></code> document:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">Format</span><span class="o">&gt;</span><span class="n">image</span><span class="o">/</span><span class="n">bil</span><span class="o">&lt;/</span><span class="n">Format</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Format</span><span class="o">&gt;</span><span class="n">image</span><span class="o">/</span><span class="n">dds</span><span class="o">&lt;/</span><span class="n">Format</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuring-the-bil-format">
+<h2>Configuring the BIL format<a class="headerlink" href="#configuring-the-bil-format" title="Permalink to this headline">¶</a></h2>
+<p>For a client application to use a BIL layer, it must know the data encoding of the BIL file (e.g. 16-bit integer, 32-bit floating point, etc), the byte order of the data, and the value that indicates missing data. BIL files do not contain this metadata, so it may be necessary to configure the server to produce BIL files in the format that a client application expects.</p>
+<div class="figure align-center">
+<img alt="../../_images/bil_config.png" src="../../_images/bil_config.png" />
+</div>
+<p>The BIL output format can be configured for each layer in the Publishing tab of the layer configuration. The plugin supports the following options:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Default</span> <span class="pre">encoding</span></code></p></td>
+<td><p>The data encoding to use if the request does not specify an encoding. For example, application/bil does not specify the response encoding, while application/bil16 does specify an encoding. Default: use same encoding as layer source files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Byte</span> <span class="pre">order</span></code></p></td>
+<td><p>Byte order of the response. Default: network byte order (big endian).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">Data</span> <span class="pre">value</span></code></p></td>
+<td><p>The value that indicates missing data. If this option is set, missing data values will be recoded to this value. Default: no data translation.</p></td>
+</tr>
+</tbody>
+</table>
+<p>For compatibility with the default behavior of NASA World Wind, use these settings:</p>
+<ul class="simple">
+<li><p>Default encoding: application/bil16</p></li>
+<li><p>Byte order: Little endian</p></li>
+<li><p>No data: -9999</p></li>
+</ul>
+</div>
+<div class="section" id="configuring-world-wind-to-access-imagery-terrain-from-geoserver">
+<h2>Configuring World Wind to access Imagery/Terrain from GeoServer<a class="headerlink" href="#configuring-world-wind-to-access-imagery-terrain-from-geoserver" title="Permalink to this headline">¶</a></h2>
+<p>Please refer to the <a class="reference external" href="http://forum.worldwindcentral.com/index.php">WorldWind Forums</a> for instructions on how to setup World Wind to work with layers
+published via GeoServer. For image layers(DDS) the user need to create a <a class="reference external" href="http://builds.worldwind.arc.nasa.gov/releases/docs/latest/api/gov/nasa/worldwind/wms/WMSTiledImageLayer.html">WMSTiledImageLayer</a> either via XML configuration or programmatically.
+For terrain layers (BIL) the equivalent class is <a class="reference external" href="http://builds.worldwind.arc.nasa.gov/releases/docs/latest/api/gov/nasa/worldwind/terrain/WMSBasicElevationModel.html">WMSBasicElevationModel</a>.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../cov-json/index.html" title="previous chapter">CoverageJSON output format</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../elasticsearch/index.html" title="next chapter">Elasticsearch data store</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">DDS/BIL(World Wind Data Formats) Extension</a><ul>
+<li><a class="reference internal" href="#installing-the-dds-bil-extension">Installing the DDS/BIL extension</a></li>
+<li><a class="reference internal" href="#checking-if-the-extension-is-enabled">Checking if the extension is enabled</a></li>
+<li><a class="reference internal" href="#configuring-the-bil-format">Configuring the BIL format</a></li>
+<li><a class="reference internal" href="#configuring-world-wind-to-access-imagery-terrain-from-geoserver">Configuring World Wind to access Imagery/Terrain from GeoServer</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../cov-json/index.html" title="previous chapter">CoverageJSON output format</a></li>
+            <li>Next: <a href="../elasticsearch/index.html" title="next chapter">Elasticsearch data store</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/dds/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

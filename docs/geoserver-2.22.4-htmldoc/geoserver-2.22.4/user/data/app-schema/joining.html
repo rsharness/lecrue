@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joining Support For Performance &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="WFS 2.0 Support" href="wfs-2.0-support.html" /> 
+  </head><body class="data/app-schema/joining">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Joining Support For Performance</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="tutorial.html" title="Tutorial" accesskey="N">Next</a></li>
+  <li>
+    <a href="wfs-2.0-support.html" title="WFS 2.0 Support" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="joining-support-for-performance">
+<span id="app-schema-joining"></span><h1>Joining Support For Performance<a class="headerlink" href="#joining-support-for-performance" title="Permalink to this headline">¶</a></h1>
+<p>App-schema joining is a optional configuration parameter that tells app-schema to use a different implementation for <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a>,
+which in many cases can improve performance considerably, by reducing the amount of SQL queries sent to the DBMS.</p>
+<div class="section" id="conditions">
+<h2>Conditions<a class="headerlink" href="#conditions" title="Permalink to this headline">¶</a></h2>
+<p>In order to use App-schema Joining, the following configuration conditions must be met:</p>
+<ul class="simple">
+<li><p>All feature mappings used must be mapped to JDBC datastores.</p></li>
+<li><p>All feature mappings that are chained to each other must map to the same physical database.</p></li>
+<li><p>In your mappings, there are restrictions on the CQL expressions specified in the &lt;SourceExpression&gt; of both the referencing field in the parent feature as well as the referenced field in the nested feature (like FEATURE_LINK). Any operators or functions used in this expression must be supported by the filter capabilities, i.e. geotools must be able to translate them directly to SQL code. This can be different for each DBMS, though as a general rule it can assumed that comparison operators, logical operators and arithmetic operators are all supported but functions are not. Using simple field names for feature chaining is guaranteed to always work.</p></li>
+</ul>
+<p>Failing to comply with any of these three restrictions when turning on Joining will result in exceptions thrown at run-time.</p>
+<p>When using app-schema with Joining turned on, the following restrictions exist with respect to normal behaviour:</p>
+<ul class="simple">
+<li><p>XPaths specified inside Filters do not support handling referenced features (see  <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining-by-reference"><span class="std std-ref">Multi-valued properties by reference (xlink:href)</span></a>) as if they were actual nested features, i.e. XPaths can only be evaluated when they can be evaluated against the actual XML code produced by WFS according to the XPath standard.</p></li>
+</ul>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Joining is turned on by default. It is disabled by adding this simple line to your app-schema.properties file (see <a class="reference internal" href="property-interpolation.html#app-schema-property-interpolation"><span class="std std-ref">Property Interpolation</span></a>)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">-</span><span class="n">schema</span><span class="o">.</span><span class="n">joining</span> <span class="o">=</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>Or, alternatively, by setting the value of the Java System Property “app-schema.joining” to “false”, for example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java</span> <span class="o">-</span><span class="n">DGEOSERVER_DATA_DIR</span><span class="o">=...</span> <span class="o">-</span><span class="n">Dapp</span><span class="o">-</span><span class="n">schema</span><span class="o">.</span><span class="n">joining</span><span class="o">=</span><span class="n">false</span> <span class="n">Start</span>
+</pre></div>
+</div>
+<p>Not specifying “app-schema.joining” parameter will enable joining by default.</p>
+</div>
+<div class="section" id="database-design-guidelines">
+<h2>Database Design Guidelines<a class="headerlink" href="#database-design-guidelines" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Databases should be optimised for fast on-the-fly joining and ordering.</p></li>
+<li><p>Make sure to put indexes on all fields used as identifiers and for feature chaining, unique indexes where possible. Lack of indices may result in data being encoded in the wrong order or corrupted output when feature chaining is involved.</p></li>
+<li><p>Map your features preferably to normalised tables.</p></li>
+<li><p>It is recommended to apply feature chaining to regular one-to-many relationships, i.e. there should be a unique constraint defined on one of the fields used for the chaining, and if possible a foreign key constraint defined on the other field.</p></li>
+</ul>
+</div>
+<div class="section" id="effects-on-performance">
+<h2>Effects on Performance<a class="headerlink" href="#effects-on-performance" title="Permalink to this headline">¶</a></h2>
+<p>Typical curves of response time for configurations with and without joining against the amount of features
+produced will be shaped like this:</p>
+<img alt="../../_images/joining.png" src="../../_images/joining.png" />
+<p>In the default implementation, response time increases rapidly with respect to the amount of produced features. This is because feature chaining
+is implemented by sending multiple SQL requests to the DBMS per feature, so the amount of requests increases with the amount
+of features produced. When Joining is turned on, response time will be almost constant with respect to the number of features. This is because in this implementation a small amount of larger queries is sent to the DBMS, independent of the amount of features produced.
+In summary, difference in performance becomes greater as the amount of features requested gets bigger. General performance of joining will be dependant on database and mapping design (see above) and database size.</p>
+<p>Using joining is strongly recommended when a large number of features need to be produced, for example
+when producing maps with WMS (see <a class="reference internal" href="wms-support.html#app-schema-wms-support"><span class="std std-ref">WMS Support</span></a>).</p>
+<p>Optimising the performance of the database will maximise the benefit of using joining, including for small queries.</p>
+</div>
+<div class="section" id="native-encoding-of-filters-on-nested-attributes">
+<h2>Native Encoding of Filters on Nested Attributes<a class="headerlink" href="#native-encoding-of-filters-on-nested-attributes" title="Permalink to this headline">¶</a></h2>
+<p>When App-Schema Joining is active, filters operating on nested attributes (i.e. attributes of features that are joined to the queried type via <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a>) are translated to SQL and executed directly in the database backend, rather than being evaluated in memory after all features have been loaded (which was standard behavior in earlier versions of GeoServer). Native encoding can yield significant performance improvements, especially when the total number of features in the database is high (several thousands or more), but only a few of them would satisfy the filter.</p>
+<p>There are, however, a few limitations in the current implementation:</p>
+<ol class="arabic simple">
+<li><p>Joining support must not have been explicitly disabled and all its pre-conditions must be met (see above)</p></li>
+<li><p>Only binary comparison operators (e.g. <code class="docutils literal notranslate"><span class="pre">PropertyIsEqualTo</span></code>, <code class="docutils literal notranslate"><span class="pre">PropertyIsGreaterThan</span></code>, etc…), <code class="docutils literal notranslate"><span class="pre">PropertyIsLike</span></code> and <code class="docutils literal notranslate"><span class="pre">PropertyIsNull</span></code> filters are translated to SQL</p></li>
+<li><p>Filters involving conditional polymorphic mappings are evaluated in memory</p></li>
+<li><p>Filters comparing two or more different nested attributes are evaluated in memory</p></li>
+<li><p>Filters matching multiple nested attribute mappings are evaluated in memory</p></li>
+</ol>
+<p>Much like joining support, native encoding of nested filters is turned on by default, and it is disabled by adding to your app-schema.properties file the line</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">-</span><span class="n">schema</span><span class="o">.</span><span class="n">encodeNestedFilters</span> <span class="o">=</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>Or, alternatively, by setting the value of the Java System Property “app-schema.encodeNestedFilters” to “false”, for example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java</span> <span class="o">-</span><span class="n">DGEOSERVER_DATA_DIR</span><span class="o">=...</span> <span class="o">-</span><span class="n">Dapp</span><span class="o">-</span><span class="n">schema</span><span class="o">.</span><span class="n">encodeNestedFilters</span><span class="o">=</span><span class="n">false</span> <span class="n">Start</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="union-performance-improvement-for-or-conditions">
+<h2>UNION performance improvement for OR conditions<a class="headerlink" href="#union-performance-improvement-for-or-conditions" title="Permalink to this headline">¶</a></h2>
+<p>OR conditions are difficult to optimize for postgresql and are usually slow.  App-Schema improves OR condition performance using UNION clauses instead OR for nested filter subqueries.</p>
+<p>With UNION improvement enabled main OR binary operator on nested filter subquery will rebuild normal OR query like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span> <span class="n">FROM</span> <span class="n">table</span> <span class="n">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span> <span class="n">OR</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+</pre></div>
+</div>
+<p>to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span> <span class="n">FROM</span> <span class="n">table</span> <span class="n">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span> <span class="n">UNION</span> <span class="n">SELECT</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span> <span class="n">FROM</span> <span class="n">table</span> <span class="n">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+</pre></div>
+</div>
+<p>UNION improvement is enabled by default, and it is disabled by adding to your app-schema.properties file the line</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">-</span><span class="n">schema</span><span class="o">.</span><span class="n">orUnionReplace</span> <span class="o">=</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>Or, alternatively, by setting the value of the Java System Property “app-schema.orUnionReplace” to “false”, for example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java</span> <span class="o">-</span><span class="n">DGEOSERVER_DATA_DIR</span><span class="o">=...</span> <span class="o">-</span><span class="n">Dapp</span><span class="o">-</span><span class="n">schema</span><span class="o">.</span><span class="n">orUnionReplace</span><span class="o">=</span><span class="n">false</span> <span class="n">Start</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This optimization will only be applied when a PostgresSQL database is being used.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="wfs-2.0-support.html" title="previous chapter">WFS 2.0 Support</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="tutorial.html" title="next chapter">Tutorial</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Joining Support For Performance</a><ul>
+<li><a class="reference internal" href="#conditions">Conditions</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#database-design-guidelines">Database Design Guidelines</a></li>
+<li><a class="reference internal" href="#effects-on-performance">Effects on Performance</a></li>
+<li><a class="reference internal" href="#native-encoding-of-filters-on-nested-attributes">Native Encoding of Filters on Nested Attributes</a></li>
+<li><a class="reference internal" href="#union-performance-improvement-for-or-conditions">UNION performance improvement for OR conditions</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="wfs-2.0-support.html" title="previous chapter">WFS 2.0 Support</a></li>
+            <li>Next: <a href="tutorial.html" title="next chapter">Tutorial</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/joining.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

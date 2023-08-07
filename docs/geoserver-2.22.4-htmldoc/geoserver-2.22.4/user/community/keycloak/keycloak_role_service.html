@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Keycloak Role Service &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MBTiles Extension" href="../mbtiles/index.html" />
+    <link rel="prev" title="Authentication with Keycloak" href="authentication.html" /> 
+  </head><body class="community/keycloak/keycloak_role_service">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Keycloak extension</a> &raquo;</li>
+    <li>Keycloak Role Service</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../mbtiles/index.html" title="MBTiles Extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="authentication.html" title="Authentication with Keycloak" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="keycloak-role-service">
+<span id="security-tutorials-keycloak-role-service"></span><h1>Keycloak Role Service<a class="headerlink" href="#keycloak-role-service" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial walks through how to set up Keycloak as a role service for GeoServer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this example the Keycloak service runs on port <cite>8080</cite> while GeoServer runs on port <cite>8181</cite>.</p>
+</div>
+<p>The Keycloak Role Service uses the Keycloak REST api in order to retrieve the roles for its various operations. By default it will retrieve roles with <code class="docutils literal notranslate"><span class="pre">realm</span></code> scope.
+However it can be configured to retrieve roles with a client scope in a specific realm.</p>
+<div class="section" id="keycloak-client-configuration">
+<h2>Keycloak Client Configuration<a class="headerlink" href="#keycloak-client-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Follow the <a class="reference external" href="https://docs.geoserver.org/latest/en/user/community/keycloak/index.html">Authentication with Keycloak</a>
+guide to configure GeoServer to allow logging in via Keycloak. The Keycloak Role Service needs a client to be configured on Keycloak side having <code class="docutils literal notranslate"><span class="pre">Access</span> <span class="pre">Type</span></code> set to <code class="docutils literal notranslate"><span class="pre">confidential</span></code>.</p>
+<p>If for your Keycloak Authentication Filter you have used a different <code class="docutils literal notranslate"><span class="pre">Access</span> <span class="pre">Type</span></code> i.e. <code class="docutils literal notranslate"><span class="pre">barer-only</span></code>, a separate client will have then to be configured for the Keycloak Role Service.</p>
+<p>For the client, ensure that:</p>
+<ul class="simple">
+<li><p>Standard flow, implicit flow, and direct access grants are enabled</p></li>
+<li><p>The base URL is set to <code class="docutils literal notranslate"><span class="pre">http://localhost:8181/geoserver/web</span></code></p></li>
+<li><p>The following redirect URIs are enabled:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8181/geoserver*</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8080/auth/realms/master/broker/keycloak-oidc/endpoint*</span></code></p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Access</span> <span class="pre">Type</span></code> is set to <strong>confidential</strong> and the <code class="docutils literal notranslate"><span class="pre">Service</span> <span class="pre">Accounts</span> <span class="pre">Enabled</span></code> option is enabled.</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/access_type_confidential.png" src="../../_images/access_type_confidential.png" />
+</div>
+<ul class="simple">
+<li><p>Under the <code class="docutils literal notranslate"><span class="pre">Service</span> <span class="pre">Account</span> <span class="pre">Roles</span></code> tab, ensure that the realm-admin, from the realm-management client role is addedd to the <code class="docutils literal notranslate"><span class="pre">Assigned</span> <span class="pre">roles</span></code>.</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/service_account_roles.png" src="../../_images/service_account_roles.png" />
+</div>
+<p>To assign a user a role:</p>
+<ol class="arabic simple">
+<li><p>Under the users section in Keycloak, click the user’s ID (if there are missing users, click “View all users”).</p></li>
+<li><p>In the role mappings tab, select the GeoStore client from the client roles dropdown.</p></li>
+<li><p>Select the role from the available roles, and click add selected.</p></li>
+</ol>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/keycloak_client0021.png" src="../../_images/keycloak_client0021.png" />
+<p class="caption"><span class="caption-text"><em>An example set of role mappings for a user.</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>When creating custom roles, ensure they begin with <code class="docutils literal notranslate"><span class="pre">ROLE_</span></code> e.g. ROLE_STAFF.</p>
+</div>
+<div class="section" id="geoserver-configuration-for-role-syncing">
+<h2>GeoServer Configuration for Role Syncing<a class="headerlink" href="#geoserver-configuration-for-role-syncing" title="Permalink to this headline">¶</a></h2>
+<p>Role syncing with Keycloak will be tied to the confidential client.</p>
+<ol class="arabic simple">
+<li><p>In GeoServer as an admin, on the ‘Users, Groups, Roles’ page, add a new role service.</p></li>
+<li><p>Select Keycloak from the list of provided options. All fillable fields are required, excluding the <code class="docutils literal notranslate"><span class="pre">Comma</span> <span class="pre">separated</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">ID</span> <span class="pre">of</span> <span class="pre">client</span> <span class="pre">(not</span> <span class="pre">client-id)</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Base</span> <span class="pre">URL</span> <span class="pre">for</span> <span class="pre">Keycloak</span></code> is the keycloak host name eg. <a class="reference external" href="http://localhost:8080">http://localhost:8080</a>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Realm</span> <span class="pre">Name</span></code> is the realm from which the roles should be retrieved eg. master.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">ID</span></code> can be retrieved from the <code class="docutils literal notranslate"><span class="pre">Settings</span></code> tab of the client configuration on Keycloak.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">secret</span></code> can be retrieved from the <code class="docutils literal notranslate"><span class="pre">Credentials</span></code> tab of the client configuration on Keycloak.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Comma</span> <span class="pre">separated</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">ID</span> <span class="pre">of</span> <span class="pre">client</span> <span class="pre">(not</span> <span class="pre">client-id)</span></code> is meant to allow the Role Service to retrieve also roles with client scope. By default indeed the Keycloak Role Service will retrieve realm roles only. The id of a client can be retrieved from the URL when viewing the client configuration page in Keycloak. URL format: eg. <code class="docutils literal notranslate"><span class="pre">/auth/admin/master/console/#/realms/master/clients/{ID</span> <span class="pre">of</span> <span class="pre">client}</span></code></p></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">Administrator</span> <span class="pre">Role</span></code> and <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">administator</span></code> role dropdown should be empty at the beginning. They can be filled once saved the role service with the Keycloak role that we want to map to the GeoServer ADMIN and GROUP ADMIN.</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Ensure you click save to create the Keycloak role service.</p></li>
+<li><p>Once the Role Service has been created and configured to have it active:
+* it can be assigned as a RoleSource to the Keycloak Filter,
+* it can be set as the <code class="docutils literal notranslate"><span class="pre">Active</span> <span class="pre">Role</span> <span class="pre">Service</span></code>  in the <code class="docutils literal notranslate"><span class="pre">Security</span> <span class="pre">Settings</span></code> page.</p></li>
+</ol>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/keycloak_role_service001.png" src="../../_images/keycloak_role_service001.png" />
+<p class="caption"><span class="caption-text"><em>An example of a fully configured Keycloak role service.</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="geoserver-configuration-for-keycloak-authentication-filters">
+<h2>GeoServer Configuration for Keycloak Authentication Filters<a class="headerlink" href="#geoserver-configuration-for-keycloak-authentication-filters" title="Permalink to this headline">¶</a></h2>
+<p>Under the Authentication section of GeoServer:</p>
+<ul class="simple">
+<li><p>Add the Keycloak authentication filter to the top of the web and default filter chains.</p></li>
+<li><p>Add keycloak to the selected provider chains, and place it above the default.</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="authentication.html" title="previous chapter">Authentication with Keycloak</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../mbtiles/index.html" title="next chapter">MBTiles Extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Keycloak Role Service</a><ul>
+<li><a class="reference internal" href="#keycloak-client-configuration">Keycloak Client Configuration</a></li>
+<li><a class="reference internal" href="#geoserver-configuration-for-role-syncing">GeoServer Configuration for Role Syncing</a></li>
+<li><a class="reference internal" href="#geoserver-configuration-for-keycloak-authentication-filters">GeoServer Configuration for Keycloak Authentication Filters</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="authentication.html" title="previous chapter">Authentication with Keycloak</a></li>
+            <li>Next: <a href="../mbtiles/index.html" title="next chapter">MBTiles Extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/keycloak/keycloak_role_service.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

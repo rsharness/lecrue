@@ -1,0 +1,631 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Coverage Service 2.0 Earth Observation extensions &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MongoDB Data Store" href="../mongodb/index.html" />
+    <link rel="prev" title="XSLT WFS output format module" href="../xslt/index.html" /> 
+  </head><body class="extensions/wcs20eo/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+    <li>Web Coverage Service 2.0 Earth Observation extensions</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../mongodb/index.html" title="MongoDB Data Store" accesskey="N">Next</a></li>
+  <li>
+    <a href="../xslt/index.html" title="XSLT WFS output format module" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="web-coverage-service-2-0-earth-observation-extensions">
+<span id="wcs20-eo"></span><h1>Web Coverage Service 2.0 Earth Observation extensions<a class="headerlink" href="#web-coverage-service-2-0-earth-observation-extensions" title="Permalink to this headline">¶</a></h1>
+<p>The WCS 2.0 Earth Observation application profile (EO-WCS, OGC 10-140r1) extends the base WCS 2.0 protocol by adding temporal support and complex coverage structural description to the base WCS 2.0 protocol, in addition to requiring that a number of other extensions are supported - the base GeoServer WCS 2.0 module already supports all of those, such as subsetting and reprojection for example). The full specification can be downloaded from the <a class="reference external" href="https://portal.opengeospatial.org/files/42722">OGC website</a>.</p>
+<p>In the WCS 2.0 EO data model we not only have coverages, but also stitched mosaics (sets of coverages making up a mosaic of images, all granules having the same time and elevation) and dataset series, groups of coverages having different times and/or other attributes (elevation, custom dimensions). A dataset series is exposed in the capabilities document (inside the extension section) and its internal structure can be retrieved calling the new DescribeEOCoverageSet call.
+At the time of writing the EO extension adds support for dataset series, but does not provide direct support for stitched mosaic description.</p>
+<p>Each grid layer exposing its inner structure will then expose a flag to enable its exposure as a dataset series. At the time of writing, the only grid readers capable of exposing their internal structure are image mosaic and netCDF.</p>
+<div class="section" id="installing-the-wcs-2-0-eo-extension">
+<h2>Installing the WCS 2.0 EO extension<a class="headerlink" href="#installing-the-wcs-2-0-eo-extension" title="Permalink to this headline">¶</a></h2>
+<p>The steps to install the EO extension as the same as most other extensions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Go to the <a class="reference external" href="http://geoserver.org/download">website download</a> page, locate the release used</p></li>
+<li><p>Look among the extensions for WCS 2.0 EO extension package to download: <a class="reference external" href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.22.4/extensions/geoserver-2.22.4-wcs2_0-eo-plugin.zip">geoserver-2.22.4-wcs2_0-eo-plugin.zip</a></p></li>
+<li><p>Stop GeoServer (or the web container hosting it)</p></li>
+<li><p>Unpack the contents of the zip file in the geoserver <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> folder</p></li>
+<li><p>Restart GeoServer</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="exposing-dataset-series">
+<h2>Exposing dataset series<a class="headerlink" href="#exposing-dataset-series" title="Permalink to this headline">¶</a></h2>
+<p>The first step to work with EO is to go into the WCS service panel and enable the EO extensions:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/serviceConfig.png" src="../../_images/serviceConfig.png" />
+<p class="caption"><span class="caption-text"><em>Enabling the WCS 2.0 EO extensions</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The second step is finding and activating the EO extensions for a suitable grid layer, which needs to be one with time dimension support and ability to describe its inner structure. At the time of writing, this means a image mosaic with time support or a netCDF data layer with time dimension.
+Once the layer is located, the EO extensions for it can be enabled by ticking a checkbox in the publishing tab:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/layerConfig.png" src="../../_images/layerConfig.png" />
+<p class="caption"><span class="caption-text"><em>Exposing a layer as a dataset</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>Once that is done the capabilities document (e.g. <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/geoserver/ows?service=WCS&amp;version=2.0.1&amp;request=GetCapabilities</span></code> for WCS 2.0 will contain an indication that a coverage set is present:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wcs:Extension&gt;</span>
+  <span class="nt">&lt;wcseo:DatasetSeriesSummary&gt;</span>
+    <span class="nt">&lt;ows:WGS84BoundingBox&gt;</span>
+      <span class="nt">&lt;ows:LowerCorner&gt;</span>0.2372206885127698 40.562080748421806<span class="nt">&lt;/ows:LowerCorner&gt;</span>
+      <span class="nt">&lt;ows:UpperCorner&gt;</span>14.592757149389236 44.55808294568743<span class="nt">&lt;/ows:UpperCorner&gt;</span>
+    <span class="nt">&lt;/ows:WGS84BoundingBox&gt;</span>
+    <span class="nt">&lt;wcseo:DatasetSeriesId&gt;</span>nurc__watertemp_dss<span class="nt">&lt;/wcseo:DatasetSeriesId&gt;</span>
+    <span class="nt">&lt;gml:TimePeriod</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_dss__timeperiod&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:beginPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+      <span class="nt">&lt;gml:endPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+   <span class="nt">&lt;/gml:TimePeriod&gt;</span>
+  <span class="nt">&lt;/wcseo:DatasetSeriesSummary&gt;</span>
+<span class="nt">&lt;/wcs:Extension&gt;</span>
+</pre></div>
+</div>
+<p>And issuing a DescribeEOCoverageSet (e.g. <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/geoserver/ows?service=WCS&amp;version=2.0.1&amp;request=DescribeEOCoverageSet&amp;eoId=nurc__watertemp_dss</span></code>) on it will return the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wcseo:EOCoverageSetDescription</span> <span class="na">xmlns:eop=</span><span class="s">&quot;http://www.opengis.net/eop/2.0&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span> <span class="na">xmlns:wcsgs=</span><span class="s">&quot;http://www.geoserver.org/wcsgs/2.0&quot;</span> <span class="na">xmlns:gmlcov=</span><span class="s">&quot;http://www.opengis.net/gmlcov/1.0&quot;</span> <span class="na">xmlns:om=</span><span class="s">&quot;http://www.opengis.net/om/2.0&quot;</span> <span class="na">xmlns:swe=</span><span class="s">&quot;http://www.opengis.net/swe/2.0&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/2.0&quot;</span> <span class="na">xmlns:wcseo=</span><span class="s">&quot;http://www.opengis.net/wcseo/1.0&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">numberMatched=</span><span class="s">&quot;4&quot;</span> <span class="na">numberReturned=</span><span class="s">&quot;4&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wcseo/1.0 http://localhost:8080/geoserver/schemas/wcseo/1.0/wcsEOAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wcs:CoverageDescriptions&gt;</span>
+    <span class="nt">&lt;wcs:CoverageDescription</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_granule_watertemp.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:boundedBy&gt;</span>
+        <span class="nt">&lt;gml:EnvelopeWithTimePeriod</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span> <span class="na">axisLabels=</span><span class="s">&quot;Lat Long time&quot;</span> <span class="na">uomLabels=</span><span class="s">&quot;Deg Deg s&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:lowerCorner&gt;</span>40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:lowerCorner&gt;</span>
+          <span class="nt">&lt;gml:upperCorner&gt;</span>44.55808294568743 14.592757149389236<span class="nt">&lt;/gml:upperCorner&gt;</span>
+          <span class="nt">&lt;gml:beginPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+          <span class="nt">&lt;gml:endPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+        <span class="nt">&lt;/gml:EnvelopeWithTimePeriod&gt;</span>
+      <span class="nt">&lt;/gml:boundedBy&gt;</span>
+      <span class="nt">&lt;wcs:CoverageId&gt;</span>nurc__watertemp_granule_watertemp.1<span class="nt">&lt;/wcs:CoverageId&gt;</span>
+      <span class="nt">&lt;gml:coverageFunction&gt;</span>
+        <span class="nt">&lt;gml:GridFunction&gt;</span>
+          <span class="nt">&lt;gml:sequenceRule</span> <span class="na">axisOrder=</span><span class="s">&quot;+2 +1&quot;</span><span class="nt">&gt;</span>Linear<span class="nt">&lt;/gml:sequenceRule&gt;</span>
+          <span class="nt">&lt;gml:startPoint&gt;</span>0 0<span class="nt">&lt;/gml:startPoint&gt;</span>
+        <span class="nt">&lt;/gml:GridFunction&gt;</span>
+      <span class="nt">&lt;/gml:coverageFunction&gt;</span>
+      <span class="nt">&lt;gmlcov:metadata&gt;</span>
+        <span class="nt">&lt;gmlcov:Extension&gt;</span>
+          <span class="nt">&lt;wcsgs:TimeDomain</span> <span class="na">default=</span><span class="s">&quot;2008-11-01T00:00:00.000Z&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;gml:TimeInstant</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_granule_watertemp.1_td_0&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:timePosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:timePosition&gt;</span>
+            <span class="nt">&lt;/gml:TimeInstant&gt;</span>
+          <span class="nt">&lt;/wcsgs:TimeDomain&gt;</span>
+          <span class="nt">&lt;wcseo:EOMetadata&gt;</span>
+            <span class="nt">&lt;eop:EarthObservation</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_metadata&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;om:phenomenonTime&gt;</span>
+                <span class="nt">&lt;gml:TimePeriod</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_tp&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;gml:beginPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+                  <span class="nt">&lt;gml:endPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+                <span class="nt">&lt;/gml:TimePeriod&gt;</span>
+              <span class="nt">&lt;/om:phenomenonTime&gt;</span>
+              <span class="nt">&lt;om:resultTime&gt;</span>
+                <span class="nt">&lt;gml:TimeInstant</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_rt&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;gml:timePosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:timePosition&gt;</span>
+                <span class="nt">&lt;/gml:TimeInstant&gt;</span>
+              <span class="nt">&lt;/om:resultTime&gt;</span>
+              <span class="nt">&lt;om:procedure/&gt;</span>
+              <span class="nt">&lt;om:observedProperty/&gt;</span>
+              <span class="nt">&lt;om:FeatureOfInterest&gt;</span>
+                <span class="nt">&lt;eop:Footprint</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_fp&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;eop:multiExtentOf&gt;</span>
+                    <span class="nt">&lt;gml:MultiSurface</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_ms&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;gml:surfaceMembers&gt;</span>
+                        <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_msp&quot;</span><span class="nt">&gt;</span>
+                          <span class="nt">&lt;gml:exterior&gt;</span>
+                            <span class="nt">&lt;gml:LinearRing&gt;</span>
+                              <span class="nt">&lt;gml:posList&gt;</span>40.562080748421806 0.23722068851276978 40.562080748421806 14.592757149389236 44.55808294568743 14.592757149389236 44.55808294568743 0.23722068851276978 40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:posList&gt;</span>
+                            <span class="nt">&lt;/gml:LinearRing&gt;</span>
+                          <span class="nt">&lt;/gml:exterior&gt;</span>
+                        <span class="nt">&lt;/gml:Polygon&gt;</span>
+                      <span class="nt">&lt;/gml:surfaceMembers&gt;</span>
+                    <span class="nt">&lt;/gml:MultiSurface&gt;</span>
+                  <span class="nt">&lt;/eop:multiExtentOf&gt;</span>
+                  <span class="nt">&lt;eop:centerOf&gt;</span>
+                    <span class="nt">&lt;gml:Point</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_co&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;gml:pos&gt;</span>42.56008184705462 7.4149889189510025<span class="nt">&lt;/gml:pos&gt;</span>
+                    <span class="nt">&lt;/gml:Point&gt;</span>
+                  <span class="nt">&lt;/eop:centerOf&gt;</span>
+                <span class="nt">&lt;/eop:Footprint&gt;</span>
+              <span class="nt">&lt;/om:FeatureOfInterest&gt;</span>
+              <span class="nt">&lt;eop:metaDataProperty&gt;</span>
+                <span class="nt">&lt;eop:EarthObservationMetaData&gt;</span>
+                  <span class="nt">&lt;eop:identifier&gt;</span>nurc__watertemp<span class="nt">&lt;/eop:identifier&gt;</span>
+                  <span class="nt">&lt;eop:acquisitionType&gt;</span>NOMINAL<span class="nt">&lt;/eop:acquisitionType&gt;</span>
+                  <span class="nt">&lt;eop:status&gt;</span>ARCHIVED<span class="nt">&lt;/eop:status&gt;</span>
+                <span class="nt">&lt;/eop:EarthObservationMetaData&gt;</span>
+              <span class="nt">&lt;/eop:metaDataProperty&gt;</span>
+            <span class="nt">&lt;/eop:EarthObservation&gt;</span>
+          <span class="nt">&lt;/wcseo:EOMetadata&gt;</span>
+        <span class="nt">&lt;/gmlcov:Extension&gt;</span>
+      <span class="nt">&lt;/gmlcov:metadata&gt;</span>
+      <span class="nt">&lt;gml:domainSet&gt;</span>
+        <span class="nt">&lt;gml:RectifiedGrid</span> <span class="na">gml:id=</span><span class="s">&quot;grid00__nurc__watertemp_granule_watertemp.1&quot;</span> <span class="na">dimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:limits&gt;</span>
+            <span class="nt">&lt;gml:GridEnvelope&gt;</span>
+              <span class="nt">&lt;gml:low&gt;</span>0 0<span class="nt">&lt;/gml:low&gt;</span>
+              <span class="nt">&lt;gml:high&gt;</span>24 24<span class="nt">&lt;/gml:high&gt;</span>
+            <span class="nt">&lt;/gml:GridEnvelope&gt;</span>
+          <span class="nt">&lt;/gml:limits&gt;</span>
+          <span class="nt">&lt;gml:axisLabels&gt;</span>i j<span class="nt">&lt;/gml:axisLabels&gt;</span>
+          <span class="nt">&lt;gml:origin&gt;</span>
+            <span class="nt">&lt;gml:Point</span> <span class="na">gml:id=</span><span class="s">&quot;p00_nurc__watertemp_granule_watertemp.1&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:pos&gt;</span>44.47816290174212 0.5243314177302991<span class="nt">&lt;/gml:pos&gt;</span>
+            <span class="nt">&lt;/gml:Point&gt;</span>
+          <span class="nt">&lt;/gml:origin&gt;</span>
+          <span class="nt">&lt;gml:offsetVector</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>0.0 0.5742214584350587<span class="nt">&lt;/gml:offsetVector&gt;</span>
+          <span class="nt">&lt;gml:offsetVector</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>-0.159840087890625 0.0<span class="nt">&lt;/gml:offsetVector&gt;</span>
+        <span class="nt">&lt;/gml:RectifiedGrid&gt;</span>
+      <span class="nt">&lt;/gml:domainSet&gt;</span>
+      <span class="nt">&lt;gmlcov:rangeType&gt;</span>
+        <span class="nt">&lt;swe:DataRecord&gt;</span>
+          <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;GRAY_INDEX&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;swe:Quantity&gt;</span>
+              <span class="nt">&lt;swe:description&gt;</span>GRAY_INDEX<span class="nt">&lt;/swe:description&gt;</span>
+              <span class="nt">&lt;swe:uom</span> <span class="na">code=</span><span class="s">&quot;W.m-2.Sr-1&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;swe:constraint&gt;</span>
+                <span class="nt">&lt;swe:AllowedValues&gt;</span>
+                  <span class="nt">&lt;swe:interval&gt;</span>-1.7976931348623157E308 1.7976931348623157E308<span class="nt">&lt;/swe:interval&gt;</span>
+                <span class="nt">&lt;/swe:AllowedValues&gt;</span>
+              <span class="nt">&lt;/swe:constraint&gt;</span>
+            <span class="nt">&lt;/swe:Quantity&gt;</span>
+          <span class="nt">&lt;/swe:field&gt;</span>
+        <span class="nt">&lt;/swe:DataRecord&gt;</span>
+      <span class="nt">&lt;/gmlcov:rangeType&gt;</span>
+      <span class="nt">&lt;wcs:ServiceParameters&gt;</span>
+        <span class="nt">&lt;wcs:CoverageSubtype&gt;</span>RectifiedGridCoverage<span class="nt">&lt;/wcs:CoverageSubtype&gt;</span>
+        <span class="nt">&lt;wcs:nativeFormat&gt;</span>image/tiff<span class="nt">&lt;/wcs:nativeFormat&gt;</span>
+      <span class="nt">&lt;/wcs:ServiceParameters&gt;</span>
+    <span class="nt">&lt;/wcs:CoverageDescription&gt;</span>
+    <span class="nt">&lt;wcs:CoverageDescription</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_granule_watertemp.2&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:boundedBy&gt;</span>
+        <span class="nt">&lt;gml:EnvelopeWithTimePeriod</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span> <span class="na">axisLabels=</span><span class="s">&quot;Lat Long time&quot;</span> <span class="na">uomLabels=</span><span class="s">&quot;Deg Deg s&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:lowerCorner&gt;</span>40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:lowerCorner&gt;</span>
+          <span class="nt">&lt;gml:upperCorner&gt;</span>44.55808294568743 14.592757149389236<span class="nt">&lt;/gml:upperCorner&gt;</span>
+          <span class="nt">&lt;gml:beginPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+          <span class="nt">&lt;gml:endPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+        <span class="nt">&lt;/gml:EnvelopeWithTimePeriod&gt;</span>
+      <span class="nt">&lt;/gml:boundedBy&gt;</span>
+      <span class="nt">&lt;wcs:CoverageId&gt;</span>nurc__watertemp_granule_watertemp.2<span class="nt">&lt;/wcs:CoverageId&gt;</span>
+      <span class="nt">&lt;gml:coverageFunction&gt;</span>
+        <span class="nt">&lt;gml:GridFunction&gt;</span>
+          <span class="nt">&lt;gml:sequenceRule</span> <span class="na">axisOrder=</span><span class="s">&quot;+2 +1&quot;</span><span class="nt">&gt;</span>Linear<span class="nt">&lt;/gml:sequenceRule&gt;</span>
+          <span class="nt">&lt;gml:startPoint&gt;</span>0 0<span class="nt">&lt;/gml:startPoint&gt;</span>
+        <span class="nt">&lt;/gml:GridFunction&gt;</span>
+      <span class="nt">&lt;/gml:coverageFunction&gt;</span>
+      <span class="nt">&lt;gmlcov:metadata&gt;</span>
+        <span class="nt">&lt;gmlcov:Extension&gt;</span>
+          <span class="nt">&lt;wcsgs:TimeDomain</span> <span class="na">default=</span><span class="s">&quot;2008-11-01T00:00:00.000Z&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;gml:TimeInstant</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_granule_watertemp.2_td_0&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:timePosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:timePosition&gt;</span>
+            <span class="nt">&lt;/gml:TimeInstant&gt;</span>
+          <span class="nt">&lt;/wcsgs:TimeDomain&gt;</span>
+          <span class="nt">&lt;wcseo:EOMetadata&gt;</span>
+            <span class="nt">&lt;eop:EarthObservation</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_metadata&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;om:phenomenonTime&gt;</span>
+                <span class="nt">&lt;gml:TimePeriod</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_tp&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;gml:beginPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+                  <span class="nt">&lt;gml:endPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+                <span class="nt">&lt;/gml:TimePeriod&gt;</span>
+              <span class="nt">&lt;/om:phenomenonTime&gt;</span>
+              <span class="nt">&lt;om:resultTime&gt;</span>
+                <span class="nt">&lt;gml:TimeInstant</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_rt&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;gml:timePosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:timePosition&gt;</span>
+                <span class="nt">&lt;/gml:TimeInstant&gt;</span>
+              <span class="nt">&lt;/om:resultTime&gt;</span>
+              <span class="nt">&lt;om:procedure/&gt;</span>
+              <span class="nt">&lt;om:observedProperty/&gt;</span>
+              <span class="nt">&lt;om:FeatureOfInterest&gt;</span>
+                <span class="nt">&lt;eop:Footprint</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_fp&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;eop:multiExtentOf&gt;</span>
+                    <span class="nt">&lt;gml:MultiSurface</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_ms&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;gml:surfaceMembers&gt;</span>
+                        <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_msp&quot;</span><span class="nt">&gt;</span>
+                          <span class="nt">&lt;gml:exterior&gt;</span>
+                            <span class="nt">&lt;gml:LinearRing&gt;</span>
+                              <span class="nt">&lt;gml:posList&gt;</span>40.562080748421806 0.23722068851276978 40.562080748421806 14.592757149389236 44.55808294568743 14.592757149389236 44.55808294568743 0.23722068851276978 40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:posList&gt;</span>
+                            <span class="nt">&lt;/gml:LinearRing&gt;</span>
+                          <span class="nt">&lt;/gml:exterior&gt;</span>
+                        <span class="nt">&lt;/gml:Polygon&gt;</span>
+                      <span class="nt">&lt;/gml:surfaceMembers&gt;</span>
+                    <span class="nt">&lt;/gml:MultiSurface&gt;</span>
+                  <span class="nt">&lt;/eop:multiExtentOf&gt;</span>
+                  <span class="nt">&lt;eop:centerOf&gt;</span>
+                    <span class="nt">&lt;gml:Point</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_co&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;gml:pos&gt;</span>42.56008184705462 7.4149889189510025<span class="nt">&lt;/gml:pos&gt;</span>
+                    <span class="nt">&lt;/gml:Point&gt;</span>
+                  <span class="nt">&lt;/eop:centerOf&gt;</span>
+                <span class="nt">&lt;/eop:Footprint&gt;</span>
+              <span class="nt">&lt;/om:FeatureOfInterest&gt;</span>
+              <span class="nt">&lt;eop:metaDataProperty&gt;</span>
+                <span class="nt">&lt;eop:EarthObservationMetaData&gt;</span>
+                  <span class="nt">&lt;eop:identifier&gt;</span>nurc__watertemp<span class="nt">&lt;/eop:identifier&gt;</span>
+                  <span class="nt">&lt;eop:acquisitionType&gt;</span>NOMINAL<span class="nt">&lt;/eop:acquisitionType&gt;</span>
+                  <span class="nt">&lt;eop:status&gt;</span>ARCHIVED<span class="nt">&lt;/eop:status&gt;</span>
+                <span class="nt">&lt;/eop:EarthObservationMetaData&gt;</span>
+              <span class="nt">&lt;/eop:metaDataProperty&gt;</span>
+            <span class="nt">&lt;/eop:EarthObservation&gt;</span>
+          <span class="nt">&lt;/wcseo:EOMetadata&gt;</span>
+        <span class="nt">&lt;/gmlcov:Extension&gt;</span>
+      <span class="nt">&lt;/gmlcov:metadata&gt;</span>
+      <span class="nt">&lt;gml:domainSet&gt;</span>
+        <span class="nt">&lt;gml:RectifiedGrid</span> <span class="na">gml:id=</span><span class="s">&quot;grid00__nurc__watertemp_granule_watertemp.2&quot;</span> <span class="na">dimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:limits&gt;</span>
+            <span class="nt">&lt;gml:GridEnvelope&gt;</span>
+              <span class="nt">&lt;gml:low&gt;</span>0 0<span class="nt">&lt;/gml:low&gt;</span>
+              <span class="nt">&lt;gml:high&gt;</span>24 24<span class="nt">&lt;/gml:high&gt;</span>
+            <span class="nt">&lt;/gml:GridEnvelope&gt;</span>
+          <span class="nt">&lt;/gml:limits&gt;</span>
+          <span class="nt">&lt;gml:axisLabels&gt;</span>i j<span class="nt">&lt;/gml:axisLabels&gt;</span>
+          <span class="nt">&lt;gml:origin&gt;</span>
+            <span class="nt">&lt;gml:Point</span> <span class="na">gml:id=</span><span class="s">&quot;p00_nurc__watertemp_granule_watertemp.2&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:pos&gt;</span>44.47816290174212 0.5243314177302991<span class="nt">&lt;/gml:pos&gt;</span>
+            <span class="nt">&lt;/gml:Point&gt;</span>
+          <span class="nt">&lt;/gml:origin&gt;</span>
+          <span class="nt">&lt;gml:offsetVector</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>0.0 0.5742214584350587<span class="nt">&lt;/gml:offsetVector&gt;</span>
+          <span class="nt">&lt;gml:offsetVector</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>-0.159840087890625 0.0<span class="nt">&lt;/gml:offsetVector&gt;</span>
+        <span class="nt">&lt;/gml:RectifiedGrid&gt;</span>
+      <span class="nt">&lt;/gml:domainSet&gt;</span>
+      <span class="nt">&lt;gmlcov:rangeType&gt;</span>
+        <span class="nt">&lt;swe:DataRecord&gt;</span>
+          <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;GRAY_INDEX&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;swe:Quantity&gt;</span>
+              <span class="nt">&lt;swe:description&gt;</span>GRAY_INDEX<span class="nt">&lt;/swe:description&gt;</span>
+              <span class="nt">&lt;swe:uom</span> <span class="na">code=</span><span class="s">&quot;W.m-2.Sr-1&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;swe:constraint&gt;</span>
+                <span class="nt">&lt;swe:AllowedValues&gt;</span>
+                  <span class="nt">&lt;swe:interval&gt;</span>-1.7976931348623157E308 1.7976931348623157E308<span class="nt">&lt;/swe:interval&gt;</span>
+                <span class="nt">&lt;/swe:AllowedValues&gt;</span>
+              <span class="nt">&lt;/swe:constraint&gt;</span>
+            <span class="nt">&lt;/swe:Quantity&gt;</span>
+          <span class="nt">&lt;/swe:field&gt;</span>
+        <span class="nt">&lt;/swe:DataRecord&gt;</span>
+      <span class="nt">&lt;/gmlcov:rangeType&gt;</span>
+      <span class="nt">&lt;wcs:ServiceParameters&gt;</span>
+        <span class="nt">&lt;wcs:CoverageSubtype&gt;</span>RectifiedGridCoverage<span class="nt">&lt;/wcs:CoverageSubtype&gt;</span>
+        <span class="nt">&lt;wcs:nativeFormat&gt;</span>image/tiff<span class="nt">&lt;/wcs:nativeFormat&gt;</span>
+      <span class="nt">&lt;/wcs:ServiceParameters&gt;</span>
+    <span class="nt">&lt;/wcs:CoverageDescription&gt;</span>
+    <span class="nt">&lt;wcs:CoverageDescription</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_granule_watertemp.3&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:boundedBy&gt;</span>
+        <span class="nt">&lt;gml:EnvelopeWithTimePeriod</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span> <span class="na">axisLabels=</span><span class="s">&quot;Lat Long time&quot;</span> <span class="na">uomLabels=</span><span class="s">&quot;Deg Deg s&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:lowerCorner&gt;</span>40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:lowerCorner&gt;</span>
+          <span class="nt">&lt;gml:upperCorner&gt;</span>44.55808294568743 14.592757149389236<span class="nt">&lt;/gml:upperCorner&gt;</span>
+          <span class="nt">&lt;gml:beginPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+          <span class="nt">&lt;gml:endPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+        <span class="nt">&lt;/gml:EnvelopeWithTimePeriod&gt;</span>
+      <span class="nt">&lt;/gml:boundedBy&gt;</span>
+      <span class="nt">&lt;wcs:CoverageId&gt;</span>nurc__watertemp_granule_watertemp.3<span class="nt">&lt;/wcs:CoverageId&gt;</span>
+      <span class="nt">&lt;gml:coverageFunction&gt;</span>
+        <span class="nt">&lt;gml:GridFunction&gt;</span>
+          <span class="nt">&lt;gml:sequenceRule</span> <span class="na">axisOrder=</span><span class="s">&quot;+2 +1&quot;</span><span class="nt">&gt;</span>Linear<span class="nt">&lt;/gml:sequenceRule&gt;</span>
+          <span class="nt">&lt;gml:startPoint&gt;</span>0 0<span class="nt">&lt;/gml:startPoint&gt;</span>
+        <span class="nt">&lt;/gml:GridFunction&gt;</span>
+      <span class="nt">&lt;/gml:coverageFunction&gt;</span>
+      <span class="nt">&lt;gmlcov:metadata&gt;</span>
+        <span class="nt">&lt;gmlcov:Extension&gt;</span>
+          <span class="nt">&lt;wcsgs:TimeDomain</span> <span class="na">default=</span><span class="s">&quot;2008-10-31T00:00:00.000Z&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;gml:TimeInstant</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_granule_watertemp.3_td_0&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:timePosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:timePosition&gt;</span>
+            <span class="nt">&lt;/gml:TimeInstant&gt;</span>
+          <span class="nt">&lt;/wcsgs:TimeDomain&gt;</span>
+          <span class="nt">&lt;wcseo:EOMetadata&gt;</span>
+            <span class="nt">&lt;eop:EarthObservation</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_metadata&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;om:phenomenonTime&gt;</span>
+                <span class="nt">&lt;gml:TimePeriod</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_tp&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;gml:beginPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+                  <span class="nt">&lt;gml:endPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+                <span class="nt">&lt;/gml:TimePeriod&gt;</span>
+              <span class="nt">&lt;/om:phenomenonTime&gt;</span>
+              <span class="nt">&lt;om:resultTime&gt;</span>
+                <span class="nt">&lt;gml:TimeInstant</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_rt&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;gml:timePosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:timePosition&gt;</span>
+                <span class="nt">&lt;/gml:TimeInstant&gt;</span>
+              <span class="nt">&lt;/om:resultTime&gt;</span>
+              <span class="nt">&lt;om:procedure/&gt;</span>
+              <span class="nt">&lt;om:observedProperty/&gt;</span>
+              <span class="nt">&lt;om:FeatureOfInterest&gt;</span>
+                <span class="nt">&lt;eop:Footprint</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_fp&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;eop:multiExtentOf&gt;</span>
+                    <span class="nt">&lt;gml:MultiSurface</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_ms&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;gml:surfaceMembers&gt;</span>
+                        <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_msp&quot;</span><span class="nt">&gt;</span>
+                          <span class="nt">&lt;gml:exterior&gt;</span>
+                            <span class="nt">&lt;gml:LinearRing&gt;</span>
+                              <span class="nt">&lt;gml:posList&gt;</span>40.562080748421806 0.23722068851276978 40.562080748421806 14.592757149389236 44.55808294568743 14.592757149389236 44.55808294568743 0.23722068851276978 40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:posList&gt;</span>
+                            <span class="nt">&lt;/gml:LinearRing&gt;</span>
+                          <span class="nt">&lt;/gml:exterior&gt;</span>
+                        <span class="nt">&lt;/gml:Polygon&gt;</span>
+                      <span class="nt">&lt;/gml:surfaceMembers&gt;</span>
+                    <span class="nt">&lt;/gml:MultiSurface&gt;</span>
+                  <span class="nt">&lt;/eop:multiExtentOf&gt;</span>
+                  <span class="nt">&lt;eop:centerOf&gt;</span>
+                    <span class="nt">&lt;gml:Point</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_co&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;gml:pos&gt;</span>42.56008184705462 7.4149889189510025<span class="nt">&lt;/gml:pos&gt;</span>
+                    <span class="nt">&lt;/gml:Point&gt;</span>
+                  <span class="nt">&lt;/eop:centerOf&gt;</span>
+                <span class="nt">&lt;/eop:Footprint&gt;</span>
+              <span class="nt">&lt;/om:FeatureOfInterest&gt;</span>
+              <span class="nt">&lt;eop:metaDataProperty&gt;</span>
+                <span class="nt">&lt;eop:EarthObservationMetaData&gt;</span>
+                  <span class="nt">&lt;eop:identifier&gt;</span>nurc__watertemp<span class="nt">&lt;/eop:identifier&gt;</span>
+                  <span class="nt">&lt;eop:acquisitionType&gt;</span>NOMINAL<span class="nt">&lt;/eop:acquisitionType&gt;</span>
+                  <span class="nt">&lt;eop:status&gt;</span>ARCHIVED<span class="nt">&lt;/eop:status&gt;</span>
+                <span class="nt">&lt;/eop:EarthObservationMetaData&gt;</span>
+              <span class="nt">&lt;/eop:metaDataProperty&gt;</span>
+            <span class="nt">&lt;/eop:EarthObservation&gt;</span>
+          <span class="nt">&lt;/wcseo:EOMetadata&gt;</span>
+        <span class="nt">&lt;/gmlcov:Extension&gt;</span>
+      <span class="nt">&lt;/gmlcov:metadata&gt;</span>
+      <span class="nt">&lt;gml:domainSet&gt;</span>
+        <span class="nt">&lt;gml:RectifiedGrid</span> <span class="na">gml:id=</span><span class="s">&quot;grid00__nurc__watertemp_granule_watertemp.3&quot;</span> <span class="na">dimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:limits&gt;</span>
+            <span class="nt">&lt;gml:GridEnvelope&gt;</span>
+              <span class="nt">&lt;gml:low&gt;</span>0 0<span class="nt">&lt;/gml:low&gt;</span>
+              <span class="nt">&lt;gml:high&gt;</span>24 24<span class="nt">&lt;/gml:high&gt;</span>
+            <span class="nt">&lt;/gml:GridEnvelope&gt;</span>
+          <span class="nt">&lt;/gml:limits&gt;</span>
+          <span class="nt">&lt;gml:axisLabels&gt;</span>i j<span class="nt">&lt;/gml:axisLabels&gt;</span>
+          <span class="nt">&lt;gml:origin&gt;</span>
+            <span class="nt">&lt;gml:Point</span> <span class="na">gml:id=</span><span class="s">&quot;p00_nurc__watertemp_granule_watertemp.3&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:pos&gt;</span>44.47816290174212 0.5243314177302991<span class="nt">&lt;/gml:pos&gt;</span>
+            <span class="nt">&lt;/gml:Point&gt;</span>
+          <span class="nt">&lt;/gml:origin&gt;</span>
+          <span class="nt">&lt;gml:offsetVector</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>0.0 0.5742214584350587<span class="nt">&lt;/gml:offsetVector&gt;</span>
+          <span class="nt">&lt;gml:offsetVector</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>-0.159840087890625 0.0<span class="nt">&lt;/gml:offsetVector&gt;</span>
+        <span class="nt">&lt;/gml:RectifiedGrid&gt;</span>
+      <span class="nt">&lt;/gml:domainSet&gt;</span>
+      <span class="nt">&lt;gmlcov:rangeType&gt;</span>
+        <span class="nt">&lt;swe:DataRecord&gt;</span>
+          <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;GRAY_INDEX&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;swe:Quantity&gt;</span>
+              <span class="nt">&lt;swe:description&gt;</span>GRAY_INDEX<span class="nt">&lt;/swe:description&gt;</span>
+              <span class="nt">&lt;swe:uom</span> <span class="na">code=</span><span class="s">&quot;W.m-2.Sr-1&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;swe:constraint&gt;</span>
+                <span class="nt">&lt;swe:AllowedValues&gt;</span>
+                  <span class="nt">&lt;swe:interval&gt;</span>-1.7976931348623157E308 1.7976931348623157E308<span class="nt">&lt;/swe:interval&gt;</span>
+                <span class="nt">&lt;/swe:AllowedValues&gt;</span>
+              <span class="nt">&lt;/swe:constraint&gt;</span>
+            <span class="nt">&lt;/swe:Quantity&gt;</span>
+          <span class="nt">&lt;/swe:field&gt;</span>
+        <span class="nt">&lt;/swe:DataRecord&gt;</span>
+      <span class="nt">&lt;/gmlcov:rangeType&gt;</span>
+      <span class="nt">&lt;wcs:ServiceParameters&gt;</span>
+        <span class="nt">&lt;wcs:CoverageSubtype&gt;</span>RectifiedGridCoverage<span class="nt">&lt;/wcs:CoverageSubtype&gt;</span>
+        <span class="nt">&lt;wcs:nativeFormat&gt;</span>image/tiff<span class="nt">&lt;/wcs:nativeFormat&gt;</span>
+      <span class="nt">&lt;/wcs:ServiceParameters&gt;</span>
+    <span class="nt">&lt;/wcs:CoverageDescription&gt;</span>
+    <span class="nt">&lt;wcs:CoverageDescription</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_granule_watertemp.4&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:boundedBy&gt;</span>
+        <span class="nt">&lt;gml:EnvelopeWithTimePeriod</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span> <span class="na">axisLabels=</span><span class="s">&quot;Lat Long time&quot;</span> <span class="na">uomLabels=</span><span class="s">&quot;Deg Deg s&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:lowerCorner&gt;</span>40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:lowerCorner&gt;</span>
+          <span class="nt">&lt;gml:upperCorner&gt;</span>44.55808294568743 14.592757149389236<span class="nt">&lt;/gml:upperCorner&gt;</span>
+          <span class="nt">&lt;gml:beginPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+          <span class="nt">&lt;gml:endPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+        <span class="nt">&lt;/gml:EnvelopeWithTimePeriod&gt;</span>
+      <span class="nt">&lt;/gml:boundedBy&gt;</span>
+      <span class="nt">&lt;wcs:CoverageId&gt;</span>nurc__watertemp_granule_watertemp.4<span class="nt">&lt;/wcs:CoverageId&gt;</span>
+      <span class="nt">&lt;gml:coverageFunction&gt;</span>
+        <span class="nt">&lt;gml:GridFunction&gt;</span>
+          <span class="nt">&lt;gml:sequenceRule</span> <span class="na">axisOrder=</span><span class="s">&quot;+2 +1&quot;</span><span class="nt">&gt;</span>Linear<span class="nt">&lt;/gml:sequenceRule&gt;</span>
+          <span class="nt">&lt;gml:startPoint&gt;</span>0 0<span class="nt">&lt;/gml:startPoint&gt;</span>
+        <span class="nt">&lt;/gml:GridFunction&gt;</span>
+      <span class="nt">&lt;/gml:coverageFunction&gt;</span>
+      <span class="nt">&lt;gmlcov:metadata&gt;</span>
+        <span class="nt">&lt;gmlcov:Extension&gt;</span>
+          <span class="nt">&lt;wcsgs:TimeDomain</span> <span class="na">default=</span><span class="s">&quot;2008-10-31T00:00:00.000Z&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;gml:TimeInstant</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_granule_watertemp.4_td_0&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:timePosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:timePosition&gt;</span>
+            <span class="nt">&lt;/gml:TimeInstant&gt;</span>
+          <span class="nt">&lt;/wcsgs:TimeDomain&gt;</span>
+          <span class="nt">&lt;wcseo:EOMetadata&gt;</span>
+            <span class="nt">&lt;eop:EarthObservation</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_metadata&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;om:phenomenonTime&gt;</span>
+                <span class="nt">&lt;gml:TimePeriod</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_tp&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;gml:beginPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+                  <span class="nt">&lt;gml:endPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+                <span class="nt">&lt;/gml:TimePeriod&gt;</span>
+              <span class="nt">&lt;/om:phenomenonTime&gt;</span>
+              <span class="nt">&lt;om:resultTime&gt;</span>
+                <span class="nt">&lt;gml:TimeInstant</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_rt&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;gml:timePosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:timePosition&gt;</span>
+                <span class="nt">&lt;/gml:TimeInstant&gt;</span>
+              <span class="nt">&lt;/om:resultTime&gt;</span>
+              <span class="nt">&lt;om:procedure/&gt;</span>
+              <span class="nt">&lt;om:observedProperty/&gt;</span>
+              <span class="nt">&lt;om:FeatureOfInterest&gt;</span>
+                <span class="nt">&lt;eop:Footprint</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_fp&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;eop:multiExtentOf&gt;</span>
+                    <span class="nt">&lt;gml:MultiSurface</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_ms&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;gml:surfaceMembers&gt;</span>
+                        <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_msp&quot;</span><span class="nt">&gt;</span>
+                          <span class="nt">&lt;gml:exterior&gt;</span>
+                            <span class="nt">&lt;gml:LinearRing&gt;</span>
+                              <span class="nt">&lt;gml:posList&gt;</span>40.562080748421806 0.23722068851276978 40.562080748421806 14.592757149389236 44.55808294568743 14.592757149389236 44.55808294568743 0.23722068851276978 40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:posList&gt;</span>
+                            <span class="nt">&lt;/gml:LinearRing&gt;</span>
+                          <span class="nt">&lt;/gml:exterior&gt;</span>
+                        <span class="nt">&lt;/gml:Polygon&gt;</span>
+                      <span class="nt">&lt;/gml:surfaceMembers&gt;</span>
+                    <span class="nt">&lt;/gml:MultiSurface&gt;</span>
+                  <span class="nt">&lt;/eop:multiExtentOf&gt;</span>
+                  <span class="nt">&lt;eop:centerOf&gt;</span>
+                    <span class="nt">&lt;gml:Point</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_co&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+                      <span class="nt">&lt;gml:pos&gt;</span>42.56008184705462 7.4149889189510025<span class="nt">&lt;/gml:pos&gt;</span>
+                    <span class="nt">&lt;/gml:Point&gt;</span>
+                  <span class="nt">&lt;/eop:centerOf&gt;</span>
+                <span class="nt">&lt;/eop:Footprint&gt;</span>
+              <span class="nt">&lt;/om:FeatureOfInterest&gt;</span>
+              <span class="nt">&lt;eop:metaDataProperty&gt;</span>
+                <span class="nt">&lt;eop:EarthObservationMetaData&gt;</span>
+                  <span class="nt">&lt;eop:identifier&gt;</span>nurc__watertemp<span class="nt">&lt;/eop:identifier&gt;</span>
+                  <span class="nt">&lt;eop:acquisitionType&gt;</span>NOMINAL<span class="nt">&lt;/eop:acquisitionType&gt;</span>
+                  <span class="nt">&lt;eop:status&gt;</span>ARCHIVED<span class="nt">&lt;/eop:status&gt;</span>
+                <span class="nt">&lt;/eop:EarthObservationMetaData&gt;</span>
+              <span class="nt">&lt;/eop:metaDataProperty&gt;</span>
+            <span class="nt">&lt;/eop:EarthObservation&gt;</span>
+          <span class="nt">&lt;/wcseo:EOMetadata&gt;</span>
+        <span class="nt">&lt;/gmlcov:Extension&gt;</span>
+      <span class="nt">&lt;/gmlcov:metadata&gt;</span>
+      <span class="nt">&lt;gml:domainSet&gt;</span>
+        <span class="nt">&lt;gml:RectifiedGrid</span> <span class="na">gml:id=</span><span class="s">&quot;grid00__nurc__watertemp_granule_watertemp.4&quot;</span> <span class="na">dimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:limits&gt;</span>
+            <span class="nt">&lt;gml:GridEnvelope&gt;</span>
+              <span class="nt">&lt;gml:low&gt;</span>0 0<span class="nt">&lt;/gml:low&gt;</span>
+              <span class="nt">&lt;gml:high&gt;</span>24 24<span class="nt">&lt;/gml:high&gt;</span>
+            <span class="nt">&lt;/gml:GridEnvelope&gt;</span>
+          <span class="nt">&lt;/gml:limits&gt;</span>
+          <span class="nt">&lt;gml:axisLabels&gt;</span>i j<span class="nt">&lt;/gml:axisLabels&gt;</span>
+          <span class="nt">&lt;gml:origin&gt;</span>
+            <span class="nt">&lt;gml:Point</span> <span class="na">gml:id=</span><span class="s">&quot;p00_nurc__watertemp_granule_watertemp.4&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:pos&gt;</span>44.47816290174212 0.5243314177302991<span class="nt">&lt;/gml:pos&gt;</span>
+            <span class="nt">&lt;/gml:Point&gt;</span>
+          <span class="nt">&lt;/gml:origin&gt;</span>
+          <span class="nt">&lt;gml:offsetVector</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>0.0 0.5742214584350587<span class="nt">&lt;/gml:offsetVector&gt;</span>
+          <span class="nt">&lt;gml:offsetVector</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span><span class="nt">&gt;</span>-0.159840087890625 0.0<span class="nt">&lt;/gml:offsetVector&gt;</span>
+        <span class="nt">&lt;/gml:RectifiedGrid&gt;</span>
+      <span class="nt">&lt;/gml:domainSet&gt;</span>
+      <span class="nt">&lt;gmlcov:rangeType&gt;</span>
+        <span class="nt">&lt;swe:DataRecord&gt;</span>
+          <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;GRAY_INDEX&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;swe:Quantity&gt;</span>
+              <span class="nt">&lt;swe:description&gt;</span>GRAY_INDEX<span class="nt">&lt;/swe:description&gt;</span>
+              <span class="nt">&lt;swe:uom</span> <span class="na">code=</span><span class="s">&quot;W.m-2.Sr-1&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;swe:constraint&gt;</span>
+                <span class="nt">&lt;swe:AllowedValues&gt;</span>
+                  <span class="nt">&lt;swe:interval&gt;</span>-1.7976931348623157E308 1.7976931348623157E308<span class="nt">&lt;/swe:interval&gt;</span>
+                <span class="nt">&lt;/swe:AllowedValues&gt;</span>
+              <span class="nt">&lt;/swe:constraint&gt;</span>
+            <span class="nt">&lt;/swe:Quantity&gt;</span>
+          <span class="nt">&lt;/swe:field&gt;</span>
+        <span class="nt">&lt;/swe:DataRecord&gt;</span>
+      <span class="nt">&lt;/gmlcov:rangeType&gt;</span>
+      <span class="nt">&lt;wcs:ServiceParameters&gt;</span>
+        <span class="nt">&lt;wcs:CoverageSubtype&gt;</span>RectifiedGridCoverage<span class="nt">&lt;/wcs:CoverageSubtype&gt;</span>
+        <span class="nt">&lt;wcs:nativeFormat&gt;</span>image/tiff<span class="nt">&lt;/wcs:nativeFormat&gt;</span>
+      <span class="nt">&lt;/wcs:ServiceParameters&gt;</span>
+    <span class="nt">&lt;/wcs:CoverageDescription&gt;</span>
+  <span class="nt">&lt;/wcs:CoverageDescriptions&gt;</span>
+  <span class="nt">&lt;wcseo:DatasetSeriesDescriptions&gt;</span>
+    <span class="nt">&lt;wcseo:DatasetSeriesDescription</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_dss&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:boundedBy&gt;</span>
+        <span class="nt">&lt;gml:Envelope</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/def/crs/EPSG/0/4326&quot;</span> <span class="na">axisLabels=</span><span class="s">&quot;Lat Long&quot;</span> <span class="na">uomLabels=</span><span class="s">&quot;Deg Deg&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;gml:lowerCorner&gt;</span>40.562080748421806 0.23722068851276978<span class="nt">&lt;/gml:lowerCorner&gt;</span>
+          <span class="nt">&lt;gml:upperCorner&gt;</span>44.55808294568743 14.592757149389236<span class="nt">&lt;/gml:upperCorner&gt;</span>
+        <span class="nt">&lt;/gml:Envelope&gt;</span>
+      <span class="nt">&lt;/gml:boundedBy&gt;</span>
+      <span class="nt">&lt;wcseo:DatasetSeriesId&gt;</span>nurc__watertemp_dss<span class="nt">&lt;/wcseo:DatasetSeriesId&gt;</span>
+      <span class="nt">&lt;gml:TimePeriod</span> <span class="na">gml:id=</span><span class="s">&quot;nurc__watertemp_dss_timeperiod&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;gml:beginPosition&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/gml:beginPosition&gt;</span>
+        <span class="nt">&lt;gml:endPosition&gt;</span>2008-11-01T00:00:00.000Z<span class="nt">&lt;/gml:endPosition&gt;</span>
+      <span class="nt">&lt;/gml:TimePeriod&gt;</span>
+    <span class="nt">&lt;/wcseo:DatasetSeriesDescription&gt;</span>
+  <span class="nt">&lt;/wcseo:DatasetSeriesDescriptions&gt;</span>
+<span class="nt">&lt;/wcseo:EOCoverageSetDescription&gt;</span>
+</pre></div>
+</div>
+<p>Any of the inner coverages can be then retrieved via a standard GetCoverage, even if it’s not directly part of the capabilities document, for example, to retrieve the first granule in the watertemp layer the request would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/ows?service=WCS&amp;version=2.0.1&amp;request=GetCoverage&amp;coverageId=nurc__watertemp_granule_watertemp.1
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../xslt/index.html" title="previous chapter">XSLT WFS output format module</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../mongodb/index.html" title="next chapter">MongoDB Data Store</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Web Coverage Service 2.0 Earth Observation extensions</a><ul>
+<li><a class="reference internal" href="#installing-the-wcs-2-0-eo-extension">Installing the WCS 2.0 EO extension</a></li>
+<li><a class="reference internal" href="#exposing-dataset-series">Exposing dataset series</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../xslt/index.html" title="previous chapter">XSLT WFS output format module</a></li>
+            <li>Next: <a href="../mongodb/index.html" title="next chapter">MongoDB Data Store</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/wcs20eo/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

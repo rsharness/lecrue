@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raster symbolizer &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Text symbolizer" href="text.html" />
+    <link rel="prev" title="Point symbolizer" href="point.html" /> 
+  </head><body class="styling/ysld/reference/symbolizers/raster">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">YSLD Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">YSLD reference</a> &raquo;</li>
+    <li>Raster symbolizer</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="text.html" title="Text symbolizer" accesskey="N">Next</a></li>
+  <li>
+    <a href="point.html" title="Point symbolizer" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="raster-symbolizer">
+<span id="ysld-reference-symbolizers-raster"></span><h1>Raster symbolizer<a class="headerlink" href="#raster-symbolizer" title="Permalink to this headline">¶</a></h1>
+<p>The raster symbolizer styles raster (coverage) layers. A raster is an array of information with each cell in the array containing one or more values, stored as “bands”.</p>
+<p>The full syntax of a raster symbolizer is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">symbolizers</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">raster</span><span class="p">:</span>
+    <span class="n">opacity</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
+    <span class="n">channels</span><span class="p">:</span>
+      <span class="n">gray</span><span class="p">:</span>
+        <span class="o">&lt;</span><span class="n">channel_options</span><span class="o">&gt;</span>
+      <span class="n">red</span><span class="p">:</span>
+        <span class="o">&lt;</span><span class="n">channel_options</span><span class="o">&gt;</span>
+      <span class="n">green</span><span class="p">:</span>
+        <span class="o">&lt;</span><span class="n">channel_options</span><span class="o">&gt;</span>
+      <span class="n">blue</span><span class="p">:</span>
+        <span class="o">&lt;</span><span class="n">channel_options</span><span class="o">&gt;</span>
+    <span class="n">color</span><span class="o">-</span><span class="nb">map</span><span class="p">:</span>
+      <span class="nb">type</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">ramp</span><span class="o">|</span><span class="n">interval</span><span class="o">|</span><span class="n">values</span><span class="o">&gt;</span>
+      <span class="n">entries</span><span class="p">:</span>
+      <span class="o">-</span> <span class="p">[</span><span class="n">color</span><span class="p">,</span> <span class="n">entry_opacity</span><span class="p">,</span> <span class="n">band_value</span><span class="p">,</span> <span class="n">text_label</span><span class="p">]</span>
+    <span class="n">contrast</span><span class="o">-</span><span class="n">enhancement</span><span class="p">:</span>
+      <span class="n">mode</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">normalize</span><span class="o">|</span><span class="n">histogram</span><span class="o">&gt;</span>
+      <span class="n">gamma</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
+    <span class="n">x</span><span class="o">-</span><span class="n">inclusion</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>where:</p>
+<table class="colwidths-given non-responsive docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 50%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Property</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">opacity</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Opacity of the entire display. Valid values are a decimal between <code class="docutils literal notranslate"><span class="pre">0</span></code> (completely transparent) and <code class="docutils literal notranslate"><span class="pre">1</span></code> (completely opaque).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">channels</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Selects the band(s) to display and the display method.</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">gray</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Display a single band as a grayscale image. Cannot be used with <code class="docutils literal notranslate"><span class="pre">red</span></code>, <code class="docutils literal notranslate"><span class="pre">green</span></code>, and <code class="docutils literal notranslate"><span class="pre">blue</span></code>. The <code class="docutils literal notranslate"><span class="pre">&lt;channel_options&gt;</span></code> can be the band name or a mapping containing <code class="docutils literal notranslate"><span class="pre">name:</span></code> and <code class="docutils literal notranslate"><span class="pre">contrast-enhancement:</span></code> (optional).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">red</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Display three bands as an RGB image. Must be used with <code class="docutils literal notranslate"><span class="pre">green</span></code>, and <code class="docutils literal notranslate"><span class="pre">blue</span></code>. Cannot be used with <code class="docutils literal notranslate"><span class="pre">gray</span></code>. The <code class="docutils literal notranslate"><span class="pre">&lt;channel_options&gt;</span></code> can be the band name or a mapping containing <code class="docutils literal notranslate"><span class="pre">name:</span></code> and <code class="docutils literal notranslate"><span class="pre">contrast-enhancement:</span></code> (optional).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">green</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Display three bands as an RGB image. Must be used with <code class="docutils literal notranslate"><span class="pre">red</span></code>, and <code class="docutils literal notranslate"><span class="pre">blue</span></code>. Cannot be used with <code class="docutils literal notranslate"><span class="pre">gray</span></code>. The <code class="docutils literal notranslate"><span class="pre">&lt;channel_options&gt;</span></code> can be the band name or a mapping containing <code class="docutils literal notranslate"><span class="pre">name:</span></code> and <code class="docutils literal notranslate"><span class="pre">contrast-enhancement:</span></code> (optional).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">blue</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Display three bands as an RGB image. Must be used with <code class="docutils literal notranslate"><span class="pre">red</span></code>, and <code class="docutils literal notranslate"><span class="pre">green</span></code>. Cannot be used with <code class="docutils literal notranslate"><span class="pre">gray</span></code>. The <code class="docutils literal notranslate"><span class="pre">&lt;channel_options&gt;</span></code> can be the band name or a mapping containing <code class="docutils literal notranslate"><span class="pre">name:</span></code> and <code class="docutils literal notranslate"><span class="pre">contrast-enhancement:</span></code> (optional). See examples below.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">color-map</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Creates a mapping of colors to grid values. Can only be used with a single band.</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Type of color mapping. Options are <code class="docutils literal notranslate"><span class="pre">ramp</span></code>, an interpolated list of values; <code class="docutils literal notranslate"><span class="pre">interval</span></code>, a non-interpolated list of values; and <code class="docutils literal notranslate"><span class="pre">values</span></code>, where values need to match exactly to be drawn.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ramp</span></code></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">entries</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Values for the color mapping. Syntax is a list of tuples.</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">color</span></code></p></th>
+<td><p>Yes</p></td>
+<td><p>Color for the particular color map entry. Value is a standard color value.</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">entry_opacity</span></code></p></th>
+<td><p>Yes</p></td>
+<td><p>Opacity of the particular color map entry. Valid values are a decimal between <code class="docutils literal notranslate"><span class="pre">0</span></code> (completely transparent) and <code class="docutils literal notranslate"><span class="pre">1</span></code> (completely opaque).</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">band_value</span></code></p></th>
+<td><p>Yes</p></td>
+<td><p>Grid value to use for the particular color map entry. Values are data-dependent. Behavior at or around this value is determined by the color ramp <code class="docutils literal notranslate"><span class="pre">type</span></code>.</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">text_label</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Label for the particular color map entry</p></td>
+<td><p>Blank</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">contrast-enhancement</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Modifies the contrast of the display</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">mode</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Type of contrast enhancement. Options are <code class="docutils literal notranslate"><span class="pre">normalize</span></code> (stretches contrast so that the smallest and largest values are set to black and white, respectively) or <code class="docutils literal notranslate"><span class="pre">histogram</span></code> (produces equal number of content in the image at each brightness level).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">normalize</span></code></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">gamma</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Multiplier value for contrast adjustment. A value greater than 1 will increase darkness, while a value less than 1 will decrease darkness.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Additional “vendor options” properties for <a class="reference internal" href="../../../sld/extensions/composite-blend/index.html#sld-extensions-composite-blend"><span class="std std-ref">Color compositing and color blending</span></a>:</p>
+<p>Additional “vendor options” properties for <a class="reference internal" href="../../../sld/extensions/composite-blend/index.html#sld-extensions-composite-blend"><span class="std std-ref">Color compositing and color blending</span></a>:</p>
+<table class="colwidths-given non-responsive docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 50%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Property</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">x-composite</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Allows for both alpha compositing and color blending options between symbolizers.</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">x-composite-base</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Allows the rendering engine to use the symbolizer mapping to define a “base” buffer for subsequent compositing and blending using <code class="docutils literal notranslate"><span class="pre">x-composite</span></code>. See the section on <a class="reference internal" href="../featurestyles.html#ysld-reference-featurestyles-composite"><span class="std std-ref">Feature Styles</span></a> for more details.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Additional “vendor options” properties for <a class="reference internal" href="../../../sld/extensions/rendering-selection.html#rendering-selection"><span class="std std-ref">Rendering Selection</span></a>:</p>
+<p>Additional “vendor options” properties for <a class="reference internal" href="../../../sld/extensions/rendering-selection.html#rendering-selection"><span class="std std-ref">Rendering Selection</span></a>:</p>
+<table class="colwidths-given non-responsive docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 50%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Property</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><code class="docutils literal notranslate"><span class="pre">x-inclusion</span></code></p></th>
+<td><p>No</p></td>
+<td><p>Define if rule should be included in style for <code class="docutils literal notranslate"><span class="pre">legendOnly</span></code> or <code class="docutils literal notranslate"><span class="pre">mapOnly</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">normal</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="enhanced-contrast">
+<h3>Enhanced contrast<a class="headerlink" href="#enhanced-contrast" title="Permalink to this headline">¶</a></h3>
+<p>This example takes a given raster and lightens the output by a factor of 2:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">symbolizers</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">raster</span><span class="p">:</span>
+    <span class="n">contrast</span><span class="o">-</span><span class="n">enhancement</span><span class="p">:</span>
+      <span class="n">gamma</span><span class="p">:</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id2">
+<img alt="../../../../_images/raster_brightness.png" src="../../../../_images/raster_brightness.png" />
+<p class="caption"><span class="caption-text">Lightened image</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="normalized-output">
+<h3>Normalized output<a class="headerlink" href="#normalized-output" title="Permalink to this headline">¶</a></h3>
+<p>This example takes a given raster and adjusts the contrast so that the smallest values are darkest and the highest values are lightest:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">symbolizers</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">raster</span><span class="p">:</span>
+    <span class="n">contrast</span><span class="o">-</span><span class="n">enhancement</span><span class="p">:</span>
+      <span class="n">mode</span><span class="p">:</span> <span class="n">normalize</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id3">
+<img alt="../../../../_images/raster_normalize.png" src="../../../../_images/raster_normalize.png" />
+<p class="caption"><span class="caption-text">Normalized image</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="band-selection">
+<h3>Band selection<a class="headerlink" href="#band-selection" title="Permalink to this headline">¶</a></h3>
+<p>This example takes a raster with multiple bands and outputs band 2 as a grayscale image (This could be used to select a single band in a multi-band image to use with <code class="docutils literal notranslate"><span class="pre">color-map</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span><span class="p">:</span> <span class="n">raster</span>
+<span class="n">feature</span><span class="o">-</span><span class="n">styles</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span>
+  <span class="n">rules</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">symbolizers</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">raster</span><span class="p">:</span>
+        <span class="n">opacity</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">channels</span><span class="p">:</span>
+          <span class="n">gray</span><span class="p">:</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id4">
+<img alt="../../../../_images/raster_band_gray.png" src="../../../../_images/raster_band_gray.png" />
+<p class="caption"><span class="caption-text">Grayscale band selection</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="band-selection-with-contrast">
+<h3>Band selection with contrast<a class="headerlink" href="#band-selection-with-contrast" title="Permalink to this headline">¶</a></h3>
+<p>This example takes an RGB raster, doubles the intensity of the red, and normalizes the green band:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span><span class="p">:</span> <span class="n">raster</span>
+<span class="n">feature</span><span class="o">-</span><span class="n">styles</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span>
+  <span class="n">rules</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">symbolizers</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">raster</span><span class="p">:</span>
+        <span class="n">channels</span><span class="p">:</span>
+          <span class="n">red</span><span class="p">:</span>
+            <span class="n">name</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="n">contrast</span><span class="o">-</span><span class="n">enhancement</span><span class="p">:</span>
+              <span class="n">gamma</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span>
+          <span class="n">green</span><span class="p">:</span>
+            <span class="n">name</span><span class="p">:</span> <span class="mi">2</span>
+            <span class="n">contrast</span><span class="o">-</span><span class="n">enhancement</span><span class="p">:</span>
+              <span class="n">mode</span><span class="p">:</span> <span class="n">normalize</span>
+          <span class="n">blue</span><span class="p">:</span>
+            <span class="n">name</span><span class="p">:</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id5">
+<img alt="../../../../_images/raster_band_contrast.png" src="../../../../_images/raster_band_contrast.png" />
+<p class="caption"><span class="caption-text">Band selection with contrast enhancement</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="color-ramp">
+<h3>Color ramp<a class="headerlink" href="#color-ramp" title="Permalink to this headline">¶</a></h3>
+<p>This example shows a color ramp from red to green to blue, with raster band values from 0-200:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">symbolizers</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">raster</span><span class="p">:</span>
+    <span class="n">color</span><span class="o">-</span><span class="nb">map</span><span class="p">:</span>
+      <span class="nb">type</span><span class="p">:</span> <span class="n">ramp</span>
+      <span class="n">entries</span><span class="p">:</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#FF0000&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">red</span><span class="p">]</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#00FF00&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">green</span><span class="p">]</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#0000FF&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="n">blue</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In this example, the grid values will have the following colors applied:</p>
+<ul class="simple">
+<li><p>Less than or equal to 0 will have an output color of <strong>solid red</strong></p></li>
+<li><p>Between 0 and 100 will have an output color <strong>interpolated between red and green</strong></p></li>
+<li><p>Between 100 and 200 will have an output color <strong>interpolated between green and blue</strong></p></li>
+<li><p>Greater than 200 will have an output color of <strong>solid blue</strong></p></li>
+</ul>
+<div class="figure align-default" id="id6">
+<img alt="../../../../_images/raster_map_ramp.png" src="../../../../_images/raster_map_ramp.png" />
+<p class="caption"><span class="caption-text">Color map with ramp</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="color-intervals">
+<h3>Color intervals<a class="headerlink" href="#color-intervals" title="Permalink to this headline">¶</a></h3>
+<p>The same example as above, but with the <code class="docutils literal notranslate"><span class="pre">color-map</span></code> type set to <code class="docutils literal notranslate"><span class="pre">intervals</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">symbolizers</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">raster</span><span class="p">:</span>
+    <span class="n">color</span><span class="o">-</span><span class="nb">map</span><span class="p">:</span>
+      <span class="nb">type</span><span class="p">:</span> <span class="n">intervals</span>
+      <span class="n">entries</span><span class="p">:</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#FF0000&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">red</span><span class="p">]</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#00FF00&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">green</span><span class="p">]</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#0000FF&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="n">blue</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In this example, the grid values will have the following colors applied:</p>
+<ul class="simple">
+<li><p>Less than or equal to 0 will have an output color of <strong>solid red</strong></p></li>
+<li><p>Between 0 and 100 will have an output color of <strong>solid green</strong></p></li>
+<li><p>Between 100 and 200 will have an output color of <strong>solid blue</strong></p></li>
+<li><p>Greater than 200 will <strong>not be colored</strong> at all (transparent)</p></li>
+</ul>
+<div class="figure align-default" id="id7">
+<img alt="../../../../_images/raster_map_intervals.png" src="../../../../_images/raster_map_intervals.png" />
+<p class="caption"><span class="caption-text">Color map with intervals</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="color-values">
+<h3>Color values<a class="headerlink" href="#color-values" title="Permalink to this headline">¶</a></h3>
+<p>The same example as above, but with the <code class="docutils literal notranslate"><span class="pre">color-map</span></code> type set to <code class="docutils literal notranslate"><span class="pre">values</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">symbolizers</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">raster</span><span class="p">:</span>
+    <span class="n">color</span><span class="o">-</span><span class="nb">map</span><span class="p">:</span>
+      <span class="nb">type</span><span class="p">:</span> <span class="n">values</span>
+      <span class="n">entries</span><span class="p">:</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#FF0000&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">red</span><span class="p">]</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#00FF00&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">green</span><span class="p">]</span>
+      <span class="o">-</span> <span class="p">[</span><span class="s1">&#39;#0000FF&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="n">blue</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In this example, the grid values will have the following colors applied:</p>
+<ul class="simple">
+<li><p>Equal to 0 will have an output color of <strong>solid red</strong></p></li>
+<li><p>Equal to 100 will have an output color of <strong>solid green</strong></p></li>
+<li><p>Equal to 200 will have an output color of <strong>solid blue</strong></p></li>
+</ul>
+<p>Any other values (even those in between the above values) will not be colored at all.</p>
+<div class="figure align-default" id="id8">
+<img alt="../../../../_images/raster_map_values.png" src="../../../../_images/raster_map_values.png" />
+<p class="caption"><span class="caption-text">Color map with values</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="point.html" title="previous chapter">Point symbolizer</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="text.html" title="next chapter">Text symbolizer</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Raster symbolizer</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#enhanced-contrast">Enhanced contrast</a></li>
+<li><a class="reference internal" href="#normalized-output">Normalized output</a></li>
+<li><a class="reference internal" href="#band-selection">Band selection</a></li>
+<li><a class="reference internal" href="#band-selection-with-contrast">Band selection with contrast</a></li>
+<li><a class="reference internal" href="#color-ramp">Color ramp</a></li>
+<li><a class="reference internal" href="#color-intervals">Color intervals</a></li>
+<li><a class="reference internal" href="#color-values">Color values</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="point.html" title="previous chapter">Point symbolizer</a></li>
+            <li>Next: <a href="text.html" title="next chapter">Text symbolizer</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/ysld/reference/symbolizers/raster.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

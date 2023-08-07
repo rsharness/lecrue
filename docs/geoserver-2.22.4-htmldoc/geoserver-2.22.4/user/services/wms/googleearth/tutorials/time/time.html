@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/default.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Super-Overlays and GeoWebCache" href="../superoverlaysgwc.html" />
+    <link rel="prev" title="Heights Templates" href="../heights/heights.html" /> 
+  </head><body class="services/wms/googleearth/tutorials/time/time">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Google Earth</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Time</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../superoverlaysgwc.html" title="Super-Overlays and GeoWebCache" accesskey="N">Next</a></li>
+  <li>
+    <a href="../heights/heights.html" title="Heights Templates" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="time">
+<span id="tutorials-time"></span><h1>Time<a class="headerlink" href="#time" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The screenshots on this tutorial have not yet been updated for the 2.0.x user interface.  But most all the rest of the information should be valid, and the user interface is roughly the same, but a bit more easy to use.</p>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>For this tutorial we will using a Shapefile which contains information about the number of Internet users in the countries of Western Europe for a rang of years.</p>
+<ol class="arabic simple">
+<li><p>Download and unzip <a class="reference download internal" download="" href="../../../../../_downloads/2cd6ebe4878868ed39174e7c99652b17/inet_weu.zip"><code class="xref download docutils literal notranslate"><span class="pre">inet_weu.zip</span></code></a></p></li>
+<li><p>Configure GeoServer to serve the Shapefile <code class="docutils literal notranslate"><span class="pre">inet_weu.zip</span></code>. (A tutorial is available <a class="reference internal" href="../../../../../gettingstarted/shapefile-quickstart/index.html#shapefile-quickstart"><span class="std std-ref">Publishing a shapefile</span></a>.)</p></li>
+<li><p>Add the SLD “<a class="reference download internal" download="" href="../../../../../_downloads/ac89b0e7fde01a3cb1b72a77b60476be/inet_weu.sld"><code class="xref download docutils literal notranslate"><span class="pre">inet_weu.sld</span></code></a> to GeoServer. ( A tutorial is available for <a class="reference internal" href="../../../../../styling/index.html#styling"><span class="std std-ref">Styling</span></a>)</p></li>
+<li><p>Set the style of the feature type added in step 2 to the style added in step 3</p></li>
+</ol>
+<div class="figure align-center" id="id2">
+<img alt="../../../../../_images/style2.png" src="../../../../../_images/style2.png" />
+<p class="caption"><span class="caption-text"><em>Style</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="checking-the-setup">
+<h2>Checking the Setup<a class="headerlink" href="#checking-the-setup" title="Permalink to this headline">¶</a></h2>
+<p>If all is configured properly you should be able to navigate to <a class="reference external" href="http://localhost:8080/geoserver/wms/kml?layers=topp:inet_weu&amp;format=openlayers&amp;bbox=-33.780,26.266,21.005,56.427">http://localhost:8080/geoserver/wms/kml?layers=topp:inet_weu&amp;format=openlayers&amp;bbox=-33.780,26.266,21.005,56.427</a> and see the following map:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../../../../_images/gettingStarted.png" src="../../../../../_images/gettingStarted.png" />
+<p class="caption"><span class="caption-text"><em>Setup</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="creating-the-template">
+<h2>Creating the Template<a class="headerlink" href="#creating-the-template" title="Permalink to this headline">¶</a></h2>
+<p>Next we will create a template which allows us to specify the temporal aspects of the dataset. The schema of our dataset looks like:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>INET_P100n</p></td>
+<td><p>Number of internet users per 100 people</p></td>
+</tr>
+<tr class="row-even"><td><p>NAME</p></td>
+<td><p>Name of country</p></td>
+</tr>
+<tr class="row-odd"><td><p>RPT_YEAR</p></td>
+<td><p>Year</p></td>
+</tr>
+<tr class="row-even"><td><p>Geometry</p></td>
+<td><p>Polygon representing the country</p></td>
+</tr>
+</tbody>
+</table>
+<p>The temporal attribute is <code class="docutils literal notranslate"><span class="pre">RPT_YEAR</span></code> and is the one that matters to us. Ok, time to create the template.</p>
+<ol class="arabic simple">
+<li><p>In your text editor of choice, create a new text file called <code class="docutils literal notranslate"><span class="pre">time.ftl</span></code>.</p></li>
+<li><p>Add the following text:</p></li>
+</ol>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>${RPT_YEAR.value?date(&#39;yyyy&#39;)}
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Save the file to the <code class="docutils literal notranslate"><span class="pre">&lt;GEOSERVER_DATA_DIR&gt;/workspaces/topp/inet_weu_shapefile/inet_weu</span></code> directory. Where <code class="docutils literal notranslate"><span class="pre">&lt;GEOSERVER_DATA_DIR&gt;</span></code> is the location of the “data directory” of your GeoServer installation. Usually pointed to via the <code class="docutils literal notranslate"><span class="pre">GEOSERVER_DATA_DIR</span></code> environment variable.</p></li>
+</ol>
+<p>See the ref:<cite>references</cite> section for more information about specifying a date format.</p>
+</div>
+<div class="section" id="trying-it-out">
+<h2>Trying it Out<a class="headerlink" href="#trying-it-out" title="Permalink to this headline">¶</a></h2>
+<p>Ok time to try it out.</p>
+<ol class="arabic simple">
+<li><p>Navigate to <a class="reference external" href="http://localhost:8080/geoserver/wms/kml?layers=inet_weu&amp;legend=true">http://localhost:8080/geoserver/wms/kml?layers=inet_weu&amp;legend=true</a>. This should cause Google Earth to open.</p></li>
+</ol>
+<div class="figure align-center" id="id4">
+<img alt="../../../../../_images/try1.png" src="../../../../../_images/try1.png" />
+<p class="caption"><span class="caption-text"><em>Google Earth</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>In Google Earth, adjust the time bar so that it captures a time interval that is approximately 1 year wide</p></li>
+</ol>
+<div class="figure align-center" id="id5">
+<img alt="../../../../../_images/try2.png" src="../../../../../_images/try2.png" />
+<p class="caption"><span class="caption-text"><em>Google Earth Time Bar</em></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Slide the time bar forward in time and notice how the polygon colors change</p></li>
+</ol>
+<div class="figure align-center" id="id6">
+<img alt="../../../../../_images/try3.png" src="../../../../../_images/try3.png" />
+<p class="caption"><span class="caption-text"><em>Sliding the Time Bar</em></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="references">
+<span id="id1"></span><h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="specifying-a-date-format">
+<h3>Specifying a Date Format<a class="headerlink" href="#specifying-a-date-format" title="Permalink to this headline">¶</a></h3>
+<p>When setting up a time template for your own dataset the most important issue is the format of your temporal data. It may or may not be in a format in which GeoServer can read directly. You can check if the date/time format can be used directly by GeoServer by using the following time template.  This is an example time template file (time.ftl) file without explicit formatting.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>${DATETIME_ATTRIBUTE_NAME.value}
+</pre></div>
+</div>
+<p>While GeoServer will try its best to parse the data there are cases in which your data is in a format which it cannot parse. When this occurs it is necessary to explicitly specify the format. Luckily Freemarker provides us with functionality to do just this.</p>
+<p>Consider the date time <code class="docutils literal notranslate"><span class="pre">12:30</span> <span class="pre">on</span> <span class="pre">January</span> <span class="pre">01,</span> <span class="pre">2007</span></code> specified in the following format: <code class="docutils literal notranslate"><span class="pre">01?01%2007&amp;12$30!00</span></code>. When creating the template we need to explicitly tell Freemarker the format the date time is in with the datetime function.  This is an example time template file (time.ftl) file with explicit formatting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${DATETIME_ATTRIBUTE_NAME.value?datetime(&quot;M?d%y&amp;H:m:s&quot;)}
+</pre></div>
+</div>
+<p>The process is similar for dates (no time). The date <code class="docutils literal notranslate"><span class="pre">01?01%2007</span></code> would be specified in a template with explicit formatting:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>${DATETIME_ATTRIBUTE_NAME.value?date(&quot;M?d%y&quot;)}
+</pre></div>
+</div>
+<p>So when must you specify the date format in this manner? The following table illustrates the <span class="guilabel">date</span> formats that GeoServer can understand.  Note that the ‘-‘ character can be one of any of the following characters: ‘/’ (forward slash), ‘ ‘ (space), ‘.’ (period), ‘,’ (comma)</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Date Format</strong></p></td>
+<td><p><strong>Example</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>yyyy-MM-dd</p></td>
+<td><p>2007-06-20</p></td>
+</tr>
+<tr class="row-odd"><td><p>yyyy-MMM-dd</p></td>
+<td><p>2007-Jun-20</p></td>
+</tr>
+<tr class="row-even"><td><p>MM-dd-yyyy</p></td>
+<td><p>06-20-2007</p></td>
+</tr>
+<tr class="row-odd"><td><p>MMM-dd-yyyy</p></td>
+<td><p>Jun-20-2007</p></td>
+</tr>
+<tr class="row-even"><td><p>dd-MM-yyyy</p></td>
+<td><p>20-06-2007</p></td>
+</tr>
+<tr class="row-odd"><td><p>dd-MMM-yyyy</p></td>
+<td><p>20-Jun-2007</p></td>
+</tr>
+</tbody>
+</table>
+<p>The set of <span class="guilabel">date time</span> formats which GeoServer can be understand is formed by appending the timestamp formats <code class="docutils literal notranslate"><span class="pre">hh:mm</span></code> and <code class="docutils literal notranslate"><span class="pre">hh:mm:ss</span></code> to the entries in the above table:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>DateTime Format</strong></p></td>
+<td><p><strong>Example</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>yyyy-MM-dd hh:mm</p></td>
+<td><p>2007-06-20 12:30</p></td>
+</tr>
+<tr class="row-odd"><td><p>yyyy-MMM-dd hh:mm</p></td>
+<td><p>2007-Jun-20 12:30</p></td>
+</tr>
+<tr class="row-even"><td><p>yyyy-MM-dd hh:mm:ss</p></td>
+<td><p>2007-06-20 12:30:00</p></td>
+</tr>
+<tr class="row-odd"><td><p>yyyy-MMM-dd hh:mm:ss</p></td>
+<td><p>2007-Jun-20 12:30:00</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>Setting the Timezone</strong></p>
+<p>Be aware that the KML output for <span class="guilabel">date time</span> formats will reflect the timezone of the java virtual machine, which can be set using the user.timezone parameter in the startup script. For example, the following command starts GeoServer using the Coordinated Universal Time (UTC) timezone.</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">exec</span> <span class="pre">&quot;$_RUNJAVA&quot;</span> <span class="pre">-DGEOSERVER_DATA_DIR=&quot;$GEOSERVER_DATA_DIR&quot;</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">-Djava.awt.headless=true</span> <span class="pre">-DSTOP.PORT=8079</span></code>
+<code class="docutils literal notranslate"><span class="pre">-Duser.timezone=UTC</span></code>
+<code class="docutils literal notranslate"><span class="pre">-DSTOP.KEY=geoserver</span> <span class="pre">-jar</span> <span class="pre">start.jar</span></code></p>
+</dd>
+</dl>
+</div></blockquote>
+<p>If the timezone is not set, it will default to the timezone of the operating system.</p>
+</div>
+</div>
+<div class="section" id="specifying-a-date-range">
+<h3>Specifying a Date Range<a class="headerlink" href="#specifying-a-date-range" title="Permalink to this headline">¶</a></h3>
+<p>In the above example a single time stamp is output for the dataset. GeoServer also supports specifying date ranges via a template. The syntax for ranges is:</p>
+<p>Where begin is the first date in the range, end is the last date in the range, and || is the delimiter between the two. As an example:</p>
+<p>Would the date range starting at <code class="docutils literal notranslate"><span class="pre">January</span> <span class="pre">1,</span> <span class="pre">2007</span></code> and ending <code class="docutils literal notranslate"><span class="pre">June</span> <span class="pre">1,</span> <span class="pre">2007</span></code>. Date ranges can also be open ended:</p>
+<p>The first date specifies a date range where the beginning is open-ended. The second specifies a date range where the end is open-ended.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../heights/heights.html" title="previous chapter">Heights Templates</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../superoverlaysgwc.html" title="next chapter">Super-Overlays and GeoWebCache</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Time</a><ul>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#checking-the-setup">Checking the Setup</a></li>
+<li><a class="reference internal" href="#creating-the-template">Creating the Template</a></li>
+<li><a class="reference internal" href="#trying-it-out">Trying it Out</a></li>
+<li><a class="reference internal" href="#references">References</a><ul>
+<li><a class="reference internal" href="#specifying-a-date-format">Specifying a Date Format</a></li>
+<li><a class="reference internal" href="#specifying-a-date-range">Specifying a Date Range</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../heights/heights.html" title="previous chapter">Heights Templates</a></li>
+            <li>Next: <a href="../superoverlaysgwc.html" title="next chapter">Super-Overlays and GeoWebCache</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/tutorials/time/time.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

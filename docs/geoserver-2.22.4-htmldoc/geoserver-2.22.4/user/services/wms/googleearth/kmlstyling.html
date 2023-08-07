@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KML Styling &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+  </head><body class="services/wms/googleearth/kmlstyling">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Google Earth</a> &raquo;</li>
+    <li>KML Styling</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="tutorials/index.html" title="Tutorials" accesskey="N">Next</a></li>
+  <li>
+    <a href="quickstart.html" title="Quickstart" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="kml-styling">
+<span id="google-earth-kml-styling"></span><h1>KML Styling<a class="headerlink" href="#kml-styling" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Keyhole Markup Langauge (KML), when created and output by GeoServer, is styled using <a class="reference external" href="http://en.wikipedia.org/wiki/Styled_Layer_Descriptor">Styled Layer Descriptors</a> (SLD). This is the same approach used to style standard WMS output formats, but is a bit different from how Google Earth is normally styled, behaving more like Cascading Style Sheets (CSS). The style of the map is specified in the SLD file as a series of rules, and then the data matching those rules is styled appropriately in the KML output. For those unfamiliar with SLD, a good place to start is the <a class="reference internal" href="../../../styling/sld/introduction.html#sld-intro"><span class="std std-ref">Introduction to SLD</span></a>. The remainder of this guide contains information about how to construct SLD documents in order to impact the look of KML produced by GeoServer.</p>
+<div class="section" id="contents">
+<h3>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p><a class="reference internal" href="#kml-styling-basic"><span class="std std-ref">SLD Generation from CSS</span></a></p>
+<p><a class="reference internal" href="#kml-styling-sld-hand"><span class="std std-ref">Creating SLD by hand</span></a></p>
+<p><a class="reference internal" href="#kml-styling-sld-structure"><span class="std std-ref">SLD Structure</span></a></p>
+<p><a class="reference internal" href="#kml-styling-points"><span class="std std-ref">Points</span></a></p>
+<p><a class="reference internal" href="#kml-styling-lines"><span class="std std-ref">Lines</span></a></p>
+<p><a class="reference internal" href="#kml-styling-polygons"><span class="std std-ref">Polygons</span></a></p>
+<p><a class="reference internal" href="#kml-styling-text-labels"><span class="std std-ref">Text Labels</span></a></p>
+<p><a class="reference internal" href="#kml-styling-descriptions"><span class="std std-ref">Descriptions</span></a></p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="sld-generation-from-css">
+<span id="kml-styling-basic"></span><h2>SLD Generation from CSS<a class="headerlink" href="#sld-generation-from-css" title="Permalink to this headline">¶</a></h2>
+<p>The CSS extension provides the facility to generate SLD files using a lightweight “Cascading Style Sheet” syntax. The CSS GUI provides a live map preview as you are editing your style in addition to an attribute reference for the current layer.</p>
+<p>The generated styles will work seamlessly with KML output from GeoServer.</p>
+</div>
+<div class="section" id="creating-sld-by-hand">
+<span id="kml-styling-sld-hand"></span><h2>Creating SLD by hand<a class="headerlink" href="#creating-sld-by-hand" title="Permalink to this headline">¶</a></h2>
+<p>One can edit the SLD files directly instead of using the CSS extension.  For the most complete exploration of editing SLDs see the <a class="reference internal" href="../../../styling/index.html#styling"><span class="std std-ref">Styling</span></a> section.  The examples below show how some of the basic styles show up in Google Earth.</p>
+</div>
+<div class="section" id="sld-structure">
+<span id="kml-styling-sld-structure"></span><h2>SLD Structure<a class="headerlink" href="#sld-structure" title="Permalink to this headline">¶</a></h2>
+<p>The following is a skeleton of a SLD document. It can be used as a base on which to expand upon to create more interesting and complicated styles.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;</span>
+   <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span>
+   <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+   <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+   <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;NamedLayer&gt;</span>
+      <span class="nt">&lt;Name&gt;</span>Default Line<span class="nt">&lt;/Name&gt;</span>
+      <span class="nt">&lt;UserStyle&gt;</span>
+         <span class="nt">&lt;Title&gt;</span>My Style<span class="nt">&lt;/Title&gt;</span>
+         <span class="nt">&lt;Abstract&gt;</span>A style<span class="nt">&lt;/Abstract&gt;</span>
+         <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+            <span class="nt">&lt;Rule&gt;</span>
+
+                  <span class="c">&lt;!-- symbolizers go here --&gt;</span>
+
+            <span class="nt">&lt;/Rule&gt;</span>
+         <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+      <span class="nt">&lt;/UserStyle&gt;</span>
+   <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+<p><em>Figure 3: Basic SLD structure</em></p>
+<p>In order to test the code snippets in this document, create an SLD with the content as shown in Figure 3, and then add the specific code you wish to test in the space that says <code class="docutils literal notranslate"><span class="pre">&lt;!--</span> <span class="pre">symbolizers</span> <span class="pre">go</span> <span class="pre">here</span> <span class="pre">--&gt;</span></code>. To view, edit, or add SLD files to GeoServer, navigate to <strong>Config</strong> -&gt; <strong>Data</strong> -&gt; <strong>Styles</strong>.</p>
+</div>
+<div class="section" id="points">
+<span id="kml-styling-points"></span><h2>Points<a class="headerlink" href="#points" title="Permalink to this headline">¶</a></h2>
+<p>In SLD, styles for points are specified via a PointSymbolizer. An empty PointSymbolizer element will result in a default KML style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<img alt="../../../_images/pointDefault.png" src="../../../_images/pointDefault.png" />
+<p class="caption"><span class="caption-text"><em>Figure 4: Default point</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Three aspects of points that can be specified are <em>color</em>, <em>opacity</em>, and the <em>icon</em>.</p>
+<div class="section" id="point-color">
+<h3>Point Color<a class="headerlink" href="#point-color" title="Permalink to this headline">¶</a></h3>
+<p>The color of a point is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and a <code class="docutils literal notranslate"><span class="pre">fill</span></code> attribute. The color is specified as a six digit hexadecimal code.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PointSymbolizer&gt;</span>
+   <span class="nt">&lt;Graphic&gt;</span>
+      <span class="nt">&lt;Mark&gt;</span>
+         <span class="nt">&lt;Fill&gt;</span>
+            <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#ff0000<span class="nt">&lt;/CssParameter&gt;</span>
+         <span class="nt">&lt;/Fill&gt;</span>
+      <span class="nt">&lt;/Mark&gt;</span>
+   <span class="nt">&lt;/Graphic&gt;</span>
+<span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id2">
+<img alt="../../../_images/pointColor.png" src="../../../_images/pointColor.png" />
+<p class="caption"><span class="caption-text"><em>Figure 5: Setting the point color (#ff0000 = 100% red)</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="point-opacity">
+<h3>Point Opacity<a class="headerlink" href="#point-opacity" title="Permalink to this headline">¶</a></h3>
+<p>The opacity of a point is specified with a CssParameter element and a <code class="docutils literal notranslate"><span class="pre">fill-opacity</span></code> attribute. The opacity is specified as a floating point number between <strong>0</strong> and <strong>1</strong>, with 0 being completely transparent, and 1 being completely opaque.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PointSymbolizer&gt;</span>
+   <span class="nt">&lt;Graphic&gt;</span>
+      <span class="nt">&lt;Mark&gt;</span>
+         <span class="nt">&lt;Fill&gt;</span>
+            <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.5<span class="nt">&lt;/CssParameter&gt;</span>
+         <span class="nt">&lt;/Fill&gt;</span>
+      <span class="nt">&lt;/Mark&gt;</span>
+   <span class="nt">&lt;/Graphic&gt;</span>
+<span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id3">
+<img alt="../../../_images/pointOpacity.png" src="../../../_images/pointOpacity.png" />
+<p class="caption"><span class="caption-text"><em>Figure 6: Setting the point opacity (0.5 = 50% opaque)</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="point-icon">
+<h3>Point Icon<a class="headerlink" href="#point-icon" title="Permalink to this headline">¶</a></h3>
+<p>An icon different from the default can be specified with the <code class="docutils literal notranslate"><span class="pre">ExternalGraphic</span></code> element:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PointSymbolizer&gt;</span>
+   <span class="nt">&lt;Graphic&gt;</span>
+      <span class="nt">&lt;ExternalGraphic&gt;</span>
+         <span class="nt">&lt;OnlineResource</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+            <span class="na">xlink:href=</span><span class="s">&quot;http://maps.google.com/mapfiles/kml/pal3/icon55.png&quot;</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;Format&gt;</span>image/png<span class="nt">&lt;/Format&gt;</span>
+      <span class="nt">&lt;/ExternalGraphic&gt;</span>
+   <span class="nt">&lt;/Graphic&gt;</span>
+<span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id4">
+<img alt="../../../_images/pointCustomIcon.png" src="../../../_images/pointCustomIcon.png" />
+<p class="caption"><span class="caption-text"><em>Figure 7: A custom icon for points</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>In Figure 7, the custom icon is specified as a remote URL. It is also possible to place the graphic in the GeoServer <code class="docutils literal notranslate"><span class="pre">styles</span></code> directory, and then specify the filename only:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PointSymbolizer&gt;</span>
+   <span class="nt">&lt;Graphic&gt;</span>
+      <span class="nt">&lt;ExternalGraphic&gt;</span>
+         <span class="nt">&lt;OnlineResource</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;icon55.png&quot;</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;Format&gt;</span>image/png<span class="nt">&lt;/Format&gt;</span>
+      <span class="nt">&lt;/ExternalGraphic&gt;</span>
+   <span class="nt">&lt;/Graphic&gt;</span>
+<span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p><em>Figure 8: Specifying a local file for a graphic point</em></p>
+</div>
+</div>
+<div class="section" id="lines">
+<span id="kml-styling-lines"></span><h2>Lines<a class="headerlink" href="#lines" title="Permalink to this headline">¶</a></h2>
+<p>Styles for lines are specified via a <code class="docutils literal notranslate"><span class="pre">LineSymbolizer</span></code>. An empty <code class="docutils literal notranslate"><span class="pre">LineSymbolizer</span></code> element will result in a default KML style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LineSymbolizer&gt;</span>
+<span class="nt">&lt;/LineSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id5">
+<img alt="../../../_images/lineDefault.png" src="../../../_images/lineDefault.png" />
+<p class="caption"><span class="caption-text"><em>Figure 9: Default line</em></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>The aspects of the resulting line which can be specified via a <code class="docutils literal notranslate"><span class="pre">LineSymbolizer</span></code> are <em>color</em>, <em>width</em>, and <em>opacity</em>.</p>
+<div class="section" id="line-color">
+<h3>Line Color<a class="headerlink" href="#line-color" title="Permalink to this headline">¶</a></h3>
+<p>The color of a line is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and a <code class="docutils literal notranslate"><span class="pre">stroke</span></code> attribute. The color is specified as a six digit hexadecimal code.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LineSymbolizer&gt;</span>
+   <span class="nt">&lt;Stroke&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#ff0000<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/LineSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id6">
+<img alt="../../../_images/lineColor.png" src="../../../_images/lineColor.png" />
+<p class="caption"><span class="caption-text"><em>Figure 10: Line rendered with color #ff0000 (100% red)</em></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="line-width">
+<h3>Line Width<a class="headerlink" href="#line-width" title="Permalink to this headline">¶</a></h3>
+<p>The width of a line is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and a <code class="docutils literal notranslate"><span class="pre">stroke-width</span></code> attribute. The width is specified as an integer (in pixels):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LineSymbolizer&gt;</span>
+   <span class="nt">&lt;Stroke&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>5<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/LineSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id7">
+<img alt="../../../_images/lineWidth.png" src="../../../_images/lineWidth.png" />
+<p class="caption"><span class="caption-text"><em>Figure 11: Line rendered with a width of five (5) pixels</em></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="line-opacity">
+<h3>Line Opacity<a class="headerlink" href="#line-opacity" title="Permalink to this headline">¶</a></h3>
+<p>The opacity of a line is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and a <code class="docutils literal notranslate"><span class="pre">fill-opacity</span></code> attribute. The opacity is specified as a floating point number between <strong>0</strong> and <strong>1</strong>, with 0 being completely transparent, and 1 being completely opaque.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LineSymbolizer&gt;</span>
+   <span class="nt">&lt;Stroke&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-opacity&quot;</span><span class="nt">&gt;</span>0.5<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/LineSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id8">
+<img alt="../../../_images/lineOpacity.png" src="../../../_images/lineOpacity.png" />
+<p class="caption"><span class="caption-text"><em>Figure 12: A line rendered with 50% opacity</em></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="polygons">
+<span id="kml-styling-polygons"></span><h2>Polygons<a class="headerlink" href="#polygons" title="Permalink to this headline">¶</a></h2>
+<p>Styles for polygons are specified via a <code class="docutils literal notranslate"><span class="pre">PolygonSymbolizer</span></code>. An empty <code class="docutils literal notranslate"><span class="pre">PolygonSymbolizer</span></code> element will result in a default KML style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>Polygons have more options for styling than points and lines, as polygons have both an inside (“fill”) and an outline (“stroke”). The aspects of polygons that can be specified via a <code class="docutils literal notranslate"><span class="pre">PolygonSymbolizer</span></code> are <em>stroke color</em>, <em>stroke width</em>, <em>stroke opacity</em>, <em>fill color</em>, and <em>fill opacity</em>.</p>
+<div class="section" id="polygon-stroke-color">
+<h3>Polygon Stroke Color<a class="headerlink" href="#polygon-stroke-color" title="Permalink to this headline">¶</a></h3>
+<p>The outline color of a polygon is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and <code class="docutils literal notranslate"><span class="pre">stroke</span></code> attribute inside of a <code class="docutils literal notranslate"><span class="pre">Stroke</span></code> element. The color is specified as a 6 digit hexadecimal code:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;Stroke&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000FF<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id9">
+<img alt="../../../_images/polygonOutlineColor.png" src="../../../_images/polygonOutlineColor.png" />
+<p class="caption"><span class="caption-text"><em>Figure 13: Outline of a polygon (#0000FF or 100% blue)</em></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="polygon-stroke-width">
+<h3>Polygon Stroke Width<a class="headerlink" href="#polygon-stroke-width" title="Permalink to this headline">¶</a></h3>
+<p>The outline width of a polygon is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and <code class="docutils literal notranslate"><span class="pre">stroke-width</span></code> attribute inside of a <code class="docutils literal notranslate"><span class="pre">Stroke</span></code> element. The width is specified as an integer.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;Stroke&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>5<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../../_images/polygonOutlineWidth.png" src="../../../_images/polygonOutlineWidth.png" />
+</div>
+<p><em>Figure 14: Polygon with stroke width of five (5) pixels</em></p>
+</div>
+<div class="section" id="polygon-stroke-opacity">
+<h3>Polygon Stroke Opacity<a class="headerlink" href="#polygon-stroke-opacity" title="Permalink to this headline">¶</a></h3>
+<p>The stroke opacity of a polygon is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and <code class="docutils literal notranslate"><span class="pre">stroke</span></code> attribute inside of a <code class="docutils literal notranslate"><span class="pre">Stroke</span></code> element. The opacity is specified as a floating point number between <strong>0</strong> and <strong>1</strong>, with 0 being completely transparent, and 1 being completely opaque.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;Stroke&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-opacity&quot;</span><span class="nt">&gt;</span>0.5<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id10">
+<img alt="../../../_images/polygonOutlineOpacity.png" src="../../../_images/polygonOutlineOpacity.png" />
+<p class="caption"><span class="caption-text"><em>Figure 15: Polygon stroke opacity of 0.5 (50% opaque)</em></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="polygon-fill-color">
+<h3>Polygon Fill Color<a class="headerlink" href="#polygon-fill-color" title="Permalink to this headline">¶</a></h3>
+<p>The fill color of a polygon is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and <code class="docutils literal notranslate"><span class="pre">fill</span></code> attribute inside of a <code class="docutils literal notranslate"><span class="pre">Fill</span></code> element. The color is specified as a six digit hexadecimal code:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;Fill&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#0000FF<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Fill&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id11">
+<img alt="../../../_images/polygonFillColor.png" src="../../../_images/polygonFillColor.png" />
+<p class="caption"><span class="caption-text"><em>Figure 16: Polygon fill color of #0000FF (100% blue)</em></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="polygon-fill-opacity">
+<h3>Polygon Fill Opacity<a class="headerlink" href="#polygon-fill-opacity" title="Permalink to this headline">¶</a></h3>
+<p>The fill opacity of a polygon is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and <code class="docutils literal notranslate"><span class="pre">fill-opacity</span></code> attribute inside of a <code class="docutils literal notranslate"><span class="pre">Fill</span></code> element. The opacity is specified as a floating point number between <strong>0</strong> and <strong>1</strong>, with 0 being completely transparent, and 1 being completely opaque.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;Fill&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.5<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Fill&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id12">
+<img alt="../../../_images/polygonFillOpacity.png" src="../../../_images/polygonFillOpacity.png" />
+<p class="caption"><span class="caption-text"><em>Figure 17: Polygon fill opacity of 0.5 (50% opaque)</em></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="text-labels">
+<span id="kml-styling-text-labels"></span><h2>Text Labels<a class="headerlink" href="#text-labels" title="Permalink to this headline">¶</a></h2>
+<p>There are two ways to specify a label for a feature in Google Earth. The first is with Freemarker templates (LINK?), and the second is with a <code class="docutils literal notranslate"><span class="pre">TextSymbolizer</span></code>. Templates take precedence over symbolizers.</p>
+<div class="section" id="freemarker-templates">
+<h3>Freemarker Templates<a class="headerlink" href="#freemarker-templates" title="Permalink to this headline">¶</a></h3>
+<p>Specifying labels via a Freemarker template involves creating a special text file called <code class="docutils literal notranslate"><span class="pre">title.ftl</span></code> and placing it into the <code class="docutils literal notranslate"><span class="pre">workspaces/&lt;ws</span> <span class="pre">name&gt;/&lt;datastore</span> <span class="pre">name&gt;/&lt;feature</span> <span class="pre">type</span> <span class="pre">name&gt;</span></code> directory (inside the GeoServer data directory) for the dataset to be labeled. For example, to create a template to label the <code class="docutils literal notranslate"><span class="pre">states</span></code> dataset by state name one would create the file here:  <code class="docutils literal notranslate"><span class="pre">&lt;data_dir&gt;/workspaces/topp/states_shapefile/states/title.ftl</span></code>. The content of the file would be:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>${STATE_NAME.value}
+</pre></div>
+</div>
+<div class="figure align-center" id="id13">
+<img alt="../../../_images/labelTemplate.png" src="../../../_images/labelTemplate.png" />
+<p class="caption"><span class="caption-text"><em>Figure 18: Using a Freemarker template to display the value of STATE_NAME</em></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+<p>For more information on Placemark Templates, please see our full tutorial (LINK FORTHCOMING).</p>
+</div>
+<div class="section" id="textsymbolizer">
+<h3>TextSymbolizer<a class="headerlink" href="#textsymbolizer" title="Permalink to this headline">¶</a></h3>
+<p>In SLD labels are specified with the Label element of a <code class="docutils literal notranslate"><span class="pre">TextSymbolizer</span></code>.  (Note the <code class="docutils literal notranslate"><span class="pre">ogc:</span></code> prefix on the <code class="docutils literal notranslate"><span class="pre">PropertyName</span></code> element.)</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;TextSymbolizer&gt;</span>
+   <span class="nt">&lt;Label&gt;</span>
+      <span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_NAME<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+   <span class="nt">&lt;/Label&gt;</span>
+<span class="nt">&lt;/TextSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id14">
+<img alt="../../../_images/labelSymbolizer.png" src="../../../_images/labelSymbolizer.png" />
+<p class="caption"><span class="caption-text"><em>Figure 19: Using a TextSymbolizer to display the value of STATE_NAME</em></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+<p>The aspects of the resulting label which can be specified via a <code class="docutils literal notranslate"><span class="pre">TextSymbolizer</span></code> are <em>color</em> and <em>opacity</em>.</p>
+</div>
+<div class="section" id="textsymbolizer-color">
+<h3>TextSymbolizer Color<a class="headerlink" href="#textsymbolizer-color" title="Permalink to this headline">¶</a></h3>
+<p>The color of a label is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and <code class="docutils literal notranslate"><span class="pre">fill</span></code> attribute inside of a <code class="docutils literal notranslate"><span class="pre">Fill</span></code> element. The color is specified as a six digit hexadecimal code:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;TextSymbolizer&gt;</span>
+   <span class="nt">&lt;Label&gt;</span>
+      <span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_NAME<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+   <span class="nt">&lt;/Label&gt;</span>
+   <span class="nt">&lt;Fill&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Fill&gt;</span>
+<span class="nt">&lt;/TextSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id15">
+<img alt="../../../_images/labelColor.png" src="../../../_images/labelColor.png" />
+<p class="caption"><span class="caption-text"><em>Figure 20: TextSymbolizer with black text color (#000000)</em></span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="textsymbolizer-opacity">
+<h3>TextSymbolizer Opacity<a class="headerlink" href="#textsymbolizer-opacity" title="Permalink to this headline">¶</a></h3>
+<p>The opacity of a label is specified with a <code class="docutils literal notranslate"><span class="pre">CssParameter</span></code> element and <code class="docutils literal notranslate"><span class="pre">fill-opacity</span></code> attribute inside of a <code class="docutils literal notranslate"><span class="pre">Fill</span></code> element. The opacity is specified as a floating point number between <strong>0</strong> and <strong>1</strong>, with 0 being completely transparent, and 1 being completely opaque.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;TextSymbolizer&gt;</span>
+   <span class="nt">&lt;Label&gt;</span>
+      <span class="nt">&lt;ogc:PropertyName&gt;</span>STATE_NAME<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+   <span class="nt">&lt;/Label&gt;</span>
+   <span class="nt">&lt;Fill&gt;</span>
+      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.5<span class="nt">&lt;/CssParameter&gt;</span>
+   <span class="nt">&lt;/Fill&gt;</span>
+<span class="nt">&lt;/TextSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id16">
+<img alt="../../../_images/labelOpacity.png" src="../../../_images/labelOpacity.png" />
+<p class="caption"><span class="caption-text"><em>Figure 21: TextSymbolizer with opacity 0.5 (50% opaque)</em></span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="descriptions">
+<span id="kml-styling-descriptions"></span><h2>Descriptions<a class="headerlink" href="#descriptions" title="Permalink to this headline">¶</a></h2>
+<p>When working with KML, each feature is linked to a description, accessible when the feature is clicked on. By default, GeoServer creates a list of all the attributes and values for the particular feature.</p>
+<div class="figure align-center" id="id17">
+<img alt="../../../_images/descriptionDefault.png" src="../../../_images/descriptionDefault.png" />
+<p class="caption"><span class="caption-text"><em>Figure 22: Default description for a feature</em></span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</div>
+<p>It is possible to modify this default behavior. Much like with featureType titles, which are edited by creating a <code class="docutils literal notranslate"><span class="pre">title.ftl</span></code> template, a custom description can be used by creating template called <code class="docutils literal notranslate"><span class="pre">description.ftl</span></code> and placing it into the feature type directory (inside the GeoServer data directory) for the dataset. For instance, to create a template to provide a description for the states dataset, one would create the file: <code class="docutils literal notranslate"><span class="pre">&lt;data_dir&gt;/workspaces/topp/states_shapefile/states/description.ftl</span></code>. As an example, if the content of the description template is:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This is the state of ${STATE_NAME.value}.
+</pre></div>
+</div>
+<p>The resultant description will look like this:</p>
+<div class="figure align-center" id="id18">
+<img alt="../../../_images/descriptionTemplate.png" src="../../../_images/descriptionTemplate.png" />
+<p class="caption"><span class="caption-text"><em>Figure 23: A custom description</em></span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</div>
+<p>It is also possible to create one description template for all featureTypes in a given namespace. To do this, create a <code class="docutils literal notranslate"><span class="pre">description.ftl</span></code> file as above, and save it as <code class="docutils literal notranslate"><span class="pre">&lt;data_dir&gt;/templates/&lt;workspace&gt;/description.ftl</span></code>. Please note that if a description template is created for a specific featureType that also has an associated namespace description template, the featureType template (i.e. the most specific template) will take priority.</p>
+<p>One can also create more complex descriptions using a combination of HTML and the attributes of the data. A full tutorial on how to use templates to create descriptions is available in our page on KML Placemark Templates.  (LINK?)</p>
+<p><a class="reference internal" href="#kml-styling-basic"><span class="std std-ref">SLD Generation from CSS</span></a>
+<a class="reference internal" href="#kml-styling-sld-structure"><span class="std std-ref">SLD Structure</span></a>
+<a class="reference internal" href="#kml-styling-points"><span class="std std-ref">Points</span></a>
+<a class="reference internal" href="#kml-styling-lines"><span class="std std-ref">Lines</span></a>
+<a class="reference internal" href="#kml-styling-polygons"><span class="std std-ref">Polygons</span></a>
+<a class="reference internal" href="#kml-styling-text-labels"><span class="std std-ref">Text Labels</span></a>
+<a class="reference internal" href="#kml-styling-descriptions"><span class="std std-ref">Descriptions</span></a></p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="quickstart.html" title="previous chapter">Quickstart</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="tutorials/index.html" title="next chapter">Tutorials</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">KML Styling</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#contents">Contents</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sld-generation-from-css">SLD Generation from CSS</a></li>
+<li><a class="reference internal" href="#creating-sld-by-hand">Creating SLD by hand</a></li>
+<li><a class="reference internal" href="#sld-structure">SLD Structure</a></li>
+<li><a class="reference internal" href="#points">Points</a><ul>
+<li><a class="reference internal" href="#point-color">Point Color</a></li>
+<li><a class="reference internal" href="#point-opacity">Point Opacity</a></li>
+<li><a class="reference internal" href="#point-icon">Point Icon</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lines">Lines</a><ul>
+<li><a class="reference internal" href="#line-color">Line Color</a></li>
+<li><a class="reference internal" href="#line-width">Line Width</a></li>
+<li><a class="reference internal" href="#line-opacity">Line Opacity</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#polygons">Polygons</a><ul>
+<li><a class="reference internal" href="#polygon-stroke-color">Polygon Stroke Color</a></li>
+<li><a class="reference internal" href="#polygon-stroke-width">Polygon Stroke Width</a></li>
+<li><a class="reference internal" href="#polygon-stroke-opacity">Polygon Stroke Opacity</a></li>
+<li><a class="reference internal" href="#polygon-fill-color">Polygon Fill Color</a></li>
+<li><a class="reference internal" href="#polygon-fill-opacity">Polygon Fill Opacity</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#text-labels">Text Labels</a><ul>
+<li><a class="reference internal" href="#freemarker-templates">Freemarker Templates</a></li>
+<li><a class="reference internal" href="#textsymbolizer">TextSymbolizer</a></li>
+<li><a class="reference internal" href="#textsymbolizer-color">TextSymbolizer Color</a></li>
+<li><a class="reference internal" href="#textsymbolizer-opacity">TextSymbolizer Opacity</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#descriptions">Descriptions</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="quickstart.html" title="previous chapter">Quickstart</a></li>
+            <li>Next: <a href="tutorials/index.html" title="next chapter">Tutorials</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/kmlstyling.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

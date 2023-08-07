@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A Remote “Gdal Contour” Process Binding Example &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="S3 Support for GeoTiff" href="../s3-geotiff/index.html" />
+    <link rel="prev" title="Deployment And Setup Of The XMPP Python Wrappers" href="install_python.html" /> 
+  </head><body class="community/remote-wps/running_example">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WPS Remote community module</a> &raquo;</li>
+    <li>A Remote “Gdal Contour” Process Binding Example</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../s3-geotiff/index.html" title="S3 Support for GeoTiff" accesskey="N">Next</a></li>
+  <li>
+    <a href="install_python.html" title="Deployment And Setup Of The XMPP Python Wrappers" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="a-remote-gdal-contour-process-binding-example">
+<span id="extensions-wps-remote-install-example"></span><h1>A Remote “Gdal Contour” Process Binding Example<a class="headerlink" href="#a-remote-gdal-contour-process-binding-example" title="Permalink to this headline">¶</a></h1>
+<p>Before continue reading this section, please be sure to have fully understood and successfully completed all the passages at sections:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="install_geoserver.html#extensions-wps-remote-install-geoserver"><span class="std std-ref">Deployment And Setup Of GeoServer With WPS Remote Plugin</span></a></p></li>
+<li><p><a class="reference internal" href="install_xmpp.html#extensions-wps-remote-install-xmpp"><span class="std std-ref">Installation Of OpenFire XMPP Server To Exchange Messages</span></a></p></li>
+<li><p><a class="reference internal" href="install_python.html#extensions-wps-remote-install-python"><span class="std std-ref">Deployment And Setup Of The XMPP Python Wrappers</span></a></p></li>
+</ul>
+<div class="section" id="running-the-python-wps-agent">
+<h2>Running the Python WPS Agent<a class="headerlink" href="#running-the-python-wps-agent" title="Permalink to this headline">¶</a></h2>
+<p>In order to start the RemoteWPS Python Wrapper, we need to run an instance of the <code class="docutils literal notranslate"><span class="pre">wpsagent.py</span></code> using the configuration files defined at section <a class="reference internal" href="install_python.html#extensions-wps-remote-install-python"><span class="std std-ref">Deployment And Setup Of The XMPP Python Wrappers</span></a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; <span class="nb">cd</span> C:<span class="se">\w</span>ork<span class="se">\R</span>emoteWPS
+
+$&gt; python wpsagent.py -r .<span class="se">\x</span>mpp_data<span class="se">\c</span>onfigs<span class="se">\r</span>emote.config -s .<span class="se">\x</span>mpp_data<span class="se">\c</span>onfigs<span class="se">\m</span>yservice<span class="se">\s</span>ervice.config service
+</pre></div>
+</div>
+<p>Few instants after the execution of the command, you should be able to see con <code class="docutils literal notranslate"><span class="pre">invite</span></code> message on the prompt</p>
+<div class="figure align-center">
+<img alt="../../_images/run_example001.jpg" src="../../_images/run_example001.jpg" />
+</div>
+<p>and the <code class="docutils literal notranslate"><span class="pre">default.GdalContour</span></code> instance successfully connected and authenticated into the XMPP Server channels</p>
+<div class="figure align-center">
+<img alt="../../_images/run_example002.jpg" src="../../_images/run_example002.jpg" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/run_example003.jpg" src="../../_images/run_example003.jpg" />
+</div>
+<p>The new GeoServer WPS Process should be now available among the GeoServer Processes</p>
+<div class="figure align-center">
+<img alt="../../_images/run_example004.jpg" src="../../_images/run_example004.jpg" />
+</div>
+<p>The GeoServer Remote Process Factory automatically creates the WPS interface for the new process, exposing through the OGC WPS Protocol the Inputs and Outputs definitions like shown in the illustration below</p>
+<div class="figure align-center">
+<img alt="../../_images/run_example005.jpg" src="../../_images/run_example005.jpg" />
+</div>
+<p>At the Execute Request the Remote WPS Python framework starts a new thread and assigns to it the unique <strong>execution_id</strong> provided by GeoServer.</p>
+<div class="figure align-center">
+<img alt="../../_images/run_example006.jpg" src="../../_images/run_example006.jpg" />
+</div>
+<p>The logs of the execution are stored into the <strong>working directory</strong></p>
+<div class="figure align-center">
+<img alt="../../_images/run_example007.jpg" src="../../_images/run_example007.jpg" />
+</div>
+<p>From the log file is possible to recognize the full command line executed by the Remote WPS Python wrapper along with the lines received through the standard output</p>
+<div class="figure align-center">
+<img alt="../../_images/run_example008.jpg" src="../../_images/run_example008.jpg" />
+</div>
+<p>The main window shows the received XMPP messages and the actions taken accordingly</p>
+<div class="figure align-center">
+<img alt="../../_images/run_example009.jpg" src="../../_images/run_example009.jpg" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The same information can be found into the log file specified into the “logger.properties” file (see above).</p>
+</div>
+<p>On GeoServer side, it is possible to follow the process execution by following the messages sent via XMPP to the GeoServer logs</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; tail -F -n <span class="m">200</span> /storage/data/logs/geoserver.log
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../_images/run_example010.jpg" src="../../_images/run_example010.jpg" />
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install_python.html" title="previous chapter">Deployment And Setup Of The XMPP Python Wrappers</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../s3-geotiff/index.html" title="next chapter">S3 Support for GeoTiff</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">A Remote “Gdal Contour” Process Binding Example</a><ul>
+<li><a class="reference internal" href="#running-the-python-wps-agent">Running the Python WPS Agent</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install_python.html" title="previous chapter">Deployment And Setup Of The XMPP Python Wrappers</a></li>
+            <li>Next: <a href="../s3-geotiff/index.html" title="next chapter">S3 Support for GeoTiff</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/remote-wps/running_example.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

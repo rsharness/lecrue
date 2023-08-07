@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoPackage WPS Process &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GeoStyler" href="../geostyler/index.html" />
+    <link rel="prev" title="Installing the GeoServer GeoPackage extension" href="installing.html" /> 
+  </head><body class="community/geopkg/output">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GeoPackage Extension</a> &raquo;</li>
+    <li>GeoPackage WPS Process</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../geostyler/index.html" title="GeoStyler" accesskey="N">Next</a></li>
+  <li>
+    <a href="installing.html" title="Installing the GeoServer GeoPackage extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="geopackage-wps-process">
+<h1>GeoPackage WPS Process<a class="headerlink" href="#geopackage-wps-process" title="Permalink to this headline">¶</a></h1>
+<p>A custom GeoPackage can be created with any number of tiles and features layers using the <code class="docutils literal notranslate"><span class="pre">GeoPackage</span></code> WPS Process (see <a class="reference internal" href="../../services/wps/processes/index.html#wps-processes"><span class="std std-ref">Process Cookbook</span></a>).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>While the process generates a compliant GeoPackage, some abilities like generalization, style and part of the metadata export
+are based on unofficial extensions discussed in the <a class="reference external" href="http://docs.opengeospatial.org/per/20-019r1.html">Testbed 16 GeoPackage engineering report</a>.</p>
+</div>
+<p>The WPS process takes in one parameter: <code class="docutils literal notranslate"><span class="pre">contents</span></code> which is an XML schema that represents the desired output.</p>
+<p>General outline of a <code class="docutils literal notranslate"><span class="pre">contents</span></code> scheme:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;geopackage</span> <span class="na">name=</span><span class="s">&quot;mygeopackage&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/gpkg&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;features</span> <span class="na">name=</span><span class="s">&quot;myfeaturelayer&quot;</span> <span class="na">identifier=</span><span class="s">&quot;L01&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;description&gt;</span>describe the layer<span class="nt">&lt;/description&gt;</span>
+        <span class="nt">&lt;srs&gt;</span>EPSG:4216<span class="nt">&lt;/srs&gt;</span>
+        <span class="nt">&lt;bbox&gt;</span>
+            <span class="nt">&lt;minx&gt;</span>-180<span class="nt">&lt;/minx&gt;</span>
+            <span class="nt">&lt;miny&gt;</span>-90<span class="nt">&lt;/miny&gt;</span>
+            <span class="nt">&lt;maxx&gt;</span>180<span class="nt">&lt;/maxx&gt;</span>
+            <span class="nt">&lt;maxy&gt;</span>90<span class="nt">&lt;/maxy&gt;</span>
+        <span class="nt">&lt;/bbox&gt;</span>
+        <span class="c">&lt;!-- ... --&gt;</span>
+    <span class="nt">&lt;/features&gt;</span>
+
+    <span class="nt">&lt;tiles</span> <span class="na">name=</span><span class="s">&quot;mytileslayer&quot;</span> <span class="na">identifier=</span><span class="s">&quot;L02&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;description&gt;</span>describe the layer<span class="nt">&lt;/description&gt;</span>
+        <span class="nt">&lt;srs&gt;</span>..<span class="nt">&lt;/srs&gt;</span>
+        <span class="nt">&lt;bbox&gt;</span>..<span class="nt">&lt;/bbox&gt;</span>
+        <span class="c">&lt;!-- ... --&gt;</span>
+    <span class="nt">&lt;/tiles&gt;</span>
+<span class="nt">&lt;/geopackage&gt;</span>
+</pre></div>
+</div>
+<p>Each GeoPackage has a mandatory <code class="docutils literal notranslate"><span class="pre">name</span></code>, which will be the name of the file (with the extension .gpkg added).
+Each layer (features or tiles) has the following properties:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> (mandatory): the name of the layer in the GeoPackage;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">identifier</span></code> (optional): an identifier for the layer;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional): a description for the layer;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">srs</span></code> ( mandatory for tiles, optional for features): coordinate reference system; for features the default is the SRS of the feature type;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bbox</span></code>  ( mandatory for tiles, optional for features): the bounding box; for features the default is the bounding box of the feature type.</p></li>
+</ul>
+</div></blockquote>
+<p>Outline of the features layer:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;features</span> <span class="na">name=</span><span class="s">&quot;myfeaturelayer&quot;</span> <span class="na">identifier=</span><span class="s">&quot;L01&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;description&gt;</span>..<span class="nt">&lt;/description&gt;</span>
+    <span class="nt">&lt;srs&gt;</span>..<span class="nt">&lt;/srs&gt;</span>
+    <span class="nt">&lt;bbox&gt;</span>..<span class="nt">&lt;/bbox&gt;</span>
+    <span class="nt">&lt;featuretype&gt;</span>myfeaturetype<span class="nt">&lt;/featuretype&gt;</span>
+    <span class="nt">&lt;propertynames&gt;</span>property1, property2<span class="nt">&lt;/propertynames&gt;</span>
+    <span class="nt">&lt;filter&gt;</span>..<span class="nt">&lt;/filter&gt;</span>
+    <span class="nt">&lt;indexed&gt;</span>true<span class="nt">&lt;/indexed&gt;</span>
+    <span class="nt">&lt;styles&gt;</span>true<span class="nt">&lt;/styles&gt;</span>
+    <span class="nt">&lt;metadata&gt;</span>true<span class="nt">&lt;/metadata&gt;</span>
+    <span class="nt">&lt;overviews&gt;</span>...<span class="nt">&lt;/overviews&gt;</span>
+    <span class="nt">&lt;sort</span> <span class="na">xmlns:fes=</span><span class="s">&quot;http://www.opengis.net/fes/2.0&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;fes:SortProperty&gt;</span>
+            <span class="nt">&lt;fes:ValueReference&gt;</span>theGeom<span class="nt">&lt;/fes:ValueReference&gt;</span>
+        <span class="nt">&lt;/fes:SortProperty&gt;</span>
+    <span class="nt">&lt;/sort&gt;</span>
+<span class="nt">&lt;/features&gt;</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Each features layer has the following properties:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">featuretype</span></code> (mandatory): the feature type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">propertynames</span></code> (optional): list of comma-separated names of properties in feature type to be included (default is all properties)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> (optional): any OGC filter that will be applied on features before output</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">indexed</span></code> (optional): include spatial indexes in the output (true/false)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">styles</span></code> (optional): include styles in the output (true/false). The exported structure uses the portrayal and semantic annotation extensions, as described in  <a class="reference external" href="http://docs.opengeospatial.org/per/20-019r1.html#_portrayal">Testbed 16 E/R</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metadata</span></code> (optional): embed metadata referred by the layer metadata links into the GeoPackage (true/false). The base metadata tables are filled with   contents, while semantic annotations might be used to add extra information about the metadata itself.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overviews</span></code> (optional): adds overview tables that can speed up rendering. See more at <a class="reference internal" href="#overviews"><span class="std std-ref">Creating generalized tables</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort</span></code> (optional): a filter encoding <code class="docutils literal notranslate"><span class="pre">fes:SortByType</span></code> which allows sorting the table contents on one or more attributes. If the chosen attribute
+is a geometry, the table will be sorted on its GeoHash, <a class="reference external" href="http://docs.opengeospatial.org/per/20-019r1.html#record_sorting">improving access locality</a>
+when using spatial indexes.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Outline of the tiles layer:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;tiles</span> <span class="na">name=</span><span class="s">&quot;mytileslayer&quot;</span> <span class="na">identifier=</span><span class="s">&quot;L02&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;description&gt;</span>...<span class="nt">&lt;/description&gt;</span>
+    <span class="nt">&lt;srs&gt;</span>..<span class="nt">&lt;/srs&gt;</span>
+    <span class="nt">&lt;bbox&gt;</span>..<span class="nt">&lt;/bbox&gt;</span>
+    <span class="nt">&lt;layers&gt;</span>layer1, layer2<span class="nt">&lt;/styles&gt;</span>
+    <span class="nt">&lt;styles&gt;</span>style1, style2<span class="nt">&lt;/styles&gt;</span>
+    <span class="nt">&lt;sld&gt;</span>path/to/file.sld<span class="nt">&lt;/sld&gt;</span>
+    <span class="nt">&lt;sldBody&gt;</span>..<span class="nt">&lt;/sldBody&gt;</span>
+    <span class="nt">&lt;format&gt;</span>mime/type<span class="nt">&lt;/format&gt;</span>
+    <span class="nt">&lt;bgcolor&gt;</span>ffffff<span class="nt">&lt;/bgcolor&gt;</span>
+    <span class="nt">&lt;transparent&gt;</span>true<span class="nt">&lt;/transparent&gt;</span>
+    <span class="nt">&lt;coverage&gt;</span>
+        <span class="nt">&lt;minZoom&gt;</span>5<span class="nt">&lt;/minZoom&gt;</span>
+        <span class="nt">&lt;maxZoom&gt;</span>50<span class="nt">&lt;/maxZoom&gt;</span>
+        <span class="nt">&lt;minColumn&gt;</span>6<span class="nt">&lt;/minColumn&gt;</span>
+        <span class="nt">&lt;maxColumn&gt;</span>60<span class="nt">&lt;/maxColumn&gt;</span>
+        <span class="nt">&lt;minRow&gt;</span>7<span class="nt">&lt;/minRow&gt;</span>
+        <span class="nt">&lt;maxRow&gt;</span>70<span class="nt">&lt;/maxRow&gt;</span>
+    <span class="nt">&lt;/coverage&gt;</span>
+    <span class="nt">&lt;gridset&gt;</span>
+        ...
+    <span class="nt">&lt;/gridset&gt;</span>
+    <span class="nt">&lt;parameters&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;...&quot;</span><span class="nt">&gt;</span>value<span class="nt">&lt;/parameter&gt;</span>
+    <span class="nt">&lt;parameters&gt;</span>
+<span class="nt">&lt;/tiles&gt;</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Each tiles layer has the following properties:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code> (mandatory): comma-separated list of layers that will be included</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">styles</span></code>, <code class="docutils literal notranslate"><span class="pre">sld</span></code>, and <code class="docutils literal notranslate"><span class="pre">sldbody</span></code> are mutually exclusive, having one is mandatory</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">styles</span></code>: list of comma-separated styles to be used</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sld</span></code>: path to SLD style file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sldbody</span></code>: inline SLD style file</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">format</span></code> (optional): mime-type of image format of tiles (image/png or image/jpeg)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bgcolor</span></code> (optional): background colour as a six-digit hexadecimal RGB value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">transparent</span></code> (optional): transparency (true or false)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coverage</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minzoom</span></code>, <code class="docutils literal notranslate"><span class="pre">maxzoom</span></code>, <code class="docutils literal notranslate"><span class="pre">minColumn</span></code>, <code class="docutils literal notranslate"><span class="pre">maxColumn</span></code>, <code class="docutils literal notranslate"><span class="pre">minRow</span></code>, <code class="docutils literal notranslate"><span class="pre">maxRow</span></code> (all optional): set the minimum and maximum zoom level, column, and rows</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gridset</span></code> (optional): see below</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code> (optional): list of other parameters that can be used in a GetMap to produce tiles (open to all GeoServer vendor parameters)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Gridset can take on two possible (mutually exclusive) forms:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gridset&gt;</span>
+    <span class="nt">&lt;name&gt;</span>mygridset<span class="nt">&lt;/name&gt;</span>
+<span class="nt">&lt;/gridset&gt;</span>
+</pre></div>
+</div>
+<p>where the <code class="docutils literal notranslate"><span class="pre">name</span></code> of a known gridset is specified; or a custom gridset may be defined as follows:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gridset&gt;</span>
+    <span class="nt">&lt;grids&gt;</span>
+        <span class="nt">&lt;grid&gt;</span>
+            <span class="nt">&lt;zoomlevel&gt;</span>1<span class="nt">&lt;/zoomlevel&gt;</span>
+            <span class="nt">&lt;tileWidth&gt;</span>256<span class="nt">&lt;/tileWidth&gt;</span>
+            <span class="nt">&lt;tileHeight&gt;</span>256<span class="nt">&lt;/tileHeight&gt;</span>
+            <span class="nt">&lt;matrixWidth&gt;</span>4<span class="nt">&lt;/matrixWidth&gt;</span>
+            <span class="nt">&lt;matrixHeight&gt;</span>4<span class="nt">&lt;/matrixHeight&gt;</span>
+            <span class="nt">&lt;pixelXSize&gt;</span>0.17<span class="nt">&lt;/pixelXSize&gt;</span>
+            <span class="nt">&lt;pixelYSize&gt;</span>0.17<span class="nt">&lt;/pixelYSize&gt;</span>
+        <span class="nt">&lt;/grid&gt;</span>
+        <span class="nt">&lt;grid&gt;</span>...<span class="nt">&lt;/grid&gt;</span>
+        <span class="c">&lt;!-- ... --&gt;</span>
+    <span class="nt">&lt;/grids&gt;</span>
+<span class="nt">&lt;/gridset&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="creating-generalized-tables">
+<span id="overviews"></span><h2>Creating generalized tables<a class="headerlink" href="#creating-generalized-tables" title="Permalink to this headline">¶</a></h2>
+<p>The process can create generalized tables, as described in <a class="reference external" href="http://docs.opengeospatial.org/per/20-019r1.html#im_generalized_tables_extension">Testbed 16 generalized tables
+extension</a>.</p>
+<p>Generalized tables are sidecar tables that typically contain less records than the original
+table, with the option to also generalize their geometry. These are created by adding
+a list of <code class="docutils literal notranslate"><span class="pre">overview</span></code> directives in a feature layer description, each one containing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> (mandatory): the generalized table name</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distance</span></code> (optional): the generalization distance to create simplified geometries</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scaleDenominator</span></code>: the scale denominator at which the table starts being used, in preference to the original table, and other tables with a lower scale denominator value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> (optional): an OGC filter removing features that are not meant to be rendered at the target scale denominator</p></li>
+</ul>
+</div></blockquote>
+<p>Here is an example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;features</span> <span class="na">name=</span><span class="s">&quot;woodland&quot;</span> <span class="na">identifier=</span><span class="s">&quot;woodland&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;description&gt;</span>woodland<span class="nt">&lt;/description&gt;</span>
+  <span class="nt">&lt;srs&gt;</span>EPSG:27700<span class="nt">&lt;/srs&gt;</span>
+  <span class="nt">&lt;featuretype&gt;</span>oszoom:woodland<span class="nt">&lt;/featuretype&gt;</span>
+  <span class="nt">&lt;indexed&gt;</span>true<span class="nt">&lt;/indexed&gt;</span>
+  <span class="nt">&lt;styles&gt;</span>true<span class="nt">&lt;/styles&gt;</span>
+  <span class="nt">&lt;overviews&gt;</span>
+    <span class="nt">&lt;overview&gt;</span>
+      <span class="nt">&lt;name&gt;</span>woodland_g1<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;scaleDenominator&gt;</span>80000<span class="nt">&lt;/scaleDenominator&gt;</span>
+      <span class="nt">&lt;filter</span> <span class="na">xmlns:fes=</span><span class="s">&quot;http://www.opengis.net/fes/2.0&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;fes:Or&gt;</span>
+          <span class="nt">&lt;fes:PropertyIsEqualTo&gt;</span>
+            <span class="nt">&lt;fes:ValueReference&gt;</span>type<span class="nt">&lt;/fes:ValueReference&gt;</span>
+            <span class="nt">&lt;fes:Literal&gt;</span>National<span class="nt">&lt;/fes:Literal&gt;</span>
+          <span class="nt">&lt;/fes:PropertyIsEqualTo&gt;</span>
+          <span class="nt">&lt;fes:PropertyIsEqualTo&gt;</span>
+            <span class="nt">&lt;fes:ValueReference&gt;</span>type<span class="nt">&lt;/fes:ValueReference&gt;</span>
+            <span class="nt">&lt;fes:Literal&gt;</span>Regional<span class="nt">&lt;/fes:Literal&gt;</span>
+          <span class="nt">&lt;/fes:PropertyIsEqualTo&gt;</span>
+        <span class="nt">&lt;/fes:Or&gt;</span>
+      <span class="nt">&lt;/filter&gt;</span>
+    <span class="nt">&lt;/overview&gt;</span>
+    <span class="nt">&lt;overview&gt;</span>
+      <span class="nt">&lt;name&gt;</span>woodland_g2<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;scaleDenominator&gt;</span>320000<span class="nt">&lt;/scaleDenominator&gt;</span>
+      <span class="nt">&lt;filter</span> <span class="na">xmlns:fes=</span><span class="s">&quot;http://www.opengis.net/fes/2.0&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;fes:PropertyIsEqualTo&gt;</span>
+          <span class="nt">&lt;fes:ValueReference&gt;</span>type<span class="nt">&lt;/fes:ValueReference&gt;</span>
+          <span class="nt">&lt;fes:Literal&gt;</span>National<span class="nt">&lt;/fes:Literal&gt;</span>
+        <span class="nt">&lt;/fes:PropertyIsEqualTo&gt;</span>
+      <span class="nt">&lt;/filter&gt;</span>
+    <span class="nt">&lt;/overview&gt;</span>
+  <span class="nt">&lt;/overviews&gt;</span>
+<span class="nt">&lt;/features&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="installing.html" title="previous chapter">Installing the GeoServer GeoPackage extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../geostyler/index.html" title="next chapter">GeoStyler</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GeoPackage WPS Process</a><ul>
+<li><a class="reference internal" href="#creating-generalized-tables">Creating generalized tables</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="installing.html" title="previous chapter">Installing the GeoServer GeoPackage extension</a></li>
+            <li>Next: <a href="../geostyler/index.html" title="next chapter">GeoStyler</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/geopkg/output.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

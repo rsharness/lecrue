@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Setting up a JNDI connection pool with Tomcat &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="geoserver on JBoss" href="../jboss/jboss_tutorial.html" />
+    <link rel="prev" title="INSPIRE metadata configuration using metadata and CSW" href="../metadata/index.html" /> 
+  </head><body class="tutorials/tomcat-jndi/tomcat-jndi">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Setting up a JNDI connection pool with Tomcat</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../jboss/jboss_tutorial.html" title="geoserver on JBoss" accesskey="N">Next</a></li>
+  <li>
+    <a href="../metadata/index.html" title="INSPIRE metadata configuration using metadata and CSW" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="setting-up-a-jndi-connection-pool-with-tomcat">
+<span id="tomcat-jndi"></span><h1>Setting up a JNDI connection pool with Tomcat<a class="headerlink" href="#setting-up-a-jndi-connection-pool-with-tomcat" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial walks the reader through the procedures necessary to setup a Oracle JNDI connection pool in Tomcat 6 and how to retrieve it from GeoServer. In the last section other two examples of configuration are described
+with PostGIS and SQLServer.</p>
+<div class="section" id="tomcat-setup">
+<h2>Tomcat setup<a class="headerlink" href="#tomcat-setup" title="Permalink to this headline">¶</a></h2>
+<p>In order to setup a connection pool Tomcat needs a JDBC driver and the necessary pool configurations.</p>
+<p>First off, you need to find the JDBC driver for your database. Most often it is distributed on the website of your DBMS provider, or available in the installed version of your database.
+For example, a Oracle XE install on a Linux system provides the driver at  <code class="file docutils literal notranslate"><span class="pre">/usr/lib/oracle/xe/app/oracle/product/10.2.0/server/jdbc/lib/ojdbc14.jar</span></code>, and that file needs to be moved into Tomcat shared libs directory, <code class="file docutils literal notranslate"><em><span class="pre">TOMCAT_HOME</span></em><span class="pre">/lib</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>be careful to remove the jdbc driver from the GeoServer WEB-INF/lib folder when copied to the Tomcat shared libs, to avoid issues in JNDI DataStores usage.</p>
+</div>
+<p>Once that is done, the Tomcat configuration file <code class="file docutils literal notranslate"><em><span class="pre">TOMCAT_HOME</span></em><span class="pre">/conf/context.xml</span></code> needs to be edited in order to setup the connection pool. In the case of a local Oracle XE the setup might look like:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Context&gt;</span>
+   ...
+   <span class="nt">&lt;Resource</span> <span class="na">name=</span><span class="s">&quot;jdbc/oralocal&quot;</span>
+      <span class="na">auth=</span><span class="s">&quot;Container&quot;</span>
+      <span class="na">type=</span><span class="s">&quot;javax.sql.DataSource&quot;</span>
+      <span class="na">driverClassName=</span><span class="s">&quot;oracle.jdbc.driver.OracleDriver&quot;</span>
+      <span class="na">url=</span><span class="s">&quot;jdbc:oracle:thin:@localhost:1521:xe&quot;</span>
+      <span class="na">username=</span><span class="s">&quot;xxxxx&quot;</span> <span class="na">password=</span><span class="s">&quot;xxxxxx&quot;</span>
+      <span class="na">maxActive=</span><span class="s">&quot;20&quot;</span>
+      <span class="na">initialSize=</span><span class="s">&quot;0&quot;</span>
+      <span class="na">minIdle=</span><span class="s">&quot;0&quot;</span>
+      <span class="na">maxIdle=</span><span class="s">&quot;8&quot;</span>
+      <span class="na">maxWait=</span><span class="s">&quot;10000&quot;</span>
+      <span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">&quot;30000&quot;</span>
+      <span class="na">minEvictableIdleTimeMillis=</span><span class="s">&quot;60000&quot;</span>
+      <span class="na">testWhileIdle=</span><span class="s">&quot;true&quot;</span>
+      <span class="na">poolPreparedStatements=</span><span class="s">&quot;true&quot;</span>
+      <span class="na">maxOpenPreparedStatements=</span><span class="s">&quot;100&quot;</span>
+      <span class="na">validationQuery=</span><span class="s">&quot;SELECT SYSDATE FROM DUAL&quot;</span>
+      <span class="na">maxAge=</span><span class="s">&quot;600000&quot;</span>
+      <span class="na">rollbackOnReturn=</span><span class="s">&quot;true&quot;</span>
+      <span class="nt">/&gt;</span>
+ <span class="nt">&lt;/Context&gt;</span>
+</pre></div>
+</div>
+<p>The example sets up a connection pool connecting to the local Oracle XE instance.
+The pool configuration shows is quite full-fledged:</p>
+<ul class="simple">
+<li><p>at most 20 active connections (max number of connection that will ever be used in parallel)</p></li>
+<li><p>at most 3 connections kept in the pool unused</p></li>
+<li><p>prepared statement pooling (very important for good performance)</p></li>
+<li><p>at most 100 prepared statements in the pool</p></li>
+<li><p>a validation query that double checks the connection is still alive before actually using it (this is not necessary if there is guarantee the connections will never drop, either due to the server forcefully closing them, or to network/maintenance issues).</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Modify following settings only if you really know what you are doing. Using too low values for <code class="docutils literal notranslate"><span class="pre">removedAbandonedTimeout</span></code> and <code class="docutils literal notranslate"><span class="pre">minEvictableIdleTimeMillis</span></code> may result in connection failures, if so try to setup <code class="docutils literal notranslate"><span class="pre">logAbandoned</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> and check your <code class="docutils literal notranslate"><span class="pre">catalina.out</span></code> log file.</p>
+</div>
+<p>Other parameters to setup connection pool:</p>
+<ul class="simple">
+<li><p>timeBetweenEvictionRunsMillis (default -1) The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.</p></li>
+<li><p>numTestsPerEvictionRun        (default 3) The number of objects to examine during each run of the idle object evictor thread (if any).</p></li>
+<li><p>minEvictableIdleTimeMillis    (default 1000 * 60 * 30) The minimum amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any).</p></li>
+<li><p>removeAbandoned       (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.</p></li>
+<li><p>removeAbandonedTimeout        (default 300) Timeout in seconds before an abandoned connection can be removed.</p></li>
+<li><p>logAbandoned  (default false) Flag to log stack traces for application code which abandoned a Statement or Connection.</p></li>
+</ul>
+<p>For more information about the possible parameters and their values refer to the <a class="reference external" href="http://commons.apache.org/dbcp/configuration.html">DBCP documentation</a>.</p>
+</div>
+<div class="section" id="geoserver-setup">
+<h2>GeoServer setup<a class="headerlink" href="#geoserver-setup" title="Permalink to this headline">¶</a></h2>
+<p>Login into the GeoServer web administration interface and configure the datastore.</p>
+<p>First, choose the <em>Oracle (JNDI)</em> datastore and give it a name:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/oracle_start.png" src="../../_images/oracle_start.png" />
+<p class="caption"><span class="caption-text"><em>Choosing a JNDI enabled datastore</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>Then, configure the connection parameters so that the JNDI path matches the one specified in the Tomcat configuration:</p>
+<div class="figure align-center" id="id4">
+<img alt="../../_images/oracle_conf.png" src="../../_images/oracle_conf.png" />
+<p class="caption"><span class="caption-text"><em>Configuring the JNDI connection</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>When you are doing this, make sure the <em>schema</em> is properly setup, or the datastore will list all the tables it can find in the schema it can access. In the case of Oracle the schema is usually the user name, upper cased.</p>
+<p>Once the datastore is accepted the GeoServer usage proceeds as normal.</p>
+</div>
+<div class="section" id="other-examples">
+<h2>Other examples<a class="headerlink" href="#other-examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="configuring-a-postgresql-connection-pool">
+<h3>Configuring a PostgreSQL connection pool<a class="headerlink" href="#configuring-a-postgresql-connection-pool" title="Permalink to this headline">¶</a></h3>
+<p>In this example a PostgreSQL connection pool will be configured.</p>
+<p>For configuring the JNDI pool you need to move the Postgres JDBC driver (it should be named <code class="file docutils literal notranslate"><span class="pre">postgresql-XX.X.X.jar</span></code>) from the GeoServer
+<code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> folder and put it into the <code class="file docutils literal notranslate"><em><span class="pre">TOMCAT_HOME</span></em><span class="pre">/lib</span></code> folder.</p>
+<p>Then the following code must be added to the Tomcat configuration file <code class="file docutils literal notranslate"><em><span class="pre">TOMCAT_HOME</span></em><span class="pre">/conf/context.xml</span></code> inside a Context tag.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Context&gt;</span>
+        <span class="nt">&lt;Resource</span> <span class="na">name=</span><span class="s">&quot;jdbc/postgres&quot;</span>
+      <span class="na">auth=</span><span class="s">&quot;Container&quot;</span>
+      <span class="na">type=</span><span class="s">&quot;javax.sql.DataSource&quot;</span>
+      <span class="na">driverClassName=</span><span class="s">&quot;org.postgresql.Driver&quot;</span>
+      <span class="na">url=</span><span class="s">&quot;jdbc:postgresql://localhost:5432/test&quot;</span>
+      <span class="na">username=</span><span class="s">&quot;xxxxx&quot;</span> <span class="na">password=</span><span class="s">&quot;xxxxxx&quot;</span>
+      <span class="na">maxActive=</span><span class="s">&quot;20&quot;</span>
+      <span class="na">initialSize=</span><span class="s">&quot;0&quot;</span>
+      <span class="na">minIdle=</span><span class="s">&quot;0&quot;</span>
+      <span class="na">maxIdle=</span><span class="s">&quot;8&quot;</span>
+      <span class="na">maxWait=</span><span class="s">&quot;10000&quot;</span>
+      <span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">&quot;30000&quot;</span>
+      <span class="na">minEvictableIdleTimeMillis=</span><span class="s">&quot;60000&quot;</span>
+      <span class="na">testWhileIdle=</span><span class="s">&quot;true&quot;</span>
+      <span class="na">validationQuery=</span><span class="s">&quot;SELECT 1&quot;</span>
+      <span class="na">maxAge=</span><span class="s">&quot;600000&quot;</span>
+      <span class="na">rollbackOnReturn=</span><span class="s">&quot;true&quot;</span>
+    <span class="nt">/&gt;</span>
+<span class="nt">&lt;/Context&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h4>GeoServer setup<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>Login into the GeoServer web administration interface.</p>
+<p>First, choose the <em>PostGIS (JNDI)</em> datastore and give it a name:</p>
+<div class="figure align-center">
+<img alt="../../_images/postgis_start.png" src="../../_images/postgis_start.png" />
+</div>
+<p>Then configure the associated parameters. The value for jndiReferenceName corresponds to the Resource name given in <code class="file docutils literal notranslate"><em><span class="pre">TOMCAT_HOME</span></em><span class="pre">/conf/context.xml</span></code>.</p>
+<div class="figure align-center">
+<img alt="../../_images/postgis_conf.png" src="../../_images/postgis_conf.png" />
+</div>
+</div>
+</div>
+<div class="section" id="configuring-a-sqlserver-connection-pool">
+<h3>Configuring a SQLServer connection pool<a class="headerlink" href="#configuring-a-sqlserver-connection-pool" title="Permalink to this headline">¶</a></h3>
+<p>For configuring the connection pool for SQLServer you need to configure the SQLServer drivers as explained in the <a class="reference internal" href="../../data/database/sqlserver.html#data-sqlserver"><span class="std std-ref">Microsoft SQL Server</span></a> section
+and put the jar file into the <code class="file docutils literal notranslate"><em><span class="pre">TOMCAT_HOME</span></em><span class="pre">/lib</span></code> folder.</p>
+<p>Then the following code must be written in the Tomcat configuration file <code class="file docutils literal notranslate"><em><span class="pre">TOMCAT_HOME</span></em><span class="pre">/conf/context.xml</span></code></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Context&gt;</span>
+   ...
+      <span class="nt">&lt;Resource</span> <span class="na">name=</span><span class="s">&quot;jdbc/sqlserver&quot;</span>
+      <span class="na">auth=</span><span class="s">&quot;Container&quot;</span>
+      <span class="na">type=</span><span class="s">&quot;javax.sql.DataSource&quot;</span>
+      <span class="na">driverClassName=</span><span class="s">&quot;com.microsoft.sqlserver.jdbc.SQLServerDriver&quot;</span>
+      <span class="na">url=</span><span class="s">&quot;jdbc:sqlserver://localhost:1433;databaseName=test;user=admin;password=admin;&quot;</span>
+      <span class="na">username=</span><span class="s">&quot;admin&quot;</span> <span class="na">password=</span><span class="s">&quot;admin&quot;</span>
+      <span class="na">maxActive=</span><span class="s">&quot;20&quot;</span>
+      <span class="na">initialSize=</span><span class="s">&quot;0&quot;</span>
+      <span class="na">minIdle=</span><span class="s">&quot;0&quot;</span>
+      <span class="na">maxIdle=</span><span class="s">&quot;8&quot;</span>
+      <span class="na">maxWait=</span><span class="s">&quot;10000&quot;</span>
+      <span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">&quot;30000&quot;</span>
+      <span class="na">minEvictableIdleTimeMillis=</span><span class="s">&quot;60000&quot;</span>
+      <span class="na">testWhileIdle=</span><span class="s">&quot;true&quot;</span>
+      <span class="na">poolPreparedStatements=</span><span class="s">&quot;true&quot;</span>
+      <span class="na">maxOpenPreparedStatements=</span><span class="s">&quot;100&quot;</span>
+      <span class="na">validationQuery=</span><span class="s">&quot;SELECT 1&quot;</span>
+      <span class="na">maxAge=</span><span class="s">&quot;600000&quot;</span>
+      <span class="na">rollbackOnReturn=</span><span class="s">&quot;true&quot;</span>
+      <span class="nt">/&gt;</span>
+<span class="nt">&lt;/Context&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that database name, username and password must be defined directly in the URL.</p>
+</div>
+<div class="section" id="id2">
+<h4>GeoServer setup<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>Login into the GeoServer web administration interface.</p>
+<p>First, choose the <em>Microsoft SQL Server (JNDI)</em> datastore and give it a name:</p>
+<div class="figure align-center">
+<img alt="../../_images/sqlserver_start.png" src="../../_images/sqlserver_start.png" />
+</div>
+<p>Then configure the associated params:</p>
+<div class="figure align-center">
+<img alt="../../_images/sqlserver_conf.png" src="../../_images/sqlserver_conf.png" />
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../metadata/index.html" title="previous chapter">INSPIRE metadata configuration using metadata and CSW</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../jboss/jboss_tutorial.html" title="next chapter">geoserver on JBoss</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Setting up a JNDI connection pool with Tomcat</a><ul>
+<li><a class="reference internal" href="#tomcat-setup">Tomcat setup</a></li>
+<li><a class="reference internal" href="#geoserver-setup">GeoServer setup</a></li>
+<li><a class="reference internal" href="#other-examples">Other examples</a><ul>
+<li><a class="reference internal" href="#configuring-a-postgresql-connection-pool">Configuring a PostgreSQL connection pool</a><ul>
+<li><a class="reference internal" href="#id1">GeoServer setup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-a-sqlserver-connection-pool">Configuring a SQLServer connection pool</a><ul>
+<li><a class="reference internal" href="#id2">GeoServer setup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../metadata/index.html" title="previous chapter">INSPIRE metadata configuration using metadata and CSW</a></li>
+            <li>Next: <a href="../jboss/jboss_tutorial.html" title="next chapter">geoserver on JBoss</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/tomcat-jndi/tomcat-jndi.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,588 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic symbology in GeoServer &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Variable substitution in SLD" href="substitution.html" />
+    <link rel="prev" title="Rendering Transformations" href="rendering-transform.html" /> 
+  </head><body class="styling/sld/extensions/pointsymbols">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Extensions in GeoServer</a> &raquo;</li>
+    <li>Graphic symbology in GeoServer</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="substitution.html" title="Variable substitution in SLD" accesskey="N">Next</a></li>
+  <li>
+    <a href="rendering-transform.html" title="Rendering Transformations" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="graphic-symbology-in-geoserver">
+<span id="pointsymbols"></span><h1>Graphic symbology in GeoServer<a class="headerlink" href="#graphic-symbology-in-geoserver" title="Permalink to this headline">¶</a></h1>
+<p>Graphic symbology is supported via the SLD <code class="docutils literal notranslate"><span class="pre">&lt;Graphic&gt;</span></code> element.
+This element can appear in several contexts in SLD:</p>
+<ul class="simple">
+<li><p>in a <a class="reference internal" href="../reference/pointsymbolizer.html#sld-reference-pointsymbolizer"><span class="std std-ref">PointSymbolizer</span></a>, to display symbols at points</p></li>
+<li><p>in the <code class="docutils literal notranslate"><span class="pre">&lt;Stroke&gt;/&lt;GraphicStroke&gt;</span></code> element of a <a class="reference internal" href="../reference/linesymbolizer.html#sld-reference-linesymbolizer"><span class="std std-ref">LineSymbolizer</span></a> and <a class="reference internal" href="../reference/polygonsymbolizer.html#sld-reference-polygonsymbolizer"><span class="std std-ref">PolygonSymbolizer</span></a>,  to display repeated symbols along lines and polygon boundaries.</p></li>
+<li><p>in the <code class="docutils literal notranslate"><span class="pre">&lt;Stroke&gt;/&lt;GraphicFill&gt;</span></code> element of a <a class="reference internal" href="../reference/linesymbolizer.html#sld-reference-linesymbolizer"><span class="std std-ref">LineSymbolizer</span></a> and <a class="reference internal" href="../reference/polygonsymbolizer.html#sld-reference-polygonsymbolizer"><span class="std std-ref">PolygonSymbolizer</span></a>, to fill lines and polygon boundaries with tiled symbols.</p></li>
+<li><p>in the <code class="docutils literal notranslate"><span class="pre">&lt;Fill&gt;/&lt;GraphicFill&gt;</span></code> element of a <a class="reference internal" href="../reference/polygonsymbolizer.html#sld-reference-polygonsymbolizer"><span class="std std-ref">PolygonSymbolizer</span></a>, to fill polygons with tiled symbols (stippling).</p></li>
+<li><p>in a <a class="reference internal" href="../reference/textsymbolizer.html#sld-reference-textsymbolizer"><span class="std std-ref">TextSymbolizer</span></a> to display a graphic behind or instead of text labels (this is a GeoServer extension).</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;Graphic&gt;</span></code> contains either a <code class="docutils literal notranslate"><span class="pre">&lt;Mark&gt;</span></code> or an <code class="docutils literal notranslate"><span class="pre">&lt;ExternalGraphic&gt;</span></code> element.
+<strong>Marks</strong> are pure vector symbols whose geometry is predefined but with stroke and fill defined in the SLD itself.
+<strong>External Graphics</strong> are external files (such as PNG images or SVG graphics)
+that contain the shape and color information defining how to render a symbol.</p>
+<p>In standard SLD the <code class="docutils literal notranslate"><span class="pre">&lt;Mark&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;ExternalGraphic&gt;</span></code> names are fixed strings.
+GeoServer extends this by providing <cite>dynamic symbolizers</cite>,
+which allow computing symbol names on a per-feature basis by embedding CQL expressions in them.</p>
+<div class="section" id="marks">
+<h2>Marks<a class="headerlink" href="#marks" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer supports the standard SLD <code class="docutils literal notranslate"><span class="pre">&lt;Mark&gt;</span></code> symbols,
+a user-expandable set of extended symbols,
+and also TrueType Font glyphs.
+The symbol names are specified in the <code class="docutils literal notranslate"><span class="pre">&lt;WellKnownName&gt;</span></code> element.</p>
+<p>See also the <a class="reference internal" href="../reference/pointsymbolizer.html#sld-reference-pointsymbolizer"><span class="std std-ref">PointSymbolizer</span></a> reference for further details, as well as the examples in the <a class="reference internal" href="../cookbook/points.html#sld-cookbook-points"><span class="std std-ref">Points</span></a> Cookbook section.</p>
+<div class="section" id="standard-symbols">
+<h3>Standard symbols<a class="headerlink" href="#standard-symbols" title="Permalink to this headline">¶</a></h3>
+<p>The SLD specification mandates the support of the following symbols:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">square</span></code></p></td>
+<td><p>A square</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">circle</span></code></p></td>
+<td><p>A circle</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">triangle</span></code></p></td>
+<td><p>A triangle pointing up</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">star</span></code></p></td>
+<td><p>five-pointed star</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cross</span></code></p></td>
+<td><p>A square cross with space around (not suitable for hatch fills)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">x</span></code></p></td>
+<td><p>A square X with space around (not suitable for hatch fills)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="shape-symbols">
+<h3>Shape symbols<a class="headerlink" href="#shape-symbols" title="Permalink to this headline">¶</a></h3>
+<p>The shape symbols set adds extra symbols that are not part of the basic set.
+Their names are prefixed by <code class="docutils literal notranslate"><span class="pre">shape://</span></code></p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shape://vertline</span></code></p></td>
+<td><p>A vertical line (suitable for hatch fills or to make railroad symbols)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shape://horline</span></code></p></td>
+<td><p>A horizontal line (suitable for hatch fills)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shape://slash</span></code></p></td>
+<td><p>A diagonal line leaning forwards like the “slash” keyboard symbol (suitable for diagonal hatches)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shape://backslash</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">shape://slash</span></code>, but oriented in the opposite direction</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shape://dot</span></code></p></td>
+<td><p>A very small circle with space around</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shape://plus</span></code></p></td>
+<td><p>A + symbol, without space around (suitable for cross-hatch fills)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shape://times</span></code></p></td>
+<td><p>A “X” symbol, without space around (suitable for cross-hatch fills)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shape://oarrow</span></code></p></td>
+<td><p>An open arrow symbol (triangle without one side, suitable for placing arrows at the end of lines)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shape://carrow</span></code></p></td>
+<td><p>A closed arrow symbol (closed triangle, suitable for placing arrows at the end of lines)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The weather symbols are prefixed by the <code class="docutils literal notranslate"><span class="pre">extshape://</span></code> protocol in the SLD:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Produces</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extshape://triangle</span></code></p></td>
+<td><p>cold front</p></td>
+<td><p><img alt="triangle" src="../../../_images/triangle.png" /></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extshape://emicircle</span></code></p></td>
+<td><p>warm front</p></td>
+<td><p><img alt="emicircle" src="../../../_images/emicircle.png" /></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extshape://triangleemicircle</span></code></p></td>
+<td><p>stationary front</p></td>
+<td><p><img alt="triangleemicircle" src="../../../_images/triangleemicircle.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">extshape://</span></code> for a few additional built-in shapes:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extshape://narrow</span></code></p></td>
+<td><p>North Arrow</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extshape://sarrow</span></code></p></td>
+<td><p>South Arrow</p></td>
+</tr>
+</tbody>
+</table>
+<p>More complex symbols like Wind Barbs can be created with the <code class="docutils literal notranslate"><span class="pre">windbarbs://</span></code> prefix. There are some examples:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">windbarbs://default(15)[kts]</span></code></p></td>
+<td><p><em>15</em> wind intensity with <em>[kts]</em> unit of measure</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">windbarbs://default(9)[m/s]?hemisphere=s</span></code></p></td>
+<td><p><em>9</em> wind intensity with <em>[m/s]</em> unit of measure, in the south hemisphere</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="custom-wkt-shapes">
+<h3>Custom WKT Shapes<a class="headerlink" href="#custom-wkt-shapes" title="Permalink to this headline">¶</a></h3>
+<p>Custom shapes can be defined using your own Geometry. Geometry is defined using the same well-known-text format used for CQL_FILTER.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LineSymbolizer&gt;</span>
+  <span class="nt">&lt;Stroke&gt;</span>
+    <span class="nt">&lt;GraphicStroke&gt;</span>
+      <span class="nt">&lt;Graphic&gt;</span>
+        <span class="nt">&lt;Mark&gt;</span>
+          <span class="nt">&lt;WellKnownName&gt;</span>wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25))<span class="nt">&lt;/WellKnownName&gt;</span>
+          <span class="nt">&lt;Fill&gt;</span>
+            <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#0000ff<span class="nt">&lt;/CssParameter&gt;</span>
+          <span class="nt">&lt;/Fill&gt;</span>
+          <span class="nt">&lt;Stroke&gt;</span>
+            <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000ff<span class="nt">&lt;/CssParameter&gt;</span>
+            <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/CssParameter&gt;</span>
+          <span class="nt">&lt;/Stroke&gt;</span>
+        <span class="nt">&lt;/Mark&gt;</span>
+        <span class="nt">&lt;Size&gt;</span>6<span class="nt">&lt;/Size&gt;</span>
+      <span class="nt">&lt;/Graphic&gt;</span>
+    <span class="nt">&lt;/GraphicStroke&gt;</span>
+  <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/LineSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>Which produces double dashed line:</p>
+<img alt="../../../_images/double-dashed-line.png" src="../../../_images/double-dashed-line.png" />
+<p>You can also make use of curves when defining WKT:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LineSymbolizer&gt;</span>
+  <span class="nt">&lt;Stroke&gt;</span>
+    <span class="nt">&lt;GraphicStroke&gt;</span>
+      <span class="nt">&lt;Graphic&gt;</span>
+        <span class="nt">&lt;Mark&gt;</span>
+          <span class="nt">&lt;WellKnownName&gt;</span>wkt://COMPOUNDCURVE((0 0, 0.25 0), CIRCULARSTRING(0.25 0, 0.5 0.5, 0.75 0), (0.75 0, 1 0))<span class="nt">&lt;/WellKnownName&gt;</span>
+          <span class="nt">&lt;Fill&gt;</span>
+            <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#0000ff<span class="nt">&lt;/CssParameter&gt;</span>
+          <span class="nt">&lt;/Fill&gt;</span>
+          <span class="nt">&lt;Stroke&gt;</span>
+            <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000ff<span class="nt">&lt;/CssParameter&gt;</span>
+            <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/CssParameter&gt;</span>
+          <span class="nt">&lt;/Stroke&gt;</span>
+        <span class="nt">&lt;/Mark&gt;</span>
+        <span class="nt">&lt;Size&gt;</span>10<span class="nt">&lt;/Size&gt;</span>
+      <span class="nt">&lt;/Graphic&gt;</span>
+    <span class="nt">&lt;/GraphicStroke&gt;</span>
+  <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/LineSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>Producing an “emi circle” line:</p>
+<img alt="../../../_images/emicircle-line.png" src="../../../_images/emicircle-line.png" />
+</div>
+<div class="section" id="bulk-ttf-marks">
+<h3>Bulk TTF marks<a class="headerlink" href="#bulk-ttf-marks" title="Permalink to this headline">¶</a></h3>
+<p>It is possible to create a mark using glyphs from any decorative or symbolic True Type Font, such as Wingdings, WebDings, or the many symbol fonts available on the internet.
+The syntax for specifying this is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ttf</span><span class="p">:</span><span class="o">//&lt;</span><span class="n">fontname</span><span class="o">&gt;</span><span class="c1">#&lt;hexcode&gt;</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">fontname</span></code> is the full name of a TTF font available to GeoServer, and <code class="docutils literal notranslate"><span class="pre">hexcode</span></code> is the hexadecimal code of the symbol.
+To get the hex code of a symbol, use the “Char Map” utility available in most operating systems (Windows and Linux Gnome both have one).</p>
+<p>For example, to use the “shield” symbol contained in the WebDings font, the Gnome <code class="docutils literal notranslate"><span class="pre">charmap</span></code> reports the symbol hex code as shown:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../../_images/charmap.png" src="../../../_images/charmap.png" />
+<p class="caption"><span class="caption-text"><em>Selecting a symbol hex code in the Gnome char map</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The SLD to use the shield glyph as a symbol is:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span> <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;Mark&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;WellKnownName&gt;</span>ttf://Webdings#0x0064<span class="nt">&lt;/WellKnownName&gt;</span>
+<span class="lineno"> 5 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 6 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#AAAAAA<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 7 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno"> 8 </span>         <span class="nt">&lt;Stroke/&gt;</span>
+<span class="lineno"> 9 </span>       <span class="nt">&lt;/Mark&gt;</span>
+<span class="lineno">10 </span>     <span class="nt">&lt;Size&gt;</span>16<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">11 </span>   <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">12 </span> <span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>This results in the following map display:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../../_images/shields.png" src="../../../_images/shields.png" />
+<p class="caption"><span class="caption-text"><em>Shield symbols rendered on the map</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="extending-the-mark-subsystem-using-java">
+<h3>Extending the Mark subsystem using Java<a class="headerlink" href="#extending-the-mark-subsystem-using-java" title="Permalink to this headline">¶</a></h3>
+<p>The Mark subsystem is user-extensible.
+To do this using Java code, implement the <code class="docutils literal notranslate"><span class="pre">MarkFactory</span></code> interface and declare the implementation in the <code class="docutils literal notranslate"><span class="pre">META-INF/services/org.geotools.renderer.style.MarkFactory</span></code> file.</p>
+<p>For further information see the Javadoc of the GeoTools <a class="reference external" href="http://svn.osgeo.org/geotools/trunk/modules/library/render/src/main/java/org/geotools/renderer/style/MarkFactory.java">MarkFactory</a>,
+along with the following example code:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The <a class="reference external" href="http://svn.osgeo.org/geotools/trunk/modules/library/render/src/main/resources/META-INF/services/org.geotools.renderer.style.MarkFactory">factory SPI registration file</a></p></li>
+<li><p>The <a class="reference external" href="http://svn.osgeo.org/geotools/trunk/modules/library/render/src/main/java/org/geotools/renderer/style/TTFMarkFactory.java">TTFMarkFactory</a> implementation</p></li>
+<li><p>The <a class="reference external" href="http://svn.osgeo.org/geotools/trunk/modules/library/render/src/main/java/org/geotools/renderer/style/ShapeMarkFactory.java">ShapeMarkFactory</a> implementation</p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="external-graphics">
+<h2>External Graphics<a class="headerlink" href="#external-graphics" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;ExternalGraphic&gt;</span></code> is the other way to define point symbology.
+Unlike marks, external graphics are used as-is, so the specification is somewhat simpler.
+The element content specifies a graphic <code class="docutils literal notranslate"><span class="pre">&lt;OnlineResource&gt;</span></code> using a URL or file path, and the graphic <code class="docutils literal notranslate"><span class="pre">&lt;Format&gt;</span></code> using a MIME type:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno">2 </span>     <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno">3 </span>        <span class="nt">&lt;ExternalGraphic&gt;</span>
+<span class="lineno">4 </span>           <span class="nt">&lt;OnlineResource</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://mywebsite.com/pointsymbol.png&quot;</span> <span class="nt">/&gt;</span>
+<span class="lineno">5 </span>           <span class="nt">&lt;Format&gt;</span>image/png<span class="nt">&lt;/Format&gt;</span>
+<span class="lineno">6 </span>        <span class="nt">&lt;/ExternalGraphic&gt;</span>
+<span class="lineno">7 </span>     <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">8 </span> <span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>As with <code class="docutils literal notranslate"><span class="pre">&lt;Mark&gt;</span></code>, a <code class="docutils literal notranslate"><span class="pre">&lt;Size&gt;</span></code> element can be optionally specified.
+When using images as graphic symbols it is better to avoid resizing, as that may blur their appearance.
+Use images at their native resolution by omitting the <code class="docutils literal notranslate"><span class="pre">&lt;Size&gt;</span></code> element.
+In contrast, for SVG graphics specifying a <code class="docutils literal notranslate"><span class="pre">&lt;Size&gt;</span></code> is recommended.
+SVG files are a vector-based format describing both shape and color,
+so they scale cleanly to any size.</p>
+<p>If the path of the symbol file is relative,
+the file is looked for under <code class="docutils literal notranslate"><span class="pre">$GEOSERVER_DATA_DIR/styles</span></code>.
+For example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno">2 </span>   <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno">3 </span>     <span class="nt">&lt;ExternalGraphic&gt;</span>
+<span class="lineno">4 </span>       <span class="nt">&lt;OnlineResource</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;burg02.svg&quot;</span> <span class="nt">/&gt;</span>
+<span class="lineno">5 </span>       <span class="nt">&lt;Format&gt;</span>image/svg+xml<span class="nt">&lt;/Format&gt;</span>
+<span class="lineno">6 </span>     <span class="nt">&lt;/ExternalGraphic&gt;</span>
+<span class="lineno">7 </span>     <span class="nt">&lt;Size&gt;</span>20<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">8 </span>   <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">9 </span> <span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>In this example an SVG graphic is being used, so the size is specified explicitly.</p>
+<div class="section" id="svg-parameters">
+<h3>SVG Parameters<a class="headerlink" href="#svg-parameters" title="Permalink to this headline">¶</a></h3>
+<p>GeoServer can handle SVG images in which parts of the SVG-attributes are
+named parameters, as outlined the <a class="reference external" href="https://www.w3.org/TR/SVGParamPrimer/">SVG Parameters 1.0 specification</a>. This capability is also supported by <a class="reference external" href="http://qgis.org">QGIS</a>.</p>
+<p>SVG Parameters are represented in a file like: <a class="reference external" href="https://github.com/qgis/QGIS/blob/master/images/svg/symbol/poi_peak.svg">poi_peak.svg</a> as:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span> <span class="na">enable-background=</span><span class="s">&quot;new 0 0 580 580&quot;</span> <span class="na">height=</span><span class="s">&quot;580&quot;</span> <span class="na">viewBox=</span><span class="s">&quot;0 0 580 580&quot;</span> <span class="na">width=</span><span class="s">&quot;580&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;path</span> <span class="na">d=</span><span class="s">&quot;m290.565 67.281l-255.498 442.534-1.087 1.885 511.229.393 2.18.002z&quot;</span> <span class="na">fill=</span><span class="s">&quot;param(fill)&quot;</span>
+ <span class="na">fill-opacity=</span><span class="s">&quot;param(fill-opacity)&quot;</span> <span class="na">stroke=</span><span class="s">&quot;param(outline)&quot;</span> <span class="na">stroke-opacity=</span><span class="s">&quot;param(outline-opacity)&quot;</span> <span class="na">stroke-width=</span><span class="s">&quot;param(outline-width)&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/svg&gt;</span>
+</pre></div>
+</div>
+<p>The ‘param’-constructs mean that you can define the parameters: <cite>fill</cite>, <cite>fill-opacity</cite>, <cite>outline</cite>, <cite>outline-opacity</cite> and <cite>outline-width</cite> as part of an SVG URL reference, where a reference to this image with red fill would be: <code class="docutils literal notranslate"><span class="pre">poi_peak.svg?fill=#FF0000</span></code>.</p>
+<p>Note: When editng <code class="file docutils literal notranslate"><span class="pre">SVG</span></code> files (e.g. in Inkscape) save using ‘simple svg’ format.</p>
+<p>Default behaviour:</p>
+<ul>
+<li><p>OnlineResource <cite>href</cite> URI without any parameters.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;se:OnlineResource</span> <span class="na">xlink:href=</span><span class="s">&quot;poi_peak.svg&quot;</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Displays <code class="file docutils literal notranslate"><span class="pre">poi_peak.svg</span></code> with the default black <cite>fill</cite>.</p>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/peak_black.png" src="../../../_images/peak_black.png" />
+<p class="caption"><span class="caption-text">SVG image with default black fill</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ul>
+<p>Using <cite>#ff000</cite> red parameter:</p>
+<ul>
+<li><p>OnlineResource <cite>href</cite> URI with parameter:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;se:OnlineResource</span> <span class="na">xlink:href=</span><span class="s">&quot;poi_peak.svg?fill=#ff0000&quot;</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Displays <code class="file docutils literal notranslate"><span class="pre">poi_peak.svg</span></code> with supplied red <cite>fill</cite>.</p>
+<div class="figure align-default" id="id4">
+<img alt="../../../_images/peak_redfill.png" src="../../../_images/peak_redfill.png" />
+<p class="caption"><span class="caption-text">SVG image with fill provided by parameter</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ul>
+<p>To define several parameters, the query-parameters should be url-encoded.</p>
+<ul>
+<li><p>A green peak with 25% opacity: <cite>?fill=#00ff00&amp;opacity=0.25</cite>, requires encoding both the ‘#’ ( <code class="docutils literal notranslate"><span class="pre">%23</span></code> ) and the ‘&amp;’ ( <code class="docutils literal notranslate"><span class="pre">&amp;amp;</span></code> ) signs:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;se:OnlineResource</span> <span class="na">xlink:href=</span><span class="s">&quot;poi_peak.svg?fill=%2300ff00&amp;amp;opacity=0.25&quot;</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Displayed with white fill, red outlined peaks:</p>
+<div class="figure align-default" id="id5">
+<img alt="../../../_images/peak_green25opacity.png" src="../../../_images/peak_green25opacity.png" />
+<p class="caption"><span class="caption-text">SVG image with fill and outline provided by parameters</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ul>
+<p>Parameters names are defined by the SVG file:</p>
+<ul>
+<li><p>The parameter ‘stroke’ above is called ‘outline’ in the original <code class="file docutils literal notranslate"><span class="pre">svg</span></code> file:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>stroke=&quot;param(outline)&quot;
+</pre></div>
+</div>
+</li>
+<li><p>OnlineResource <cite>href</cite> URI referencing parameters <cite>fill</cite>, <cite>outline</cite> and <cite>outline-width</cite>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;se:OnlineResource</span> <span class="na">xlink:href=</span><span class="s">&quot;poi_peak.svg?fill=%23ffffff&amp;amp;outline=%23ff0000&amp;amp;outline-width=5&quot;</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Displayed as:</p>
+<div class="figure align-default" id="id6">
+<img alt="../../../_images/peak_whitered.png" src="../../../_images/peak_whitered.png" />
+<p class="caption"><span class="caption-text">SVG image with fill</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ul>
+<p>The use of SVG parameters can be combinded with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.</p>
+<ul>
+<li><p>OnlineResource <cite>href</cite> URI referencing SVG Parameter with dynamic CQL expression:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;se:OnlineResource</span> <span class="na">xlink:href=</span><span class="s">&quot;poi_peak.svg?fill=${COLOR}&quot;</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Display depends on the feature attribute <cite>COLOR</cite>.</p></li>
+</ul>
+</div>
+<div class="section" id="bulk-wkt-shapes">
+<h3>Bulk WKT Shapes<a class="headerlink" href="#bulk-wkt-shapes" title="Permalink to this headline">¶</a></h3>
+<p>It is possible to create a symbol set of your own custom marks using a property file.</p>
+<p>Here is an <code class="file docutils literal notranslate"><span class="pre">example.properties</span></code>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>zig=LINESTRING(0.0 0.25, 0.25 0.25, 0.5 0.75, 0.75 0.25, 1.00 0.25)
+block=POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))
+</pre></div>
+</div>
+<p>The SLD to use the symbols defined in <code class="file docutils literal notranslate"><span class="pre">example.properties</span></code> is:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span> <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno"> 2 </span>   <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno"> 3 </span>     <span class="nt">&lt;ExternalGraphic&gt;</span>
+<span class="lineno"> 4 </span>       <span class="nt">&lt;OnlineResource</span>
+<span class="lineno"> 5 </span>         <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+<span class="lineno"> 6 </span>         <span class="na">xlink:href=</span><span class="s">&quot;example.properties#zig&quot;</span> <span class="nt">/&gt;</span>
+<span class="lineno"> 7 </span>       <span class="nt">&lt;Format&gt;</span>wkt<span class="nt">&lt;/Format&gt;</span>
+<span class="lineno"> 8 </span>     <span class="nt">&lt;/ExternalGraphic&gt;</span>
+<span class="lineno"> 9 </span>     <span class="nt">&lt;Size&gt;</span>20<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">10 </span>   <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">11 </span> <span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="symbol-positioning">
+<h3>Symbol Positioning<a class="headerlink" href="#symbol-positioning" title="Permalink to this headline">¶</a></h3>
+<p>Graphic symbols are rendered so that the center of the graphic extent
+lies on the placement point (or points, in the case of repeated or tiled graphics).
+If it is desired to have a graphic offset from a point
+(such as a symbol which acts
+as a pointer) it is necessary to offset
+the visible portion of the graphic within the overall extent.
+For images this can be accomplished by extending the image with transparent pixels.
+For SVG graphics this can be done by surrounding the shape with
+an invisible rectangle with the desired relative position.</p>
+</div>
+</div>
+<div class="section" id="dynamic-symbolizers">
+<h2>Dynamic symbolizers<a class="headerlink" href="#dynamic-symbolizers" title="Permalink to this headline">¶</a></h2>
+<p>In standard SLD, the <code class="docutils literal notranslate"><span class="pre">Mark/WellKnowName</span></code> element and the <code class="docutils literal notranslate"><span class="pre">ExternalGraphic/OnlineResource/&#64;xlink:href</span></code> attribute are fixed strings.
+This means they have the same value for all rendered features.
+When the symbols to be displayed vary depending on feature attributes this restriction leads to very verbose styling, as a separate <code class="docutils literal notranslate"><span class="pre">Rule</span></code> and <code class="docutils literal notranslate"><span class="pre">Symbolizer</span></code> must be used for each different symbol.</p>
+<p>GeoServer improves this by allowing <a class="reference internal" href="../../../filter/ecql_reference.html#filter-ecql-reference"><span class="std std-ref">CQL expressions</span></a> to be embedded inside the content of both <code class="docutils literal notranslate"><span class="pre">WellKnownName</span></code> and <code class="docutils literal notranslate"><span class="pre">OnlineResource/&#64;xlink:href</span></code>.
+When the names of the symbols can be derived from the feature attribute values, this provides much more compact styling.
+CQL expressions can be embedded in a <code class="docutils literal notranslate"><span class="pre">&lt;WellKnownName&gt;</span></code> content string or an <code class="docutils literal notranslate"><span class="pre">&lt;OnlineResource&gt;</span></code> <code class="docutils literal notranslate"><span class="pre">xlink:href</span></code> attribute by using the syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${&lt;cql expression&gt;}
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently <code class="docutils literal notranslate"><span class="pre">xlink:href</span></code> strings must be valid URLs <em>before</em> expression expansion is performed.
+This means that the URL cannot be completely provided by an expression.
+The <code class="docutils literal notranslate"><span class="pre">xlink:href</span></code> string must explicitly include at least the prefix <code class="docutils literal notranslate"><span class="pre">http://</span></code></p>
+</div>
+<p>The simplest form of expression is a single attribute name, such as <code class="docutils literal notranslate"><span class="pre">${STATE_ABBR}</span></code>.
+For example, suppose we want to display the flags of the US states using symbols whose file names match the state name.
+The following style specifies the flag symbols using a single rule:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="nt">&lt;ExternalGraphic&gt;</span>
+<span class="lineno">2 </span>   <span class="nt">&lt;OnlineResource</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+<span class="lineno">3 </span>                   <span class="na">xlink:href=</span><span class="s">&quot;http://mysite.com/tn_${STATE_ABBR}.jpg&quot;</span><span class="nt">/&gt;</span>
+<span class="lineno">4 </span>   <span class="nt">&lt;Format&gt;</span>image/jpeg<span class="nt">&lt;/Format&gt;</span>
+<span class="lineno">5 </span><span class="nt">&lt;/ExternalGraphic&gt;</span>
+</pre></div>
+</div>
+<p>If manipulation of the attribute values is required a full CQL expression can be specified.
+For example, if the values in the <code class="docutils literal notranslate"><span class="pre">STATE_ABBR</span></code> attribute are uppercase but the URL requires a lowercase name, the CQL <code class="docutils literal notranslate"><span class="pre">strToLowerCase</span></code> function can be used:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="nt">&lt;ExternalGraphic&gt;</span>
+<span class="lineno">2 </span>   <span class="nt">&lt;OnlineResource</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+<span class="lineno">3 </span>            <span class="na">xlink:href=</span><span class="s">&quot;http://mysite.com/tn_${strToLowerCase(STATE_ABBR)}.jpg&quot;</span> <span class="nt">/&gt;</span>
+<span class="lineno">4 </span>   <span class="nt">&lt;Format&gt;</span>image/jpeg<span class="nt">&lt;/Format&gt;</span>
+<span class="lineno">5 </span><span class="nt">&lt;/ExternalGraphic&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="rendering-transform.html" title="previous chapter">Rendering Transformations</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="substitution.html" title="next chapter">Variable substitution in SLD</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Graphic symbology in GeoServer</a><ul>
+<li><a class="reference internal" href="#marks">Marks</a><ul>
+<li><a class="reference internal" href="#standard-symbols">Standard symbols</a></li>
+<li><a class="reference internal" href="#shape-symbols">Shape symbols</a></li>
+<li><a class="reference internal" href="#custom-wkt-shapes">Custom WKT Shapes</a></li>
+<li><a class="reference internal" href="#bulk-ttf-marks">Bulk TTF marks</a></li>
+<li><a class="reference internal" href="#extending-the-mark-subsystem-using-java">Extending the Mark subsystem using Java</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#external-graphics">External Graphics</a><ul>
+<li><a class="reference internal" href="#svg-parameters">SVG Parameters</a></li>
+<li><a class="reference internal" href="#bulk-wkt-shapes">Bulk WKT Shapes</a></li>
+<li><a class="reference internal" href="#symbol-positioning">Symbol Positioning</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dynamic-symbolizers">Dynamic symbolizers</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="rendering-transform.html" title="previous chapter">Rendering Transformations</a></li>
+            <li>Next: <a href="substitution.html" title="next chapter">Variable substitution in SLD</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/extensions/pointsymbols.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

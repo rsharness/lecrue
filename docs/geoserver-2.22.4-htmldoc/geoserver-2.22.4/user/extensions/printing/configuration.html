@@ -1,0 +1,794 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Protocol" href="protocol.html" />
+    <link rel="prev" title="GeoServer Printing Module" href="index.html" /> 
+  </head><body class="extensions/printing/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GeoServer Printing Module</a> &raquo;</li>
+    <li>Configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="protocol.html" title="Protocol" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="GeoServer Printing Module" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>The server side uses a <a class="reference external" href="http://www.yaml.org/">YAML</a> configuration file that defines the page layouts and allowed values. This file is usually called config.yaml.</p>
+<p>Here is the general structure:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dpis</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">254</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">190</span>
+  <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+
+<span class="l l-Scalar l-Scalar-Plain">?maxSvgWidth</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">2048</span> <span class="c1"># set the maximum dimensions to 2048 points, this is useful when using MapServer and a maximum dimension is there</span>
+<span class="l l-Scalar l-Scalar-Plain">?maxSvgHeight</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">2048</span>
+<span class="l l-Scalar l-Scalar-Plain">?integerSvg</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span> <span class="c1"># the library in MapServer &lt;= 5.6 does not support floating point values in the SVG coordinate space, set this to true if using a WMS that does not support floating point values in SVG coordinates</span>
+
+<span class="l l-Scalar l-Scalar-Plain">?ignoreCapabilities</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span> <span class="c1"># assume client is correct and do not load capabilities.  This is not recommended to be used unless you it fails when false (false is default)</span>
+<span class="l l-Scalar l-Scalar-Plain">?maxPrintTimeBeforeWarningInSeconds</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span> <span class="c1"># if print jobs take longer than this then a warning in the logs will be written along with the spec.</span>
+<span class="l l-Scalar l-Scalar-Plain">?printTimeoutMinutes</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span> <span class="c1"># The maximum time to allow a print job to take before cancelling the print job.  The default is 5 (minutes)</span>
+<span class="l l-Scalar l-Scalar-Plain">?formats</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pdf</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">png</span>
+  <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+
+<span class="nt">scales</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">25000</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">50000</span>
+  <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+
+<span class="nt">hosts</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">HOST_WHITELIST_DEFINITION</span><span class="p p-Indicator">}</span>
+  <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+
+<span class="l l-Scalar l-Scalar-Plain">?localHostForward</span><span class="p p-Indicator">:</span> <span class="c1"># For request on map.example.com we build an http request on localhost with the header Host=map.example.com, this is to not pass the request through the proxy.</span>
+<span class="p p-Indicator">?</span>  <span class="nt">from</span><span class="p">:</span>
+<span class="p p-Indicator">?</span>    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">map.example.com</span>
+<span class="p p-Indicator">?</span>  <span class="nt">https2http</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span> <span class="c1"># For above hosts on request on https we build a request on http</span>
+
+<span class="l l-Scalar l-Scalar-Plain">?headers</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Cookie&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Referer&#39;</span><span class="p p-Indicator">]</span> <span class="c1"># The header that will be copied to the tiles http requests</span>
+
+<span class="l l-Scalar l-Scalar-Plain">?keys</span><span class="p p-Indicator">:</span>
+<span class="p p-Indicator">?</span>  <span class="p p-Indicator">-</span> <span class="kt">!key</span>
+<span class="p p-Indicator">?</span>    <span class="nt">host</span><span class="p">:</span> <span class="kt">!dnsMatch</span>
+<span class="p p-Indicator">?</span>      <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">maps.google.com</span>
+<span class="p p-Indicator">?</span>      <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="p p-Indicator">?</span>    <span class="nt">domain</span><span class="p">:</span> <span class="kt">!dnsMatch</span>
+<span class="p p-Indicator">?</span>      <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="p p-Indicator">?</span>    <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1234456</span>
+<span class="p p-Indicator">?</span>    <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gmd-xyz</span>
+
+
+<span class="l l-Scalar l-Scalar-Plain">?fonts</span><span class="p p-Indicator">:</span>
+<span class="p p-Indicator">?</span> <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">PATH</span><span class="p p-Indicator">}</span>
+
+<span class="l l-Scalar l-Scalar-Plain">?globalParallelFetches</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="l l-Scalar l-Scalar-Plain">?perHostParallelFetches</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="l l-Scalar l-Scalar-Plain">?tilecacheMerging</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="l l-Scalar l-Scalar-Plain">?connectionTimeout</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">30000           MF_V1.2</span>
+<span class="l l-Scalar l-Scalar-Plain">?socketTimeout</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">180000              MF_V1.2</span>
+<span class="l l-Scalar l-Scalar-Plain">?outputFilename</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Mapfish-print      MF_V1.2</span>
+<span class="l l-Scalar l-Scalar-Plain">?disableScaleLocking</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="l l-Scalar l-Scalar-Plain">?brokenUrlPlaceholder</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">default      MF_V2.0</span>
+<span class="l l-Scalar l-Scalar-Plain">?proxyBaseUrl</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">http://mapfishprint.org  MF_V2.0</span>
+<span class="l l-Scalar l-Scalar-Plain">?tmsDefaultOriginX</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.0f   MF_V2.0</span>
+<span class="l l-Scalar l-Scalar-Plain">?tmsDefaultOriginY</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.0f   MF_V2.0</span>
+
+<span class="l l-Scalar l-Scalar-Plain">?security</span><span class="p p-Indicator">:</span>
+<span class="p p-Indicator">?</span>  <span class="p p-Indicator">-</span> <span class="kt">!basicAuth</span>
+<span class="p p-Indicator">?</span>      <span class="nt">matcher</span><span class="p">:</span> <span class="kt">!dnsMatch</span>
+<span class="p p-Indicator">?</span>        <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">www.camptocamp.com</span>
+<span class="p p-Indicator">?</span>        <span class="nt">post</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">443</span>
+<span class="p p-Indicator">?</span>      <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xyz</span>
+<span class="p p-Indicator">?</span>      <span class="nt">password</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">zyx</span>
+<span class="p p-Indicator">?</span>      <span class="nt">preemptive</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="p p-Indicator">?</span>  <span class="p p-Indicator">-</span> <span class="kt">!basicAuth</span>
+<span class="p p-Indicator">?</span>    <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">abc</span>
+<span class="p p-Indicator">?</span>    <span class="nt">password</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bca</span>
+
+<span class="nt">layouts</span><span class="p">:</span>
+   <span class="p p-Indicator">{</span><span class="nv">LAYOUT_NAME</span><span class="p p-Indicator">}:</span>
+<span class="p p-Indicator">?</span>   <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Mapfish-print.pdf  MF_V1.2</span>
+<span class="p p-Indicator">?</span>   <span class="nt">metaData</span><span class="p">:</span>
+<span class="p p-Indicator">?</span>     <span class="p p-Indicator">{</span><span class="nv">METADATA_DEFINITION</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">?</span>   <span class="nt">titlePage</span><span class="p">:</span>
+<span class="p p-Indicator">?</span>     <span class="p p-Indicator">{</span><span class="nv">PAGE_DEFINITION</span><span class="p p-Indicator">}</span>
+    <span class="nt">mainPage</span><span class="p">:</span>
+<span class="p p-Indicator">?</span>     <span class="nt">rotation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+      <span class="p p-Indicator">{</span><span class="nv">PAGE_DEFINITION</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">?</span>   <span class="nt">lastPage</span><span class="p">:</span>
+<span class="p p-Indicator">?</span>     <span class="p p-Indicator">{</span><span class="nv">PAGE_DEFINITION</span><span class="p p-Indicator">}</span>
+  <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>Optional parts are shown with a question mark in the left margin. The question marks must not be put in the configuration file. Their default values is shown.</p>
+<p>Note: Sets of values like DPI can be entered in one of two forms:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dpi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">2</span><span class="p p-Indicator">,</span><span class="nv">3</span><span class="p p-Indicator">,</span><span class="nv">...</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dpis</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">254</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">190</span>
+</pre></div>
+</div>
+<p>A chosen DPI value from the above configuration is used in WMS GetMap requests as an added format_options (GeoServer) or map_resolution (MapServer) parameter. This is used for symbol/label-rescaling suitable for high resolution printouts, see <a class="reference internal" href="../../services/wms/vendor.html#wms-vendor-parameters"><span class="std std-ref">GeoServer format_options specification</span></a> (GeoServer 2.1) and <a class="reference external" href="http://mapserver.org/development/rfc/ms-rfc-55.html">MapServer defresolution keyword</a> (MapServer 5.6) for more information.</p>
+<p>In general, PDF dimensions and positions are specified in points. 72 points == 1 inch == 25.4 mm.</p>
+<p>The list of <code class="docutils literal notranslate"><span class="pre">{HOST_WHITELIST_DEFINITION}</span></code> defines the allowed URLs for getting maps. Its format will be defined in <a class="reference external" href="configuration.html#host-whitelist-definition">the next sub-section</a>.</p>
+<p>The formats element lists the values formats that the server permits.  If omitted only ‘pdf’ is permitted.  If the single element ‘*’ (quotes are required) is present then all formats that the server can produce can be requested.  The formats the server can produce depends to a large degree on how the Java is configured.  PDF is supported on all systems but for image output formats JAI and ImageIO is used which means both must be on the server for them to be available.  You can get the list of supported formats by running the standalone client with the –clientConfig flag enabled (you will need to supply a yaml config file as well).  If you are using the servlet then do a get info request to see the list of formats (with the ‘*’ as the outputFormats parameter in the config file).</p>
+<p>You can have as many layouts as you want. Their name must be unique and will be used on the client side. A layout can have a <code class="docutils literal notranslate"><span class="pre">titlePage</span></code> that will be added at the beginning of the generated document. It cannot contain any map. Same for the <code class="docutils literal notranslate"><span class="pre">lastPage</span></code>, but for the end of the document. The <code class="docutils literal notranslate"><span class="pre">mainPage</span></code> section is mandatory and will be used once for each page requested. The details of a <code class="docutils literal notranslate"><span class="pre">{PAGE_DEFINITION}</span></code> section can be found <a class="reference external" href="configuration.html#page-definition">in another sub-section of this document</a>.</p>
+<p>If you want to let the user rotate the map (for a given layout), you have to set the <code class="docutils literal notranslate"><span class="pre">rotate</span></code> field to <code class="docutils literal notranslate"><span class="pre">true</span></code> in the corresponding <code class="docutils literal notranslate"><span class="pre">mainPage</span></code> section.</p>
+<p><code class="docutils literal notranslate"><span class="pre">globalParallelFetches</span></code> and <code class="docutils literal notranslate"><span class="pre">perHostParallelFetches</span></code> are used to tune the parallel loading of the map tiles/images. If you want to disable the parallel loading, set <code class="docutils literal notranslate"><span class="pre">globalParallelFetches</span></code> to 1.</p>
+<p>New versions of tilecache added the support for merging multiple layers in a single WMS request. If you want to use this functionality, set the <code class="docutils literal notranslate"><span class="pre">tilecacheMerging</span></code> attribute to true.</p>
+<p><code class="docutils literal notranslate"><span class="pre">connectionTimeout</span></code> and <code class="docutils literal notranslate"><span class="pre">socketTimeout</span></code> (only since MapFish v1.2) can be used to tune the timeouts for reading tiles from map servers.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">outputFilename</span></code> parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client.  It will be the name of the file that the client downloads.  If the ‘outputFilename’ parameter is defined in a layout then that value will override the default name.  In both cases the .pdf is optional; if not present the server will append .pdf to the name.  In all cases the json request can override the filename defined in the configuration file by posting a ‘outputFilename’ attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method.  If a pattern is provided it will be passed to SimpleDataFormat for processing.  A few examples follow:</p>
+<ul class="simple">
+<li><p>outputFilename: <code class="docutils literal notranslate"><span class="pre">host-${yyyyMMdd}.pdf</span></code>   # results in host-20111213.pdf</p></li>
+<li><p>outputFilename: <code class="docutils literal notranslate"><span class="pre">host-${date}</span></code>           # results in host-Dec_13_2011.pdf (actual output depends on locale of server)</p></li>
+<li><p>outputFilename: <code class="docutils literal notranslate"><span class="pre">host-${dateTime}</span></code>       # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on locale of server)</p></li>
+<li><p>outputFilename: <code class="docutils literal notranslate"><span class="pre">host-${time}.pdf</span></code>       # results in host-1:11:14_PM.pdf (actual output depends on locale of server)</p></li>
+<li><p>outputFilename: <code class="docutils literal notranslate"><span class="pre">host-${yyMMdd-hhmmss}</span></code>  # results in host-111213-011154.pdf (actual output depends on locale of server)</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">disableScaleLocking</span></code> allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.</p>
+<p><code class="docutils literal notranslate"><span class="pre">brokenUrlPlaceholder</span></code> the placeholder image to use in the case of a broken url.  By default, when a url request fails, an error is thrown and the pdf process terminates.  However if this parameter is set then instead a placeholder image is returned.
+Non-null values are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">default</span></code> - use the system default image.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">throw</span></code> - throw an exception.</p></li>
+<li><p>&lt;url&gt; - obtain the image from the supplied url.  If this url is broken then an exception will be thrown.  This can be anytype of valid url from a file url to https url.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">proxyBaseUrl</span></code> the optional url of the proxy between mapfish-print and the internet.  This is the url base that will be in the info.json response.  On occasion the url or port of the web server containing mapfish-print is not the server that is public to the internet and the requests are proxied to the mapfish-print webserver.  In this case it is important for the info.json request to return the public URL instead of the url of the webserver.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tmsDefaultOriginX</span></code> By default this is null.  If non-null then TmsMapReader will use this as the origin x value if null then the origin will be derived from the maxExtent parameter.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tmsDefaultOriginY</span></code> By default this is null.  If non-null then TmsMapReader will use this as the origin y value if null then the origin will be derived from the maxExtent parameter.</p>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>Both Keys and Security are options for accessing protected services.  Keys are currently for Google maps premium accounts and Security is for other types and is more general  Currently only BasicAuth is supported but other strategies can easily be added</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">security</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="kt">!basicAuth</span>
+        <span class="nt">matcher</span><span class="p">:</span> <span class="kt">!dnsMatch</span>
+          <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">www.camptocamp.com</span>
+          <span class="nt">post</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">443</span>
+        <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xyz</span>
+        <span class="nt">password</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">zyx</span>
+        <span class="nt">preemptive</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="p p-Indicator">-</span> <span class="kt">!basicAuth</span>
+      <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">abc</span>
+      <span class="nt">password</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cba</span>
+</pre></div>
+</div>
+<p>The above example has 2 security configuration.  Each option is tested (in order) to see if it can be used for the given URI and if it applies it is used to configure requests for the URI.  In the above example the first configuration will be used if the URI matches the hostmatcher provided if not then the second configuration will be applied.  The last configuration has no host matcher so it is applied to all URIs.</p>
+<p>A basicAuth security configuration consists of 4 options</p>
+<ul class="simple">
+<li><p>matcher - a host matcher for determining which requests need the security to be applied</p></li>
+<li><p>username - username for basicauth</p></li>
+<li><p>password - password for basicauth</p></li>
+<li><p>preemptive - optional, but for cases where the credentials need to be sent without the challenge</p></li>
+</ul>
+</div>
+<div class="section" id="keys">
+<h2>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h2>
+<p>Google maps currently requires a private key to be used (we only support users Google maps premium accounts).</p>
+<p>The keys section allows a key to be mapped to hosts.  The hosts are identified with host matchers that are described in the &lt;configuration.html#host-whitelist-definition&gt; sub-section.</p>
+<p>In addition a domain hostmatcher can be used to select a key based on the domain of the local server.  This can be useful if the same configuration is used in a test environment and a production environment with differing domains.  For example mapfish.org and mapfish.net.</p>
+<p>Finally google maps (for example) requires a client id as well that is associated with the private key.  There for in the case of google premium services a legal key would be:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">keys</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="kt">!key</span>
+    <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">yxcvyxvcyxvyx</span>
+    <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gme-xxxcs</span>
+</pre></div>
+</div>
+<p>Thanks to the hosts and domain matcher it is possible to have a key for google maps and (for future proofing) a different key for a different service.</p>
+</div>
+<div class="section" id="fonts-definition">
+<h2>Fonts definition<a class="headerlink" href="#fonts-definition" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">fonts</span></code> section is optional. It contains the path of the fonts you want to use. The entries can point to files (TTF, OTF, TTC, AFM, PFM) or directories. Don’t point to directories containing too many files since it will slow down the start time. By default, PDF gives you access to the following fonts (Cp1252 encoding only):</p>
+<ul class="simple">
+<li><p>Courrier (-Bold, -Oblique, -BoldOblique)</p></li>
+<li><p>Helvetica (-Bold, -Oblique, -BoldOblique)</p></li>
+<li><p>Times (-Roman, -Bold, -Oblique, -BoldOblique)</p></li>
+<li><p>Symbol</p></li>
+<li><p>ZapfDingbats</p></li>
+</ul>
+</div>
+<div class="section" id="host-allow-list-definition">
+<h2>Host allow-list definition<a class="headerlink" href="#host-allow-list-definition" title="Permalink to this headline">¶</a></h2>
+<p>In this section, you can put as many entries as you want, even for the same type of filter. If at least one matches, the Map server can be used.</p>
+<p>This section is not for defining which client can request maps. It is just here to avoid having the print module used as a proxy to access documents from computers behind firewalls.</p>
+<p>There are 3 ways to allow-list a host.</p>
+<div class="section" id="allowing-every-local-services">
+<h3>Allowing every local services:<a class="headerlink" href="#allowing-every-local-services" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="kt">!localMatch</span>
+  <span class="nt">dummy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">dummy</span></code> parameter is ignored, but mandatory to avoid a limitation in the YAML format.</p>
+</div>
+<div class="section" id="allowing-by-dns-name">
+<h3>Allowing by DNS name:<a class="headerlink" href="#allowing-by-dns-name" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="kt">!dnsMatch</span>
+  <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">labs.metacarta.com</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="allowing-by-ip-address">
+<h3>Allowing by IP address:<a class="headerlink" href="#allowing-by-ip-address" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="p p-Indicator">-</span> <span class="kt">!ipMatch</span>
+    <span class="nt">ip</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">www.camptocamp.org</span>
+<span class="p p-Indicator">?</span>   <span class="nt">mask</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">255.255.255.255</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">ip</span></code> parameter can be a DNS name that will be resolved or directly an IP address.</p>
+<p>All the methods accept the following optional parameters:</p>
+<ul class="simple">
+<li><p>port: to limit to a certain TCP port</p></li>
+<li><p>pathRegexp: a regexp that must match the path part of the URL (before the ‘?’).</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="metadata-definition">
+<h2>Metadata definition<a class="headerlink" href="#metadata-definition" title="Permalink to this headline">¶</a></h2>
+<p>Allow to add some metadata to the generated PDF. They are visible in acroread in the File-&gt;Properties menu.</p>
+<p>The structure is like that:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>    <span class="nt">metaData</span><span class="p">:</span>
+<span class="p p-Indicator">?</span>     <span class="nt">title</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+<span class="p p-Indicator">?</span>     <span class="nt">author</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+<span class="p p-Indicator">?</span>     <span class="nt">subject</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+<span class="p p-Indicator">?</span>     <span class="nt">keywords</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+<span class="p p-Indicator">?</span>     <span class="nt">creator</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+<span class="p p-Indicator">?</span>     <span class="nt">supportLegacyReader</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+</pre></div>
+</div>
+<p>All fields are optional and can use global variables, as defined in the <a class="reference external" href="configuration.html#block-definition">Block definition</a> chapter. Page specific variables are not accessible.</p>
+</div>
+<div class="section" id="page-definition">
+<h2>Page definition<a class="headerlink" href="#page-definition" title="Permalink to this headline">¶</a></h2>
+<p>The structure is like that:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>      <span class="nt">pageSize</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A4</span>
+<span class="p p-Indicator">?</span>     <span class="nt">landscape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="p p-Indicator">?</span>     <span class="nt">marginLeft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">40</span>
+<span class="p p-Indicator">?</span>     <span class="nt">marginRight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">40</span>
+<span class="p p-Indicator">?</span>     <span class="nt">marginTop</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="p p-Indicator">?</span>     <span class="nt">marginBottom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="p p-Indicator">?</span>     <span class="nt">backgroundPdf</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">template.pdf</span>
+<span class="p p-Indicator">?</span>     <span class="nt">condition</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="p p-Indicator">?</span>     <span class="nt">header</span><span class="p">:</span>
+        <span class="nt">height</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50</span>
+        <span class="nt">items</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">BLOCK_DEFINITION</span><span class="p p-Indicator">}</span>
+          <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+      <span class="nt">items</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">BLOCK_DEFINITION</span><span class="p p-Indicator">}</span>
+        <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">?</span>     <span class="nt">footer</span><span class="p">:</span>
+        <span class="nt">height</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50</span>
+        <span class="nt">items</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">BLOCK_DEFINITION</span><span class="p p-Indicator">}</span>
+          <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>With the <code class="docutils literal notranslate"><span class="pre">condition</span></code> we can completely hide a page, same behavior than in block.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">backgroundPdf</span></code> is specified, the first page of the given PDF file will be added as background of every page.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">header</span></code> and <code class="docutils literal notranslate"><span class="pre">footer</span></code> sections are optional. If the <code class="docutils literal notranslate"><span class="pre">items</span></code> that are in the main section are too big, more pages are generated. The header and footer will be drawn on those pages as well.</p>
+<p>Here is a short list of supported <strong>pageSizes</strong>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 30%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head" rowspan="2"><p>name</p></th>
+<th class="head" rowspan="2"><p>width</p></th>
+<th class="head" rowspan="2"><p>height</p></th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td rowspan="2"><p>LETTER</p></td>
+<td rowspan="2"><p>612</p></td>
+<td rowspan="2"><p>792</p></td>
+</tr>
+<tr class="row-even"></tr>
+<tr class="row-odd"><td rowspan="2"><p>LEGAL</p></td>
+<td rowspan="2"><p>612</p></td>
+<td rowspan="2"><p>1008</p></td>
+</tr>
+<tr class="row-even"></tr>
+<tr class="row-odd"><td rowspan="2"><p>A4</p></td>
+<td rowspan="2"><p>595</p></td>
+<td rowspan="2"><p>842</p></td>
+</tr>
+<tr class="row-even"></tr>
+<tr class="row-odd"><td rowspan="2"><p>A3</p></td>
+<td rowspan="2"><p>842</p></td>
+<td rowspan="2"><p>1191</p></td>
+</tr>
+<tr class="row-even"></tr>
+</tbody>
+</table>
+<p>The complete list can be found in <a class="reference external" href="http://api.itextpdf.com/itext/com/itextpdf/text/PageSize.html">http://api.itextpdf.com/itext/com/itextpdf/text/PageSize.html</a>. If you want to use a custom page size, you can set <strong>pageSize</strong> to the width and the height separated by a space.</p>
+</div>
+<div class="section" id="id1">
+<h2>Block definition<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The next sub-sections document the possible types of blocks.</p>
+<p>In general, text values or URLs can contain values taken from the <strong>spec</strong> structure coming with the client’s request. A syntax similar to shell is used: ${variableName}. If the current page is a <strong>titlePage</strong>, only the root values are taken. If it’s a <strong>mainPage</strong>, the service will first look in the current <strong>page</strong> section then in the root values. Here is how to use this functionality:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span><span class="p">:</span> <span class="s1">&#39;The value of mapTitle is: $</span><span class="si">{mapTitle}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p>Some virtual variables can be used:</p>
+<ul class="simple">
+<li><p>${pageNum}: The current page number.</p></li>
+<li><p>${pageTot}: The total number of pages. Can be used only in text blocks.</p></li>
+<li><p>${now}: The current date and time as defined by the machine’s locale.</p></li>
+<li><p>${now FORMAT}: The current date and time as defined by the FORMAT string. The syntax is here: <a class="reference external" href="http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html">http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html</a>.</p></li>
+<li><p>${configDir}: The absolute path to the directory of the configuration file.</p></li>
+<li><p>${format PRINTF VAR}: Format the value of VAR using the provided <a class="reference external" href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html#syntax">PRINTF format</a> (for example: %,d).</p></li>
+</ul>
+<p>All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to <code class="docutils literal notranslate"><span class="pre">false</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>, the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it, exclamation mark is part of yaml syntax, than the expression should be in quotes.</p>
+<p>Example: show text block only if in the spec the attribute name <code class="docutils literal notranslate"><span class="pre">showText</span></code> is given, is not equal to <code class="docutils literal notranslate"><span class="pre">false</span></code> and not equal to <code class="docutils literal notranslate"><span class="pre">0</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="kt">!text</span>
+  <span class="nt">text</span><span class="p">:</span> <span class="s">&#39;mytext&#39;</span>
+  <span class="nt">condition</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">showText</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="text-block">
+<h2>Text block<a class="headerlink" href="#text-block" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>        <span class="p p-Indicator">-</span> <span class="kt">!text</span>
+<span class="p p-Indicator">?</span>         <span class="nt">font</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Helvetica</span>
+<span class="p p-Indicator">?</span>         <span class="nt">fontSize</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="p p-Indicator">?</span>         <span class="nt">fontEncoding</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Cp1252</span>
+<span class="p p-Indicator">?</span>         <span class="nt">fontColor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>         <span class="nt">spacingAfter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">align</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">left</span>
+<span class="p p-Indicator">?</span>         <span class="nt">vertAlign</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle</span>
+<span class="p p-Indicator">?</span>         <span class="nt">backgroundColor</span><span class="p">:</span> <span class="c1">#FFFFFF</span>
+          <span class="nt">text</span><span class="p">:</span> <span class="s">&#39;Blahblah&#39;</span>
+</pre></div>
+</div>
+<p>Typical <code class="docutils literal notranslate"><span class="pre">fontEncoding</span></code> values are:</p>
+<ul class="simple">
+<li><p>Cp1250</p></li>
+<li><p>Cp1252</p></li>
+<li><p>Cp1257</p></li>
+<li><p>Identity-H (horizontal UTF-8)</p></li>
+<li><p>Identity-V (vertical UTF-8)</p></li>
+<li><p>MacRoman</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">font</span></code> must refer to a standard PDF font or a <a class="reference external" href="configuration.html#fonts-definition">declared font</a>.</p>
+</div>
+<div class="section" id="image-block">
+<h2>Image block<a class="headerlink" href="#image-block" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>        <span class="p p-Indicator">-</span> <span class="kt">!image</span>
+          <span class="nt">maxWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200</span>
+          <span class="nt">maxHeight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="p p-Indicator">?</span>         <span class="nt">spacingAfter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">align</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">left</span>
+<span class="p p-Indicator">?</span>         <span class="nt">vertAlign</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle</span>
+          <span class="nt">url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://trac.mapfish.org/trac/mapfish/chrome/site/img/mapfish.png</span>
+</pre></div>
+</div>
+<p>Supported formats are PNG, GIF, Jpeg, Jpeg2000, BMP, WMF (vector), SVG and TIFF.</p>
+<p>The original aspect ratio will be respected. The url can contain <code class="docutils literal notranslate"><span class="pre">${}</span></code> variables.</p>
+</div>
+<div class="section" id="columns-block">
+<h2>Columns block<a class="headerlink" href="#columns-block" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>        <span class="p p-Indicator">-</span> <span class="kt">!columns</span>
+<span class="p p-Indicator">?</span>         <span class="nt">config</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">TABLE_CONFIG</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">?</span>         <span class="nt">widths</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">25</span><span class="p p-Indicator">,</span><span class="nv">25</span><span class="p p-Indicator">,</span><span class="nv">25</span><span class="p p-Indicator">,</span><span class="nv">25</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">?</span>         <span class="nt">backgroundColor</span><span class="p">:</span> <span class="c1">#FFFFFF</span>
+<span class="p p-Indicator">?</span>         <span class="nt">absoluteX</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="p p-Indicator">?</span>         <span class="nt">absoluteY</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="p p-Indicator">?</span>         <span class="nt">width</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">PAGE_WIDTH</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">?</span>         <span class="nt">spacingAfter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">nbColumns</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-1</span>
+          <span class="nt">items</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">BLOCK_DEFINITION</span><span class="p p-Indicator">}</span>
+            <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>Can be called <strong>!table</strong> as well.</p>
+<p>By default, the width of the columns will be equal.</p>
+<p>Each item will be in its own column.</p>
+<p>If the <strong>absoluteX</strong>, <strong>absoluteY</strong> and <strong>width</strong> are given, the columns block will be floating on top of the page at the specified position.</p>
+<p>The <strong>widths</strong> attribute can be used to change the width of the columns (by default, they have the same width). It must contain one integer for each column. The width of a given column is <cite>tableWidth*columnWeight/sum(columnWeight)</cite>.</p>
+<p>Every block type is allowed except for <strong>map</strong> if the column has an absolute position.</p>
+<p>Look at
+&lt;<a class="reference external" href="http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleServer#Tableconfiguration">http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleServer#Tableconfiguration</a>
+to know how to specify the <strong>config</strong> field.</p>
+</div>
+<div class="section" id="map-block">
+<h2>Map block<a class="headerlink" href="#map-block" title="Permalink to this headline">¶</a></h2>
+<p>Allowed only within a <strong>mainPage</strong>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>        <span class="p p-Indicator">-</span> <span class="kt">!map</span>
+          <span class="nt">width</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">WIDTH</span><span class="p p-Indicator">}</span>
+          <span class="nt">height</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">HEIGHT</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">?</span>         <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">map</span>
+<span class="p p-Indicator">?</span>         <span class="nt">spacingAfter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">align</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">left</span>
+<span class="p p-Indicator">?</span>         <span class="nt">vertAlign</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle</span>
+<span class="p p-Indicator">?</span>         <span class="nt">absoluteX</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="p p-Indicator">?</span>         <span class="nt">absoluteY</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="p p-Indicator">?</span>         <span class="nt">overviewMap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="p p-Indicator">?</span>         <span class="nt">backgroundColor</span><span class="p">:</span> <span class="c1">#FFFFFF</span>
+</pre></div>
+</div>
+<p><strong>width</strong> and <strong>height</strong> are mandatory. You can use variable substitution in this part, but if you do so, the browser won’t receive the map size when it calls <strong>info.json</strong>. You’ll have to <strong>override mapfish.widgets.print.Base.configReceived</strong> and set the map width and height of your layouts.</p>
+<p>If the <strong>absoluteX</strong> and <strong>absoluteY</strong> are given, the map block will be floating on top of the page at the specified position.</p>
+<p>The <strong>name</strong> is what will be displayed in the Acrobat’s reader layer panel. The map layers will be displayed bellow it.</p>
+<p>If <strong>overviewMap</strong> is specified, the map will be an overview of the extent augmented by the given factor. There are few cases to consider with map overviews:</p>
+<ol class="arabic simple">
+<li><p>If there is no overview overrides and no OL.Control.MapOverview, then all the layers will figure in the PDF map overview.</p></li>
+<li><p>If there are overview overrides, the OL map overview control is ignored.</p></li>
+<li><p>If there are no overview overrides and there is an OL.Control.MapOverview (takes the first one), then the layers defined in the control are taken into account. By default it is the current base layer.</p></li>
+</ol>
+</div>
+<div class="section" id="scalebar-block">
+<h2>Scalebar block<a class="headerlink" href="#scalebar-block" title="Permalink to this headline">¶</a></h2>
+<p>Display a scalebar.</p>
+<p>Allowed only within a <strong>mainPage</strong>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>        <span class="p p-Indicator">-</span> <span class="kt">!scalebar</span>
+          <span class="nt">maxSize</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">150</span>
+<span class="p p-Indicator">?</span>         <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">line</span>
+<span class="p p-Indicator">?</span>         <span class="nt">intervals</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="p p-Indicator">?</span>         <span class="nt">subIntervals</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="p p-Indicator">?</span>         <span class="nt">units</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">m</span>
+<span class="p p-Indicator">?</span>         <span class="nt">barSize</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="p p-Indicator">?</span>         <span class="nt">lineWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="p p-Indicator">?</span>         <span class="nt">barDirection</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">up</span>
+<span class="p p-Indicator">?</span>         <span class="nt">textDirection</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">up</span>
+<span class="p p-Indicator">?</span>         <span class="nt">labelDistance</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="p p-Indicator">?</span>         <span class="nt">font</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Helvetica</span>
+<span class="p p-Indicator">?</span>         <span class="nt">fontSize</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="p p-Indicator">?</span>         <span class="nt">fontColor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>         <span class="nt">color</span><span class="p">:</span> <span class="c1">#000000</span>
+<span class="p p-Indicator">?</span>         <span class="nt">barBgColor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="p p-Indicator">?</span>         <span class="nt">spacingAfter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">align</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">left</span>
+<span class="p p-Indicator">?</span>         <span class="nt">vertAlign</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle</span>
+<span class="p p-Indicator">?</span>         <span class="nt">backgroundColor</span><span class="p">:</span> <span class="c1">#FFFFFF</span>
+<span class="p p-Indicator">?</span>         <span class="nt">lockUnits</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>The scalebar, will adapt its width up to <cite>maxSize</cite> (includes the labels) in order to have a multiple of 1, 2 or 5 values at each graduation. For example:</p>
+<ul class="simple">
+<li><p>0, 1, 2, …</p></li>
+<li><p>0, 2, 4, …</p></li>
+<li><p>0, 5, 10, …</p></li>
+<li><p>0, 10, 20, …</p></li>
+</ul>
+<p>The <cite>barSize</cite> is the thickness of the bar or the height of the tick marks on the line. The <cite>lineWith</cite> is for the thickness of the lines (or bar border).</p>
+<p>Units can be any of:</p>
+<ul class="simple">
+<li><p>m (mm, cm, m or km)</p></li>
+<li><p>ft (in, ft, yd, mi)</p></li>
+<li><p>degrees (min, sec, °)</p></li>
+</ul>
+<p>If the value is too big or too small, the module will switch to one of the unit in parenthesis (the same unit is used for every intervals).  If this behaviour is not desired, the lockUnits parameter will force the declared unit (or map unit if no unit is declared) to be used for the scalebar.</p>
+<p>The number of <cite>intervals</cite> can be set to anything &gt;=2. Labels are drawn only at main intervals. If there is no space to display a label at a certain interval, this label won’t be displayed. If <cite>subIntervals</cite> are enabled, their number will depend on the length of an interval.</p>
+<p>The type can be:</p>
+<ul class="simple">
+<li><p>line: A simple line with graduations</p></li>
+<li><p>bar: A thick bar with a suite of color and barBgColor blocks.</p></li>
+<li><p>bar_sub: Like bar, but with little lines for labels.</p></li>
+</ul>
+<img alt="../../_images/scalebarTypes.png" src="../../_images/scalebarTypes.png" />
+<p>The bar and/or text orientation can be set to <code class="docutils literal notranslate"><span class="pre">up</span></code>, <code class="docutils literal notranslate"><span class="pre">down</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code> or <code class="docutils literal notranslate"><span class="pre">right</span></code>.</p>
+<p>The <cite>align</cite> attribute is for placing the whole scalebar within the surrounding column or page. The <cite>vertAlign</cite> attribute is used only when placed in a column.</p>
+<p>Labels are always centered on the graduation, at a distance specified by labelDistance.</p>
+</div>
+<div class="section" id="attributes-block">
+<h2>Attributes block<a class="headerlink" href="#attributes-block" title="Permalink to this headline">¶</a></h2>
+<p>Allows to display a table of the displayed feature’s attributes.</p>
+<p>Allowed only within a <em>mainPage</em>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>        <span class="p p-Indicator">-</span> <span class="kt">!attributes</span>
+          <span class="nt">source</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">results</span>
+<span class="p p-Indicator">?</span>         <span class="nt">tableConfig</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">TABLE_CONFIG</span><span class="p p-Indicator">}</span>
+          <span class="nt">columnDefs</span><span class="p">:</span>
+            <span class="p p-Indicator">{</span><span class="nv">COLUMN_NAME</span><span class="p p-Indicator">}:</span>
+<span class="p p-Indicator">?</span>             <span class="nt">columnWeight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0        MF_V1.2</span>
+              <span class="nt">header</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">BLOCK_DEFINITION</span><span class="p p-Indicator">}</span>
+              <span class="nt">cell</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">BLOCK_DEFINITION</span><span class="p p-Indicator">}</span>
+<span class=" -Error">            </span><span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>Look <a class="reference external" href="configuration.html#table-configuration">here</a> for how to specify the <em>tableConfig</em> field.</p>
+<p>The <em>columnWeigth</em> (MF_V1.2 only) allows to define a weight for the column width. If you specify it for one column, you have to specify it for all of them. The width of a given column is tableWidth*columnWeight/sum(columnWeight).</p>
+<p>The <strong>source</strong> value defines the name of the entry in the root of the client’s <strong>spec</strong>. For example, it would look like that:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">{</span>
+  <span class="nv">...</span>
+  <span class="nv">pages</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span>
+    <span class="p p-Indicator">{</span>
+      <span class="nv">...</span>
+      <span class="nv">results</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{</span>
+<span class="nt">        data</span><span class="p">:</span> <span class="p p-Indicator">[</span>
+          <span class="p p-Indicator">{</span><span class="nv">id</span><span class="p p-Indicator">:</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> name</span><span class="p">:</span> <span class="s">&#39;blah&#39;</span><span class="p p-Indicator">,</span><span class="nt"> icon</span><span class="p">:</span> <span class="s">&#39;icon_pan&#39;</span><span class="p p-Indicator">},</span>
+          <span class="nv">...</span>
+        <span class="p p-Indicator">],</span>
+<span class="nt">        columns</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;id&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;name&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;icon&#39;</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">}</span>
+    <span class="p p-Indicator">}</span>
+  <span class="p p-Indicator">]</span>
+  <span class="nv">...</span>
+<span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>With this spec you would have to define 3 columnDefs with the names <strong>id</strong>, <strong>name</strong> and <strong>icon</strong>. Each cell definition blocks have access to all the values of the current row.</p>
+<p>The spec part is filled automatically by the 2 MapFish widgets when their <a class="reference external" href="http://www.mapfish.org/apidoc/trunk/files/mapfish/widgets/print/Base-js.html#mapfish.widgets.print.Base.grids">grids</a> parameter is set.</p>
+<p>Here is a crazy example of columnDef that will show the name of the icon and it’s bitmap side-by-side inside a single column:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">columnDefs</span><span class="p">:</span>
+  <span class="nt">icon</span><span class="p">:</span>
+    <span class="nt">header</span><span class="p">:</span> <span class="kt">!text</span>
+      <span class="nt">text</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Symbol</span>
+      <span class="nt">backgroundColor</span><span class="p">:</span> <span class="c1">#A0A0A0</span>
+    <span class="nt">cell</span><span class="p">:</span> <span class="kt">!columns</span>
+      <span class="nt">items</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="kt">!text</span>
+          <span class="nt">text</span><span class="p">:</span> <span class="s">&#39;${icon}&#39;</span>
+        <span class="p p-Indicator">-</span> <span class="kt">!image</span>
+          <span class="nt">align</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">center</span>
+          <span class="nt">maxWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">15</span>
+          <span class="nt">maxHeight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">15</span>
+          <span class="nt">url</span><span class="p">:</span> <span class="s">&#39;http://www.mapfish.org/svn/mapfish/trunk/MapFish/client/mfbase/mapfish/img/${icon}.png&#39;</span>
+</pre></div>
+</div>
+<p>A more complex example can be found in SVN: <a class="reference external" href="http://trac.mapfish.org/trac/mapfish/browser/trunk/MapFish/server/java/print/print-standalone/samples/config.yaml">config.yaml</a> <a class="reference external" href="http://trac.mapfish.org/trac/mapfish/browser/trunk/MapFish/server/java/print/print-standalone/samples/spec.json">spec.json</a></p>
+<p>The print widgets are able to fill the spec for you based on a dictionary of <strong>Ext.grid.GridPanel</strong>. Just pass them through the grids parameter.</p>
+</div>
+<div class="section" id="legends-block">
+<h2>Legends block<a class="headerlink" href="#legends-block" title="Permalink to this headline">¶</a></h2>
+<p>Display each layers along with its classes (icons and labels).</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>        <span class="p p-Indicator">-</span> <span class="kt">!legends</span>
+<span class="p p-Indicator">?</span>         <span class="nt">backgroundColor</span><span class="p">:</span> <span class="c1">#FFFFFF</span>
+<span class="p p-Indicator">?</span>         <span class="nt">borders</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="p p-Indicator">?</span>         <span class="nt">horizontalAlignment</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">center</span>
+<span class="p p-Indicator">?</span>         <span class="nt">maxWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">maxHeight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">iconMaxWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">iconMaxHeight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="p p-Indicator">?</span>         <span class="nt">iconPadding</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8 7 6 5</span>
+<span class="p p-Indicator">?</span>         <span class="nt">textMaxWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="p p-Indicator">?</span>         <span class="nt">textMaxHeight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="p p-Indicator">?</span>         <span class="nt">textPadding</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8 7 6 5</span>
+<span class="p p-Indicator">?</span>         <span class="nt">defaultScale</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="p p-Indicator">?</span>         <span class="nt">inline</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="p p-Indicator">?</span>         <span class="nt">classIndentation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="p p-Indicator">?</span>         <span class="nt">layerSpaceBefore</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="p p-Indicator">?</span>         <span class="nt">layerSpace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="p p-Indicator">?</span>         <span class="nt">classSpace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="p p-Indicator">?</span>         <span class="nt">layerFont</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Helvetica</span>
+<span class="p p-Indicator">?</span>         <span class="nt">layerFontSize</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="p p-Indicator">?</span>         <span class="nt">classFont</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Helvetica</span>
+<span class="p p-Indicator">?</span>         <span class="nt">classFontSize</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="p p-Indicator">?</span>         <span class="nt">fontEncoding</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Cp1252</span>
+<span class="p p-Indicator">?</span>         <span class="nt">columnMargin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+</pre></div>
+</div>
+<p><strong>borders</strong> is mainly for debugging purpouses and shows all borders in the legend tables. This can be either ‘true’ or ‘false’.</p>
+<p><strong>horizontalAlignment</strong> can be left, right or center (default) and aligns all items left, right or in the center.</p>
+<p><strong>iconMaxWidth</strong>, <strong>iconMaxHeight</strong>, <strong>defaultScale</strong> with value of 0 indicate that the value will be ignored, i.e. the values are automatically set to the equivalent of Infinity, Infinity and 1 respectively. If the legends URL passed to MapFish (see <a class="reference external" href="http://mapfish.org/doc/print/protocol.html#print-pdf">http://mapfish.org/doc/print/protocol.html#print-pdf</a>) are obtained from a WMS GetLegendGraphic request, the width/height are only indicative (even more when a label text is included with <a class="reference internal" href="../../services/wms/get_legend_graphic/index.html#get-legend-graphic-options"><span class="std std-ref">LEGEND_OPTIONS/forceLabels parameter</span></a>) and it would be safer, in order to preserve scale coherence between legends and map, to set <strong>iconMaxWidth</strong> and <strong>iconMaxHeight</strong> to zero.</p>
+<p><strong>textMaxWidth/Height</strong> and <strong>iconMaxWidth/Height</strong> define how wide/high the text/icon cells of a legend item can be. At this point textMaxHeight is ignored.</p>
+<p><strong>textPadding</strong> and <strong>iconPadding</strong> can be used like standard CSS padding. In the above example 8 is the padding top, 7 padding right, 6 padding bottom and 5 padding left.</p>
+<p>if <strong>inline</strong> is true icons and text are rendered on the same line, BUT multicolumn is still enabled.</p>
+<p>if <strong>maxWidth</strong> is set the whole legend gets a maximum width, just like other blocks. Note that <strong>maxWidth</strong> does not have any impact on icons size, thus icons may overflow outside the legends block.</p>
+<p>if <strong>maxHeight</strong> is set the whole legend gets a maximum height. This forces more than one column to appear if the legend is higher than the specified value. This can be used to enable the multi-column layout. 0 makes the maxHeight= max value, i.e. the equivalent of infinity.</p>
+<p>if <strong>defaultScale</strong> is non null it means that the legend image will be scaled so it doesn’t take the full space. This can be overridden for individual classes in the spec JSON sent to the print module by adding an attribute called ‘scale’ and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If <strong>defaultScale</strong> equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with ~90 dpi resolution (exactly 25.4/0.28), setting <strong>defaultScale</strong> value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the <a class="reference internal" href="../../services/wms/get_legend_graphic/index.html#get-legend-graphic-options"><span class="std std-ref">LEGEND_OPTIONS/dpi GeoServer parameter</span></a> is not handled by MapFish, the resolution will necessary be ~91 dpi, which may cause visual quality difference with the map.</p>
+<p>For this to work, you need to set the <strong>layerTree</strong> config option on MF print widgets,
+more precisely the legends should be present in the print.pdf JSON request.</p>
+<p><strong>layerSpaceBefore</strong> is to specify the space before the second and consecutive layers.</p>
+<p><strong>layerSpace</strong> and <strong>classSpace</strong> is to specify the line space to add after layers and classes.</p>
+<p><strong>columnMaxWidth</strong> maximum width of a column in multi-column layout. Not tested (at time of writing).</p>
+<p><strong>classIndentation</strong> amount of points to indent classes by.</p>
+<p><strong>layerSpaceBefore</strong> if a layer is after another one, this defines the amount of space to have before it. This will not be applied if the layer is the first item in its column in multi-column layout.</p>
+<p><strong>layerFont</strong> font of layer name legend items.</p>
+<p><strong>layerFontSize</strong> font size of layer name.</p>
+<p><strong>classFont</strong> font of class legend items.</p>
+<p><strong>classFontSize</strong> font size of class.</p>
+<p><strong>fontEncoding</strong> (see below)</p>
+</div>
+<div class="section" id="table-configuration">
+<h2>Table configuration<a class="headerlink" href="#table-configuration" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="#columns-block">columns block</a> and the <a class="reference external" href="#attributes-block">attributes block</a> can take a table configuration object like that:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>    <span class="nt">config</span><span class="p">:</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidthLeft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidthRight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidthTop</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidthBottom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColorLeft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColorRight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColorTop</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColorBottom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">cells</span><span class="p">:</span>
+<span class="p p-Indicator">?</span>       <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">CELL_CONFIGURATION</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>A cell configuration looks like that:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">?</span>     <span class="nt">row</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">?</span>     <span class="nt">col</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidthLeft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidthRight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidthTop</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderWidthBottom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColorLeft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColorRight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColorTop</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">borderColorBottom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+<span class="p p-Indicator">?</span>     <span class="nt">padding</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">paddingLeft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">paddingRight</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">paddingTop</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">paddingBottom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="p p-Indicator">?</span>     <span class="nt">backgroundColor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">white</span>
+<span class="p p-Indicator">?</span>     <span class="nt">align</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">LEFT</span>
+<span class="p p-Indicator">?</span>     <span class="nt">vertAlign</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TOP</span>
+</pre></div>
+</div>
+<p>The stuff configured at table level is for the table border, not every cell.</p>
+<p>The <strong>cells</strong> list defines overrides for some cells. The cells an override is applied to is defined by the <strong>row</strong> and <strong>col</strong> attribute. Those attributes can have several formats:</p>
+<ul class="simple">
+<li><p><strong>0</strong>: apply only to row or column 0 (the first)</p></li>
+<li><p><strong>0-10</strong>: applies only the row or columns from 0 to 10</p></li>
+<li><p>or you can use any regular expression</p></li>
+</ul>
+<p>Every matching overrides is applied in order and will override the values defined in the previous ones.</p>
+<p>For example, if you want to draw an attribute block like that:</p>
+<img alt="../../_images/tableConfig.png" src="../../_images/tableConfig.png" />
+<p>You define that:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="kt">!attributes</span>
+  <span class="nt">tableConfig</span><span class="p">:</span>
+    <span class="nt">borderWidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+    <span class="nt">cells</span><span class="p">:</span>
+      <span class="c1"># match every cell (default cell formatting)</span>
+      <span class="p p-Indicator">-</span> <span class="nt">borderWidthBottom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
+        <span class="nt">borderWidthLeft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
+        <span class="nt">padding</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
+        <span class="nt">paddingTop</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+      <span class="c1"># match every even cell (yellowish background)</span>
+      <span class="p p-Indicator">-</span> <span class="nt">row</span><span class="p">:</span> <span class="s">&#39;\d*[02468]&#39;</span>
+        <span class="nt">backgroundColor</span><span class="p">:</span> <span class="c1">#FFFFCC</span>
+      <span class="c1"># for the header</span>
+      <span class="p p-Indicator">-</span> <span class="nt">row</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+        <span class="nt">borderWidthBottom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+        <span class="nt">backgroundColor</span><span class="p">:</span> <span class="c1">#FA0002</span>
+        <span class="nt">align</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">center</span>
+  <span class="p p-Indicator">{</span><span class="nv">...</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="warranty-disclaimer-and-license">
+<h2>Warranty disclaimer and license<a class="headerlink" href="#warranty-disclaimer-and-license" title="Permalink to this headline">¶</a></h2>
+<p>The authors provide these documents “AS-IS”, without warranty of any kind
+either expressed or implied.</p>
+<p>Document under <a class="reference external" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Common License Attribution-Share Alike 2.5 Generic</a>.</p>
+<p>Authors: MapFish developers.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">GeoServer Printing Module</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="protocol.html" title="next chapter">Protocol</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#keys">Keys</a></li>
+<li><a class="reference internal" href="#fonts-definition">Fonts definition</a></li>
+<li><a class="reference internal" href="#host-allow-list-definition">Host allow-list definition</a><ul>
+<li><a class="reference internal" href="#allowing-every-local-services">Allowing every local services:</a></li>
+<li><a class="reference internal" href="#allowing-by-dns-name">Allowing by DNS name:</a></li>
+<li><a class="reference internal" href="#allowing-by-ip-address">Allowing by IP address:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#metadata-definition">Metadata definition</a></li>
+<li><a class="reference internal" href="#page-definition">Page definition</a></li>
+<li><a class="reference internal" href="#id1">Block definition</a></li>
+<li><a class="reference internal" href="#text-block">Text block</a></li>
+<li><a class="reference internal" href="#image-block">Image block</a></li>
+<li><a class="reference internal" href="#columns-block">Columns block</a></li>
+<li><a class="reference internal" href="#map-block">Map block</a></li>
+<li><a class="reference internal" href="#scalebar-block">Scalebar block</a></li>
+<li><a class="reference internal" href="#attributes-block">Attributes block</a></li>
+<li><a class="reference internal" href="#legends-block">Legends block</a></li>
+<li><a class="reference internal" href="#table-configuration">Table configuration</a></li>
+<li><a class="reference internal" href="#warranty-disclaimer-and-license">Warranty disclaimer and license</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">GeoServer Printing Module</a></li>
+            <li>Next: <a href="protocol.html" title="next chapter">Protocol</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/printing/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

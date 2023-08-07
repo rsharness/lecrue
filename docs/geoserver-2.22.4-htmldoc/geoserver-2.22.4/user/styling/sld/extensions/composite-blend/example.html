@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compositing and blending example &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Z ordering features within and across feature types and layers" href="../z-order/index.html" />
+    <link rel="prev" title="Composite and blending modes" href="modes.html" /> 
+  </head><body class="styling/sld/extensions/composite-blend/example">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Extensions in GeoServer</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Color compositing and color blending</a> &raquo;</li>
+    <li>Compositing and blending example</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../z-order/index.html" title="Z ordering features within and across feature types and layers" accesskey="N">Next</a></li>
+  <li>
+    <a href="modes.html" title="Composite and blending modes" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="compositing-and-blending-example">
+<span id="sld-extensions-composite-blend-example"></span><h1>Compositing and blending example<a class="headerlink" href="#compositing-and-blending-example" title="Permalink to this headline">¶</a></h1>
+<p>Let’s say we want to draw the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> layer so that the polygons are not filled with the population keyed
+colors, but only an inner border inside the polygon should appear, leaving the internal fully transparent.</p>
+<p>This is the destination:</p>
+<div class="figure align-default" id="id1">
+<img alt="../../../../_images/states.png" src="../../../../_images/states.png" />
+<p class="caption"><span class="caption-text">topp:states layer</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Using alpha blending, this can be achieved by creating a mask around the state borders with a thick
+stroke, and then using a “destination-in” alpha compositing.</p>
+<p>This is the source (mask):</p>
+<div class="figure align-default" id="id2">
+<img alt="../../../../_images/states-border.png" src="../../../../_images/states-border.png" />
+<p class="caption"><span class="caption-text">Layer mask</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The SLD will contain three FeatureTypeStyles. The first one would be the standard rules (states colored by population) and the last one will contain the label rules. The second (middle) one is where the blending will occur:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>...
+<span class="nt">&lt;FeatureTypeStyle&gt;</span>
+  <span class="c">&lt;!-- Usual states rules, skipped for brevity --&gt;</span>
+<span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+<span class="nt">&lt;FeatureTypeStyle&gt;</span>
+  <span class="nt">&lt;Rule&gt;</span>
+    <span class="nt">&lt;LineSymbolizer&gt;</span>
+      <span class="nt">&lt;Stroke&gt;</span>
+        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>10<span class="nt">&lt;/CssParameter&gt;</span>
+        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+      <span class="nt">&lt;/Stroke&gt;</span>
+    <span class="nt">&lt;/LineSymbolizer&gt;</span>
+  <span class="nt">&lt;/Rule&gt;</span>
+  <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;composite&quot;</span><span class="nt">&gt;</span>destination-in<span class="nt">&lt;/VendorOption&gt;</span>
+<span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+<span class="nt">&lt;FeatureTypeStyle&gt;</span>
+  <span class="c">&lt;!-- The label rules, skipped for brevity --&gt;</span>
+<span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+...
+</pre></div>
+</div>
+<p>This is the result of the composition:</p>
+<div class="figure align-default">
+<img alt="../../../../_images/states-border-composite.png" src="../../../../_images/states-border-composite.png" />
+</div>
+<p>Now, if for example someone makes a WMS call in which the another layer is drawn below this one, the result will look like this:</p>
+<div class="figure align-default">
+<img alt="../../../../_images/ne-states-border-composite1.png" src="../../../../_images/ne-states-border-composite1.png" />
+</div>
+<p>This other background layer is hardly visible, because it has been cut by the mask. This shows the risks of using alpha compositing without care in a WMS setting.</p>
+<p>In order to achieve the desired result no matter how the client composes the request, the first FeatureTypeStyle that draws the polygons (the states themselves) needs to be set as a <em>compositing base</em>, ensuring the mask will only be applied to it.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;composite-base&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>The result will look like the following (though a multiply blend was added to the base to ensure a nice
+visual transparency effect on the border lines):</p>
+<div class="figure align-default">
+<img alt="../../../../_images/ne-states-border-composite2.jpg" src="../../../../_images/ne-states-border-composite2.jpg" />
+</div>
+<div class="figure align-default">
+<img alt="../../../../_images/ne-states-border-composite3.jpg" src="../../../../_images/ne-states-border-composite3.jpg" />
+</div>
+<p><a class="reference download internal" download="" href="../../../../_downloads/c9a5e4e48da5f4694a01ec66985da27e/statesblend.sld"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">final</span> <span class="pre">style</span></code></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See the <a class="reference internal" href="modes.html#sld-extensions-composite-blend-modes"><span class="std std-ref">full list of available modes</span></a>.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="modes.html" title="previous chapter">Composite and blending modes</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../z-order/index.html" title="next chapter">Z ordering features within and across feature types and layers</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="modes.html" title="previous chapter">Composite and blending modes</a></li>
+            <li>Next: <a href="../z-order/index.html" title="next chapter">Z ordering features within and across feature types and layers</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/extensions/composite-blend/example.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

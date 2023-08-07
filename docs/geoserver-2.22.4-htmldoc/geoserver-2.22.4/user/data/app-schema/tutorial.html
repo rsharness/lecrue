@@ -1,0 +1,445 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tutorial &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MongoDB Tutorial" href="mongo-tutorial.html" />
+    <link rel="prev" title="Joining Support For Performance" href="joining.html" /> 
+  </head><body class="data/app-schema/tutorial">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Tutorial</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="mongo-tutorial.html" title="MongoDB Tutorial" accesskey="N">Next</a></li>
+  <li>
+    <a href="joining.html" title="Joining Support For Performance" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="tutorial">
+<span id="app-schema-tutorial"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial demonstrates how to configure two complex feature types using the app-schema plugin and data from two property files.</p>
+<div class="section" id="geosciml">
+<h2>GeoSciML<a class="headerlink" href="#geosciml" title="Permalink to this headline">¶</a></h2>
+<p>This example uses <a class="reference external" href="http://geosciml.org/doc/geosciml/2.0/documentation/html/">Geoscience Markup Language (GeoSciML) 2.0</a>, a GML 3.1 application schema:</p>
+<blockquote>
+<div><p><em>“GeoSciML is an application schema that specifies a set of feature-types and supporting structures for information used in the solid-earth geosciences.”</em></p>
+</div></blockquote>
+<p>The tutorial defines two feature types:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code>, which describes “a body of material in the Earth”.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code>, which describes the representation on a map of a feature, in this case <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code>.</p></li>
+</ol>
+<p>Because a single <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code> can be observed at several distinct locations on the Earth’s surface, it can have a multivalued <code class="docutils literal notranslate"><span class="pre">gsml:occurrence</span></code> property, each being a <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code>.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Install GeoServer as usual.</p></li>
+<li><p>Install the app-schema plugin <code class="docutils literal notranslate"><span class="pre">geoserver-*-app-schema-plugin.zip</span></code>:</p>
+<blockquote>
+<div><ul>
+<li><p>Place the jar files in <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> folder contains the GeoServer configuraration (data directory) used for this tutorial.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Either replace your existing <code class="docutils literal notranslate"><span class="pre">data</span></code> directory with the tutorial data directory,</p></li>
+<li><p>Or edit <code class="docutils literal notranslate"><span class="pre">WEB-INF/web.xml</span></code> to set <code class="docutils literal notranslate"><span class="pre">GEOSERVER_DATA_DIR</span></code> to point to the tutorial data directory. (Be sure to uncomment the section that sets <code class="docutils literal notranslate"><span class="pre">GEOSERVER_DATA_DIR</span></code>.)</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Perform any configuration required by your servlet container, and then start the servlet. For example, if you are using Tomcat, configure a new context in <code class="docutils literal notranslate"><span class="pre">server.xml</span></code> and then restart Tomcat.</p></li>
+<li><p>The first time GeoServer starts with the tutorial configuration, it will download all the schema (XSD) files it needs and store them in the <code class="docutils literal notranslate"><span class="pre">app-schema-cache</span></code> folder in the data directory. <strong>You must be connected to the internet for this to work.</strong></p></li>
+</ul>
+</div>
+<div class="section" id="datastore-xml">
+<h2>datastore.xml<a class="headerlink" href="#datastore-xml" title="Permalink to this headline">¶</a></h2>
+<p>Each data store configuration file <code class="docutils literal notranslate"><span class="pre">datastore.xml</span></code> specifies the location of a mapping file and triggers its loading as an app-schema data source. This file should not be confused with the source data store, which is specified inside the mapping file.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">gsml_GeologicUnit</span></code> the file is <code class="docutils literal notranslate"><span class="pre">workspaces/gsml/gsml_GeologicUnit/datastore.xml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">dataStore</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">gsml_GeologicUnit_datastore</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">gsml_GeologicUnit</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">enabled</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">enabled</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">workspace</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">gsml_workspace</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">workspace</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">connectionParameters</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">entry</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;namespace&quot;</span><span class="o">&gt;</span><span class="n">urn</span><span class="p">:</span><span class="n">cgi</span><span class="p">:</span><span class="n">xmlns</span><span class="p">:</span><span class="n">CGI</span><span class="p">:</span><span class="n">GeoSciML</span><span class="p">:</span><span class="mf">2.0</span><span class="o">&lt;/</span><span class="n">entry</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">entry</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;url&quot;</span><span class="o">&gt;</span><span class="n">file</span><span class="p">:</span><span class="n">workspaces</span><span class="o">/</span><span class="n">gsml</span><span class="o">/</span><span class="n">gsml_GeologicUnit</span><span class="o">/</span><span class="n">gsml_GeologicUnit</span><span class="o">.</span><span class="n">xml</span><span class="o">&lt;/</span><span class="n">entry</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">entry</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;dbtype&quot;</span><span class="o">&gt;</span><span class="n">app</span><span class="o">-</span><span class="n">schema</span><span class="o">&lt;/</span><span class="n">entry</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">connectionParameters</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dataStore</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>For <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code> the file is <code class="docutils literal notranslate"><span class="pre">workspaces/gsml/gsml_MappedFeature/datastore.xml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">dataStore</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">gsml_MappedFeature_datastore</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">gsml_MappedFeature</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">enabled</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">enabled</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">workspace</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">gsml_workspace</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">workspace</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">connectionParameters</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">entry</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;namespace&quot;</span><span class="o">&gt;</span><span class="n">urn</span><span class="p">:</span><span class="n">cgi</span><span class="p">:</span><span class="n">xmlns</span><span class="p">:</span><span class="n">CGI</span><span class="p">:</span><span class="n">GeoSciML</span><span class="p">:</span><span class="mf">2.0</span><span class="o">&lt;/</span><span class="n">entry</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">entry</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;url&quot;</span><span class="o">&gt;</span><span class="n">file</span><span class="p">:</span><span class="n">workspaces</span><span class="o">/</span><span class="n">gsml</span><span class="o">/</span><span class="n">gsml_MappedFeature</span><span class="o">/</span><span class="n">gsml_MappedFeature</span><span class="o">.</span><span class="n">xml</span><span class="o">&lt;/</span><span class="n">entry</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">entry</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;dbtype&quot;</span><span class="o">&gt;</span><span class="n">app</span><span class="o">-</span><span class="n">schema</span><span class="o">&lt;/</span><span class="n">entry</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">connectionParameters</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dataStore</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ensure that there is no blank-space inside an <code class="docutils literal notranslate"><span class="pre">entry</span></code> element.</p>
+</div>
+</div>
+<div class="section" id="mapping-files">
+<h2>Mapping files<a class="headerlink" href="#mapping-files" title="Permalink to this headline">¶</a></h2>
+<p>Configuration of app-schema feature types is performed in mapping files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">workspaces/gsml/gsml_GeologicUnit/gsml_GeologicUnit.xml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspaces/gsml/gsml_MappedFeature/gsml_MappedFeature.xml</span></code></p></li>
+</ul>
+<div class="section" id="namespaces">
+<h3>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h3>
+<p>Each mapping file contains namespace prefix definitions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">Namespace</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">prefix</span><span class="o">&gt;</span><span class="n">gml</span><span class="o">&lt;/</span><span class="n">prefix</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">uri</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">opengis</span><span class="o">.</span><span class="n">net</span><span class="o">/</span><span class="n">gml</span><span class="o">&lt;/</span><span class="n">uri</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">Namespace</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Namespace</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">prefix</span><span class="o">&gt;</span><span class="n">gsml</span><span class="o">&lt;/</span><span class="n">prefix</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">uri</span><span class="o">&gt;</span><span class="n">urn</span><span class="p">:</span><span class="n">cgi</span><span class="p">:</span><span class="n">xmlns</span><span class="p">:</span><span class="n">CGI</span><span class="p">:</span><span class="n">GeoSciML</span><span class="p">:</span><span class="mf">2.0</span><span class="o">&lt;/</span><span class="n">uri</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">Namespace</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Namespace</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">prefix</span><span class="o">&gt;</span><span class="n">xlink</span><span class="o">&lt;/</span><span class="n">prefix</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">uri</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">1999</span><span class="o">/</span><span class="n">xlink</span><span class="o">&lt;/</span><span class="n">uri</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">Namespace</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Only those namespace prefixes used in the mapping file need to be declared, so the mapping file for <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code> has less.</p>
+</div>
+<div class="section" id="source-data-store">
+<h3>Source data store<a class="headerlink" href="#source-data-store" title="Permalink to this headline">¶</a></h3>
+<p>The data for this tutorial is contained in two property files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">workspaces/gsml/gsml_GeologicUnit/gsml_GeologicUnit.properties</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspaces/gsml/gsml_MappedFeature/gsml_MappedFeature.properties</span></code></p></li>
+</ul>
+<p><a class="reference internal" href="../vector/properties.html#data-java-properties"><span class="std std-ref">Java Properties</span></a> describes the format of property files.</p>
+<p>For this example, each feature type uses an identical source data store configuration. This <code class="docutils literal notranslate"><span class="pre">directory</span></code> parameter indicates that the source data is contained in property files named by their feature type, in the same directory as the corresponding mapping file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">sourceDataStores</span><span class="o">&gt;</span>
+     <span class="o">&lt;</span><span class="n">DataStore</span><span class="o">&gt;</span>
+         <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">datastore</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+         <span class="o">&lt;</span><span class="n">parameters</span><span class="o">&gt;</span>
+             <span class="o">&lt;</span><span class="n">Parameter</span><span class="o">&gt;</span>
+                 <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">directory</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+                 <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">file</span><span class="p">:</span><span class="o">./&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+             <span class="o">&lt;/</span><span class="n">Parameter</span><span class="o">&gt;</span>
+         <span class="o">&lt;/</span><span class="n">parameters</span><span class="o">&gt;</span>
+     <span class="o">&lt;/</span><span class="n">DataStore</span><span class="o">&gt;</span>
+ <span class="o">&lt;/</span><span class="n">sourceDataStores</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="data-stores.html#app-schema-data-stores"><span class="std std-ref">Data Stores</span></a> for a description of how to use other types of data stores such as databases.</p>
+</div>
+<div class="section" id="target-types">
+<h3>Target types<a class="headerlink" href="#target-types" title="Permalink to this headline">¶</a></h3>
+<p>Both feature types are defined by the same XML Schema, the top-level schema for GeoSciML 2.0. This is specified in the <code class="docutils literal notranslate"><span class="pre">targetTypes</span></code> section. The type of the output feature is defined in <code class="docutils literal notranslate"><span class="pre">targetElement</span></code> in the <code class="docutils literal notranslate"><span class="pre">typeMapping</span></code> section below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">targetTypes</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">FeatureType</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">schemaUri</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">geosciml</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">geosciml</span><span class="o">/</span><span class="mf">2.0</span><span class="o">/</span><span class="n">xsd</span><span class="o">/</span><span class="n">geosciml</span><span class="o">.</span><span class="n">xsd</span><span class="o">&lt;/</span><span class="n">schemaUri</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">FeatureType</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">targetTypes</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In this case the schema is published, but because the OASIS XML Catalog is used for schema resolution, a private or modified schema in the catalog can be used if desired.</p>
+</div>
+<div class="section" id="mappings">
+<h3>Mappings<a class="headerlink" href="#mappings" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">typeMappings</span></code> element begins with configuration elements. From the mapping file for <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">typeMappings</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">FeatureTypeMapping</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">sourceDataStore</span><span class="o">&gt;</span><span class="n">datastore</span><span class="o">&lt;/</span><span class="n">sourceDataStore</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">sourceType</span><span class="o">&gt;</span><span class="n">gsml_GeologicUnit</span><span class="o">&lt;/</span><span class="n">sourceType</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">targetElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">GeologicUnit</span><span class="o">&lt;/</span><span class="n">targetElement</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The mapping starts with <code class="docutils literal notranslate"><span class="pre">sourceDataStore</span></code>, which gives the arbitrary identifier used above to name the source of the input data in the <code class="docutils literal notranslate"><span class="pre">sourceDataStores</span></code> section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sourceType</span></code> gives the name of the source simple feature type. In this case it is the simple feature type <code class="docutils literal notranslate"><span class="pre">gsml_GeologicUnit</span></code>, sourced from the rows of the file <code class="docutils literal notranslate"><span class="pre">gsml_GeologicUnit.properties</span></code> in the same directory as the mapping file.</p></li>
+<li><p>When working with databases <code class="docutils literal notranslate"><span class="pre">sourceType</span></code> is the name of a table or view. Database identifiers must be lowercase for PostGIS or uppercase for Oracle Spatial.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targetElement</span></code> is the name of the output complex feature type.</p></li>
+</ul>
+</div>
+<div class="section" id="gml-id-mapping">
+<h3>gml:id mapping<a class="headerlink" href="#gml-id-mapping" title="Permalink to this headline">¶</a></h3>
+<p>The first mapping sets the <code class="docutils literal notranslate"><span class="pre">gml:id</span></code> to be the feature id specified in the source property file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+        <span class="n">gsml</span><span class="p">:</span><span class="n">GeologicUnit</span>
+    <span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">idExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">ID</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">idExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">targetAttribute</span></code> is the XPath to the element for which the mapping applies, in this case, the top-level feature type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">idExpression</span></code> is a special form that can only be used to set the <code class="docutils literal notranslate"><span class="pre">gml:id</span></code> on a feature. Any field or CQL expression can be used, if it evaluates to an <a class="reference external" href="http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName">NCName</a>.</p></li>
+</ul>
+</div>
+<div class="section" id="ordinary-mapping">
+<h3>Ordinary mapping<a class="headerlink" href="#ordinary-mapping" title="Permalink to this headline">¶</a></h3>
+<p>Most mappings consist of a target and source. Here is one from <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+        <span class="n">gml</span><span class="p">:</span><span class="n">description</span>
+        <span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">DESCRIPTION</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>In this case, the value of <code class="docutils literal notranslate"><span class="pre">gml:description</span></code> is just the value of the <code class="docutils literal notranslate"><span class="pre">DESCRIPTION</span></code> field in the property file.</p></li>
+<li><p>For a database, the field name is the name of the column (the table/view is set in <code class="docutils literal notranslate"><span class="pre">sourceType</span></code> above). Database identifiers must be lowercase for PostGIS or uppercase for Oracle Spatial.</p></li>
+<li><p>CQL expressions can be used to calculate content. Use caution because queries on CQL-calculated values prevent the construction of efficient SQL queries.</p></li>
+<li><p>Source expressions can be CQL literals, which are single-quoted.</p></li>
+</ul>
+</div>
+<div class="section" id="client-properties">
+<h3>Client properties<a class="headerlink" href="#client-properties" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the element content, a mapping can set one or more “client properties” (XML attributes). Here is one from <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+        <span class="n">gsml</span><span class="p">:</span><span class="n">specification</span>
+    <span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">GU_URN</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This mapping leaves the content of the <code class="docutils literal notranslate"><span class="pre">gsml:specification</span></code> element empty but sets an <code class="docutils literal notranslate"><span class="pre">xlink:href</span></code> attribute to the value of the <code class="docutils literal notranslate"><span class="pre">GU_URN</span></code> field.</p></li>
+<li><p>Multiple <code class="docutils literal notranslate"><span class="pre">ClientProperty</span></code> mappings can be set.</p></li>
+</ul>
+<p>In this example from the mapping for <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code> both element content and an XML attribute are provided:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+        <span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">codeSpace</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;urn:x-test:classifierScheme:TestAuthority:GeologicUnitName&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">codespace</span></code> XML attribute is set to a fixed value by providing a CQL literal.</p></li>
+<li><p>There are multiple mappings for <code class="docutils literal notranslate"><span class="pre">gml:name</span></code>, and the index <code class="docutils literal notranslate"><span class="pre">[1]</span></code> means that this mapping targets the first.</p></li>
+</ul>
+</div>
+<div class="section" id="targetattributenode">
+<h3>targetAttributeNode<a class="headerlink" href="#targetattributenode" title="Permalink to this headline">¶</a></h3>
+<p>If the type of a property is abstract, a <code class="docutils literal notranslate"><span class="pre">targetAttributeNode</span></code> mapping must be used to specify a concrete type. This mapping must occur before the mapping for the content of the property.</p>
+<p>Here is an example from the mapping file for <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">positionalAccuracy</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValuePropertyType</span><span class="o">&lt;/</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">positionalAccuracy</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="s1">&#39;urn:ogc:def:nil:OGC:missing&#39;</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">codeSpace</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;urn:ietf:rfc:2141&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gsml:positionalAccuracy</span></code> is of type <code class="docutils literal notranslate"><span class="pre">gsml:CGI_TermValuePropertyType</span></code>, which is abstract, so must be mapped to its concrete subtype <code class="docutils literal notranslate"><span class="pre">gsml:CGI_TermValuePropertyType</span></code> with a <code class="docutils literal notranslate"><span class="pre">targetAttributeNode</span></code> mapping before its contents can be mapped.</p></li>
+<li><p>This example also demonstrates that mapping can be applied to nested properties to arbitrary depth. This becomes unmanageable for deep nesting, where feature chaining is preferred.</p></li>
+</ul>
+</div>
+<div class="section" id="feature-chaining">
+<h3>Feature chaining<a class="headerlink" href="#feature-chaining" title="Permalink to this headline">¶</a></h3>
+<p>In feature chaining, one feature type is used as a property of an enclosing feature type, by value or by reference:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+        <span class="n">gsml</span><span class="p">:</span><span class="n">occurrence</span>
+    <span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">URN</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>In this case from the mapping for <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code>, we specify a mapping for its <code class="docutils literal notranslate"><span class="pre">gsml:occurrence</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">URN</span></code> field of the source <code class="docutils literal notranslate"><span class="pre">gsml_GeologicUnit</span></code> simple feature is use as the “foreign key”, which maps to the second <code class="docutils literal notranslate"><span class="pre">gml:name</span></code> in each <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code>.</p></li>
+<li><p>Every <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code> with <code class="docutils literal notranslate"><span class="pre">gml:name[2]</span></code> equal to the <code class="docutils literal notranslate"><span class="pre">URN</span></code> of the <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code> under construction is included as a <code class="docutils literal notranslate"><span class="pre">gsml:occurrence</span></code> property of the <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code> (by value).</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="wfs-response">
+<h2>WFS response<a class="headerlink" href="#wfs-response" title="Permalink to this headline">¶</a></h2>
+<p>When GeoServer is running, test app-schema WFS in a web browser. If GeoServer is listening on <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code> you can query the two feature types using these links:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://localhost:8080/geoserver/wfs?request=GetFeature&amp;version=1.1.0&amp;typeName=gsml:GeologicUnit">http://localhost:8080/geoserver/wfs?request=GetFeature&amp;version=1.1.0&amp;typeName=gsml:GeologicUnit</a></p></li>
+<li><p><a class="reference external" href="http://localhost:8080/geoserver/wfs?request=GetFeature&amp;version=1.1.0&amp;typeName=gsml:MappedFeature">http://localhost:8080/geoserver/wfs?request=GetFeature&amp;version=1.1.0&amp;typeName=gsml:MappedFeature</a></p></li>
+</ul>
+<div class="section" id="gsml-geologicunit">
+<h3>gsml:GeologicUnit<a class="headerlink" href="#gsml-geologicunit" title="Permalink to this headline">¶</a></h3>
+<p>Feature chaining has been used to construct the multivalued property <code class="docutils literal notranslate"><span class="pre">gsml:occurrence</span></code> of <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code>. This property is a <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code>. The WFS response for <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code> combines the output of both feature types into a single response. The first <code class="docutils literal notranslate"><span class="pre">gsml:GeologicUnit</span></code> has two <code class="docutils literal notranslate"><span class="pre">gsml:occurrence</span></code> properties, while the second has one. The relationships between the feature instances are data driven.</p>
+<p>Because the mapping files in the tutorial configuration do not contain attribute mappings for all mandatory properties of these feature types, the WFS response is not <em>schema-valid</em> against the GeoSciML 2.0 schemas. Schema-validity can be achieved by adding more attribute mappings to the mapping files.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These feature types are defined in terms of GML 3.1 (the default for WFS 1.1.0); other GML versions will not work.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The web interface does not yet support app-schema store or layer administration.</p>
+</div>
+</div>
+</div>
+<div class="section" id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gsml_GeologicUnit.properties</span></code> and <code class="docutils literal notranslate"><span class="pre">gsml_MappedFeature.properties</span></code> are derived from data provided by the Department of Primary Industries, Victoria, Australia. For the purposes of this tutorial, this data has been modified to the extent that it has no real-world meaning.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="joining.html" title="previous chapter">Joining Support For Performance</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="mongo-tutorial.html" title="next chapter">MongoDB Tutorial</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Tutorial</a><ul>
+<li><a class="reference internal" href="#geosciml">GeoSciML</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#datastore-xml">datastore.xml</a></li>
+<li><a class="reference internal" href="#mapping-files">Mapping files</a><ul>
+<li><a class="reference internal" href="#namespaces">Namespaces</a></li>
+<li><a class="reference internal" href="#source-data-store">Source data store</a></li>
+<li><a class="reference internal" href="#target-types">Target types</a></li>
+<li><a class="reference internal" href="#mappings">Mappings</a></li>
+<li><a class="reference internal" href="#gml-id-mapping">gml:id mapping</a></li>
+<li><a class="reference internal" href="#ordinary-mapping">Ordinary mapping</a></li>
+<li><a class="reference internal" href="#client-properties">Client properties</a></li>
+<li><a class="reference internal" href="#targetattributenode">targetAttributeNode</a></li>
+<li><a class="reference internal" href="#feature-chaining">Feature chaining</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#wfs-response">WFS response</a><ul>
+<li><a class="reference internal" href="#gsml-geologicunit">gsml:GeologicUnit</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="joining.html" title="previous chapter">Joining Support For Performance</a></li>
+            <li>Next: <a href="mongo-tutorial.html" title="next chapter">MongoDB Tutorial</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/tutorial.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

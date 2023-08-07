@@ -1,0 +1,704 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WMTS Multidimensional usage &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WMTS Multidimensional performance" href="performance.html" />
+    <link rel="prev" title="Installing the WMTS multidimensional extension" href="install.html" /> 
+  </head><body class="extensions/wmts-multidimensional/usage">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WMTS Multidimensional</a> &raquo;</li>
+    <li>WMTS Multidimensional usage</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="performance.html" title="WMTS Multidimensional performance" accesskey="N">Next</a></li>
+  <li>
+    <a href="install.html" title="Installing the WMTS multidimensional extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wmts-multidimensional-usage">
+<span id="wmts-multidminensional-usage"></span><h1>WMTS Multidimensional usage<a class="headerlink" href="#wmts-multidimensional-usage" title="Permalink to this headline">¶</a></h1>
+<p>All described operations including is optional parameters and other extensions were implemented, only the REST interfaces for the domain discovery operations were not implemented.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">GetFeature</span></code> operation only supports the profile GML 3.1 as feature info format (“application/gml+xml; version=3.1”) and the <code class="docutils literal notranslate"><span class="pre">GetHistogram</span></code> operation only supports <code class="docutils literal notranslate"><span class="pre">text/xml</span></code> as output format.</p>
+<p>This module support well defined dimensions like elevation and time, but also custom dimensions.</p>
+<div class="section" id="getcapabilities">
+<h2>GetCapabilities<a class="headerlink" href="#getcapabilities" title="Permalink to this headline">¶</a></h2>
+<p>The default behavior of WMTS is to list in the capabilities document all the values available in a certain dimension, something like this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Dimension&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Default&gt;</span>0.0<span class="nt">&lt;/Default&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>0.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>200.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>400.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>600.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>800.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>1000.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>1200.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>1400.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>1600.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>1800.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>2000.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>3000.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>4000.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>5000.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>6000.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>7000.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>8000.0<span class="nt">&lt;/Value&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>9000.0<span class="nt">&lt;/Value&gt;</span>
+<span class="nt">&lt;/Dimension&gt;</span>
+</pre></div>
+</div>
+<p>This module will instead take into account the presentation mode selected by the user:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/layer_dimensions.png" src="../../_images/layer_dimensions.png" />
+<p class="caption"><span class="caption-text"><em>Configuration of a layer dimensions.</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>With the presentation mode select to <code class="docutils literal notranslate"><span class="pre">Continuous</span> <span class="pre">interval</span></code> or <code class="docutils literal notranslate"><span class="pre">Resolution</span> <span class="pre">and</span> <span class="pre">interval</span></code> we will instead see something like this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Dimension&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Default&gt;</span>0.0<span class="nt">&lt;/Default&gt;</span>
+  <span class="nt">&lt;Value&gt;</span>0.0--9000.0<span class="nt">&lt;/Value&gt;</span>
+<span class="nt">&lt;/Dimension&gt;</span>
+</pre></div>
+</div>
+<p>Descriptions for the new introduced operations and associated formats will also be added to the capabilities document.</p>
+</div>
+<div class="section" id="operations">
+<h2>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h2>
+<p>This module adds three new operations to the WMTS service that are described in detail in this <a class="reference external" href="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multidim_geosolutions.html">document</a>:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DescribeDomains</p></td>
+<td><p>Describes all the dimension domains in a compact document, along with the restricted bounding box of the two dimensional space intercepted by the request.</p></td>
+</tr>
+<tr class="row-odd"><td><p>GetDomainValues</p></td>
+<td><p>Allows to page through domain values (supplements DescribeDomains in case the domain has too many values, and the client still wants to get all of them, one page at a time)</p></td>
+</tr>
+<tr class="row-even"><td><p>GetHistogram</p></td>
+<td><p>Given a scattered domain description and an interval, this operation divides the interval in regular buckets, and provides an item count for each bucket.</p></td>
+</tr>
+<tr class="row-odd"><td><p>GetFeature</p></td>
+<td><p>Enumerate the actual dimension possible values combinations, returns a list of features along with dimension values using the same formats as the feature info operation (“application/gml+xml; version=3.1”).</p></td>
+</tr>
+</tbody>
+</table>
+<p>Note that currently there is no restful implementations of this operations.</p>
+<div class="section" id="describedomains">
+<h3>DescribeDomains<a class="headerlink" href="#describedomains" title="Permalink to this headline">¶</a></h3>
+<p>This operation is useful to understand which domains are available in our layer dimensions and how they relate to each other. The parameters available for this operation are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Mandatory</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Service=WMTS</p></td>
+<td><p>Yes</p></td>
+<td><p>Service type identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>Request=DescribeDomains</p></td>
+<td><p>Yes</p></td>
+<td><p>Operation name</p></td>
+</tr>
+<tr class="row-even"><td><p>Version=1.0.0</p></td>
+<td><p>Yes</p></td>
+<td><p>Standard and schema version for this operation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Layer</p></td>
+<td><p>Yes</p></td>
+<td><p>Layer identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>TileMatrixSet</p></td>
+<td><p>Yes</p></td>
+<td><p>Tile matrix set identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>bbox=minx,miny,maxx,maxy</p></td>
+<td><p>No</p></td>
+<td><p>Bounding box corners (lower left, upper right) in CRS units</p></td>
+</tr>
+<tr class="row-even"><td><p>DimensionIdentifier</p></td>
+<td><p>No</p></td>
+<td><p>At most one per dimension, a range described as min/max, restricting the domain of this dimension</p></td>
+</tr>
+<tr class="row-odd"><td><p>Domains</p></td>
+<td><p>No</p></td>
+<td><p>A comma separated list of domain names to be returned, in case only a subset is required. The space domain is identified by “bbox”.</p></td>
+</tr>
+<tr class="row-even"><td><p>ExpandLimit</p></td>
+<td><p>No</p></td>
+<td><p>A numerical value, greater or equal to zero. If the number of unique domain values is below <code class="docutils literal notranslate"><span class="pre">ExpandLimit</span></code> then the domain with be represented in full, as
+a comma separated list of values, otherwise in compact form, as <code class="docutils literal notranslate"><span class="pre">start--end</span></code>. The server assumes a built-in limit of 200 in case not specified,
+and allows client to specify a value up to 10000, values can be tuned via the user interface, in the WMTS panel (server defaults) and on a layer
+by layer basis.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/expandLimitConfig.png" src="../../_images/expandLimitConfig.png" />
+<p class="caption"><span class="caption-text"><em>Configuration domain expansion limits.</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">bbox</span></code> parameter allows the client to restrict the <code class="docutils literal notranslate"><span class="pre">DescribeDomains</span></code> operation to a certain spatial area, by default the layer extent will be used.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">DimensionIdentifier</span></code> parameter can be used to restrict the domain values of a certain dimension, this is useful to answer questions like which elevations values are available in a specific day.</p>
+<p>A simple <code class="docutils literal notranslate"><span class="pre">DescribeDomains</span></code> request will look like this:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&amp;Version=1.0.0&amp;Layer=some_layer&amp;TileMatrixSet=EPSG:4326</span>
+</pre></div>
+</div>
+<p>and the result will be similar to this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Domains</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;SpaceDomain&gt;</span>
+    <span class="nt">&lt;BoundingBox</span> <span class="na">CRS=</span><span class="s">&quot;EPSG:4326&quot;</span>
+     <span class="na">maxx=</span><span class="s">&quot;179.875&quot;</span> <span class="na">maxy=</span><span class="s">&quot;89.9375&quot;</span> <span class="na">minx=</span><span class="s">&quot;-180.125&quot;</span> <span class="na">miny=</span><span class="s">&quot;-90.125&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/SpaceDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>0.0,200.0,400.0,600.0,800.0,1000.0<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>6<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>REFERENCE_TIME<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>2016-02-23T00:00:00.000Z,2016-02-24T00:00:00.000Z<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>time<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>2016-02-23T03:00:00.000Z,2016-02-23T06:00:00.000Z<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+<span class="nt">&lt;/Domains&gt;</span>
+</pre></div>
+</div>
+<p>Note that if an end attribute has been defined in the layer dimension configuration page, the result will show ranges in place of single values. The result in this case will look like the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Domains</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;SpaceDomain&gt;</span>
+    <span class="nt">&lt;BoundingBox</span> <span class="na">CRS=</span><span class="s">&quot;EPSG:4326&quot;</span>
+     <span class="na">maxx=</span><span class="s">&quot;179.875&quot;</span> <span class="na">maxy=</span><span class="s">&quot;89.9375&quot;</span> <span class="na">minx=</span><span class="s">&quot;-180.125&quot;</span> <span class="na">miny=</span><span class="s">&quot;-90.125&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/SpaceDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>0.0/50.0,200.0/300.0,400.0/500.0<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>6<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>REFERENCE_TIME<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>2016-02-23T00:00:00.000Z/2016-02-23T23:00:00.000Z,2016-02-24T00:00:00.000Z/2016-02-24T12:00:00.000Z<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>time<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>2016-02-23T03:00:00.000Z/2016-02-23T06:00:00.000Z,2016-02-23T06:00:00.000Z/2016-02-23T12:00:00.000Z<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+<span class="nt">&lt;/Domains&gt;</span>
+</pre></div>
+</div>
+<p>From the information above we can see that we have three dimensions <code class="docutils literal notranslate"><span class="pre">time</span></code>, <code class="docutils literal notranslate"><span class="pre">elevation</span></code> and <code class="docutils literal notranslate"><span class="pre">REFERENCE_TIME</span></code> and the respective domains values.</p>
+<p>Now let’s see how elevations relate to time dimension by asking which elevations under 500.0 meters are available at time 2016-02-23T03:00:00.000Z:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&amp;Version=1.0.0&amp;Layer=some_layer&amp;TileMatrixSet=EPSG:4326&amp;elevation=0/500&amp;time=2016-02-23T03:00:00.000Z</span>
+</pre></div>
+</div>
+<p>the result will be similar to this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Domains</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;SpaceDomain&gt;</span>
+    <span class="nt">&lt;BoundingBox</span> <span class="na">CRS=</span><span class="s">&quot;EPSG:4326&quot;</span>
+     <span class="na">maxx=</span><span class="s">&quot;179.875&quot;</span> <span class="na">maxy=</span><span class="s">&quot;89.9375&quot;</span> <span class="na">minx=</span><span class="s">&quot;-180.125&quot;</span> <span class="na">miny=</span><span class="s">&quot;-90.125&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/SpaceDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>200.0<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>1<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>REFERENCE_TIME<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>2016-02-23T00:00:00.000Z<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>1<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+  <span class="nt">&lt;DimensionDomain&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>time<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;Domain&gt;</span>2016-02-23T03:00:00.000Z<span class="nt">&lt;/Domain&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>1<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/DimensionDomain&gt;</span>
+<span class="nt">&lt;/Domains&gt;</span>
+</pre></div>
+</div>
+<p>So for time 2016-02-23T03:00:00.000Z there is only values measured at 200.0 meters.</p>
+<p>In case only the space domain is of interest, the following request will do:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&amp;Version=1.0.0&amp;Layer=some_layer&amp;TileMatrixSet=EPSG:4326&amp;elevation=0/500&amp;time=2016-02-23T03:00:00.000Z&amp;domains=bbox</span>
+</pre></div>
+</div>
+<p>and the result will be similar to this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Domains</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;SpaceDomain&gt;</span>
+    <span class="nt">&lt;BoundingBox</span> <span class="na">CRS=</span><span class="s">&quot;EPSG:4326&quot;</span>
+     <span class="na">maxx=</span><span class="s">&quot;179.875&quot;</span> <span class="na">maxy=</span><span class="s">&quot;89.9375&quot;</span> <span class="na">minx=</span><span class="s">&quot;-180.125&quot;</span> <span class="na">miny=</span><span class="s">&quot;-90.125&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/SpaceDomain&gt;</span>
+<span class="nt">&lt;/Domains&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getdomainvalues">
+<h3>GetDomainValues<a class="headerlink" href="#getdomainvalues" title="Permalink to this headline">¶</a></h3>
+<p>This operation is useful to page through the values of a given domain, in case the “multidimensional” area of interest
+is too large for DescribeDomain to return them in a single shot.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Mandatory</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Service=WMTS</p></td>
+<td><p>Yes</p></td>
+<td><p>Service type identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>Request=GetDomainValues</p></td>
+<td><p>Yes</p></td>
+<td><p>Operation name</p></td>
+</tr>
+<tr class="row-even"><td><p>Version=1.0.0</p></td>
+<td><p>Yes</p></td>
+<td><p>Standard and schema version for this operation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Layer</p></td>
+<td><p>Yes</p></td>
+<td><p>Layer identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>bbox=minx,miny,maxx,maxy</p></td>
+<td><p>No</p></td>
+<td><p>Bounding box corners (lower left, upper right) in CRS units</p></td>
+</tr>
+<tr class="row-odd"><td><p>DimensionIdentifier</p></td>
+<td><p>No</p></td>
+<td><p>At most one per dimension, a range described as min/max, restricting the domain of this dimension</p></td>
+</tr>
+<tr class="row-even"><td><p>Domain</p></td>
+<td><p>Yes</p></td>
+<td><p>Name of the domain whose values will be returned (one cannot use “bbox”, only single value dimensions can be enumerated by GetDomainValues, e.g., time, elevation).</p></td>
+</tr>
+<tr class="row-odd"><td><p>FromValue</p></td>
+<td><p>No</p></td>
+<td><p>Sets the beginning of domain enumeration, for paging purposes. It’s not included in the result</p></td>
+</tr>
+<tr class="row-even"><td><p>FromEnd</p></td>
+<td><p>No</p></td>
+<td><p>If equals to true specifies that the beginning of domain enumeration, set by the FromValue, should be applied to the end attribute. When set to true results will be sorted by end attribute.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sort</p></td>
+<td><p>No</p></td>
+<td><p>Can be “asc” or “desc”, determines if the enumeration is from low to high, or from high to low</p></td>
+</tr>
+<tr class="row-even"><td><p>Limit</p></td>
+<td><p>No</p></td>
+<td><p>Maximum number of values returned by this call. The server assumes a built-in limit of 1000 in case not specified,
+and allows client to specify a value up to 10000.</p></td>
+</tr>
+</tbody>
+</table>
+<p>For example, let’s say a “elevation” domain has values 1,2,3 and 5, and that we are paging through
+it by pages of 2 elements. The client will start without providing a “fromValue”, and will then continue
+using the last value of the previous page as a reference:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&amp;Version=1.0.0&amp;Layer=sampleLayer&amp;domain=elevation&amp;limit=2</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;DomainValues</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Limit&gt;</span>2<span class="nt">&lt;/Limit&gt;</span>
+  <span class="nt">&lt;Sort&gt;</span>asc<span class="nt">&lt;/Sort&gt;</span>
+  <span class="nt">&lt;Domain&gt;</span>1.0,2.0<span class="nt">&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+<span class="nt">&lt;/DomainValues&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&amp;Version=1.0.0&amp;Layer=sampleLayer&amp;domain=elevation&amp;limit=2&amp;fromValue=2</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;DomainValues</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Limit&gt;</span>2<span class="nt">&lt;/Limit&gt;</span>
+  <span class="nt">&lt;Sort&gt;</span>asc<span class="nt">&lt;/Sort&gt;</span>
+  <span class="nt">&lt;FromValue&gt;</span>2.0<span class="nt">&lt;/FromValue&gt;</span>
+  <span class="nt">&lt;Domain&gt;</span>3.0,5.0<span class="nt">&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+<span class="nt">&lt;/DomainValues&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&amp;Version=1.0.0&amp;Layer=sampleLayer&amp;domain=elevation&amp;limit=2&amp;fromValue=5</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;DomainValues</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Limit&gt;</span>2<span class="nt">&lt;/Limit&gt;</span>
+  <span class="nt">&lt;Sort&gt;</span>asc<span class="nt">&lt;/Sort&gt;</span>
+  <span class="nt">&lt;FromValue&gt;</span>5.0<span class="nt">&lt;/FromValue&gt;</span>
+  <span class="nt">&lt;Domain&gt;&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Size&gt;</span>0<span class="nt">&lt;/Size&gt;</span>
+<span class="nt">&lt;/DomainValues&gt;</span>
+</pre></div>
+</div>
+<p>For elevations it might not be uncommon to iterate backwards, from the top-most elevation down to the lowest value. The interaction
+between client and server might then look as follows:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&amp;Version=1.0.0&amp;Layer=sampleLayer&amp;domain=elevation&amp;limit=2&amp;sort=desc</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;DomainValues</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Limit&gt;</span>2<span class="nt">&lt;/Limit&gt;</span>
+  <span class="nt">&lt;Sort&gt;</span>asc<span class="nt">&lt;/Sort&gt;</span>
+  <span class="nt">&lt;Domain&gt;</span>5.0,3.0<span class="nt">&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+<span class="nt">&lt;/DomainValues&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&amp;Version=1.0.0&amp;Layer=sampleLayer&amp;domain=elevation&amp;limit=2&amp;fromValue=3&amp;sort=desc</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;DomainValues</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Limit&gt;</span>2<span class="nt">&lt;/Limit&gt;</span>
+  <span class="nt">&lt;Sort&gt;</span>asc<span class="nt">&lt;/Sort&gt;</span>
+  <span class="nt">&lt;FromValue&gt;</span>3.0<span class="nt">&lt;/FromValue&gt;</span>
+  <span class="nt">&lt;Domain&gt;</span>2.0,1.0<span class="nt">&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+<span class="nt">&lt;/DomainValues&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&amp;Version=1.0.0&amp;Layer=sampleLayer&amp;domain=elevation&amp;limit=2&amp;fromValue=1&amp;sort=desc</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;DomainValues</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Limit&gt;</span>2<span class="nt">&lt;/Limit&gt;</span>
+  <span class="nt">&lt;Sort&gt;</span>asc<span class="nt">&lt;/Sort&gt;</span>
+  <span class="nt">&lt;FromValue&gt;</span>1.0<span class="nt">&lt;/FromValue&gt;</span>
+  <span class="nt">&lt;Domain&gt;&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Size&gt;</span>0<span class="nt">&lt;/Size&gt;</span>
+<span class="nt">&lt;/DomainValues&gt;</span>
+</pre></div>
+</div>
+<p>Assume now that along with the values 1,2,3,5 we have end attribute values respectively equal to 5,3,4,6.</p>
+<p>The following request:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&amp;Version=1.0.0&amp;Layer=sampleLayer&amp;domain=elevation&amp;limit=2&amp;fromValue=3.5&amp;fromEnd=true</span>
+</pre></div>
+</div>
+<p>will return</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;DomainValues</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Limit&gt;</span>2<span class="nt">&lt;/Limit&gt;</span>
+  <span class="nt">&lt;Sort&gt;</span>asc<span class="nt">&lt;/Sort&gt;</span>
+  <span class="nt">&lt;Domain&gt;</span>3.0/4.0,1.0/5.0,5.0/6.0<span class="nt">&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Size&gt;</span>2<span class="nt">&lt;/Size&gt;</span>
+<span class="nt">&lt;/DomainValues&gt;</span>
+</pre></div>
+</div>
+<p>The paging approach might seem odd for those used to using “limit” and “offset”. The main reason it’s done
+this way it’s performance, paging through unique values via limit and offset means that the data source
+has to compute and collect the unique values that are not needed (the ones in previous pages) in order to
+find the ones in the current page. With large domains (typical of time series) this quickly becomes too
+slow for interactive usage, as one moves forward in the domain.</p>
+<p>By giving a starting point, the unneeded data points can be skipped via index and the distinct value
+computation can be performed only on the current page data, stopping it as soon as the desired number
+of results has been computed. With an index on the dimension being queries, this results in nearly
+constant response times, regardless of the page being requested.</p>
+</div>
+<div class="section" id="gethistogram">
+<h3>GetHistogram<a class="headerlink" href="#gethistogram" title="Permalink to this headline">¶</a></h3>
+<p>This operation can be used to provide information about the data distribution between the minimum and maximum values of a certain dimension.</p>
+<p>The parameters available for this operation are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Mandatory</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Service=WMTS</p></td>
+<td><p>Yes</p></td>
+<td><p>Service type identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>Request=GetHistogram</p></td>
+<td><p>Yes</p></td>
+<td><p>Operation name</p></td>
+</tr>
+<tr class="row-even"><td><p>Version=1.0.0</p></td>
+<td><p>Yes</p></td>
+<td><p>Standard and schema version for this operation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Layer</p></td>
+<td><p>Yes</p></td>
+<td><p>Layer identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>TileMatrixSet</p></td>
+<td><p>Yes</p></td>
+<td><p>Tile matrix set identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>BBOX=minx,miny,maxx,maxy</p></td>
+<td><p>No</p></td>
+<td><p>Bounding box corners (lower left, upper right) in CRS units</p></td>
+</tr>
+<tr class="row-even"><td><p>DimensionIdentifier</p></td>
+<td><p>No</p></td>
+<td><p>At most one per dimension, a range described as min/max, restricting the domain of this dimension</p></td>
+</tr>
+<tr class="row-odd"><td><p>Histogram</p></td>
+<td><p>Yes</p></td>
+<td><p>Name of the dimension for which the histogram will be computed</p></td>
+</tr>
+<tr class="row-even"><td><p>Resolution</p></td>
+<td><p>No</p></td>
+<td><p>Suggested size of the histogram bucket. Cannot be provided for enumerated dimensions, will use the period syntax for time (e.g. PT1H), a number for numeric dimensions, or auto to leave the decision to the server</p></td>
+</tr>
+<tr class="row-odd"><td><p>Format</p></td>
+<td><p>No</p></td>
+<td><p>The desired output format, default is text/html.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The parameters common to the <code class="docutils literal notranslate"><span class="pre">DescribeDomains</span></code> operation work as already described above. Currently only the <code class="docutils literal notranslate"><span class="pre">text/xml</span></code> output format is supported.</p>
+<p>The following example request the histogram for time dimension with a resolution of 8 hours restricting elevations between 500.0 and 1000.0 meters:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetHistogram&amp;Version=1.0.0&amp;Layer=some_layer&amp;TileMatrixSet=EPSG:4326&amp;histogram=time&amp;resolution=PT8H&amp;elevation=500.0/1000.0</span>
+</pre></div>
+</div>
+<p>and the result will be similar to this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Histogram</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>time<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Domain&gt;</span>2016-02-23T00:00:00.000Z/2016-02-25T00:00:00.000Z/PT8H<span class="nt">&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Values&gt;</span>240,0,240,0,0,240<span class="nt">&lt;/Values&gt;</span>
+<span class="nt">&lt;/Histogram&gt;</span>
+</pre></div>
+</div>
+<p>Looking at the result we can conclude that measurements between 500.0 and 1000.0 meters are typically done during the night.</p>
+<p>The bucket matching is setup so that each one contains its first value, but not its last value (which is contained in the next bucket instead).
+This is important to understand the results. Say we have a dataset with regular elevations, from 0 to 100 with a step of 10, and the
+request calls for elevations between 0 and 20. Then the results will look something like follows:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Histogram</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Domain&gt;</span>0/30/10<span class="nt">&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Values&gt;</span>5,3,8<span class="nt">&lt;/Values&gt;</span>
+<span class="nt">&lt;/Histogram&gt;</span>
+</pre></div>
+</div>
+<p>That is, there values catch the intervals [0,10[, [10, 20[, and [20, 30[ (to have a bucket for the images/features
+having elevation exactly matching 20). This will happen only if an extreme value if found, the same request
+filtering on elevations between 0 and 15 will return this instead:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Histogram</span> <span class="na">xmlns=</span><span class="s">&quot;http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>elevation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;Domain&gt;</span>0/20/10<span class="nt">&lt;/Domain&gt;</span>
+  <span class="nt">&lt;Values&gt;</span>5,3<span class="nt">&lt;/Values&gt;</span>
+<span class="nt">&lt;/Histogram&gt;</span>
+</pre></div>
+</div>
+<p>Note that if an end attribute is specified the bucket matching will be applied on ranges rather than on single values. In this case, buckets are filled by the intersection of ranges’ values with bucket limits and not by containment. This is done in order to avoid some range values falling outside every bucket, but as a side effect, the same range can match more than one bucket.</p>
+</div>
+<div class="section" id="getfeature">
+<h3>GetFeature<a class="headerlink" href="#getfeature" title="Permalink to this headline">¶</a></h3>
+<p>This operation is capable to enumerate the actual possible values combinations. The output of this operation is similar to the output of the <code class="docutils literal notranslate"><span class="pre">WFS</span> <span class="pre">2.0</span> <span class="pre">GetFeature</span></code> operation which is a list of features along with dimension values using the same formats as the feature info operation. This output can be used to draw the features on a map for example.</p>
+<p>The parameters available for this operation are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Mandatory</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Service=WMTS</p></td>
+<td><p>Yes</p></td>
+<td><p>Service type identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>Request=GetFeature</p></td>
+<td><p>Yes</p></td>
+<td><p>Operation name</p></td>
+</tr>
+<tr class="row-even"><td><p>Version=1.0.0</p></td>
+<td><p>Yes</p></td>
+<td><p>Standard and schema version for this operation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Layer</p></td>
+<td><p>Yes</p></td>
+<td><p>Layer identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>TileMatrixSet</p></td>
+<td><p>Yes</p></td>
+<td><p>Tile matrix set identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>BBOX=minx,miny,maxx,maxy</p></td>
+<td><p>No</p></td>
+<td><p>Bounding box corners (lower left, upper right) in CRS units</p></td>
+</tr>
+<tr class="row-even"><td><p>DimensionIdentifier</p></td>
+<td><p>No</p></td>
+<td><p>At most one per dimension, a range described as min/max, restricting the domain of this dimension</p></td>
+</tr>
+<tr class="row-odd"><td><p>Format</p></td>
+<td><p>Yes</p></td>
+<td><p>The desired output format</p></td>
+</tr>
+</tbody>
+</table>
+<p>The parameters common to the <code class="docutils literal notranslate"><span class="pre">DescribeDomains</span></code> operation work as already described above. Currently only the <code class="docutils literal notranslate"><span class="pre">application/gml+xml;</span> <span class="pre">version=3.1</span></code> output format is supported.</p>
+<p>Using the same restrictions parameters we used for the second request used as an example for the <code class="docutils literal notranslate"><span class="pre">DescribeDomains</span></code> operation a <code class="docutils literal notranslate"><span class="pre">GetFeature</span></code> request will look like this:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetFeature&amp;Version=1.0.0&amp;Layer=some_layer&amp;TileMatrixSet=EPSG:4326&amp;elevation=0/500&amp;time=2016-02-23T03:00:00.000Z</span>
+</pre></div>
+</div>
+<p>and the result will be similar to this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;wmts:FeatureCollection</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:wmts=</span><span class="s">&quot;http://www.opengis.net/wmts/1.0&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wmts:feature</span> <span class="na">gml:id=</span><span class="s">&quot;FID.1681&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wmts:footprint&gt;</span>
+      <span class="nt">&lt;gml:Polygon</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:sch=</span><span class="s">&quot;http://www.ascc.net/xml/schematron&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;gml:exterior&gt;</span>
+          <span class="nt">&lt;gml:LinearRing</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;gml:posList&gt;</span>-180.125 -90.125 -180.125 89.875 179.875 89.875 179.875 -90.125 -180.125 -90.125<span class="nt">&lt;/gml:posList&gt;</span>
+          <span class="nt">&lt;/gml:LinearRing&gt;</span>
+        <span class="nt">&lt;/gml:exterior&gt;</span>
+      <span class="nt">&lt;/gml:Polygon&gt;</span>
+    <span class="nt">&lt;/wmts:footprint&gt;</span>
+    <span class="nt">&lt;wmts:dimension</span> <span class="na">name=</span><span class="s">&quot;elevation&quot;</span><span class="nt">&gt;</span>200.0<span class="nt">&lt;/wmts:dimension&gt;</span>
+    <span class="nt">&lt;wmts:dimension</span> <span class="na">name=</span><span class="s">&quot;time&quot;</span><span class="nt">&gt;</span>2016-02-23T03:00:00.000Z<span class="nt">&lt;/wmts:dimension&gt;</span>
+    <span class="nt">&lt;wmts:dimension</span> <span class="na">name=</span><span class="s">&quot;REFERENCE_TIME&quot;</span><span class="nt">&gt;</span>2016-02-23T00:00:00.000Z<span class="nt">&lt;/wmts:dimension&gt;</span>
+  <span class="nt">&lt;/wmts:feature&gt;</span>
+<span class="nt">&lt;/wmts:FeatureCollection&gt;</span>
+</pre></div>
+</div>
+<p>Note how this result correlate with the correspondent <code class="docutils literal notranslate"><span class="pre">DescribeDomains</span></code> operation result.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install.html" title="previous chapter">Installing the WMTS multidimensional extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="performance.html" title="next chapter">WMTS Multidimensional performance</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WMTS Multidimensional usage</a><ul>
+<li><a class="reference internal" href="#getcapabilities">GetCapabilities</a></li>
+<li><a class="reference internal" href="#operations">Operations</a><ul>
+<li><a class="reference internal" href="#describedomains">DescribeDomains</a></li>
+<li><a class="reference internal" href="#getdomainvalues">GetDomainValues</a></li>
+<li><a class="reference internal" href="#gethistogram">GetHistogram</a></li>
+<li><a class="reference internal" href="#getfeature">GetFeature</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install.html" title="previous chapter">Installing the WMTS multidimensional extension</a></li>
+            <li>Next: <a href="performance.html" title="next chapter">WMTS Multidimensional performance</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/wmts-multidimensional/usage.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

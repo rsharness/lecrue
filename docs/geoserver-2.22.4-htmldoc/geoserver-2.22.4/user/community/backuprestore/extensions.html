@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Backup and Restore Extension for the management of ImageMosaic indexers &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Use Cases" href="usecases.html" />
+    <link rel="prev" title="Usage Via GeoServer’s REST API" href="usagerest.html" /> 
+  </head><body class="community/backuprestore/extensions">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Backup and Restore Documentation</a> &raquo;</li>
+    <li>Backup and Restore Extension for the management of ImageMosaic indexers</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="usecases.html" title="Use Cases" accesskey="N">Next</a></li>
+  <li>
+    <a href="usagerest.html" title="Usage Via GeoServer’s REST API" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="backup-and-restore-extension-for-the-management-of-imagemosaic-indexers">
+<span id="backup-restore-extensions"></span><h1>Backup and Restore Extension for the management of ImageMosaic indexers<a class="headerlink" href="#backup-and-restore-extension-for-the-management-of-imagemosaic-indexers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p><em>ImageMosaics CoverageStores</em> make use of several <code class="docutils literal notranslate"><span class="pre">.properties</span></code> files instructing the reader on how to create the mosaic index.</p>
+<p>What we want to achieve is to allow the GeoServer Backup &amp; Restore module to <em>inject</em> environment properties on indexers allowing the ImageMosaic to be automatically ported among different environments.</p>
+</div>
+<div class="section" id="technical-details">
+<h2>Technical Details<a class="headerlink" href="#technical-details" title="Permalink to this headline">¶</a></h2>
+<p>The GeoServer Backup &amp; Restore module actually provides an extension point on reading / writing allowing GeoServer to handle additional resources related to a particular <code class="docutils literal notranslate"><span class="pre">ResourceInfo</span></code>.</p>
+<blockquote>
+<div><p>The interfaces</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">public</span> <span class="n">interface</span> <span class="n">CatalogAdditionalResourcesWriter</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+
+    <span class="n">public</span> <span class="n">boolean</span> <span class="n">canHandle</span><span class="p">(</span><span class="n">Object</span> <span class="n">item</span><span class="p">);</span>
+
+    <span class="n">public</span> <span class="n">void</span> <span class="n">writeAdditionalResources</span><span class="p">(</span><span class="n">Backup</span> <span class="n">backupFacade</span><span class="p">,</span> <span class="n">Resource</span> <span class="n">base</span><span class="p">,</span> <span class="n">T</span> <span class="n">item</span><span class="p">)</span>
+            <span class="n">throws</span> <span class="n">IOException</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">public</span> <span class="n">interface</span> <span class="n">CatalogAdditionalResourcesReader</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+
+    <span class="n">public</span> <span class="n">boolean</span> <span class="n">canHandle</span><span class="p">(</span><span class="n">Object</span> <span class="n">item</span><span class="p">);</span>
+
+    <span class="n">public</span> <span class="n">void</span> <span class="n">readAdditionalResources</span><span class="p">(</span><span class="n">Backup</span> <span class="n">backupFacade</span><span class="p">,</span> <span class="n">Resource</span> <span class="n">base</span><span class="p">,</span> <span class="n">T</span> <span class="n">item</span><span class="p">)</span>
+            <span class="n">throws</span> <span class="n">IOException</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Is invoked by the <code class="docutils literal notranslate"><span class="pre">CatalogFileWriter</span></code> (when doing a Backup) and the <code class="docutils literal notranslate"><span class="pre">CatalogItemWriter</span></code> (when doing a Restore) after a successful write of the resource configuration on the, respectively, target backup folder and in-memory catalog.</p>
+<p>The idea is the following one <em>allowing the CatalogItemWriter to</em>:</p>
+<ol class="arabic simple">
+<li><p>Restore the ImageMosaic Indexer Properties injecting environment properties</p></li>
+<li><p>Check if the Mosaic index physically exist and if not create an empty one</p></li>
+</ol>
+<p>In order to do that we envisage the following technical approach</p>
+<p>On a <strong>BACKUP</strong> operation</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The Additional Resource Writer checks if the <code class="docutils literal notranslate"><span class="pre">ResourceInfo</span></code> is an ImageMosaic Coverage Store.</p></li>
+<li><p>The Additional Resource Writer looks for <code class="docutils literal notranslate"><span class="pre">*.template</span></code> files on the ImageMosaic index directory. It must store them into the zip archive by reading the path from the Coverage Store.</p></li>
+<li><p>The Additional Resource Writer stores the <code class="docutils literal notranslate"><span class="pre">*.template</span></code> along with the <code class="docutils literal notranslate"><span class="pre">*.properties</span></code> files on the target backup folder. Same as above.</p></li>
+</ol>
+</div></blockquote>
+<p>On a <strong>RESTORE</strong> operation</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The Additional Resource Reader checks if the <code class="docutils literal notranslate"><span class="pre">ResourceInfo</span></code> is an ImageMosaic Coverage Store.</p></li>
+<li><p>The Additional Resource Reader looks for <code class="docutils literal notranslate"><span class="pre">*.template</span></code> files on the ImageMosaic index directory. It will try to restore them by using the path read from the Coverage Store configuration.</p></li>
+<li><p>The Additional Resource Reader overwrites the <code class="docutils literal notranslate"><span class="pre">*.properties</span></code> files by resolving all the environment properties declared on the templates.</p></li>
+<li><p>The Additional Resource Reader checks if the empty mosaic must be created or not.</p></li>
+</ol>
+</div></blockquote>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="usagerest.html" title="previous chapter">Usage Via GeoServer’s REST API</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="usecases.html" title="next chapter">Use Cases</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Backup and Restore Extension for the management of ImageMosaic indexers</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#technical-details">Technical Details</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="usagerest.html" title="previous chapter">Usage Via GeoServer’s REST API</a></li>
+            <li>Next: <a href="usecases.html" title="next chapter">Use Cases</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/backuprestore/extensions.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Considerations &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Linux init scripts" href="linuxscript.html" />
+    <link rel="prev" title="Configuration Considerations" href="config.html" /> 
+  </head><body class="production/data">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Running in a production environment</a> &raquo;</li>
+    <li>Data Considerations</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="linuxscript.html" title="Linux init scripts" accesskey="N">Next</a></li>
+  <li>
+    <a href="config.html" title="Configuration Considerations" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="data-considerations">
+<span id="production-data"></span><h1>Data Considerations<a class="headerlink" href="#data-considerations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="use-an-external-data-directory">
+<h2>Use an external data directory<a class="headerlink" href="#use-an-external-data-directory" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer comes with a built-in data directory.  However, it is a good idea to separate the data from the application.
+Using an external data directory allows for much easier upgrades, since there is no risk of configuration information being overwritten.  An external data directory also makes it easy to transfer your configuration elsewhere if desired.  To point to an external data directory, you only need  to edit the <code class="file docutils literal notranslate"><span class="pre">web.xml</span></code> file.  If you are new to GeoServer, you can copy (or just move) the data directory that comes with GeoServer to another location.</p>
+</div>
+<div class="section" id="use-a-spatial-database">
+<h2>Use a spatial database<a class="headerlink" href="#use-a-spatial-database" title="Permalink to this headline">¶</a></h2>
+<p>Shapefiles are a very common format for geospatial data. But if you are running GeoServer in a production environment, it is better to use a spatial database such as <a class="reference external" href="http://www.postgis.org">PostGIS</a>.  This is essential if doing transactions (WFS-T). Most spatial databases provide shapefile conversion tools. Although there are many options for spatial databases (see the section on <a class="reference internal" href="../data/database/index.html#data-database"><span class="std std-ref">Databases</span></a>), PostGIS is recommended. Oracle, and DB2 are also supported.</p>
+</div>
+<div class="section" id="pick-the-best-performing-coverage-formats">
+<h2>Pick the best performing coverage formats<a class="headerlink" href="#pick-the-best-performing-coverage-formats" title="Permalink to this headline">¶</a></h2>
+<p>There are very significant differences between performance of the various coverage formats.</p>
+<p>Serving big coverage data sets with good performance requires some knowledge and tuning, since usually data is set up for distribution and archival. The following tips try to provide you with a base knowledge of how data restructuring affects performance, and how to use the available tools to get optimal data serving performance.</p>
+<div class="section" id="choose-the-right-format">
+<h3>Choose the right format<a class="headerlink" href="#choose-the-right-format" title="Permalink to this headline">¶</a></h3>
+<p>The first key element is choosing the right format. Some formats are designed for data exchange, others for data rendering and serving. A good data serving format is binary, allows for multi-resolution extraction, and provides support for quick subset extraction at native resolutions.</p>
+<p>Examples of such formats are GeoTiff, ECW, JPEG 2000 and MrSid. ArcGrid on the other hand is an example of format that’s particularly ill-suited for large dataset serving (it’s text based, no multi-resolution, and we have to read it fully even to extract a data subset in the general case).</p>
+<p>GeoServer supports MrSID, ECW and JPEG 2000 through the GDAL Image Format plugin.  MrSID is the easiest to work with, as their reader is now available under a GeoServer compatible open source format.  If you have ECW files you have several non-ideal options.  If you are only using GeoServer for educational or non-profit purposes you can use the plugin for free.  If not you need to buy a license, since it’s server software.  You could also use GDAL to convert it to MrSID or tiled GeoTiffs.  If your files are JPEG 2000 you can use the utilities of ECW and MrSID software.  But the fastest is Kakadu, which requires a license.</p>
+</div>
+<div class="section" id="setup-geotiff-data-for-fast-rendering">
+<h3>Setup Geotiff data for fast rendering<a class="headerlink" href="#setup-geotiff-data-for-fast-rendering" title="Permalink to this headline">¶</a></h3>
+<p>As soon as your Geotiffs gets beyond some tens of megabytes you’ll want to add the following capabilities:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>inner tiling</p></li>
+<li><p>overviews</p></li>
+</ul>
+</div></blockquote>
+<p>Inner tiling sets up the image layout so that it’s organized in tiles instead of simple stripes (rows). This allows much quicker access to a certain area of the geotiff, and the GeoServer readers will leverage this by accessing only the tiles needed to render the current display area. The following sample command instructs <a class="reference external" href="http://www.gdal.org/gdal_translate.html">gdal_translate</a> to create a tiled
+<a class="reference external" href="http://www.gdal.org/frmt_gtiff.html">geotiff</a>.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>gdal_translate -of GTiff -projwin -180 90 -50 -10 -co &quot;TILED=YES&quot; bigDataSet.ecw myTiff.tiff
+</pre></div>
+</div>
+<p>An overview is a downsampled version of the same image, that is, a zoomed out version, which is usually much smaller. When GeoServer needs to render the Geotiff, it’ll look for the most appropriate overview as a starting point, thus reading and converting way less data. Overviews can be added using
+<a class="reference external" href="http://www.gdal.org/gdaladdo.html">gdaladdo</a>, or the OverviewsEmbedded command included in Geotools. Here is a sample of using gdaladdo to add overviews that are downsampled 2, 4, 8 and 16 times compared to the original:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>gdaladdo -r average mytiff.tif 2 4 8 16
+</pre></div>
+</div>
+<p>As a final note, Geotiff supports various kinds of compression both lossles as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed.
+Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O although at the expenses of some CPU cycles.</p>
+</div>
+<div class="section" id="handling-huge-data-sets">
+<h3>Handling huge data sets<a class="headerlink" href="#handling-huge-data-sets" title="Permalink to this headline">¶</a></h3>
+<p>If you have really huge data sets (several gigabytes), odds are that simply adding overviews and tiles does not cut it, making intermediate resolution serving slow. This is because tiling occurs only on the native resolution levels, and intermediate overviews are too big for quick extraction.</p>
+<p>So, what you need is a way to have tiling on intermediate levels as well. This is supported by the ImagePyramid plugin.</p>
+<p>This plugin assumes you have create various seamless image mosaics, each for a different resolution level of the original image. In the mosaic, tiles are actual files (for more info about mosaics, see the <a class="reference internal" href="../data/raster/imagemosaic/index.html#data-imagemosaic"><span class="std std-ref">ImageMosaic</span></a>). The whole pyramid structures looks like the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>rootDirectory
+    +- pyramid.properties
+    +- 0
+       +- mosaic metadata files
+       +- mosaic_file_0.tiff
+       +- ...
+       +- mosiac_file_n.tiff
+    +- ...
+    +- 32
+       +- mosaic metadata files
+       +- mosaic_file_0.tiff
+       +- ...
+       +- mosiac_file_n.tiff
+</pre></div>
+</div>
+<p>Creating a pyramid by hand can theoretically be done with gdal, but in practice it’s a daunting task that would require some scripting, since gdal provides no “tiler” command to extract regular tiles out of an image, nor one to create a downsampled set of tiles. As an alternative, you can use the geotools PyramidBuilder tool (documentation on how to use this is pending, contact the developers if you need to use it).</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="config.html" title="previous chapter">Configuration Considerations</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="linuxscript.html" title="next chapter">Linux init scripts</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Data Considerations</a><ul>
+<li><a class="reference internal" href="#use-an-external-data-directory">Use an external data directory</a></li>
+<li><a class="reference internal" href="#use-a-spatial-database">Use a spatial database</a></li>
+<li><a class="reference internal" href="#pick-the-best-performing-coverage-formats">Pick the best performing coverage formats</a><ul>
+<li><a class="reference internal" href="#choose-the-right-format">Choose the right format</a></li>
+<li><a class="reference internal" href="#setup-geotiff-data-for-fast-rendering">Setup Geotiff data for fast rendering</a></li>
+<li><a class="reference internal" href="#handling-huge-data-sets">Handling huge data sets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="config.html" title="previous chapter">Configuration Considerations</a></li>
+            <li>Next: <a href="linuxscript.html" title="next chapter">Linux init scripts</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/production/data.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

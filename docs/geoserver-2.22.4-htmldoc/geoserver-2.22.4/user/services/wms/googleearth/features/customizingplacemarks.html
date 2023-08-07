@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customizing Placemarks &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="KML Placemark Placement" href="kmlcentroids.html" />
+    <link rel="prev" title="Toggling Placemarks" href="togglingplacemarks.html" /> 
+  </head><body class="services/wms/googleearth/features/customizingplacemarks">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Google Earth</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features</a> &raquo;</li>
+    <li>Customizing Placemarks</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="kmlcentroids.html" title="KML Placemark Placement" accesskey="N">Next</a></li>
+  <li>
+    <a href="togglingplacemarks.html" title="Toggling Placemarks" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="customizing-placemarks">
+<span id="ge-feature-customizing-placemarks"></span><h1>Customizing Placemarks<a class="headerlink" href="#customizing-placemarks" title="Permalink to this headline">¶</a></h1>
+<p>KML output can leverage some powerful visualization abilities in Google Earth. <strong>Titles</strong> can be displayed on top of the features. <strong>Descriptions</strong> (custom HTML shown when clicking on a feature) can be added to customize the views of the attribute data. In addition, using Google Earth’s time slider, <strong>time</strong>-based animations can be created. Finally, <strong>height</strong> of features can be set, as opposed to the default ground overlay. All of these can be accomplished by creating Freemarker templates.  Freemarker templates are text files (with limited HTML code), saved in the <a class="reference internal" href="../../../../datadirectory/index.html#datadir"><span class="std std-ref">GeoServer data directory</span></a>, that utilize variables that link to specific attributes in the data.</p>
+<div class="section" id="titles">
+<h2>Titles<a class="headerlink" href="#titles" title="Permalink to this headline">¶</a></h2>
+<p>Specifying labels via a template involves creating a special text file called <code class="docutils literal notranslate"><span class="pre">title.ftl</span></code> and placing it into the featuretypes directory inside the <a class="reference internal" href="../../../../datadirectory/index.html#datadir"><span class="std std-ref">GeoServer data directory</span></a> for the dataset to be labeled. For instance, to create a template to label the <code class="docutils literal notranslate"><span class="pre">states</span></code> layer by state name, one would create the file: <code class="docutils literal notranslate"><span class="pre">&lt;data_dir&gt;/workspaces/topp/states_shapefile/states/title.ftl</span></code>. The content of the file would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${STATE_NAME.value}
+</pre></div>
+</div>
+</div>
+<div class="section" id="descriptions">
+<h2>Descriptions<a class="headerlink" href="#descriptions" title="Permalink to this headline">¶</a></h2>
+<p>When working with KML, each feature is linked to a description, accessible when the feature is clicked on. By default, GeoServer creates a list of all the attributes and values for the particular feature.</p>
+<p>It is possible to modify this default behavior. Much like with featuretype titles, which are edited by creating a <code class="docutils literal notranslate"><span class="pre">title.ftl</span></code> template, specifying descriptions via a template involves creating a special text file called <code class="docutils literal notranslate"><span class="pre">description.ftl</span></code> and placing it into the featuretypes directory inside the <a class="reference internal" href="../../../../datadirectory/index.html#datadir"><span class="std std-ref">GeoServer data directory</span></a> for the dataset to be labeled. For instance, a sample description template would be saved here: <code class="docutils literal notranslate"><span class="pre">&lt;data_dir&gt;/workspaces/topp/states_shapefile/states/description.ftl</span></code>. The content of the file could be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This is the state of ${STATE_NAME.value}.
+</pre></div>
+</div>
+<p>The resulting description will look like this:</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Add SS:  A custom description</p>
+</div>
+<p>It is also possible to create one description template for all layers in a given namespace. To do this, create a <code class="docutils literal notranslate"><span class="pre">description.ftl</span></code> file as above, and save it here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">data_dir</span><span class="o">&gt;/</span><span class="n">workspaces</span><span class="o">/&lt;</span><span class="n">namespace</span><span class="o">&gt;/</span><span class="n">description</span><span class="o">.</span><span class="n">ftl</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Please note that if a description template is created for a specific layer that also has an associated namespace description template, the layer template (i.e. the most specific template) will take priority.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="togglingplacemarks.html" title="previous chapter">Toggling Placemarks</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="kmlcentroids.html" title="next chapter">KML Placemark Placement</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Customizing Placemarks</a><ul>
+<li><a class="reference internal" href="#titles">Titles</a></li>
+<li><a class="reference internal" href="#descriptions">Descriptions</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="togglingplacemarks.html" title="previous chapter">Toggling Placemarks</a></li>
+            <li>Next: <a href="kmlcentroids.html" title="next chapter">KML Placemark Placement</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/features/customizingplacemarks.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

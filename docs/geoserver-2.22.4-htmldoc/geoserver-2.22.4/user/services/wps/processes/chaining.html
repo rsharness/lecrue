@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Process chaining &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Hazelcast based process status clustering" href="../hazelcast-clustering.html" />
+    <link rel="prev" title="GeoServer processes" href="gs.html" /> 
+  </head><body class="services/wps/processes/chaining">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Web Processing Service (WPS)</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Process Cookbook</a> &raquo;</li>
+    <li>Process chaining</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../hazelcast-clustering.html" title="Hazelcast based process status clustering" accesskey="N">Next</a></li>
+  <li>
+    <a href="gs.html" title="GeoServer processes" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="process-chaining">
+<h1>Process chaining<a class="headerlink" href="#process-chaining" title="Permalink to this headline">¶</a></h1>
+<p>One of the benefits of WPS is its native ability to chain processes.  Much like how functions can call other functions, a WPS process can use as its input the output of another process.  Many complex functions can thus be combined in to a single powerful request.</p>
+<p>For example, let’s take some of the sample data that is shipped with GeoServer and use the WPS engine to chain a few of the built in processes, which will allow users to perform geospatial analysis on the fly.</p>
+<p>The question we want to answer in this example is the following:
+How many miles of roads are crossing a protected area?</p>
+<p>The data that will be used for this example is included with a standard installation of GeoServer:</p>
+<ul class="simple">
+<li><p><cite>sf:roads</cite>: the layer that contains road information</p></li>
+<li><p><cite>sf:restricted</cite>: the layer representing restricted areas</p></li>
+</ul>
+<p>The restricted areas partially overlap the roads. We would like to know the total length of roads inside the restricted areas, as shown in the next screenshot. The road network is represented in white against a false color DEM (Digital Elevation Model). The restricted areas are represented with a dashed line in dark brown. The portion of the road network that is inside the restricted areas is drawn in red.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../../_images/spearfish.png" src="../../../_images/spearfish.png" />
+<p class="caption"><span class="caption-text">Length of total roads inside restricted area</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>In order to calculate the total length, we will need the following built in WPS processes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gs:IntersectionFeatureCollection</span></code>: returns the intersection between two feature collections adding the attributes from both of them</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gs:CollectGeometries</span></code>: collects all the default geometries in a feature collection and returns them as a single geometry collection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JTS:length</span></code>: calculates the length of a geometry in the same unit of measure as the geometry</p></li>
+</ul>
+<p>The sequence in which these processes are executed is important. The first thing we want to do is intersect the road network with the restricted areas. This gives us the feature collection with all the roads that we are interested in. Then we collect those geometries into a single GeometryCollection so that the length can be calculated with the built in JTS algorithm.</p>
+<p><cite>gs:IntersectionFeatureCollection</cite> –&gt; <cite>gs:CollectGeometries</cite> –&gt; <cite>JTS:length</cite></p>
+<p>The sequence of processes determines how the WPS request is built, by embedding the first process into the second, the second into the third, etc. A process produces some output which will become the input of the next process, resulting in a processing pipeline that can solve complex spatial analysis with a single HTTP request. The advantage of using GeoServer’s layers is that data is not being shipped back and forth between processes, resulting in very good performance.</p>
+<p>Here is the complete WPS request in XML format:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;ows:Identifier&gt;</span>JTS:length<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>geom<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml; subtype=gml/3.1.1&quot;</span>
+                      <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wps&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;wps:Body&gt;</span>
+        <span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;ows:Identifier&gt;</span>gs:CollectGeometries<span class="nt">&lt;/ows:Identifier&gt;</span>
+          <span class="nt">&lt;wps:DataInputs&gt;</span>
+            <span class="nt">&lt;wps:Input&gt;</span>
+              <span class="nt">&lt;ows:Identifier&gt;</span>features<span class="nt">&lt;/ows:Identifier&gt;</span>
+              <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml; subtype=wfs-collection/1.0&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wps&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;wps:Body&gt;</span>
+                  <span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;ows:Identifier&gt;</span>gs:IntersectionFeatureCollection<span class="nt">&lt;/ows:Identifier&gt;</span>
+                    <span class="nt">&lt;wps:DataInputs&gt;</span>
+                      <span class="nt">&lt;wps:Input&gt;</span>
+                        <span class="nt">&lt;ows:Identifier&gt;</span>first feature collection<span class="nt">&lt;/ows:Identifier&gt;</span>
+                        <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml; subtype=wfs-collection/1.0&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wfs&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+                          <span class="nt">&lt;wps:Body&gt;</span>
+                            <span class="nt">&lt;wfs:GetFeature</span> <span class="na">service=</span><span class="s">&quot;WFS&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">outputFormat=</span><span class="s">&quot;GML2&quot;</span><span class="nt">&gt;</span>
+                              <span class="nt">&lt;wfs:Query</span> <span class="na">typeName=</span><span class="s">&quot;sf:roads&quot;</span><span class="nt">/&gt;</span>
+                            <span class="nt">&lt;/wfs:GetFeature&gt;</span>
+                          <span class="nt">&lt;/wps:Body&gt;</span>
+                        <span class="nt">&lt;/wps:Reference&gt;</span>
+                      <span class="nt">&lt;/wps:Input&gt;</span>
+                      <span class="nt">&lt;wps:Input&gt;</span>
+                        <span class="nt">&lt;ows:Identifier&gt;</span>second feature collection<span class="nt">&lt;/ows:Identifier&gt;</span>
+                        <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml; subtype=wfs-collection/1.0&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wfs&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+                          <span class="nt">&lt;wps:Body&gt;</span>
+                            <span class="nt">&lt;wfs:GetFeature</span> <span class="na">service=</span><span class="s">&quot;WFS&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">outputFormat=</span><span class="s">&quot;GML2&quot;</span><span class="nt">&gt;</span>
+                              <span class="nt">&lt;wfs:Query</span> <span class="na">typeName=</span><span class="s">&quot;sf:restricted&quot;</span><span class="nt">/&gt;</span>
+                            <span class="nt">&lt;/wfs:GetFeature&gt;</span>
+                          <span class="nt">&lt;/wps:Body&gt;</span>
+                        <span class="nt">&lt;/wps:Reference&gt;</span>
+                      <span class="nt">&lt;/wps:Input&gt;</span>
+                      <span class="nt">&lt;wps:Input&gt;</span>
+                        <span class="nt">&lt;ows:Identifier&gt;</span>first attributes to retain<span class="nt">&lt;/ows:Identifier&gt;</span>
+                        <span class="nt">&lt;wps:Data&gt;</span>
+                          <span class="nt">&lt;wps:LiteralData&gt;</span>the_geom cat<span class="nt">&lt;/wps:LiteralData&gt;</span>
+                        <span class="nt">&lt;/wps:Data&gt;</span>
+                      <span class="nt">&lt;/wps:Input&gt;</span>
+                      <span class="nt">&lt;wps:Input&gt;</span>
+                        <span class="nt">&lt;ows:Identifier&gt;</span>second attributes to retain<span class="nt">&lt;/ows:Identifier&gt;</span>
+                        <span class="nt">&lt;wps:Data&gt;</span>
+                          <span class="nt">&lt;wps:LiteralData&gt;</span>cat<span class="nt">&lt;/wps:LiteralData&gt;</span>
+                        <span class="nt">&lt;/wps:Data&gt;</span>
+                      <span class="nt">&lt;/wps:Input&gt;</span>
+                    <span class="nt">&lt;/wps:DataInputs&gt;</span>
+                    <span class="nt">&lt;wps:ResponseForm&gt;</span>
+                      <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml;</span>
+<span class="s">                                         subtype=wfs-collection/1.0&quot;</span><span class="nt">&gt;</span>
+                        <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+                      <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+                    <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+                  <span class="nt">&lt;/wps:Execute&gt;</span>
+                <span class="nt">&lt;/wps:Body&gt;</span>
+              <span class="nt">&lt;/wps:Reference&gt;</span>
+            <span class="nt">&lt;/wps:Input&gt;</span>
+          <span class="nt">&lt;/wps:DataInputs&gt;</span>
+          <span class="nt">&lt;wps:ResponseForm&gt;</span>
+            <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml; subtype=gml/3.1.1&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+            <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+          <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+        <span class="nt">&lt;/wps:Execute&gt;</span>
+      <span class="nt">&lt;/wps:Body&gt;</span>
+    <span class="nt">&lt;/wps:Reference&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:RawDataOutput&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+<p>You can save this XML request in a file called wps-chaining.xml and execute the request using cURL like this:</p>
+<blockquote>
+<div><p>curl -u admin:geoserver -H ‘Content-type: xml’ -XPOST -d&#64;’wps-chaining.xml’ http://localhost:8080/geoserver/wps</p>
+</div></blockquote>
+<p>The response is just a number, the total length of the roads that intersect the restricted areas, and should be around <em>25076.285</em> meters (the length process returns map units)</p>
+<p>To see WPS requests in action, you can use the built-in <a class="reference internal" href="../requestbuilder.html#wps-request-builder"><span class="std std-ref">WPS Request Builder</span></a>.</p>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="gs.html" title="previous chapter">GeoServer processes</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../hazelcast-clustering.html" title="next chapter">Hazelcast based process status clustering</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="gs.html" title="previous chapter">GeoServer processes</a></li>
+            <li>Next: <a href="../hazelcast-clustering.html" title="next chapter">Hazelcast based process status clustering</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wps/processes/chaining.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

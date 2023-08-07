@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Styled marks &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="CSS Cookbook" href="cookbook/index.html" />
+    <link rel="prev" title="Rendering transformations in CSS" href="transformation.html" /> 
+  </head><body class="styling/css/styledmarks">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">CSS Styling</a> &raquo;</li>
+    <li>Styled marks</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="cookbook/index.html" title="CSS Cookbook" accesskey="N">Next</a></li>
+  <li>
+    <a href="transformation.html" title="Rendering transformations in CSS" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="styled-marks">
+<span id="css-styledmarks"></span><h1>Styled marks<a class="headerlink" href="#styled-marks" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer’s CSS module provides a collection of predefined symbols that you can
+use and combine to create simple marks, strokes, and fill patterns without
+needing an image editing program.  You can access these symbols via the
+symbol() CSS function.  For example, the built-in circle symbol makes it easy
+to create a simple ‘dot’ marker for a point layer:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="nt">mark</span><span class="nd">:</span> <span class="nt">symbol</span><span class="o">(</span><span class="nt">circle</span><span class="o">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Symbols work anywhere you can use a <code class="docutils literal notranslate"><span class="pre">url()</span></code> to reference an image (as in, you
+can use symbols for stroke and fill patterns as well as markers.)</p>
+<div class="section" id="symbol-names">
+<h2>Symbol names<a class="headerlink" href="#symbol-names" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer extensions can add extra symbols (such as the <code class="docutils literal notranslate"><span class="pre">chart://</span></code> symbol
+family which allows the use of charts as symbols via a naming scheme similar to
+the Google Charts API).  However, there are a few symbols that are always available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>circle</p></li>
+<li><p>square</p></li>
+<li><p>triangle</p></li>
+<li><p>arrow</p></li>
+<li><p>cross</p></li>
+<li><p>star</p></li>
+<li><p>x</p></li>
+<li><p>shape://horizline</p></li>
+<li><p>shape://vertline</p></li>
+<li><p>shape://backslash</p></li>
+<li><p>shape://slash</p></li>
+<li><p>shape://plus</p></li>
+<li><p>shape://times</p></li>
+<li><p>windbarbs://default(size)[unit]</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="symbol-selectors">
+<h2>Symbol selectors<a class="headerlink" href="#symbol-selectors" title="Permalink to this headline">¶</a></h2>
+<p>Symbols offer some additional styling options beyond those offered for image
+references. To specify these style properties, just add another
+rule with a special selector.  There are 8 “pseudoclass” selectors that are
+used to style selectors:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">:mark</span></code> specifies that a rule applies to symbols used as point markers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:shield</span></code> specifies that a rule applies to symbols used as label
+shields (icons displayed behind label text)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:stroke</span></code> specifies that a rule applies to symbols used as stroke
+patterns</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:fill</span></code> specifies that a rule applies to symbols used as fill patterns</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:symbol</span></code> specifies that a rule applies to any symbol, regardless of
+which context it is used in</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:nth-mark(n)</span></code> specifies that a rule applies to the symbol used for the
+nth stacked point marker on a feature.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:nth-shield(n)</span></code> specifies that a rule applies to the symbol used for
+the background of the nth stacked label on a feature</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:nth-stroke(n)</span></code> specifies that a rule applies to the symbol used for
+the nth stacked stroke pattern on a feature.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:nth-fill(n)</span></code> specifies that a rule applies to the symbol used for the
+nth stacked fill pattern on a feature.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:nth-symbol(n)</span></code> specifies that a rule applies to the symbol used for
+the nth stacked symbol on a feature, regardless of which context it is
+used in.</p></li>
+</ul>
+</div></blockquote>
+<p>These pseudoclass selectors can be used in a top level rule, but starting with GeoServer 2.10,
+they are more commonly used in sub-rules close to the mark property, to get better readability
+(see example below).</p>
+</div>
+<div class="section" id="symbol-styling-properties">
+<h2>Symbol styling properties<a class="headerlink" href="#symbol-styling-properties" title="Permalink to this headline">¶</a></h2>
+<p>Styling a built-in symbol is similar to styling a polygon feature. However, the
+styling options are slightly different from those available to a true polygon
+feature:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">mark</span></code> and <code class="docutils literal notranslate"><span class="pre">label</span></code> families of properties are unavailable for
+symbols.</p></li>
+<li><p>Nested symbol styling is not currently supported.</p></li>
+<li><p>Only the first <code class="docutils literal notranslate"><span class="pre">stroke</span></code> and <code class="docutils literal notranslate"><span class="pre">fill</span></code> will be used.</p></li>
+<li><p>Additional <code class="docutils literal notranslate"><span class="pre">size</span></code> (as a length) and <code class="docutils literal notranslate"><span class="pre">rotation</span></code> (as an angle)
+properties are available.  These are analogous to the
+<code class="docutils literal notranslate"><span class="pre">(mark|stroke|fill)-size</span></code> and <code class="docutils literal notranslate"><span class="pre">(mark|stroke|fill)-rotation</span></code>
+properties available for true geometry styling.</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The various prefixed ‘-size’ and ‘-rotation’ properties on the
+containing style override those for the symbol if they are present.</p>
+</div>
+</div>
+<div class="section" id="example-styled-symbol">
+<h2>Example styled symbol<a class="headerlink" href="#example-styled-symbol" title="Permalink to this headline">¶</a></h2>
+<p>As an example, consider a situation where you are styling a layer that includes data about hospitals in your town.  You can create a simple hospital logo by placing a red cross symbol on top of a white circle background:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="nt">usage</span><span class="o">=</span><span class="s1">&#39;hospital&#39;</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">mark</span><span class="nd">:</span> <span class="nt">symbol</span><span class="o">(</span><span class="s1">&#39;circle&#39;</span><span class="o">),</span> <span class="nt">symbol</span><span class="o">(</span><span class="s1">&#39;cross&#39;</span><span class="o">);</span>
+  <span class="nd">:nth-mark</span><span class="o">(</span><span class="nt">1</span><span class="o">)</span> <span class="p">{</span>
+    <span class="nt">size</span><span class="nd">:</span> <span class="nt">16px</span><span class="o">;</span>
+    <span class="nt">fill</span><span class="nd">:</span> <span class="nt">white</span><span class="o">;</span>
+    <span class="nt">stroke</span><span class="nd">:</span> <span class="nt">red</span><span class="o">;</span>
+  <span class="p">}</span><span class="o">;</span>
+  <span class="nd">:nth-mark</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span> <span class="p">{</span>
+    <span class="nt">size</span><span class="nd">:</span> <span class="nt">12px</span><span class="o">;</span>
+    <span class="nt">fill</span><span class="nd">:</span> <span class="nt">red</span><span class="o">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Also an windbarb example where you get wind speed and direction from your data fields horSpeed and horDir (direction):</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="cm">/* select windbard based on speed( here in meters per second, and south hemisphere) */</span>
+  <span class="nt">mark</span><span class="nd">:</span> <span class="nt">symbol</span><span class="o">(</span><span class="s1">&#39;windbarbs://default(${horSpeed})[m/s]?hemisphere=s&#39;</span><span class="o">);</span>
+
+  <span class="o">/*</span> <span class="nt">rotate</span> <span class="nt">windbarb</span> <span class="nt">based</span> <span class="nt">on</span> <span class="nt">horDir</span> <span class="nt">property</span> <span class="o">(</span><span class="nt">in</span> <span class="nt">degrees</span><span class="o">)</span> <span class="o">*/</span>
+  <span class="nt">mark-rotation</span><span class="nd">:</span> <span class="o">[</span><span class="nt">horDir</span><span class="o">];</span>
+
+  <span class="nt">mark-size</span><span class="nd">:</span> <span class="nt">20</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="transformation.html" title="previous chapter">Rendering transformations in CSS</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="cookbook/index.html" title="next chapter">CSS Cookbook</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Styled marks</a><ul>
+<li><a class="reference internal" href="#symbol-names">Symbol names</a></li>
+<li><a class="reference internal" href="#symbol-selectors">Symbol selectors</a></li>
+<li><a class="reference internal" href="#symbol-styling-properties">Symbol styling properties</a></li>
+<li><a class="reference internal" href="#example-styled-symbol">Example styled symbol</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="transformation.html" title="previous chapter">Rendering transformations in CSS</a></li>
+            <li>Next: <a href="cookbook/index.html" title="next chapter">CSS Cookbook</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/css/styledmarks.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

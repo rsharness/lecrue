@@ -1,0 +1,946 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapping File &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Application Schema Resolution" href="app-schema-resolution.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+  </head><body class="data/app-schema/mapping-file">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Mapping File</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="app-schema-resolution.html" title="Application Schema Resolution" accesskey="N">Next</a></li>
+  <li>
+    <a href="configuration.html" title="Configuration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="mapping-file">
+<span id="app-schema-mapping-file"></span><h1>Mapping File<a class="headerlink" href="#mapping-file" title="Permalink to this headline">¶</a></h1>
+<p>An app-schema feature type is configured using a mapping file that defines the data source for the feature and the mappings from the source data to XPaths in the output XML.</p>
+<div class="section" id="outline">
+<h2>Outline<a class="headerlink" href="#outline" title="Permalink to this headline">¶</a></h2>
+<p>Here is an outline of a mapping file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;as:AppSchemaDataAccess xmlns:as=&quot;http://www.geotools.org/app-schema&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://www.geotools.org/app-schema AppSchemaDataAccess.xsd&quot;&gt;
+    &lt;namespaces&gt;...&lt;/namespaces&gt;
+    &lt;includedTypes&gt;...&lt;/includedTypes&gt;
+    &lt;sourceDataStores&gt;...&lt;/sourceDataStores&gt;
+    &lt;catalog&gt;...&lt;/catalog&gt;
+    &lt;targetTypes...&lt;/targetTypes&gt;
+    &lt;typeMappings&gt;...&lt;/typeMappings&gt;
+&lt;/as:AppSchemaDataAccess&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">namespaces</span></code> defines all the namespace prefixes used in the mapping file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">includedTypes</span></code> (optional) defines all the included non-feature type mapping file locations that are referred in the mapping file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sourceDataStores</span></code> provides the configuration information for the source data stores.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">catalog</span></code> is the location of the OASIS Catalog used to resolve XML Schema locations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targetTypes</span></code> is the location of the XML Schema that defines the feature type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">typeMappings</span></code> give the relationships between the fields of the source data store and the elements of the output complex feature.</p></li>
+</ul>
+<div class="section" id="mapping-file-schema">
+<h3>Mapping file schema<a class="headerlink" href="#mapping-file-schema" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">AppSchemaDataAccess.xsd</span></code> is optional because it is not used by GeoServer. The presence of <code class="docutils literal notranslate"><span class="pre">AppSchemaDataAccess.xsd</span></code> in the same folder as the mapping file enables XML editors to observe its grammar and provide contextual help.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="namespaces">
+<h3>namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">namespaces</span></code> section defines all the XML namespaces used in the mapping file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">Namespace</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">prefix</span><span class="o">&gt;</span><span class="n">gsml</span><span class="o">&lt;/</span><span class="n">prefix</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">uri</span><span class="o">&gt;</span><span class="n">urn</span><span class="p">:</span><span class="n">cgi</span><span class="p">:</span><span class="n">xmlns</span><span class="p">:</span><span class="n">CGI</span><span class="p">:</span><span class="n">GeoSciML</span><span class="p">:</span><span class="mf">2.0</span><span class="o">&lt;/</span><span class="n">uri</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">Namespace</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Namespace</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">prefix</span><span class="o">&gt;</span><span class="n">gml</span><span class="o">&lt;/</span><span class="n">prefix</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">uri</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">opengis</span><span class="o">.</span><span class="n">net</span><span class="o">/</span><span class="n">gml</span><span class="o">&lt;/</span><span class="n">uri</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">Namespace</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Namespace</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">prefix</span><span class="o">&gt;</span><span class="n">xlink</span><span class="o">&lt;/</span><span class="n">prefix</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">uri</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">1999</span><span class="o">/</span><span class="n">xlink</span><span class="o">&lt;/</span><span class="n">uri</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">Namespace</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="includedtypes-optional">
+<h3>includedTypes (optional)<a class="headerlink" href="#includedtypes-optional" title="Permalink to this headline">¶</a></h3>
+<p>Non-feature types (eg. gsml:CompositionPart is a data type that is nested in gsml:GeologicUnit) may be mapped separately for its reusability, but we don’t want to configure it as a feature type as we don’t want to individually access it. Related feature types don’t need to be explicitly included here as it would have its own workspace configuration for GeoServer to find it. The location path in <code class="docutils literal notranslate"><span class="pre">Include</span></code> tag is relative to the mapping file. For an example, if gsml:CompositionPart configuration file is located in the same directory as the gsml:GeologicUnit configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">includedTypes</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">Include</span><span class="o">&gt;</span><span class="n">gsml_CompositionPart</span><span class="o">.</span><span class="n">xml</span><span class="o">&lt;/</span><span class="n">Include</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">includedTypes</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sourcedatastores">
+<h3>sourceDataStores<a class="headerlink" href="#sourcedatastores" title="Permalink to this headline">¶</a></h3>
+<p>Every mapping file requires at least one data store to provide data for features. app-schema reuses GeoServer data stores, so there are many available types. See <a class="reference internal" href="data-stores.html#app-schema-data-stores"><span class="std std-ref">Data Stores</span></a> for details of data store configuration. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">sourceDataStores</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">DataStore</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">datastore</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">parameters</span><span class="o">&gt;</span>
+            <span class="o">...</span>
+        <span class="o">&lt;/</span><span class="n">parameters</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">DataStore</span><span class="o">&gt;</span>
+    <span class="o">...</span>
+<span class="o">&lt;/</span><span class="n">sourceDataStores</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>If you have more than one <code class="docutils literal notranslate"><span class="pre">DataStore</span></code> in a mapping file, be sure to give them each a distinct <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p>
+</div>
+<div class="section" id="catalog-optional">
+<h3>catalog (optional)<a class="headerlink" href="#catalog-optional" title="Permalink to this headline">¶</a></h3>
+<p>The location of an OASIS XML Catalog configuration file, given as a path relative to the mapping file. See <a class="reference internal" href="app-schema-resolution.html#app-schema-app-schema-resolution"><span class="std std-ref">Application Schema Resolution</span></a> for more information. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">catalog</span><span class="o">&gt;../../../</span><span class="n">schemas</span><span class="o">/</span><span class="n">catalog</span><span class="o">.</span><span class="n">xml</span><span class="o">&lt;/</span><span class="n">catalog</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="targettypes">
+<h3>targetTypes<a class="headerlink" href="#targettypes" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">targetTypes</span></code> section lists all the application schemas required to define the mapping. Typically only one is required. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">targetTypes</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">FeatureType</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">schemaUri</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">geosciml</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">geosciml</span><span class="o">/</span><span class="mf">2.0</span><span class="o">/</span><span class="n">xsd</span><span class="o">/</span><span class="n">geosciml</span><span class="o">.</span><span class="n">xsd</span><span class="o">&lt;/</span><span class="n">schemaUri</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">FeatureType</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">targetTypes</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mappings">
+<h2>Mappings<a class="headerlink" href="#mappings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="typemappings-and-featuretypemapping">
+<h3>typeMappings and FeatureTypeMapping<a class="headerlink" href="#typemappings-and-featuretypemapping" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">typeMappings</span></code> section is the heart of the app-schema module. It defines the mapping from simple features to the nested structure of one or more simple features. It consists of a list of <code class="docutils literal notranslate"><span class="pre">FeatureTypeMapping</span></code> elements, which each define one output feature type. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">typeMappings</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">FeatureTypeMapping</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">mappingName</span><span class="o">&gt;</span><span class="n">mappedfeature1</span><span class="o">&lt;/</span><span class="n">mappingName</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">sourceDataStore</span><span class="o">&gt;</span><span class="n">datastore</span><span class="o">&lt;/</span><span class="n">sourceDataStore</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">sourceType</span><span class="o">&gt;</span><span class="n">mappedfeature</span><span class="o">&lt;/</span><span class="n">sourceType</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">targetElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">&lt;/</span><span class="n">targetElement</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">isDenormalised</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isDenormalised</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">defaultGeometry</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">shape</span><span class="o">/</span><span class="n">gml</span><span class="p">:</span><span class="n">Polygon</span><span class="o">&lt;/</span><span class="n">defaultGeometry</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">attributeMappings</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+                <span class="o">...</span>
+</pre></div>
+</div>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">mappingName</span></code> is an optional tag, to identify the mapping in <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a> when there are multiple FeatureTypeMapping instances for the same type. This is solely for feature chaining purposes, and would not work for identifying top level features.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sourceDataStore</span></code> must be an identifier you provided when you defined a source data store the <code class="docutils literal notranslate"><span class="pre">sourceDataStores</span></code> section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sourceType</span></code> is the simple feature type name. For example:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>a table or view name, lowercase for PostGIS, uppercase for Oracle.</p></li>
+<li><p>a property file name (without the .properties suffix)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targetElement</span></code> is the element name in the target application schema. This is the same as the WFS feature type name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isDenormalised</span></code> is an optional tag (default true) to indicate whether this type contains denormalised data or not. If data is not denormalised, then app-schema will build a more efficient query to apply the global feature limit.  When combined with a low global feature limit (via <cite>Services –&gt; WFS</cite>), setting this option to false can prevent unnecessary processing and database lookups from taking place.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defaultGeometry</span></code> can be used to explicitly define the attribute of the feature type that should be used as the default geometry, this is more relevant in WMS than WFS. The default geometry XML path can reference any attribute of the feature type, exactly the same path that would be used to reference the desired property in a OGC filter. The path can reference a nested attribute belonging to a chained feature having a zero or one relationship with the root feature type.</p></li>
+</ul>
+</div>
+<div class="section" id="attributemappings-and-attributemapping">
+<h3>attributeMappings and AttributeMapping<a class="headerlink" href="#attributemappings-and-attributemapping" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">attributeMappings</span></code> comprises a list of <code class="docutils literal notranslate"><span class="pre">AttributeMapping</span></code> elements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;...&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">idExpression</span><span class="o">&gt;...&lt;/</span><span class="n">idExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;...&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttributeNode</span><span class="o">&gt;...&lt;/</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;...&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;...&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="targetattribute">
+<h3>targetAttribute<a class="headerlink" href="#targetattribute" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">targetAttribute</span></code> is the XPath to the output element, in the context of the target element. For example, if the containing mapping is for a feature, you should be able to map a <code class="docutils literal notranslate"><span class="pre">gml:name</span></code> property by setting the target attribute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Multivalued attributes resulting from <a class="reference internal" href="#app-schema-denormalised-sources"><span class="std std-ref">Denormalised sources</span></a> are automatically encoded. If you wish to encode multivalued attributes from different input columns as a specific instance of an attribute, you can use a (one-based) index. For example, you can set the third <code class="docutils literal notranslate"><span class="pre">gml:name</span></code> with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The reserved name <code class="docutils literal notranslate"><span class="pre">FEATURE_LINK</span></code> is used to map data that is not encoded in XML but is required for use in <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a>.</p>
+</div>
+<div class="section" id="idexpression-optional">
+<h3>idExpression (optional)<a class="headerlink" href="#idexpression-optional" title="Permalink to this headline">¶</a></h3>
+<p>A CQL expression that is used to set the custom <code class="docutils literal notranslate"><span class="pre">gml:id</span></code> of the output feature type. This should be the name of a database column on its own. Using functions would cause an exception because it is not supported with the default joining implementation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Every feature must have a <code class="docutils literal notranslate"><span class="pre">gml:id</span></code>. This requirement is an implementation limitation (strictly, <code class="docutils literal notranslate"><span class="pre">gml:id</span></code> is optional in GML).</p>
+<ul class="simple">
+<li><p>If idExpression is unspecified, <code class="docutils literal notranslate"><span class="pre">gml:id</span></code> will be <code class="docutils literal notranslate"><span class="pre">&lt;the</span> <span class="pre">table</span> <span class="pre">name&gt;.&lt;primary</span> <span class="pre">key&gt;</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">MAPPEDFEATURE.1</span></code>.</p></li>
+<li><p>In the absence of primary keys, this will be <code class="docutils literal notranslate"><span class="pre">&lt;the</span> <span class="pre">table</span> <span class="pre">name&gt;.&lt;generated</span> <span class="pre">gml</span> <span class="pre">id&gt;</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">MAPPEDFEATURE.fid--46fd41b8_1407138b56f_-7fe0</span></code>.</p></li>
+<li><p>If using property files instead of database tables, the default <code class="docutils literal notranslate"><span class="pre">gml:id</span></code> will be the row key found before the equals (“=”) in the property file, e.g. the feature with row “mf1=Mudstone|POINT(1 2)|…” will have gml:id <code class="docutils literal notranslate"><span class="pre">mf1</span></code>.</p></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">gml:id</span></code> must be an <a class="reference external" href="http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName">NCName</a>.</p>
+</div>
+</div>
+<div class="section" id="sourceexpression-optional">
+<h3>sourceExpression (optional)<a class="headerlink" href="#sourceexpression-optional" title="Permalink to this headline">¶</a></h3>
+<p>Use a <code class="docutils literal notranslate"><span class="pre">sourceExpression</span></code> tag to set the element content from source data. For example, to set the element content from a column called <code class="docutils literal notranslate"><span class="pre">DESCRIPTION</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">DESCRIPTION</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">sourceExpression</span></code> is not present, the generated element is empty (unless set by another mapping).</p>
+<p>You can use CQL expressions to calculate the content of the element. This example concatenated strings from two columns and a literal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">strConCat</span><span class="p">(</span><span class="n">FIRST</span> <span class="p">,</span> <span class="n">strConCat</span><span class="p">(</span><span class="s1">&#39; followed by &#39;</span><span class="p">,</span> <span class="n">SECOND</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>You can also use <a class="reference internal" href="cql-functions.html#app-schema-cql-functions"><span class="std std-ref">CQL functions</span></a> for vocabulary translations.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Avoid use of CQL expressions for properties that users will want to query, because the current implementation cannot reverse these expressions to generate efficient SQL, and will instead read all features to calculate the property to find the features that match the filter query. Falling back to brute force search makes queries on CQL-calculated expressions very slow. If you must concatenate strings to generate content, you may find that doing this in your database is much faster.</p>
+</div>
+</div>
+<div class="section" id="linkelement-and-linkfield-optional">
+<h3>linkElement and linkField (optional)<a class="headerlink" href="#linkelement-and-linkfield-optional" title="Permalink to this headline">¶</a></h3>
+<p>The presence of <code class="docutils literal notranslate"><span class="pre">linkElement</span></code> and <code class="docutils literal notranslate"><span class="pre">linkField</span></code> change the meaning of <code class="docutils literal notranslate"><span class="pre">sourceExpression</span></code> to a <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a> mapping, in which the source of the mapping is the feature of type <code class="docutils literal notranslate"><span class="pre">linkElement</span></code> with property <code class="docutils literal notranslate"><span class="pre">linkField</span></code> matching the expression. For example, the following <code class="docutils literal notranslate"><span class="pre">sourceExpression</span></code> uses as the result of the mapping the (possibly multivalued) <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code> for which <code class="docutils literal notranslate"><span class="pre">gml:name[2]</span></code> is equal to the value of <code class="docutils literal notranslate"><span class="pre">URN</span></code> for the source feature. This is in effect a foreign key relation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">URN</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The feature type <code class="docutils literal notranslate"><span class="pre">gsml:MappedFeature</span></code> might be defined in another mapping file. The <code class="docutils literal notranslate"><span class="pre">linkField</span></code> can be <code class="docutils literal notranslate"><span class="pre">FEATURE_LINK</span></code> if you wish to relate the features by a property not exposed in XML.
+See <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a> for a comprehensive discussion.</p>
+<p>For special cases, <code class="docutils literal notranslate"><span class="pre">linkElement</span></code> could be an OCQL function, and <code class="docutils literal notranslate"><span class="pre">linkField</span></code> could be omitted.
+See <a class="reference internal" href="polymorphism.html#app-schema-polymorphism"><span class="std std-ref">Polymorphism</span></a> for further information.</p>
+</div>
+<div class="section" id="targetattributenode-optional">
+<span id="app-schema-mapping-file-targetattributenode"></span><h3>targetAttributeNode (optional)<a class="headerlink" href="#targetattributenode-optional" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">targetAttributeNode</span></code> is required wherever a property type contains an abstract element and app-schema cannot determine the type of the enclosed attribute.</p>
+<p>In this example, <code class="docutils literal notranslate"><span class="pre">om:result</span></code> is of <code class="docutils literal notranslate"><span class="pre">xs:anyType</span></code>, which is abstract. We can use <code class="docutils literal notranslate"><span class="pre">targetAttributeNode</span></code> to set the type of the property type to a type that encloses a non-abstract element:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">om</span><span class="p">:</span><span class="n">result</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">MeasureType</span><span class="o">&lt;/</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">TOPAGE</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">xsi</span><span class="p">:</span><span class="nb">type</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;gml:MeasureType&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">uom</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;http://www.opengis.net/def/uom/UCUM/0/Ma&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>If the casting type is complex, the specific type is implicitly determined by the XPath in targetAttribute and targetAttributeNode is not required.
+E.g., in this example <code class="docutils literal notranslate"><span class="pre">om:result</span></code> is automatically specialised as a MappedFeatureType:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">om</span><span class="p">:</span><span class="n">result</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Although it is not required, we may still specify targetAttributeNode for the root node, and map the children attributes as per normal.
+This mapping must come before the mapping for the enclosed elements. By doing this, app-schema will report an exception if a mapping is specified for any of the children attributes that violates the type in targetAttributeNode.
+E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">om</span><span class="p">:</span><span class="n">result</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeatureType</span><span class="o">&lt;</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">om</span><span class="p">:</span><span class="n">result</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Note that the GML encoding rules require that complex types are never the direct property of another complex type; they are always contained in a property type to ensure that their type is encoded in a surrounding element. Encoded GML is always type/property/type/property. This is also known as the GML “striping” rule. The consequence of this for app-schema mapping files is that <code class="docutils literal notranslate"><span class="pre">targetAttributeNode</span></code> must be applied to the property and the type must be set to the XSD property type, not to the type of the contained attribute (<code class="docutils literal notranslate"><span class="pre">gsml:CGI_TermValuePropertyType</span></code> not <code class="docutils literal notranslate"><span class="pre">gsml:CGI_TermValueType</span></code>). Because the XPath refers to a property type not the encoded content, <code class="docutils literal notranslate"><span class="pre">targetAttributeNode</span></code> appears in a mapping with <code class="docutils literal notranslate"><span class="pre">targetAttribute</span></code> and no other elements when using with complex types.</p>
+<p>The XML encoder will encode nested complex features that are mapped to a complex type that does not respect the GML striping rule. The Java configuration property <code class="docutils literal notranslate"><span class="pre">encoder.relaxed</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">false</span></code> to disable this behavior.</p>
+</div>
+<div class="section" id="encodeifempty-optional">
+<h3>encodeIfEmpty (optional)<a class="headerlink" href="#encodeifempty-optional" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">encodeIfEmpty</span></code> element will determine if an attribute will be encoded if it contains a null or empty value. By default <code class="docutils literal notranslate"><span class="pre">encodeIfEmpty</span></code> is set to false therefore any attribute that does not contain a value will be skipped:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">encodeIfEmpty</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">encodeIfEmpty</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">encodeIfEmpty</span></code> can be used to bring up attributes that only contain client properties such as <code class="docutils literal notranslate"><span class="pre">xlink:title</span></code>.</p>
+</div>
+<div class="section" id="ismultiple-optional">
+<h3>isMultiple (optional)<a class="headerlink" href="#ismultiple-optional" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">isMultiple</span></code> element states whether there might be multiple values for this attribute, coming from denormalised rows. Because the default value is <code class="docutils literal notranslate"><span class="pre">false</span></code> and it is omitted in this case, it is most usually seen as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>For example, the table below is denormalised with <code class="docutils literal notranslate"><span class="pre">NAME</span></code> column having multiple values:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 37%" />
+<col style="width: 51%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>ID</p></th>
+<th class="head"><p>NAME</p></th>
+<th class="head"><p>DESCRIPTION</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>gu.25678</p></td>
+<td><p>Yaugher Volcanic Group 1</p></td>
+<td><p>Olivine basalt, tuff, microgabbro</p></td>
+</tr>
+<tr class="row-odd"><td><p>gu.25678</p></td>
+<td><p>Yaugher Volcanic Group 2</p></td>
+<td><p>Olivine basalt, tuff, microgabbro</p></td>
+</tr>
+</tbody>
+</table>
+<p>The configuration file specifies <code class="docutils literal notranslate"><span class="pre">isMultiple</span></code> for <code class="docutils literal notranslate"><span class="pre">gml:name</span></code> attribute that is mapped to the <code class="docutils literal notranslate"><span class="pre">NAME</span></code> column:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">codeSpace</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;urn:ietf:rfc:2141&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The output produces multiple <code class="docutils literal notranslate"><span class="pre">gml:name</span></code> attributes for each feature grouped by the id:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">GeologicUnit</span> <span class="n">gml</span><span class="p">:</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;gu.25678&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">description</span><span class="o">&gt;</span><span class="n">Olivine</span> <span class="n">basalt</span><span class="p">,</span> <span class="n">tuff</span><span class="p">,</span> <span class="n">microgabbro</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">description</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span> <span class="n">codeSpace</span><span class="o">=</span><span class="s2">&quot;urn:ietf:rfc:2141&quot;</span><span class="o">&gt;</span><span class="n">Yaugher</span> <span class="n">Volcanic</span> <span class="n">Group</span> <span class="mi">1</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span> <span class="n">codeSpace</span><span class="o">=</span><span class="s2">&quot;urn:ietf:rfc:2141&quot;</span><span class="o">&gt;</span><span class="n">Yaugher</span> <span class="n">Volcanic</span> <span class="n">Group</span> <span class="mi">2</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+ <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="islist-optional">
+<h3>isList (optional)<a class="headerlink" href="#islist-optional" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">isList</span></code> element states whether there might be multiple values for this attribute, concatenated as a list. The usage is similar with <code class="docutils literal notranslate"><span class="pre">isMultiple</span></code>, except the values appear concatenated inside a single node instead of each value encoded in a separate node. Because the default value is <code class="docutils literal notranslate"><span class="pre">false</span></code> and it is omitted in this case, it is most usually seen as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">isList</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isList</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>For example, the table below has multiple <code class="docutils literal notranslate"><span class="pre">POSITION</span></code> for each feature:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 38%" />
+<col style="width: 62%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>ID</p></th>
+<th class="head"><p>POSITION</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ID1.2</p></td>
+<td><p>1948-05</p></td>
+</tr>
+<tr class="row-odd"><td><p>ID1.2</p></td>
+<td><p>1948-06</p></td>
+</tr>
+<tr class="row-even"><td><p>ID1.2</p></td>
+<td><p>1948-07</p></td>
+</tr>
+<tr class="row-odd"><td><p>ID1.2</p></td>
+<td><p>1948-08</p></td>
+</tr>
+<tr class="row-even"><td><p>ID1.2</p></td>
+<td><p>1948-09</p></td>
+</tr>
+</tbody>
+</table>
+<p>The configuration file uses <code class="docutils literal notranslate"><span class="pre">isList</span></code> on <code class="docutils literal notranslate"><span class="pre">timePositionList</span></code> attribute mapped to <code class="docutils literal notranslate"><span class="pre">POSITION</span></code> column:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">csml</span><span class="p">:</span><span class="n">timePositionList</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">POSITION</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">isList</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isList</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The output produced:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">csml</span><span class="p">:</span><span class="n">pointSeriesDomain</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">csml</span><span class="p">:</span><span class="n">TimeSeries</span> <span class="n">gml</span><span class="p">:</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;ID1.2&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">csml</span><span class="p">:</span><span class="n">timePositionList</span><span class="o">&gt;</span><span class="mi">1949</span><span class="o">-</span><span class="mi">05</span> <span class="mi">1949</span><span class="o">-</span><span class="mi">06</span> <span class="mi">1949</span><span class="o">-</span><span class="mi">07</span> <span class="mi">1949</span><span class="o">-</span><span class="mi">08</span> <span class="mi">1949</span><span class="o">-</span><span class="mi">09</span><span class="o">&lt;/</span><span class="n">csml</span><span class="p">:</span><span class="n">timePositionList</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">csml</span><span class="p">:</span><span class="n">TimeSeries</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">csml</span><span class="p">:</span><span class="n">pointSeriesDomain</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="clientproperty-optional-multivalued">
+<h3>ClientProperty (optional, multivalued)<a class="headerlink" href="#clientproperty-optional-multivalued" title="Permalink to this headline">¶</a></h3>
+<p>A mapping can have one or more <code class="docutils literal notranslate"><span class="pre">ClientProperty</span></code> elements which set XML attributes on the mapping target. Each <code class="docutils literal notranslate"><span class="pre">ClientProperty</span></code> has a <code class="docutils literal notranslate"><span class="pre">name</span></code> and a <code class="docutils literal notranslate"><span class="pre">value</span></code> that is an arbitrary CQL expression. No <code class="docutils literal notranslate"><span class="pre">OCQL</span></code> element is used inside <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+<p>This example of a <code class="docutils literal notranslate"><span class="pre">ClientProperty</span></code> element sets the <code class="docutils literal notranslate"><span class="pre">codeSpace</span></code> XML attribute to the literal string <code class="docutils literal notranslate"><span class="pre">urn:ietf:rfc:2141</span></code>. Note the use of single quotes around the literal string. This could be applied to any target attribute of GML CodeType:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">codeSpace</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;urn:ietf:rfc:2141&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>When the GML association pattern is used to encode a property by reference, the <code class="docutils literal notranslate"><span class="pre">xlink:href</span></code> attribute is set and the element is empty. This <code class="docutils literal notranslate"><span class="pre">ClientProperty</span></code> element sets the <code class="docutils literal notranslate"><span class="pre">xlink:href</span></code> XML attribute to the value of the <code class="docutils literal notranslate"><span class="pre">RELATED_FEATURE_URN</span></code> field in the data source (for example, a column in an Oracle database table). This mapping could be applied to any property type, such a <code class="docutils literal notranslate"><span class="pre">gml:FeaturePropertyType</span></code>, or other type modelled on the GML association pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">RELATED_FEATURE_URN</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>See the discussion in <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a> for the special case in which <code class="docutils literal notranslate"><span class="pre">xlink:href</span></code> is created for multivalued properties by reference.</p>
+</div>
+</div>
+<div class="section" id="cql">
+<h2>CQL<a class="headerlink" href="#cql" title="Permalink to this headline">¶</a></h2>
+<p>CQL functions enable data conversion and conditional behaviour to be specified in mapping files.</p>
+<ul>
+<li><p>See <a class="reference internal" href="cql-functions.html#app-schema-cql-functions"><span class="std std-ref">CQL functions</span></a> for information on additional functions provided by the app-schema plugin.</p></li>
+<li><p>The uDig manual includes a list of CQL functions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="http://udig.refractions.net/confluence/display/EN/Constraint+Query+Language">http://udig.refractions.net/confluence/display/EN/Constraint+Query+Language</a></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>CQL string literals are enclosed in single quotes, for example <code class="docutils literal notranslate"><span class="pre">'urn:ogc:def:nil:OGC:missing'</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="database-identifiers">
+<h2>Database identifiers<a class="headerlink" href="#database-identifiers" title="Permalink to this headline">¶</a></h2>
+<p>When referring to database table/view names or column names, use:</p>
+<ul class="simple">
+<li><p>lowercase for PostGIS</p></li>
+<li><p>UPPERCASE for Oracle Spatial</p></li>
+</ul>
+</div>
+<div class="section" id="denormalised-sources">
+<span id="app-schema-denormalised-sources"></span><h2>Denormalised sources<a class="headerlink" href="#denormalised-sources" title="Permalink to this headline">¶</a></h2>
+<p>Multivalued properties from denormalised sources (the same source feature ID appears more than once) are automatically encoded. For example, a view might have a repeated <code class="docutils literal notranslate"><span class="pre">id</span></code> column with varying <code class="docutils literal notranslate"><span class="pre">name</span></code> so that an arbitrarily large number of <code class="docutils literal notranslate"><span class="pre">gml:name</span></code> properties can be encoded for the output feature.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Denormalised sources must grouped so that features with duplicate IDs are provided without any intervening features. This can be achieved by ensuring that denormalised source features are sorted by ID. Failure to observe this restriction will result in data corruption. This restriction is however not necessary when using <a class="reference internal" href="joining.html#app-schema-joining"><span class="std std-ref">Joining Support For Performance</span></a> because then ordering will happen automatically.</p>
+</div>
+</div>
+<div class="section" id="attributes-with-cardinality-1-n">
+<h2>Attributes with cardinality 1..N<a class="headerlink" href="#attributes-with-cardinality-1-n" title="Permalink to this headline">¶</a></h2>
+<p>Consider the following two tables, the first table contains information related to meteorological stations:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 44%" />
+<col style="width: 56%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>ID</p></th>
+<th class="head"><p>NAME</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>st.1</p></td>
+<td><p>Station 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>st.2</p></td>
+<td><p>Station 2</p></td>
+</tr>
+</tbody>
+</table>
+<p>The second table contains tags that are associated with meteorological stations:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 31%" />
+<col style="width: 33%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>ID</p></th>
+<th class="head"><p>STATION_ID</p></th>
+<th class="head"><p>TAG</p></th>
+<th class="head"><p>CODE</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>tg.1</p></td>
+<td><p>st.1</p></td>
+<td><p>temperature</p></td>
+<td><p>X1Y</p></td>
+</tr>
+<tr class="row-odd"><td><p>tg.2</p></td>
+<td><p>st.1</p></td>
+<td><p>wind</p></td>
+<td><p>X2Y</p></td>
+</tr>
+<tr class="row-even"><td><p>tg.3</p></td>
+<td><p>st.2</p></td>
+<td><p>pressure</p></td>
+<td><p>X3Y</p></td>
+</tr>
+</tbody>
+</table>
+<p>A station can have multiple tags, establishing a one to many relationship between stations and tags, the GML representation of the first station should look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">Station</span> <span class="n">gml</span><span class="p">:</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;st.1&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span><span class="n">Station</span> <span class="mi">1</span><span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span> <span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;X1Y&quot;</span><span class="o">&gt;</span><span class="n">temperature</span><span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span> <span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;X2Y&quot;</span><span class="o">&gt;</span><span class="n">wind</span><span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">Station_gml32</span><span class="o">&gt;</span>
+<span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Mappings with a one to many relationship are supported with a custom syntax in JDBC based data stores and Apache Solr data store.</p>
+<div class="section" id="sql-based-data-stores">
+<h3>SQL based data stores<a class="headerlink" href="#sql-based-data-stores" title="Permalink to this headline">¶</a></h3>
+<p>When using JDBC based data stores attributes with a 1..N relationship can be mapped like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">jdbcMultipleValue</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceColumn</span><span class="o">&gt;</span><span class="n">ID</span><span class="o">&lt;/</span><span class="n">sourceColumn</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetTable</span><span class="o">&gt;</span><span class="n">TAGS</span><span class="o">&lt;/</span><span class="n">targetTable</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetColumn</span><span class="o">&gt;</span><span class="n">STATION_ID</span><span class="o">&lt;/</span><span class="n">targetColumn</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetValue</span><span class="o">&gt;</span><span class="n">TAG</span><span class="o">&lt;/</span><span class="n">targetValue</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">jdbcMultipleValue</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">CODE</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">targetValue</span></code> refers to the value of the <code class="docutils literal notranslate"><span class="pre">&lt;st:tag&gt;</span></code> element, the client property is mapped with the usual syntax. Behind the scenes App-Schema will take care of associating the <code class="docutils literal notranslate"><span class="pre">st:code</span></code> attribute value with the correct tag.</p>
+<p>Another variant of this feature can be used for nested elements on an unbounded anonymous sequence, Using ‘anonymousAttribute’ element definition
+for generating child elements and values inside an anonymous umbounded sequence:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">jdbcMultipleValue</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceColumn</span><span class="o">&gt;</span><span class="n">ID</span><span class="o">&lt;/</span><span class="n">sourceColumn</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetTable</span><span class="o">&gt;</span><span class="n">TAGS</span><span class="o">&lt;/</span><span class="n">targetTable</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetColumn</span><span class="o">&gt;</span><span class="n">STATION_ID</span><span class="o">&lt;/</span><span class="n">targetColumn</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">jdbcMultipleValue</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">anonymousAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">CODE</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">anonymousAttribute</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case ‘st:code’ element children will be generated with the computed client property value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">Station</span> <span class="n">gml</span><span class="p">:</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;st.1&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span><span class="n">Station</span> <span class="mi">1</span><span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">&gt;</span><span class="n">X1Y</span><span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">&gt;</span><span class="n">X2Y</span><span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">st</span><span class="p">:</span><span class="n">Station_gml32</span><span class="o">&gt;</span>
+<span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Having an schema with anonymous unbounded sequence like</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">complexType</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;StationType&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">complexContent</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">extension</span> <span class="n">base</span><span class="o">=</span><span class="s2">&quot;gml:AbstractFeatureType&quot;</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">sequence</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;xs:string&quot;</span><span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;contact&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;st:ContactPropertyType&quot;</span><span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;location&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;gml:GeometryPropertyType&quot;</span><span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">maxOccurs</span><span class="o">=</span><span class="s2">&quot;unbounded&quot;</span> <span class="n">minOccurs</span><span class="o">=</span><span class="s2">&quot;0&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;st:TagType&quot;</span><span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;measurements&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;ms:MeasurementPropertyType&quot;</span> <span class="n">minOccurs</span><span class="o">=</span><span class="s2">&quot;0&quot;</span> <span class="n">maxOccurs</span><span class="o">=</span><span class="s2">&quot;unbounded&quot;</span><span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;maintainer&quot;</span> <span class="n">minOccurs</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">complexType</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">sequence</span> <span class="n">maxOccurs</span><span class="o">=</span><span class="s2">&quot;unbounded&quot;</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;xs:string&quot;</span><span class="o">/&gt;</span>
+              <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;level&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;xs:integer&quot;</span> <span class="n">nillable</span><span class="o">=</span><span class="s2">&quot;true&quot;</span><span class="o">/&gt;</span>
+              <span class="o">&lt;</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;classType&quot;</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;/</span><span class="n">xs</span><span class="p">:</span><span class="n">sequence</span><span class="o">&gt;</span>
+          <span class="o">&lt;/</span><span class="n">xs</span><span class="p">:</span><span class="n">complexType</span><span class="o">&gt;</span>
+        <span class="o">&lt;/</span><span class="n">xs</span><span class="p">:</span><span class="n">element</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">xs</span><span class="p">:</span><span class="n">sequence</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">xs</span><span class="p">:</span><span class="n">extension</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">xs</span><span class="p">:</span><span class="n">complexContent</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">xs</span><span class="p">:</span><span class="n">complexType</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>We could define the following mapping</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&lt;</span><span class="n">FeatureTypeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceDataStore</span><span class="o">&gt;</span><span class="n">stations_gml32</span><span class="o">&lt;/</span><span class="n">sourceDataStore</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceType</span><span class="o">&gt;</span><span class="n">stations_gml32</span><span class="o">&lt;/</span><span class="n">sourceType</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetElement</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">Station_gml32</span><span class="o">&lt;/</span><span class="n">targetElement</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">attributeMappings</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">Station_gml32</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">idExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">ID</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">idExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">location</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">LOCATION</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">maintainer</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">jdbcMultipleValue</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">sourceColumn</span><span class="o">&gt;</span><span class="n">ID</span><span class="o">&lt;/</span><span class="n">sourceColumn</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">targetTable</span><span class="o">&gt;</span><span class="n">MAINTAINERS_GML32</span><span class="o">&lt;/</span><span class="n">targetTable</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">targetColumn</span><span class="o">&gt;</span><span class="n">OWNER</span><span class="o">&lt;/</span><span class="n">targetColumn</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">jdbcMultipleValue</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">anonymousAttribute</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">anonymousAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">anonymousAttribute</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">level</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">LEVEL</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">anonymousAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">anonymousAttribute</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">classType</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">CLASSTYPE</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">anonymousAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">measurements</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">ID</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">ms_gml32</span><span class="p">:</span><span class="n">Measurement_gml32</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">FEATURE_LINK</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">attributeMappings</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">FeatureTypeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>So Geoserver will produce GML like this</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">Station_gml32</span> <span class="n">gml</span><span class="p">:</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;st.2&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span><span class="n">station2</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">location</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">Point</span> <span class="n">srsDimension</span><span class="o">=</span><span class="s2">&quot;2&quot;</span> <span class="n">srsName</span><span class="o">=</span><span class="s2">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">pos</span><span class="o">&gt;-</span><span class="mi">3</span> <span class="o">-</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">pos</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">Point</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">location</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">measurements</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ms_gml32</span><span class="p">:</span><span class="n">Measurement_gml32</span> <span class="n">gml</span><span class="p">:</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;ms.3&quot;</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">ms_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span><span class="n">pressure</span><span class="o">&lt;/</span><span class="n">ms_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">ms_gml32</span><span class="p">:</span><span class="n">tag</span><span class="o">&gt;</span><span class="n">pressure_tag</span><span class="o">&lt;/</span><span class="n">ms_gml32</span><span class="p">:</span><span class="n">tag</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">ms_gml32</span><span class="p">:</span><span class="n">Measurement_gml32</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">measurements</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">maintainer</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span><span class="n">mnt_c</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">level</span><span class="o">&gt;</span><span class="mi">73</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">level</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">classType</span><span class="o">&gt;</span><span class="n">st_2_mnt_c</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">classType</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span><span class="n">mnt_d</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">level</span><span class="o">&gt;</span><span class="mi">74</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">level</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">classType</span><span class="o">&gt;</span><span class="n">st_2_mnt_d</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">classType</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span><span class="n">mnt_e</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">level</span><span class="o">&gt;</span><span class="mi">75</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">level</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">classType</span><span class="o">&gt;</span><span class="n">st_2_mnt_e</span><span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">classType</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">maintainer</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">st_gml32</span><span class="p">:</span><span class="n">Station_gml32</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="apache-solr">
+<h3>Apache Solr<a class="headerlink" href="#apache-solr" title="Permalink to this headline">¶</a></h3>
+<p>When using Apache Solr data stores, 1..N relationships can be handled with <code class="docutils literal notranslate"><span class="pre">multiValued</span></code> fields and mapped like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">st</span><span class="p">:</span><span class="n">tag</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">solrMultipleValue</span><span class="o">&gt;</span><span class="n">TAG</span><span class="o">&lt;/</span><span class="n">solrMultipleValue</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">st</span><span class="p">:</span><span class="n">code</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">CODE</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="external-apache-solr-index">
+<h2>External Apache Solr Index<a class="headerlink" href="#external-apache-solr-index" title="Permalink to this headline">¶</a></h2>
+<p>Is possible to use an external Apache Solr index to speed up text based searches. Consider the following WFS <code class="docutils literal notranslate"><span class="pre">GetFeatureRequest</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">wfs</span><span class="p">:</span><span class="n">GetFeature</span> <span class="n">service</span><span class="o">=</span><span class="s2">&quot;WFS&quot;</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.0.0&quot;</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">fes</span><span class="o">=</span><span class="s2">&quot;http://www.opengis.net/fes/2.0&quot;</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">gml</span><span class="o">=</span><span class="s2">&quot;http://www.opengis.net/gml/3.2.1&quot;</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">wfs</span><span class="o">=</span><span class="s2">&quot;http://www.opengis.net/wfs/2.0&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">wfs</span><span class="p">:</span><span class="n">Query</span> <span class="n">typeNames</span><span class="o">=</span><span class="s2">&quot;st:Station&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">fes</span><span class="p">:</span><span class="n">Filter</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">fes</span><span class="p">:</span><span class="n">PropertyIsLike</span> <span class="n">escapeChar</span><span class="o">=</span><span class="s2">&quot;!&quot;</span> <span class="n">singleChar</span><span class="o">=</span><span class="s2">&quot;.&quot;</span> <span class="n">wildCard</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">fes</span><span class="p">:</span><span class="n">ValueReference</span><span class="o">&gt;</span><span class="n">st</span><span class="p">:</span><span class="n">Station</span><span class="o">/</span><span class="n">st</span><span class="p">:</span><span class="n">measurement</span><span class="o">/</span><span class="n">st</span><span class="p">:</span><span class="n">Measurement</span><span class="o">/</span><span class="n">st</span><span class="p">:</span><span class="n">description</span><span class="o">&lt;/</span><span class="n">fes</span><span class="p">:</span><span class="n">ValueReference</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">fes</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;*</span><span class="n">high</span><span class="o">*&lt;/</span><span class="n">fes</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">fes</span><span class="p">:</span><span class="n">PropertyIsLike</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">fes</span><span class="p">:</span><span class="n">Filter</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">wfs</span><span class="p">:</span><span class="n">Query</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">wfs</span><span class="p">:</span><span class="n">GetFeature</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>This request will return all the stations that have at least one measurement that contains the text <code class="docutils literal notranslate"><span class="pre">high</span></code> in its description. This type of text based queries are (usually) quite expensive to execute in relational data bases.</p>
+<p>Apache Solr is a well known open source project that aims to solve those type of performance issues, it allow us to index several fields and efficiently query those fields. Although Apache Solr allow us to index several types of fields, e.g. numbers or even latitudes longitudes, where it really shines is when dealing with text fields and text based queries.</p>
+<p>The goal of external indexes is to allow App-Schema to take advantage of Apache Solr text searches performance and at the same time to take advantage of relational databases relational capabilities. In practice, this means that the full data will be stored in the relational database and we will only need to index in Apache Solr the fields we need to improve our text based queries.</p>
+<p>Using the stations use case as an example, our data will be stored in a relational database, e.g. PostgreSQL, and we will index the possible descriptions measurements values in an Apache Solr index.</p>
+<p>Our mapping file will look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;as:AppSchemaDataAccess xmlns:as=&quot;http://www.geotools.org/app-schema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.geotools.org/app-schema AppSchemaDataAccess.xsd&quot;&gt;
+  &lt;namespaces&gt;
+    &lt;Namespace&gt;
+      &lt;prefix&gt;gml&lt;/prefix&gt;
+      &lt;uri&gt;http://www.opengis.net/gml/3.2&lt;/uri&gt;
+    &lt;/Namespace&gt;
+    &lt;Namespace&gt;
+      &lt;prefix&gt;st&lt;/prefix&gt;
+      &lt;uri&gt;http://www.stations.org/1.0&lt;/uri&gt;
+    &lt;/Namespace&gt;
+  &lt;/namespaces&gt;
+  &lt;sourceDataStores&gt;
+    &lt;SolrDataStore&gt;
+      &lt;id&gt;stations_solr&lt;/id&gt;
+      &lt;url&gt;http://localhost:8983/solr/stations_index&lt;/url&gt;
+      &lt;index name=&quot;stations_index&quot;/&gt;
+    &lt;/SolrDataStore&gt;
+    &lt;DataStore&gt;
+      &lt;id&gt;stations_db&lt;/id&gt;
+      &lt;parameters&gt;
+        &lt;Parameter&gt;
+          &lt;name&gt;dbtype&lt;/name&gt;
+          &lt;value&gt;postgisng&lt;/value&gt;
+        &lt;/Parameter&gt;
+      &lt;/parameters&gt;
+    &lt;/DataStore&gt;
+  &lt;/sourceDataStores&gt;
+  &lt;targetTypes&gt;
+    &lt;FeatureType&gt;
+      &lt;schemaUri&gt;./stations.xsd&lt;/schemaUri&gt;
+    &lt;/FeatureType&gt;
+  &lt;/targetTypes&gt;
+  &lt;typeMappings&gt;
+    &lt;FeatureTypeMapping&gt;
+      &lt;sourceDataStore&gt;stations_db&lt;/sourceDataStore&gt;
+      &lt;sourceType&gt;stations&lt;/sourceType&gt;
+      &lt;targetElement&gt;st:Station&lt;/targetElement&gt;
+      &lt;!-- configure the index data store for this feature type --&gt;
+      &lt;indexDataStore&gt;stations_solr&lt;/indexDataStore&gt;
+      &lt;indexType&gt;stations_index&lt;/indexType&gt;
+      &lt;attributeMappings&gt;
+        &lt;AttributeMapping&gt;
+          &lt;targetAttribute&gt;st:Station&lt;/targetAttribute&gt;
+          &lt;idExpression&gt;
+            &lt;OCQL&gt;id&lt;/OCQL&gt;
+          &lt;/idExpression&gt;
+          &lt;!-- the Solr index field that matches this feature type table primary key --&gt;
+          &lt;indexField&gt;id&lt;/indexField&gt;
+        &lt;/AttributeMapping&gt;
+        &lt;AttributeMapping&gt;
+          &lt;targetAttribute&gt;st:name&lt;/targetAttribute&gt;
+          &lt;sourceExpression&gt;
+            &lt;OCQL&gt;name&lt;/OCQL&gt;
+          &lt;/sourceExpression&gt;
+        &lt;/AttributeMapping&gt;
+        &lt;AttributeMapping&gt;
+          &lt;targetAttribute&gt;st:measurement&lt;/targetAttribute&gt;
+          &lt;sourceExpression&gt;
+            &lt;OCQL&gt;id&lt;/OCQL&gt;
+            &lt;linkElement&gt;st:Measurement&lt;/linkElement&gt;
+            &lt;linkField&gt;FEATURE_LINK[1]&lt;/linkField&gt;
+          &lt;/sourceExpression&gt;
+          &lt;isMultiple&gt;true&lt;/isMultiple&gt;
+        &lt;/AttributeMapping&gt;
+      &lt;/attributeMappings&gt;
+    &lt;/FeatureTypeMapping&gt;
+    &lt;FeatureTypeMapping&gt;
+      &lt;sourceDataStore&gt;stations_db&lt;/sourceDataStore&gt;
+      &lt;sourceType&gt;measurements&lt;/sourceType&gt;
+      &lt;targetElement&gt;st:Measurement&lt;/targetElement&gt;
+      &lt;attributeMappings&gt;
+        &lt;AttributeMapping&gt;
+          &lt;targetAttribute&gt;st:Measurement&lt;/targetAttribute&gt;
+          &lt;idExpression&gt;
+            &lt;OCQL&gt;id&lt;/OCQL&gt;
+          &lt;/idExpression&gt;
+        &lt;/AttributeMapping&gt;
+        &lt;AttributeMapping&gt;
+          &lt;targetAttribute&gt;st:description&lt;/targetAttribute&gt;
+          &lt;sourceExpression&gt;
+            &lt;OCQL&gt;description&lt;/OCQL&gt;
+          &lt;/sourceExpression&gt;
+          &lt;!-- the Solr index field that indexes the description possible values --&gt;
+          &lt;indexField&gt;description_txt&lt;/indexField&gt;
+        &lt;/AttributeMapping&gt;
+        &lt;AttributeMapping&gt;
+          &lt;targetAttribute&gt;FEATURE_LINK[1]&lt;/targetAttribute&gt;
+          &lt;sourceExpression&gt;
+            &lt;OCQL&gt;station_id&lt;/OCQL&gt;
+          &lt;/sourceExpression&gt;
+        &lt;/AttributeMapping&gt;
+      &lt;/attributeMappings&gt;
+    &lt;/FeatureTypeMapping&gt;
+  &lt;/typeMappings&gt;
+&lt;/as:AppSchemaDataAccess&gt;
+</pre></div>
+</div>
+<p>To be able to use an external Apache Solr index, we need at least to:</p>
+<ul class="simple">
+<li><p><strong>declare the Solr data store and the index</strong>: this is done in the root feature type mapping, e.g. <em>st:Station</em>.</p></li>
+<li><p><strong>map the Solr index field that matches the database primary key</strong>: this is done id mapping of the root feature type, e.g.``&lt;indexField&gt;id&lt;/indexField&gt;``.</p></li>
+<li><p><strong>map each attribute that is indexed in Apache Solr</strong>: this is done using the <em>indexField</em> element, e.g <code class="docutils literal notranslate"><span class="pre">&lt;indexField&gt;description_txt&lt;/indexField&gt;</span></code>.</p></li>
+</ul>
+<p>Is worth mentioning that if an external Solr index was defined, App-Schema will always query the external Solr index first and then query the relational database.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="configuration.html" title="previous chapter">Configuration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="app-schema-resolution.html" title="next chapter">Application Schema Resolution</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Mapping File</a><ul>
+<li><a class="reference internal" href="#outline">Outline</a><ul>
+<li><a class="reference internal" href="#mapping-file-schema">Mapping file schema</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#settings">Settings</a><ul>
+<li><a class="reference internal" href="#namespaces">namespaces</a></li>
+<li><a class="reference internal" href="#includedtypes-optional">includedTypes (optional)</a></li>
+<li><a class="reference internal" href="#sourcedatastores">sourceDataStores</a></li>
+<li><a class="reference internal" href="#catalog-optional">catalog (optional)</a></li>
+<li><a class="reference internal" href="#targettypes">targetTypes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mappings">Mappings</a><ul>
+<li><a class="reference internal" href="#typemappings-and-featuretypemapping">typeMappings and FeatureTypeMapping</a></li>
+<li><a class="reference internal" href="#attributemappings-and-attributemapping">attributeMappings and AttributeMapping</a></li>
+<li><a class="reference internal" href="#targetattribute">targetAttribute</a></li>
+<li><a class="reference internal" href="#idexpression-optional">idExpression (optional)</a></li>
+<li><a class="reference internal" href="#sourceexpression-optional">sourceExpression (optional)</a></li>
+<li><a class="reference internal" href="#linkelement-and-linkfield-optional">linkElement and linkField (optional)</a></li>
+<li><a class="reference internal" href="#targetattributenode-optional">targetAttributeNode (optional)</a></li>
+<li><a class="reference internal" href="#encodeifempty-optional">encodeIfEmpty (optional)</a></li>
+<li><a class="reference internal" href="#ismultiple-optional">isMultiple (optional)</a></li>
+<li><a class="reference internal" href="#islist-optional">isList (optional)</a></li>
+<li><a class="reference internal" href="#clientproperty-optional-multivalued">ClientProperty (optional, multivalued)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cql">CQL</a></li>
+<li><a class="reference internal" href="#database-identifiers">Database identifiers</a></li>
+<li><a class="reference internal" href="#denormalised-sources">Denormalised sources</a></li>
+<li><a class="reference internal" href="#attributes-with-cardinality-1-n">Attributes with cardinality 1..N</a><ul>
+<li><a class="reference internal" href="#sql-based-data-stores">SQL based data stores</a></li>
+<li><a class="reference internal" href="#apache-solr">Apache Solr</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#external-apache-solr-index">External Apache Solr Index</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="configuration.html" title="previous chapter">Configuration</a></li>
+            <li>Next: <a href="app-schema-resolution.html" title="next chapter">Application Schema Resolution</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/mapping-file.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

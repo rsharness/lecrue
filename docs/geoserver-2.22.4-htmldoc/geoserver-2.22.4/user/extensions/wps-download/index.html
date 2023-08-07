@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WPS Download plugin &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Raw data download processes" href="rawDownload.html" />
+    <link rel="prev" title="WMTS Multidimensional performance" href="../wmts-multidimensional/performance.html" /> 
+  </head><body class="extensions/wps-download/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+    <li>WPS Download plugin</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="rawDownload.html" title="Raw data download processes" accesskey="N">Next</a></li>
+  <li>
+    <a href="../wmts-multidimensional/performance.html" title="WMTS Multidimensional performance" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wps-download-plugin">
+<span id="wpsdownload"></span><h1>WPS Download plugin<a class="headerlink" href="#wps-download-plugin" title="Permalink to this headline">¶</a></h1>
+<p>WPS Download plugin provides some useful features for easily downloading:
+* Raster or Vector layer as zip files
+* Large maps as images
+* Time based animation
+The module also provides facilities to control the output file size.</p>
+<div class="section" id="installing-the-wps-download-extension">
+<h2>Installing the WPS Download extension<a class="headerlink" href="#installing-the-wps-download-extension" title="Permalink to this headline">¶</a></h2>
+<p>The WPS Download extension is listed among the other extension downloads on the GeoServer download page.</p>
+<p>The installation process is similar to other GeoServer extensions:</p>
+<ol class="arabic">
+<li><p>From the <a class="reference external" href="http://geoserver.org/download">website download</a> page, locate your release, and download: <a class="reference external" href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.22.4/extensions/geoserver-2.22.4-wps-download-plugin.zip">geoserver-2.22.4-wps-download-plugin.zip</a></p>
+<p>Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example 2.22.4 above).</p>
+</li>
+<li><p>Extract the contents of the archive into the <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory in GeoServer.
+Make sure you do not create any sub-directories during the extraction process.</p></li>
+<li><p>Restart GeoServer.</p></li>
+</ol>
+</div>
+<div class="section" id="module-description">
+<h2>Module description<a class="headerlink" href="#module-description" title="Permalink to this headline">¶</a></h2>
+<p>This module provides the following WPS process:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gs:Download</span></code> : can be used for downloading Raster and Vector Layers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gs:DownloadEstimator</span></code> : can be used for checking if the downloaded file does not exceeds the configured limits.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gs:DownloadMap</span></code>: allows to download a large map with the same composition found on the client side (eventually along with an asynchronous call)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gs:DownloadAnimation</span></code>: allows to download a map with the same composition found on the client side, with animation over a give set of times</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="configuring-the-limits">
+<h2>Configuring the limits<a class="headerlink" href="#configuring-the-limits" title="Permalink to this headline">¶</a></h2>
+<p>The user interface provides a way to configure the WPS download in the WPS administration page:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/admin2.png" src="../../_images/admin2.png" />
+</div>
+</div></blockquote>
+<p>Where the available limits are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Maximum features : maximum number of features to download</p></li>
+<li><p>Raster size limits : maximum pixel size of the Raster to read (in square pixels, width by height)</p></li>
+<li><p>Write limits : maximum raw raster size in bytes (a limit of how much space can a raster take in memory). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumulated sum of each band’s pixel sample_type size in bytes, for all bands</p></li>
+<li><p>Hard output limit : maximum file size to download (will be checked while writing the output, post compression)</p></li>
+<li><p>ZIP compresion level : compression level for the output zip file</p></li>
+<li><p>Maximum frames in animation : maximum number of frames allowed (if no limit, the maximum execution time limits will still apply and stop the process in case there are too many)</p></li>
+</ul>
+</div></blockquote>
+<p>The configuration is stored in a <strong>download.properties</strong> file found in the root of the GeoServer data directory.</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Max #of features</span>
+<span class="n">maxFeatures</span><span class="o">=</span><span class="mi">100000</span>
+<span class="c1">#8000 px X 8000 px</span>
+<span class="n">rasterSizeLimits</span><span class="o">=</span><span class="mi">64000000</span>
+<span class="c1">#8000 px X 8000 px X 3 bands X 1 byte per band = 192MB</span>
+<span class="n">writeLimits</span><span class="o">=</span><span class="mi">192000000</span>
+<span class="c1"># 50 MB</span>
+<span class="n">hardOutputLimit</span><span class="o">=</span><span class="mi">52428800</span>
+<span class="c1"># STORE =0, BEST =8</span>
+<span class="n">compressionLevel</span><span class="o">=</span><span class="mi">4</span>
+<span class="c1"># When set to 0 or below, no limit</span>
+<span class="n">maxAnimationFrames</span><span class="o">=</span><span class="mi">1000</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The file can also be manually modified while GeoServer is running, the file is under watch and gets
+reloaded on modification.</p>
+<p>The configuration can also be edited via <a class="reference external" href="http://docs.geoserver.org/latest/en/api/#1.0.0/wpsdownload.yaml">the REST API</a>.</p>
+</div>
+<div class="section" id="the-processes-and-their-usage">
+<h2>The processes and their usage<a class="headerlink" href="#the-processes-and-their-usage" title="Permalink to this headline">¶</a></h2>
+<p>The following describes the various processes, separating raw downloads from rendered downloads:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="rawDownload.html">Raw data download processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rawDownload.html#direct-download">Direct download</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapAnimationDownload.html">Rendered map/animation download processes</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../wmts-multidimensional/performance.html" title="previous chapter">WMTS Multidimensional performance</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="rawDownload.html" title="next chapter">Raw data download processes</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WPS Download plugin</a><ul>
+<li><a class="reference internal" href="#installing-the-wps-download-extension">Installing the WPS Download extension</a></li>
+<li><a class="reference internal" href="#module-description">Module description</a></li>
+<li><a class="reference internal" href="#configuring-the-limits">Configuring the limits</a></li>
+<li><a class="reference internal" href="#the-processes-and-their-usage">The processes and their usage</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../wmts-multidimensional/performance.html" title="previous chapter">WMTS Multidimensional performance</a></li>
+            <li>Next: <a href="rawDownload.html" title="next chapter">Raw data download processes</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/wps-download/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

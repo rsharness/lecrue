@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Opt. 2: Removing Redundant Attribute Values &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="STAC Datastore extension" href="../stac-datastore/index.html" />
+    <link rel="prev" title="Opt. 1: Removing Redundant Schema Information" href="schema.html" /> 
+  </head><body class="community/spatialjson/attributes">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SpatialJSON WFS Output Format Extension</a> &raquo;</li>
+    <li>Opt. 2: Removing Redundant Attribute Values</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../stac-datastore/index.html" title="STAC Datastore extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="schema.html" title="Opt. 1: Removing Redundant Schema Information" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <blockquote>
+<div></div></blockquote>
+<div class="section" id="opt-2-removing-redundant-attribute-values">
+<span id="spatialjson-attributes"></span><h1>Opt. 2: Removing Redundant Attribute Values<a class="headerlink" href="#opt-2-removing-redundant-attribute-values" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="shared-string-table">
+<h2>Shared String Table<a class="headerlink" href="#shared-string-table" title="Permalink to this headline">¶</a></h2>
+<p>A SpatialJSON response <strong>may</strong> contain a <em>Shared String Table</em>, which <strong>may</strong> contain strings that
+are referenced by some features’ properties. Only properties expressed as JSON strings can be stored
+in a shared string table (at current, temporal values, like Dates and Timestamps, which are
+expressed as strings as well, are not stored in a shared string table).</p>
+<p>If present, a new <code class="docutils literal notranslate"><span class="pre">&quot;sharedStrings&quot;</span></code> property is available in the top-level <code class="docutils literal notranslate"><span class="pre">&quot;FeatureCollection&quot;</span></code>
+object:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+
+  <span class="nt">&quot;$note&quot;</span><span class="p">:</span> <span class="s2">&quot; /* remaining properties go here */ &quot;</span><span class="p">,</span>
+
+  <span class="nt">&quot;schemaInformation&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;propertyNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;str_1&quot;</span><span class="p">,</span> <span class="s2">&quot;num_2&quot;</span><span class="p">,</span> <span class="s2">&quot;str_3&quot;</span><span class="p">,</span> <span class="s2">&quot;str_4&quot;</span><span class="p">,</span> <span class="s2">&quot;bool_5&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;geometryName&quot;</span><span class="p">:</span> <span class="s2">&quot;the_geom&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;sharedStrings&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;indexes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="nt">&quot;table&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Lorem ipsum dolor sit amet,&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;consetetur sadipscing elitr,&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;sed diam nonumy eirmod tempor invidunt ut labore&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;et dolore magna aliquyam erat,&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;sed diam voluptua.&quot;</span><span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It contains these two properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;table&quot;</span></code> - Contains the shared strings. These are referenced by their index in the array.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;indexes&quot;</span></code> - Contains the zero-based indexes of feature properties that <strong>may</strong> be stored in
+this shared string table.</p></li>
+</ul>
+<p>In SpatialJSON, a feature’s properties are basically stored in an array only (in contrast to GeoJSON
+which stores properties in an object). The <code class="docutils literal notranslate"><span class="pre">&quot;indexes&quot;</span></code> array contains the indexes in these
+properties arrays that <strong>may</strong> have their values stored in the shared string table. In a feature’s
+property array, such a value may actually be either <code class="docutils literal notranslate"><span class="pre">null</span></code>, a regular JSON <code class="docutils literal notranslate"><span class="pre">string</span></code> or a JSON
+<code class="docutils literal notranslate"><span class="pre">number</span></code> (integral number). In the latter case, the property’s value is actually stored in the
+shared string table, the value being used as the index into the shared string table.</p>
+<p>These examples show how some feature’s properties arrays are evaluated using the above string table:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="cm">/* showing properties array of feature #1 */</span>
+<span class="nx">properties</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">true</span><span class="p">]</span>
+
+<span class="cm">/* gets evaluated to */</span>
+<span class="nx">properties</span><span class="o">:</span> <span class="p">{</span>
+  <span class="s2">&quot;str_1&quot;</span><span class="o">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;num_2&quot;</span><span class="o">:</span> <span class="mi">23</span><span class="p">,</span>
+  <span class="s2">&quot;str_3&quot;</span><span class="o">:</span> <span class="s2">&quot;sed diam nonumy eirmod tempor invidunt ut labore&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;str_4&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="s2">&quot;bool_5&quot;</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+
+<span class="cm">/* showing properties array of feature #2 */</span>
+<span class="nx">properties</span><span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="kc">false</span><span class="p">]</span>
+
+<span class="cm">/* gets evaluated to */</span>
+<span class="nx">properties</span><span class="o">:</span> <span class="p">{</span>
+  <span class="s2">&quot;str_1&quot;</span><span class="o">:</span> <span class="s2">&quot;consetetur sadipscing elitr&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;num_2&quot;</span><span class="o">:</span> <span class="mi">32</span><span class="p">,</span>
+  <span class="s2">&quot;str_3&quot;</span><span class="o">:</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;str_4&quot;</span><span class="o">:</span> <span class="s2">&quot;et dolore magna aliquyam erat&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;bool_5&quot;</span><span class="o">:</span> <span class="kc">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As the examples show, there is no guarantee that all strings of a property whose index is part of
+the <code class="docutils literal notranslate"><span class="pre">sharedStrings.indexes</span></code> array are actually stored in the shared string table.</p>
+</div>
+<div class="section" id="spatialjson-writer-implementation">
+<h2>SpatialJSON Writer Implementation<a class="headerlink" href="#spatialjson-writer-implementation" title="Permalink to this headline">¶</a></h2>
+<p>It is completely up to the SpatialJSON writer to decide, which strings to add to the shared string
+table. Several strategies can be used. However, the current implementation in this module makes no
+attempt to create an <em>optimal</em> shared string table. In order to be fast, strings are added as they
+come when features are serialized. Building an optimal table would likely require iterating features
+several times, calculating frequencies of strings, etc.</p>
+<p>Nevertheless, this module’s SpatialJSON writer has some simple rules for building the shared string
+table. Even for worst case scenarios, these try (at least) not to use (much) more bytes than needed
+for the same result without using a shared string table. (In theory, there are cases in which the
+shared string table adds some extra bytes to the result.) However, for most real world datasets,
+this strategy could save a moderate to significant number of bytes.</p>
+<p>These are the rules that prevent a string from being added to the shared string table:</p>
+<ul class="simple">
+<li><p>The string’s UTF-8 encoded byte length is less than a hard-coded minimum (currently 2, may be configurable in the future)</p></li>
+<li><p>The shared sting table is full, that is, it contains 2,147,483,647 entries (not really expected)</p></li>
+<li><p>The string’s UTF-8 encoded byte length (including quotes) is less than the number of digits of it’s designated index</p></li>
+</ul>
+<p>Obviously, most savings can be achieved if a dataset contains only a few different large strings.
+That may be the case for attributes, that contain values of an enumeration, for example. The more
+often a certain string is used in the dataset, the more space can be saved by using a shared string
+table. In contrast, if every string in the set of encoded features is used only once (e. g.
+attributes that contain random or UUID-like strings), no savings will be achieved (in fact, using a
+shared string table in that case will produce even slightly bigger results).</p>
+</div>
+<div class="section" id="shared-strings-per-request-customization">
+<h2>Shared Strings per Request Customization<a class="headerlink" href="#shared-strings-per-request-customization" title="Permalink to this headline">¶</a></h2>
+<p>By default, the current implementation will add <em>all</em> JSON string encoded properties to the shared
+string table. (Except temporal values, like Dates and Timestamps, which in JSON technically are
+strings as well. However, we do not expect much redundancy in temporal values.) With the
+<code class="docutils literal notranslate"><span class="pre">format_options</span></code> vendor parameter it is possible to specify which properties can store values
+in the shared string table or to completely skip the creation of such a table.</p>
+<p>The supported format option is:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sharedstrings</span></code> (default is <code class="docutils literal notranslate"><span class="pre">*</span></code>) - Specify <code class="docutils literal notranslate"><span class="pre">false</span></code> or leave empty (e. g. <code class="docutils literal notranslate"><span class="pre">format_options=sharedstrings:</span></code>) to skip shared string table generation, or <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">*</span></code> to create a table including all JSON string encoded properties (that is the default behavior).
+Alternatively, a comma-separated list of property names could specify the set of properties that may store their values in the shared string table.</p></li>
+</ul>
+<p>When a comma-separated list of property names is specified for the <code class="docutils literal notranslate"><span class="pre">sharedstrings</span></code> format option,
+these additional rules apply:</p>
+<ul>
+<li><p>Commas in property names (really?) may be escaped with a backslash character <code class="docutils literal notranslate"><span class="pre">\</span></code>.</p></li>
+<li><p>The prefix <code class="docutils literal notranslate"><span class="pre">re:</span></code> may be prepended to the list in order to designate each item a <em>Java Regular Expression</em>: (e. g. <code class="docutils literal notranslate"><span class="pre">format_options=sharedstrings:re:adm_.*,\d\d_[a-z]+$</span></code>). See Java <a class="reference external" href="https://docs.oracle.com/javase/8/docs/api/index.html?java/util/regex/Pattern.html">Pattern</a> class.</p>
+<p>Specifying an invalid regular expression results in a Service Exception.</p>
+</li>
+<li><p>The prefix <code class="docutils literal notranslate"><span class="pre">glob:</span></code> may be prepended to the list in order to designate each item a <em>glob pattern</em>: (e. g. <code class="docutils literal notranslate"><span class="pre">format_options=sharedstrings:glob:adm_*,[0-9][0-9]_*name</span></code>). See <a class="reference external" href="https://en.wikipedia.org/wiki/Glob_(programming)">glob</a> patterns.</p>
+<p>Specifying an invalid glob pattern results in a Service Exception.</p>
+</li>
+</ul>
+<p>Although the SpatialJSON Shared String Table feature works fine and typically saves a moderate
+number of bytes for arbitrary datasets in its default configuration, that is without specifying the
+<code class="docutils literal notranslate"><span class="pre">sharedstrings</span></code> format option, this parameter provides a solid handle for advanced fine tuning of
+the string table’s creation process.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="schema.html" title="previous chapter">Opt. 1: Removing Redundant Schema Information</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../stac-datastore/index.html" title="next chapter">STAC Datastore extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Opt. 2: Removing Redundant Attribute Values</a><ul>
+<li><a class="reference internal" href="#shared-string-table">Shared String Table</a></li>
+<li><a class="reference internal" href="#spatialjson-writer-implementation">SpatialJSON Writer Implementation</a></li>
+<li><a class="reference internal" href="#shared-strings-per-request-customization">Shared Strings per Request Customization</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="schema.html" title="previous chapter">Opt. 1: Removing Redundant Schema Information</a></li>
+            <li>Next: <a href="../stac-datastore/index.html" title="next chapter">STAC Datastore extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/spatialjson/attributes.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

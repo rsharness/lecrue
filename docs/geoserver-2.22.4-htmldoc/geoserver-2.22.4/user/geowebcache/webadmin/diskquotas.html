@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disk Quotas &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BlobStores" href="blobstores.html" />
+    <link rel="prev" title="Gridsets" href="gridsets.html" /> 
+  </head><body class="geowebcache/webadmin/diskquotas">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">GeoWebCache</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GeoWebCache settings</a> &raquo;</li>
+    <li>Disk Quotas</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="blobstores.html" title="BlobStores" accesskey="N">Next</a></li>
+  <li>
+    <a href="gridsets.html" title="Gridsets" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="disk-quotas">
+<span id="gwc-webadmin-diskquotas"></span><h1>Disk Quotas<a class="headerlink" href="#disk-quotas" title="Permalink to this headline">¶</a></h1>
+<p>The Disk Quotas page manages the disk usage for cached tiles and allows you to set the global disk quota. Individual layer quotas can be set in the layer’s <a class="reference internal" href="../../data/webadmin/layers.html#data-webadmin-layers"><span class="std std-ref">properties</span></a> page.</p>
+<p>By default, disk usage for cached tiles is unbounded. However, this can cause disk capacity issues, especially when using Direct WMS integration (see <a class="reference internal" href="#gwc-webadmin-diskquotas"><span class="std std-ref">Disk Quotas</span></a> for more on this). Setting a disk quota establishes disk usage limits.</p>
+<p>When finished making any changes, remember to click <span class="guilabel">Submit</span>.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../_images/diskquota.png" src="../../_images/diskquota.png" />
+<p class="caption"><span class="caption-text">Disk quota</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="enable-disk-quota">
+<h2>Enable disk quota<a class="headerlink" href="#enable-disk-quota" title="Permalink to this headline">¶</a></h2>
+<p>When enabled, the disk quota will be set according to the options listed below. The setting is disabled by default.</p>
+</div>
+<div class="section" id="disk-quota-check-frequency">
+<h2>Disk quota check frequency<a class="headerlink" href="#disk-quota-check-frequency" title="Permalink to this headline">¶</a></h2>
+<p>This setting determines how often the cache is polled for any overage. Smaller values (more frequent polling) will slightly increase disk activity, but larger values (less frequent polling) may cause the disk quota to be temporarily exceeded. The default is <strong>10 seconds</strong>.</p>
+</div>
+<div class="section" id="maximum-tile-cache-size">
+<h2>Maximum tile cache size<a class="headerlink" href="#maximum-tile-cache-size" title="Permalink to this headline">¶</a></h2>
+<p>The maximum size for the cache. When this value is exceeded and the cache is polled, tiles will be removed according to the policy. Note that the unit options are <strong>mebibytes (MiB)</strong> (approx. 1.05MB), <strong>gibibytes (GiB)</strong> (approx. 1.07GB), and <strong>tebibytes (TiB)</strong> (approx. 1.10TB). Default is <strong>500 MiB</strong>.</p>
+<p>The graphic below this setting illustrates the size of the cache relative to the disk quota.</p>
+</div>
+<div class="section" id="tile-removal-policy">
+<h2>Tile removal policy<a class="headerlink" href="#tile-removal-policy" title="Permalink to this headline">¶</a></h2>
+<p>When the disk quota is exceeded, this policy determines how the tiles to be deleted are identified. Options are <strong>Least Frequently Used</strong> (removes tiles based on how often the tile was accessed) or <strong>Least Recently Used</strong> (removes tiles based on date of last access). The optimum configuration is dependent on your data and server usage.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="gridsets.html" title="previous chapter">Gridsets</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="blobstores.html" title="next chapter">BlobStores</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Disk Quotas</a><ul>
+<li><a class="reference internal" href="#enable-disk-quota">Enable disk quota</a></li>
+<li><a class="reference internal" href="#disk-quota-check-frequency">Disk quota check frequency</a></li>
+<li><a class="reference internal" href="#maximum-tile-cache-size">Maximum tile cache size</a></li>
+<li><a class="reference internal" href="#tile-removal-policy">Tile removal policy</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="gridsets.html" title="previous chapter">Gridsets</a></li>
+            <li>Next: <a href="blobstores.html" title="next chapter">BlobStores</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/geowebcache/webadmin/diskquotas.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

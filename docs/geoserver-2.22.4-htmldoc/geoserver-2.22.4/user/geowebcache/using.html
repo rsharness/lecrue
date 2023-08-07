@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using GeoWebCache &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration" href="config.html" />
+    <link rel="prev" title="BlobStores" href="webadmin/blobstores.html" /> 
+  </head><body class="geowebcache/using">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GeoWebCache</a> &raquo;</li>
+    <li>Using GeoWebCache</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="config.html" title="Configuration" accesskey="N">Next</a></li>
+  <li>
+    <a href="webadmin/blobstores.html" title="BlobStores" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="using-geowebcache">
+<span id="gwc-using"></span><h1>Using GeoWebCache<a class="headerlink" href="#using-geowebcache" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For an more in-depth discussion of using GeoWebCache, please see the <a class="reference external" href="http://geowebcache.org/docs/">GeoWebCache documentation</a>.</p>
+</div>
+<div class="section" id="direct-integration-with-geoserver-wms">
+<span id="gwc-directwms"></span><h2>Direct integration with GeoServer WMS<a class="headerlink" href="#direct-integration-with-geoserver-wms" title="Permalink to this headline">¶</a></h2>
+<p>GeoWebCache can be transparently integrated with the GeoServer WMS, and so requires no special endpoint or custom URL. In this way one can have the simplicity of a standard WMS endpoint with the performance of a tiled client.</p>
+<p>Although this direct integration is disabled by default, it can be enabled by going to the <a class="reference internal" href="webadmin/defaults.html#gwc-webadmin-defaults"><span class="std std-ref">Caching defaults</span></a> page in the <a class="reference internal" href="../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>.</p>
+<p>When this feature is enabled, GeoServer WMS will cache and retrieve tiles from GeoWebCache (via a GetMap request) only if <strong>all of the following criteria are followed</strong>:</p>
+<ul class="simple">
+<li><p>WMS Direct integration is enabled (you can set this on the <a class="reference internal" href="webadmin/defaults.html#gwc-webadmin-defaults"><span class="std std-ref">Caching defaults</span></a> page)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tiled=true</span></code> is included in the request (unless the <code class="docutils literal notranslate"><span class="pre">Explicitly</span> <span class="pre">require</span> <span class="pre">TILED</span> <span class="pre">Parameter</span></code> is unchecked. you can set this on the <a class="reference internal" href="webadmin/defaults.html#gwc-webadmin-defaults"><span class="std std-ref">Caching defaults</span></a> page)</p></li>
+<li><p>The request only references a single layer</p></li>
+<li><p>Caching is enabled for that layer</p></li>
+<li><p>The image requested is of the same height and width as the size saved in the layer configuration</p></li>
+<li><p>The requested CRS matches one of the available tile layer gridsets</p></li>
+<li><p>The image requested lines up with the existing grid bounds</p></li>
+<li><p>A parameter is included for which there is a corresponding Parameter Filter</p></li>
+</ul>
+<p>In addition, when direct integration is enabled, the WMS capabilities document (via a GetCapabilities request) will only return the WMS-C vendor-specific capabilities elements (such as a <code class="docutils literal notranslate"><span class="pre">&lt;TileSet&gt;</span></code> element for each cached layer/CRS/format combination) if <code class="docutils literal notranslate"><span class="pre">tiled=true</span></code> is appended to the GetCapabilities request.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information on WMS-C, please see the <a class="reference external" href="http://wiki.osgeo.org/wiki/WMS_Tiling_Client_Recommendation">WMS Tiling Client Recommendation</a> from OSGeo.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GeoWebCache integration is not compatible with the OpenLayers-based <a class="reference internal" href="../data/webadmin/layerpreview.html#layerpreview"><span class="std std-ref">Layer Preview</span></a>, as the preview does not usually align with the GeoWebCache layer gridset. This is because the OpenLayers application calculates the <code class="docutils literal notranslate"><span class="pre">tileorigin</span></code> based on the layer’s bounding box, which is different from the gridset. It is, possible to create an OpenLayers application that caches tiles; just make sure that the <code class="docutils literal notranslate"><span class="pre">tileorigin</span></code> aligns with the gridset.</p>
+</div>
+<div class="section" id="virtual-services">
+<h3>Virtual services<a class="headerlink" href="#virtual-services" title="Permalink to this headline">¶</a></h3>
+<p>When direct WMS integration is enabled, GeoWebCache will properly handle requests to <a class="reference internal" href="../configuration/virtual-services.html#virtual-services"><span class="std std-ref">Virtual Services</span></a> (<code class="docutils literal notranslate"><span class="pre">/geoserver/&lt;workspace&gt;/wms?tiled=true&amp;...</span></code>).</p>
+<p>Virtual services capabilities documents will contain <code class="docutils literal notranslate"><span class="pre">&lt;TileSet&gt;</span></code> entries only for the layers that belong to that workspace (and global layer groups), and will be referenced by unqualified layer names (no namespace). For example, the layer <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> will be referred to as <code class="docutils literal notranslate"><span class="pre">&lt;Layers&gt;states&lt;/Layers&gt;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">&lt;Layers&gt;topp:states&lt;/Layers&gt;</span></code>, and GetMap requests to the virtual services endpoint using <code class="docutils literal notranslate"><span class="pre">LAYERS=states</span></code> will properly be handled.</p>
+</div>
+<div class="section" id="supported-parameter-filters">
+<h3>Supported parameter filters<a class="headerlink" href="#supported-parameter-filters" title="Permalink to this headline">¶</a></h3>
+<p>With direct WMS integration, the following parameter filters are supported for GetMap requests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ANGLE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BGCOLOR</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BUFFER</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CQL_FILTER</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ELEVATION</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ENV</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FEATUREID</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FEATUREVERSION</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FILTER</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FORMAT_OPTIONS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAXFEATURES</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PALETTE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">STARTINDEX</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TIME</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VIEWPARAMS</span></code></p></li>
+</ul>
+<p>If a request is made using any of the above parameters, the request will be passed to GeoServer, unless a parameter filter has been set up, in which case GeoWebCache will process the request.</p>
+</div>
+</div>
+<div class="section" id="geowebcache-endpoint-url">
+<span id="gwc-endpoint"></span><h2>GeoWebCache endpoint URL<a class="headerlink" href="#geowebcache-endpoint-url" title="Permalink to this headline">¶</a></h2>
+<p>When not using direct integration, you can point your client directly to GeoWebCache.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>GeoWebCache is not a true WMS, and so the following is an oversimplification. If you encounter errors, see the <a class="reference internal" href="troubleshooting.html#gwc-troubleshooting"><span class="std std-ref">Troubleshooting</span></a> page for help.</p>
+</div>
+<p>To direct your client to GeoWebCache (and thus receive cached tiles) you need to change the WMS URL.</p>
+<p>If your application requests WMS tiles from GeoServer at this URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">wms</span>
+</pre></div>
+</div>
+<p>You can invoke the GeoWebCache WMS instead at this URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">gwc</span><span class="o">/</span><span class="n">service</span><span class="o">/</span><span class="n">wms</span>
+</pre></div>
+</div>
+<p>In other words, add <code class="docutils literal notranslate"><span class="pre">/gwc/service/wms</span></code> in between the path to your GeoServer instance and the WMS call.</p>
+<p>This end-point works using either:</p>
+<ul>
+<li><p>WMS-C: A tileset description is included in the WMS GetCapabilities document instructing clients how to retrieve content as a series of tiles (each retrieved by a GetMap request). This technique supports HTTP caching taking advantage of the browser cache and any caching proxies deployed. This technique requires a client to be created with tile server support.</p></li>
+<li><p>full-wms mode: GeoWebCache behaves as normal WMS supported ad-hoc WMS GetMapRequests. Each WMS Request is handled by obtaining the tiles required and stitching the result into a single image. This technique relies only on internal tile cache, but supports ad-hoc GetMap requests and does not require a client be constructed with tile server support.</p>
+<p>To enable this mode add the following in <code class="file docutils literal notranslate"><span class="pre">geowebcache.xml</span></code> configuration file:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;fullWMS&gt;</span>true<span class="nt">&lt;/fullWMS&gt;</span>
+</pre></div>
+</div>
+<p>The fullWMS setting only effects the <code class="docutils literal notranslate"><span class="pre">/gwc/service/wms</span></code> endpoint and is not used by direct WMS integration.</p>
+</li>
+</ul>
+<p>As soon as tiles are requested through the <code class="docutils literal notranslate"><span class="pre">gwc/service/wms</span></code> endpoint GeoWebCache automatically starts saving them. The initial requests for each tile will not be accelerated since GeoServer will  need to generate the tile and store it from subsequent use. To automate this process of requesting tiles, you can <strong>seed</strong> the cache. See the section on <a class="reference internal" href="seeding.html#gwc-seeding"><span class="std std-ref">Seeding and refreshing</span></a> for more details.</p>
+</div>
+<div class="section" id="disk-quota">
+<span id="gwc-diskquota"></span><h2>Disk quota<a class="headerlink" href="#disk-quota" title="Permalink to this headline">¶</a></h2>
+<p>GeoWebCache has a built-in disk quota feature to prevent disk space from growing unbounded. You can set the maximum size of the cache directory, poll interval, and what policy of tile removal to use when the quota is exceeded. Tiles can be removed based on usage (“Least Frequently Used” or LFU) or timestamp (“Least Recently Used” or LRU).</p>
+<p>Disk quotas are turned off by default, but can be configured on the <a class="reference internal" href="webadmin/diskquotas.html#gwc-webadmin-diskquotas"><span class="std std-ref">Disk Quotas</span></a> page in the <a class="reference internal" href="../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>.</p>
+</div>
+<div class="section" id="integration-with-external-mapping-sites">
+<h2>Integration with external mapping sites<a class="headerlink" href="#integration-with-external-mapping-sites" title="Permalink to this headline">¶</a></h2>
+<p>The documentation on the <a class="reference external" href="http://geowebcache.org">GeoWebCache homepage</a> contains examples for creating applications that integrate with Google Maps, Google Earth, Bing Maps, and more.</p>
+</div>
+<div class="section" id="support-for-custom-projections">
+<h2>Support for custom projections<a class="headerlink" href="#support-for-custom-projections" title="Permalink to this headline">¶</a></h2>
+<p>The version of GeoWebCache that comes embedded in GeoServer automatically configures every layer served in GeoServer with the two most common projections:</p>
+<ul class="simple">
+<li><p><strong>EPSG:4326</strong> (latitude/longitude)</p></li>
+<li><p><strong>EPSG:900913</strong> (Spherical Mercator, the projection used in Google Maps)</p></li>
+</ul>
+<p>You can also set a custom CRS from any that GeoServer recognizes. See the <a class="reference internal" href="webadmin/gridsets.html#gwc-webadmin-gridsets"><span class="std std-ref">Gridsets</span></a> page for details.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="webadmin/blobstores.html" title="previous chapter">BlobStores</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="config.html" title="next chapter">Configuration</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Using GeoWebCache</a><ul>
+<li><a class="reference internal" href="#direct-integration-with-geoserver-wms">Direct integration with GeoServer WMS</a><ul>
+<li><a class="reference internal" href="#virtual-services">Virtual services</a></li>
+<li><a class="reference internal" href="#supported-parameter-filters">Supported parameter filters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#geowebcache-endpoint-url">GeoWebCache endpoint URL</a></li>
+<li><a class="reference internal" href="#disk-quota">Disk quota</a></li>
+<li><a class="reference internal" href="#integration-with-external-mapping-sites">Integration with external mapping sites</a></li>
+<li><a class="reference internal" href="#support-for-custom-projections">Support for custom projections</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="webadmin/blobstores.html" title="previous chapter">BlobStores</a></li>
+            <li>Next: <a href="config.html" title="next chapter">Configuration</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/geowebcache/using.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

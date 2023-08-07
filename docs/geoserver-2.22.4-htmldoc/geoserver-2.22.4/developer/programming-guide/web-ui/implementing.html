@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Implementing a Wicket UI Extension &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Wicket Development In GeoServer" href="../wicket-pages/index.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+  </head><body class="programming-guide/web-ui/implementing">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web User Interface</a> &raquo;</li>
+    <li>Implementing a Wicket UI Extension</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../wicket-pages/index.html" title="Wicket Development In GeoServer" accesskey="N">Next</a></li>
+  <li>
+    <a href="overview.html" title="Overview" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="implementing-a-wicket-ui-extension">
+<span id="wicket-ui-implementing"></span><h1>Implementing a Wicket UI Extension<a class="headerlink" href="#implementing-a-wicket-ui-extension" title="Permalink to this headline">¶</a></h1>
+<p>This section describes how to implement an extension to the GeoServer Wicket
+user interface. The extension will be extremely simple and will be a basic page
+that is linked from the main menu and displays the message “Hello World”.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Before being able to proceed, GeoServer must be built on the local system. See
+the <a class="reference internal" href="../../source.html#source"><span class="std std-ref">Source Code</span></a> and <a class="reference internal" href="../../quickstart/index.html#quickstart"><span class="std std-ref">Quickstart</span></a> sections for details.</p>
+</div>
+<div class="section" id="create-a-new-module">
+<h2>Create a new module<a class="headerlink" href="#create-a-new-module" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Create a new module named <code class="docutils literal notranslate"><span class="pre">hello_web</span></code> somewhere on the file system</p></li>
+<li><p>Add the following <code class="docutils literal notranslate"><span class="pre">pom.xml</span></code> to the root of the new module:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span>
+   <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd &quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+  <span class="nt">&lt;parent&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>web<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.8-SNAPSHOT<span class="nt">&lt;/version&gt;</span> <span class="c">&lt;!-- change this to the proper GeoServer version --&gt;</span>
+  <span class="nt">&lt;/parent&gt;</span>
+
+  <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>hello_web<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;name&gt;</span>hello_web<span class="nt">&lt;/name&gt;</span>
+
+  <span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.geoserver.web<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>gs-web-core<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>2.8-SNAPSHOT<span class="nt">&lt;/version&gt;</span> <span class="c">&lt;!-- change this to the proper GeoServer version --&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;/dependencies&gt;</span>
+
+<span class="nt">&lt;/project&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the directory <code class="docutils literal notranslate"><span class="pre">src/main/java</span></code> under the root of the new module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_web</span><span class="p">]</span><span class="o">%</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="create-the-page-class">
+<h2>Create the page class<a class="headerlink" href="#create-the-page-class" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>The class <code class="docutils literal notranslate"><span class="pre">org.geoserver.web.GeoServerBasePage</span></code> is the base class for all
+pages in GeoServer. Create a new class called <code class="docutils literal notranslate"><span class="pre">HelloPage</span></code> in the package
+<code class="docutils literal notranslate"><span class="pre">org.geoserver.helloweb</span></code>, which extends from <code class="docutils literal notranslate"><span class="pre">GeoServerBasePage</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.helloweb</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.geoserver.web.GeoServerBasePage</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloPage</span> <span class="kd">extends</span> <span class="n">GeoServerBasePage</span> <span class="p">{</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The first task is to implement the constructor. In Wicket a page or component
+builds itself in its constructor. This page is basic and will simply create
+a label which has the value “Hello World!”:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.apache.wicket.markup.html.basic.Label</span><span class="p">;</span>
+<span class="p">...</span>
+
+   <span class="kd">public</span> <span class="nf">HelloPage</span><span class="p">()</span> <span class="p">{</span>
+       <span class="n">add</span><span class="p">(</span> <span class="k">new</span> <span class="n">Label</span><span class="p">(</span> <span class="s">&quot;hellolabel&quot;</span><span class="p">,</span> <span class="s">&quot;Hello World!&quot;</span><span class="p">)</span> <span class="p">);</span>
+   <span class="p">}</span>
+</pre></div>
+</div>
+<p>In the above code, an instance of <code class="docutils literal notranslate"><span class="pre">Label</span></code> is created. The first argument
+to its constructor is the <strong>component id</strong>. In Wicket every component must
+have an id. In the next section this id will be used to bind the component to
+its HTML presentation. The second argument to the <code class="docutils literal notranslate"><span class="pre">Label</span></code> constructor is
+the value of the world, in this case the string “Hello World!”</p>
+</li>
+</ol>
+</div>
+<div class="section" id="create-the-page-presentation">
+<h2>Create the page presentation<a class="headerlink" href="#create-the-page-presentation" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>With the page completed, the next step is to create the HTML presentation for
+the page. To do this create a file named <code class="docutils literal notranslate"><span class="pre">HelloPage.html</span></code> in the same
+directory as the <code class="docutils literal notranslate"><span class="pre">HelloPagejava</span></code> class:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+     <span class="p">&lt;</span><span class="nt">wicket:extend</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">wicket:id</span><span class="o">=</span><span class="s">&quot;hellolabel&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+     <span class="p">&lt;/</span><span class="nt">wicket:extend</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>There are few things to note about the HTML. The first is the use of the
+<code class="docutils literal notranslate"><span class="pre">&lt;wicket:extend&gt;</span></code> element. This tells wicket that <code class="docutils literal notranslate"><span class="pre">HelloPage</span></code> is an
+extension of another page, in this case <code class="docutils literal notranslate"><span class="pre">GeoServerBasePage</span></code>, and it should
+inherit presentation from that page.</p>
+<p>The second thing to note is the attribute <code class="docutils literal notranslate"><span class="pre">wicket:id</span></code> on the <code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code>
+element. This is what binds the <code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code> tag to the <code class="docutils literal notranslate"><span class="pre">Label</span></code> component
+created in the previous section. The value of <code class="docutils literal notranslate"><span class="pre">wicket:id</span></code> must match the
+id given to the component, in this case “hellolabel”.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="create-the-i18n-file">
+<h2>Create the i18n file<a class="headerlink" href="#create-the-i18n-file" title="Permalink to this headline">¶</a></h2>
+<p>With Wicket (and any web application framework), any string that appears in the
+web application should be interationalized. In GeoServer, this is performed by
+creating an internationalization (i18n) file named
+<code class="docutils literal notranslate"><span class="pre">GeoServerApplication.properties</span></code>.</p>
+<ol class="arabic">
+<li><p>Create the directory <code class="docutils literal notranslate"><span class="pre">src/main/resources</span></code> under the root of the
+<code class="docutils literal notranslate"><span class="pre">hello_web</span></code> module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_web</span><span class="p">]</span><span class="o">%</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">resources</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the (i18n) file <code class="docutils literal notranslate"><span class="pre">GeoServerApplication.properties</span></code> in the <code class="docutils literal notranslate"><span class="pre">src/main/resources</span></code> directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HelloPage</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">title</span><span class="o">=</span><span class="n">Hello</span>
+<span class="n">HelloPage</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">description</span><span class="o">=</span><span class="n">A</span> <span class="n">page</span> <span class="n">to</span> <span class="n">say</span> <span class="n">hello</span>
+
+<span class="n">HelloPage</span><span class="o">.</span><span class="n">title</span><span class="o">=</span><span class="n">Hello</span> <span class="n">Page</span> <span class="n">Title</span>
+<span class="n">HelloPage</span><span class="o">.</span><span class="n">description</span><span class="o">=</span><span class="n">This</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">description</span> <span class="n">of</span> <span class="n">the</span> <span class="n">page</span>
+</pre></div>
+</div>
+<p>The first two keys in the above i18n file declare the title of the page and the description
+of the page. This will be the title of the link to the page and the tooltip for the page link.
+The next two keys are the title and description that are displayed on the page itself.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="create-the-application-context">
+<h2>Create the application context<a class="headerlink" href="#create-the-application-context" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>The final step is to create an application context which tells GeoServer
+about the page created in the previous section. Add the following
+<code class="docutils literal notranslate"><span class="pre">applicationContext.xml</span></code> file to the <code class="docutils literal notranslate"><span class="pre">src/main/java</span></code> directory, under the root
+of the <code class="docutils literal notranslate"><span class="pre">hello_web</span></code> module:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="cp">&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;</span>
+
+ <span class="nt">&lt;beans&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;helloPage&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.web.MenuPageInfo&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span> <span class="na">value=</span><span class="s">&quot;helloPage&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;titleKey&quot;</span> <span class="na">value=</span><span class="s">&quot;HelloPage.page.title&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;descriptionKey&quot;</span> <span class="na">value=</span><span class="s">&quot;HelloPage.page.description&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;componentClass&quot;</span> <span class="na">value=</span><span class="s">&quot;org.geoserver.helloweb.HelloPage&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;/beans&gt;</span>
+</pre></div>
+</div>
+<p>The above bean declaration declares an instance of the <code class="docutils literal notranslate"><span class="pre">MenuPageInfo</span></code> class
+which is a descriptor for pages linked from the main page of the GeoServer
+web application. The property <code class="docutils literal notranslate"><span class="pre">titleKey</span></code> is the title of the page and it
+receives the value of the title i18n key created in the previous section.
+Similar for the <code class="docutils literal notranslate"><span class="pre">descriptionKey</span></code> property.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="test-the-extension">
+<h2>Test the extension<a class="headerlink" href="#test-the-extension" title="Permalink to this headline">¶</a></h2>
+<p>At this point, the <code class="docutils literal notranslate"><span class="pre">hello_web</span></code> module should look like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello_web</span><span class="o">/</span>
+   <span class="n">pom</span><span class="o">.</span><span class="n">xml</span>
+   <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">resources</span>
+       <span class="n">GeoServerApplication</span><span class="o">.</span><span class="n">properties</span>
+   <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span>
+       <span class="n">applicationContext</span><span class="o">.</span><span class="n">xml</span>
+       <span class="n">org</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">helloweb</span><span class="o">/</span>
+            <span class="n">HelloPage</span><span class="o">.</span><span class="n">java</span>
+            <span class="n">HelloPage</span><span class="o">.</span><span class="n">html</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p>Build the <code class="docutils literal notranslate"><span class="pre">hello_web</span></code> module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_web</span><span class="p">]</span><span class="o">%</span> <span class="n">mvn</span> <span class="n">install</span>
+</pre></div>
+</div>
+</li>
+<li><p>Copy the <code class="docutils literal notranslate"><span class="pre">hello_web-1.0-SNAPSHOT.jar</span></code> file from the  <code class="docutils literal notranslate"><span class="pre">hello_web/target</span></code>
+directory into the <code class="docutils literal notranslate"><span class="pre">WEB-inf/lib</span></code> directory of a GeoServer installation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_web</span><span class="p">]</span><span class="o">%</span> <span class="n">cp</span> <span class="n">target</span><span class="o">/</span><span class="n">hello</span><span class="o">-</span><span class="mf">1.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">.</span><span class="n">jar</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">bob</span><span class="o">/</span><span class="n">geoserver</span><span class="o">-</span><span class="mf">2.0</span><span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">WEB</span><span class="o">-</span><span class="n">INF</span><span class="o">/</span><span class="n">lib</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If running GeoServer from eclipse you can edit the <code class="file docutils literal notranslate"><span class="pre">web-app/pom.xml</span></code> with the following dependency:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>hello_web<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+<p>You will need to run <cite>mvn eclipse:eclipse</cite> after editing <code class="file docutils literal notranslate"><span class="pre">web-app/pom.xml</span></code> and then you can refresh the <code class="file docutils literal notranslate"><span class="pre">gs-web-app</span></code> project in eclipse so it notices the new jar.</p>
+</div>
+</li>
+<li><p>Start or restart GeoServer</p></li>
+<li><p>Navigate to <a class="reference external" href="http://localhost:8080/geoserver/web">http://localhost:8080/geoserver/web</a></p></li>
+</ol>
+<p>Upon success a link titled <code class="docutils literal notranslate"><span class="pre">Hello</span></code> should appear in the menu on the left side
+of the main GeoServer page. Following the link brings up the <code class="docutils literal notranslate"><span class="pre">HelloPage</span></code></p>
+<blockquote>
+<div><img alt="../../_images/test.jpg" src="../../_images/test.jpg" />
+</div></blockquote>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="overview.html" title="previous chapter">Overview</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../wicket-pages/index.html" title="next chapter">Wicket Development In GeoServer</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Implementing a Wicket UI Extension</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#create-a-new-module">Create a new module</a></li>
+<li><a class="reference internal" href="#create-the-page-class">Create the page class</a></li>
+<li><a class="reference internal" href="#create-the-page-presentation">Create the page presentation</a></li>
+<li><a class="reference internal" href="#create-the-i18n-file">Create the i18n file</a></li>
+<li><a class="reference internal" href="#create-the-application-context">Create the application context</a></li>
+<li><a class="reference internal" href="#test-the-extension">Test the extension</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="overview.html" title="previous chapter">Overview</a></li>
+            <li>Next: <a href="../wicket-pages/index.html" title="next chapter">Wicket Development In GeoServer</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/web-ui/implementing.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Running GeoServer in Cloud Foundry &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="geoserver on JBoss" href="../jboss/jboss_tutorial.html" /> 
+  </head><body class="tutorials/cloud-foundry/run_cf">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Running GeoServer in Cloud Foundry</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <liclass="first">
+    <a href="../jboss/jboss_tutorial.html" title="geoserver on JBoss" accesskey="P">Previous</a>
+  </li>
+</ul>
+          
+  <div class="section" id="running-geoserver-in-cloud-foundry">
+<span id="run-cf"></span><h1>Running GeoServer in Cloud Foundry<a class="headerlink" href="#running-geoserver-in-cloud-foundry" title="Permalink to this headline">¶</a></h1>
+<p>Many organizations are moving applications and databases workload to cloud providers. One target platform for apps is <a class="reference external" href="https://www.cloudfoundry.org/">Cloud Foundry</a>.
+While it is not the best environment for intense usage of GeoServer, it is sufficient for simple usage. This tutorial is a simple guide on a basic deployment.</p>
+<p>For more advanced deployments, refer to section <a class="reference internal" href="#advanced-topics">Advanced Topics</a></p>
+<div class="section" id="java-environment">
+<h2>Java Environment<a class="headerlink" href="#java-environment" title="Permalink to this headline">¶</a></h2>
+<p>Cloud Foundry runs micro services written in multiple languages using the abstraction concept of language buildpacks. The <a class="reference external" href="https://github.com/cloudfoundry/java-buildpack">java buildpack</a> supports OpenJDK and proprietary JREs and tomcat from version <a class="reference external" href="http://download.pivotal.io.s3.amazonaws.com/tomcat/index.yml">6.0.0 to 9.x.y</a></p>
+</div>
+<div class="section" id="cloud-foundry-client">
+<h2>Cloud Foundry client<a class="headerlink" href="#cloud-foundry-client" title="Permalink to this headline">¶</a></h2>
+<p>To interact with Cloud Foundry, install the <a class="reference external" href="https://docs.cloudfoundry.org/cf-cli/install-go-cli.html">command line tool</a> for your platform.</p>
+</div>
+<div class="section" id="get-a-cloud-foundry-trial-account-or-use-your-organization-paid-plan">
+<h2>Get a Cloud Foundry trial account (or use your organization paid plan)<a class="headerlink" href="#get-a-cloud-foundry-trial-account-or-use-your-organization-paid-plan" title="Permalink to this headline">¶</a></h2>
+<p>Register for a free trial account with <a class="reference external" href="https://www.sap.com/cmp/td/sap-cloud-platform-trial.html">SAP</a> or IBM.</p>
+<p><strong>Warning</strong> At this time, <a class="reference external" href="https://www.ibm.com/cloud/free">IBM</a> doesn’t allow more 64 MB of memory in free instances which prevents from starting the geoserver. The tutorial will be updated if this changes, however, the Cloud Foundry commands and manifest files are identical because Cloud Foundry truly is multi cloud!</p>
+<div class="section" id="cloud-foundry-on-sap-cloud-platform">
+<h3>Cloud Foundry on SAP Cloud Platform<a class="headerlink" href="#cloud-foundry-on-sap-cloud-platform" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://account.hanatrial.ondemand.com/cockpit/">Logon to your cockpit</a> and select your trial organization</p>
+<img alt="../../_images/sap_cp_trial1.png" src="../../_images/sap_cp_trial1.png" />
+<p>Notice the field <strong>organization name</strong> and the Cloud Foundry <strong>API endpoint</strong>.</p>
+<img alt="../../_images/sap_cp_trial2.png" src="../../_images/sap_cp_trial2.png" />
+<p>Use those 2 values to login with the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cf login -a https://api.cf.eu10.hana.ondemand.com -o your_org_name_trial
+API endpoint: https://api.cf.eu10.hana.ondemand.com
+
+Email: your.email@here.com
+
+Password:
+Authenticating...
+OK
+
+Targeted org your_org_name_trial
+
+Targeted space dev
+
+
+
+API endpoint:   https://api.cf.eu10.hana.ondemand.com (API version: 3.88.0)
+User:           your.email@here.com
+Org:            your_org_name_trial
+Space:          dev
+</pre></div>
+</div>
+<p>And now that you are logged in, you can list the apps:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="n">apps</span>
+<span class="n">Getting</span> <span class="n">apps</span> <span class="ow">in</span> <span class="n">org</span> <span class="n">your_org_name_trial</span> <span class="o">/</span> <span class="n">space</span> <span class="n">dev</span> <span class="k">as</span> <span class="n">your</span><span class="o">.</span><span class="n">email</span><span class="nd">@here</span><span class="o">.</span><span class="n">com</span><span class="o">...</span>
+<span class="n">OK</span>
+
+<span class="n">No</span> <span class="n">apps</span> <span class="n">found</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="publish-geoserver">
+<h2>Publish GeoServer<a class="headerlink" href="#publish-geoserver" title="Permalink to this headline">¶</a></h2>
+<p>Now that you are logged in to a Cloud Foundry space, you can publish GeoServer as a servlet.
+Download GeoServer as a war file.
+Create a deployment configuration file called <strong>manifest.yml</strong>:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">applications</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">geoserver</span>
+<span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">./geoserver.war</span>
+<span class="nt">health-check-type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">process</span>
+<span class="nt">random-route</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">buildpacks</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">java_buildpack</span>
+</pre></div>
+</div>
+<p>The default behavior is to use the latest OpenJRE and tomcat versions. And <em>voilà</em>, you’re ready to publish GeoServer!:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cf push -f manifest.yml
+Pushing from manifest to org your.email@here.com / space dev as your.email@here.com...
+Using manifest file manifest.yml
+Getting app info...
+[...]
+Packaging files to upload...
+Uploading files...
+    45.38 MiB / 45.38 MiB [=================================================================] 100.00% 3m59s
+[...]
+Waiting for app to start...
+[...]
+</pre></div>
+</div>
+<p>This should take two minutes the first time then you can check your application status by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cf apps
+Getting apps in org 2d2950f1trial / space dev as your.email@here.com...
+OK
+
+name        requested state   instances   memory   disk   urls
+geoserver   started           1/1         1G       1G     geoserver-humble-puku-pi.cfapps.eu10.hana.ondemand.com
+</pre></div>
+</div>
+<p>You can open the url in your browser. HTTP is automatically redirected to HTTPS and traffic is encrypted using the Cloud Foundry platform certificates which are trusted by most browsers.</p>
+</div>
+<div class="section" id="advanced-topics">
+<h2>Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="changing-the-memory-limit">
+<h3>Changing the memory limit<a class="headerlink" href="#changing-the-memory-limit" title="Permalink to this headline">¶</a></h3>
+<p>Use the command <strong>cf scale</strong>, for instance to set the limit at 2Gigabytes, execute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$cf scale geoserver -m 2G -f
+Scaling app geoserver in org 2d2950f1trial / space dev as your.email@here.com...
+</pre></div>
+</div>
+<p>This restarts the application and displays the new limit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>     <span class="n">state</span>     <span class="n">since</span>                    <span class="n">cpu</span>    <span class="n">memory</span>         <span class="n">disk</span>           <span class="n">details</span>
+<span class="c1">#0   running   2020-11-13 01:54:56 PM   0.4%   470.8M of 2G   250.2M of 1G</span>
+</pre></div>
+</div>
+<p>As for most parameters, resource limits can also be set in the manifest file</p>
+</div>
+<div class="section" id="changing-the-manifest-file">
+<h3>Changing the manifest file<a class="headerlink" href="#changing-the-manifest-file" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>The manifest file allows you to configure:</dt><dd><ul class="simple">
+<li><p>Resource limits (memory and cpu)</p></li>
+<li><p>configure the route URL</p></li>
+<li><p>Set environment variables, for instance to set a specific tomcat version</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">applications</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">geoserver</span>
+<span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">./geoserver.war</span>
+<span class="nt">health-check-type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">process</span>
+<span class="nt">random-route</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">buildpacks</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">https://github.com/cloudfoundry/java-buildpack.git</span>
+<span class="nt">env</span><span class="p">:</span>
+    <span class="nt">JBP_CONFIG_TOMCAT</span><span class="p">:</span> <span class="s">&#39;{</span><span class="nv"> </span><span class="s">tomcat:</span><span class="nv"> </span><span class="s">{</span><span class="nv"> </span><span class="s">version:</span><span class="nv"> </span><span class="s">8.0.+</span><span class="nv"> </span><span class="s">}</span><span class="nv"> </span><span class="s">}&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="scaling-challenges">
+<h3>Scaling challenges<a class="headerlink" href="#scaling-challenges" title="Permalink to this headline">¶</a></h3>
+<p>Total Memory limit of 8 GB.
+The goal of Cloud Foundry as a micro service platform is to break a monolithic application into smaller blocks. The containers are restricted to 8 GB in IBM and SAP platforms.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../jboss/jboss_tutorial.html" title="previous chapter">geoserver on JBoss</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Running GeoServer in Cloud Foundry</a><ul>
+<li><a class="reference internal" href="#java-environment">Java Environment</a></li>
+<li><a class="reference internal" href="#cloud-foundry-client">Cloud Foundry client</a></li>
+<li><a class="reference internal" href="#get-a-cloud-foundry-trial-account-or-use-your-organization-paid-plan">Get a Cloud Foundry trial account (or use your organization paid plan)</a><ul>
+<li><a class="reference internal" href="#cloud-foundry-on-sap-cloud-platform">Cloud Foundry on SAP Cloud Platform</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#publish-geoserver">Publish GeoServer</a></li>
+<li><a class="reference internal" href="#advanced-topics">Advanced Topics</a><ul>
+<li><a class="reference internal" href="#changing-the-memory-limit">Changing the memory limit</a></li>
+<li><a class="reference internal" href="#changing-the-manifest-file">Changing the manifest file</a></li>
+<li><a class="reference internal" href="#scaling-challenges">Scaling challenges</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../jboss/jboss_tutorial.html" title="previous chapter">geoserver on JBoss</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/cloud-foundry/run_cf.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoFence Admin GUI &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GeoFence Cache REST" href="cache.html" />
+    <link rel="prev" title="Installing the GeoServer GeoFence extension" href="installing.html" /> 
+  </head><body class="extensions/geofence/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Geofence Plugin</a> &raquo;</li>
+    <li>GeoFence Admin GUI</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="cache.html" title="GeoFence Cache REST" accesskey="N">Next</a></li>
+  <li>
+    <a href="installing.html" title="Installing the GeoServer GeoFence extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="geofence-admin-gui">
+<span id="geofence-configuration"></span><h1>GeoFence Admin GUI<a class="headerlink" href="#geofence-admin-gui" title="Permalink to this headline">¶</a></h1>
+<p>The GeoFence Admin Page is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the <span class="guilabel">GeoFence</span> link, found on the left side of the screen after logging in.</p>
+<div class="figure align-center">
+<img alt="../../_images/configuration2.png" src="../../_images/configuration2.png" />
+</div>
+<div class="section" id="general-settings">
+<h2>General Settings<a class="headerlink" href="#general-settings" title="Permalink to this headline">¶</a></h2>
+<p>Configure the following settings here:</p>
+<ul class="simple">
+<li><p>Geoserver instance name: the name under which this geoserver is known by the geofence server. This useful for when you use an external geofence server with multiple geoserver servers.</p></li>
+<li><p>GeoServer services URL: this is how geoserver knows how to connect to the external geofence server. When using an internal geofence server, this is not configurable. For example “<a class="reference external" href="http://localhost:9191/geofence/remoting/RuleReader">http://localhost:9191/geofence/remoting/RuleReader</a>” for an external geofence server on localhost.</p></li>
+</ul>
+</div>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<p>Configure the following settings here:</p>
+<ul>
+<li><p>Allow remote and inline layers in SLD</p></li>
+<li><p>Authenticated users can write</p></li>
+<li><p>Use GeoServer roles to get authorizations</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>Disabled: For each authorization request, GeoServer sends only the user info to GeoFence.</dt><dd><p>GeoFence will retrieve all the roles associated to the user, and will merge
+the permissions granted for each role.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Enabled: For each authorization request, GeoServer sends to GeoFence the user info AND the roles assigned in the current request session.</dt><dd><p>GeoFence will retrieve all the roles associated to the user, and will only consider the requested roles
+that are really associated to the user.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Comma delimited list of mutually exclusive roles for authorization</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>This field is mandatory when the previous option is enabled.</dt><dd><p>GeoServer will send to GeoFence the roles in the current request session which match the entries in this list.
+You can use the ‘*’ symbol to match any session role.
+When using “*”, you can use the format “<cite>-ROLENAME</cite>” to exclude one or more roles from the the session roles list.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="cache">
+<h2>Cache<a class="headerlink" href="#cache" title="Permalink to this headline">¶</a></h2>
+<p>Configure the following settings here:</p>
+<ul class="simple">
+<li><p>Size of the rule cache (amount of entries)</p></li>
+<li><p>Cache refresh interval (ms)</p></li>
+<li><p>Cache expire interval (ms)</p></li>
+</ul>
+<p>Collected data about the cache can be retrieved here. Per cache (rules, admin rules and users) we retrieve the cache size, hits, misses, load successes, load failures, load times and evictions. The cache can be manually invalidated (cleared).</p>
+</div>
+<div class="section" id="basic-geoserver-configuration">
+<h2>Basic GeoServer configuration<a class="headerlink" href="#basic-geoserver-configuration" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Login with the default administrative credentials <code class="docutils literal notranslate"><span class="pre">admin</span> <span class="pre">/</span> <span class="pre">geoserver</span></code> (or whatever you have configured before).</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/basic_001.png" src="../../_images/basic_001.png" />
+</div>
+<ul class="simple">
+<li><p>In the security panel you’ll find the GeoFence link to the GeoFence security admin page</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/basic_002.png" src="../../_images/basic_002.png" />
+</div>
+<ul>
+<li><p>Open the GeoFence admin page; you’ll get to this page:</p>
+<blockquote>
+<div><p>You can notice here the information that allow the GeoFence probe inside GeoServer to communicate with the GeoFence engine:</p>
+<ul class="simple">
+<li><p>the URL that the probe shall use to communicate with GeoFence;</p></li>
+<li><p>the name (default is <cite>default-gs</cite>) this instance will use to identify itself to GeoFence. This instance name should be equal to the one we set into GeoFence.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Testing connection to GeoFence.</p>
+<blockquote>
+<div><p>We already performed a connection test from GeoFence to GeoServer. Using the button <strong>Test connection</strong> we can also test that GeoServer can communicate to GeoFence. If everything is ok, you’ll get this message:</p>
+<div class="figure align-center">
+<img alt="../../_images/basic_003.png" src="../../_images/basic_003.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Open the <strong>Authentication</strong> page under the <strong>Security</strong> settings:</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/basic_004.png" src="../../_images/basic_004.png" />
+</div>
+<ul class="simple">
+<li><p>Add the GeoFence authenticator and <strong>put it as the first in the list</strong> otherwise you will not be able to login as <code class="docutils literal notranslate"><span class="pre">admin/admin</span></code>:</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/basic_005.png" src="../../_images/basic_005.png" />
+</div>
+<ul class="simple">
+<li><p>Now that we added GeoFence as authentication provider, we’ll be able to log into GeoServer using the credentials we added in GeoFence (user <code class="docutils literal notranslate"><span class="pre">admin</span></code> and user <cite>tiger</cite>). Try and log in using user <code class="docutils literal notranslate"><span class="pre">tiger</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="testing-authorization">
+<h2>Testing authorization<a class="headerlink" href="#testing-authorization" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Logging into GeoServer as admin you will be able to see all the defined layers:</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/basic_006.png" src="../../_images/basic_006.png" />
+</div>
+<ul class="simple">
+<li><p>Logging into GeoServer as a non-admin user, the defined rules will be examined; since we defined no rules yet, the default behaviour is to deny access to all resources:</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/basic_007.png" src="../../_images/basic_007.png" />
+</div>
+<ul>
+<li><p>Get back to GeoFence, and add a rule which allows all layers in workspace tiger for user <code class="docutils literal notranslate"><span class="pre">tiger</span></code>; create a rule defining:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>user <code class="docutils literal notranslate"><span class="pre">tiger</span></code></p></li>
+<li><p>instance <code class="docutils literal notranslate"><span class="pre">default-gs</span></code></p></li>
+<li><p>workspace <code class="docutils literal notranslate"><span class="pre">tiger</span></code> (you will get a dropdown menu containing all the workspaces available in the selected instance)</p></li>
+<li><p>grant type: <code class="docutils literal notranslate"><span class="pre">allow</span></code> You’ll get a line like this one:</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/basic_008.png" src="../../_images/basic_008.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Verify the new authorizations.</p>
+<blockquote>
+<div><p>Since the probe caches the GeoFence responses, you may need to login again as administrator (or you may keep an admin session open in another browser) and clear the probe cache. You can do it by pressing the “Invalidate” button in the bottom of the GeoFence admin page:</p>
+<div class="figure align-center">
+<img alt="../../_images/basic_009.png" src="../../_images/basic_009.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Login again in GeoServer as user tiger and you will see in <strong>layer preview</strong> all the layers in the <code class="docutils literal notranslate"><span class="pre">tiger</span></code> workspace:</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../_images/basic_010.png" src="../../_images/basic_010.png" />
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="installing.html" title="previous chapter">Installing the GeoServer GeoFence extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="cache.html" title="next chapter">GeoFence Cache REST</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GeoFence Admin GUI</a><ul>
+<li><a class="reference internal" href="#general-settings">General Settings</a></li>
+<li><a class="reference internal" href="#options">Options</a></li>
+<li><a class="reference internal" href="#cache">Cache</a></li>
+<li><a class="reference internal" href="#basic-geoserver-configuration">Basic GeoServer configuration</a></li>
+<li><a class="reference internal" href="#testing-authorization">Testing authorization</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="installing.html" title="previous chapter">Installing the GeoServer GeoFence extension</a></li>
+            <li>Next: <a href="cache.html" title="next chapter">GeoFence Cache REST</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/geofence/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

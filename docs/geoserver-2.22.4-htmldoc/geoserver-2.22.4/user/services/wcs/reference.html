@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WCS reference &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WCS output formats" href="outputformats.html" />
+    <link rel="prev" title="WCS basics" href="basics.html" /> 
+  </head><body class="services/wcs/reference">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Coverage Service (WCS)</a> &raquo;</li>
+    <li>WCS reference</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="outputformats.html" title="WCS output formats" accesskey="N">Next</a></li>
+  <li>
+    <a href="basics.html" title="WCS basics" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wcs-reference">
+<span id="id1"></span><h1>WCS reference<a class="headerlink" href="#wcs-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="http://www.opengeospatial.org/standards/wcs">Web Coverage Service</a> (WCS) is a standard created by the OGC that refers to the receiving of geospatial information as ‘coverages’: digital geospatial information representing space-varying phenomena.  One can think of it as <a class="reference internal" href="../wfs/index.html#wfs"><span class="std std-ref">Web Feature Service (WFS)</span></a> for <em>raster</em> data.  It gets the ‘source code’ of the map, but in this case its not raw vectors but raw imagery.</p>
+<p>An important distinction must be made between WCS and <a class="reference internal" href="../wms/index.html#wms"><span class="std std-ref">Web Map Service (WMS)</span></a>.  They are similar, and can return similar formats, but a WCS is able to return more information, including valuable metadata and more formats.  It additionally allows more precise queries, potentially against multi-dimensional backend formats.</p>
+</div>
+<div class="section" id="benefits-of-wcs">
+<h2>Benefits of WCS<a class="headerlink" href="#benefits-of-wcs" title="Permalink to this headline">¶</a></h2>
+<p>WCS provides a standard interface for how to request the raster source of a geospatial image.  While a WMS can return an image it is generally only useful as an image.  The results of a WCS can be used for complex modeling and analysis, as it often contains more information.  It also allows more complex querying - clients can extract just the portion of the coverage that they need.</p>
+</div>
+<div class="section" id="operations">
+<h2>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h2>
+<p>WCS can perform the following operations:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Operation</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GetCapabilities</span></code></p></td>
+<td><p>Retrieves a list of the server’s data, as well as valid WCS operations and parameters</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DescribeCoverage</span></code></p></td>
+<td><p>Retrieves an XML document that fully describes the request coverages.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GetCoverage</span></code></p></td>
+<td><p>Returns a coverage in a well known format.  Like a WMS GetMap request, but with several extensions to support the retrieval of coverages.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note" id="wcs-getcap">
+<p class="admonition-title">Note</p>
+<p>The following examples show the 1.1 protocol, the full specification for versions 1.0, 1.1 and 2.0 are available on the <a class="reference external" href="http://www.opengeospatial.org/standards/wcs">OGC website</a></p>
+</div>
+</div>
+<div class="section" id="getcapabilities">
+<h2>GetCapabilities<a class="headerlink" href="#getcapabilities" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>GetCapabilities</strong> operation is a request to a WCS server for a list of what operations and services (“capabilities”) are being offered by that server.</p>
+<p>A typical GetCapabilities request would look like this (at URL <code class="docutils literal notranslate"><span class="pre">http://www.example.com/wcs</span></code>):</p>
+<p>Using a GET request (standard HTTP):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://www.example.com/wcs?
+service=wcs&amp;
+AcceptVersions=1.1.0&amp;
+request=GetCapabilities
+</pre></div>
+</div>
+<p>Here there are three parameters being passed to our WCS server, <code class="docutils literal notranslate"><span class="pre">service=wcs</span></code>, <code class="docutils literal notranslate"><span class="pre">AcceptVersions=1.1.0</span></code>, and <code class="docutils literal notranslate"><span class="pre">request=GetCapabilities</span></code>.  At a bare minimum, it is required that a WCS request have the service and request parameters.  GeoServer relaxes these requirements (setting the default version if omitted), but “officially” they are mandatory, so they should always be included.  The <em>service</em> key tells the WCS server that a WCS request is forthcoming.  The <em>AcceptsVersion</em> key refers to which version of WCS is being requested.  The <em>request</em> key is where the actual GetCapabilities operation is specified.</p>
+<p>WCS additionally supports the Sections parameter that lets a client only request a specific section of the Capabilities Document.</p>
+</div>
+<div class="section" id="describecoverage">
+<span id="wcs-describecoverage"></span><h2>DescribeCoverage<a class="headerlink" href="#describecoverage" title="Permalink to this headline">¶</a></h2>
+<p>The purpose of the <strong>DescribeCoverage</strong> request is to additional information about a Coverage a client wants to query.  It returns information about the crs, the metadata, the domain, the range and the formats it is available in.  A client generally will need to issue a DescribeCoverage request before being sure it can make the proper GetCoverage request.</p>
+</div>
+<div class="section" id="getcoverage">
+<span id="wcs-getcoverage"></span><h2>GetCoverage<a class="headerlink" href="#getcoverage" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>GetCoverage</strong> operation requests the actual spatial data.  It can retrieve subsets of coverages, and the result can be either the coverage itself or a reference to it.  The most powerful thing about a GetCoverage request is its ability to subset domains (height and time) and ranges.  It can also do resampling, encode in different data formats, and return the resulting file in different ways.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="basics.html" title="previous chapter">WCS basics</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="outputformats.html" title="next chapter">WCS output formats</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WCS reference</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#benefits-of-wcs">Benefits of WCS</a></li>
+<li><a class="reference internal" href="#operations">Operations</a></li>
+<li><a class="reference internal" href="#getcapabilities">GetCapabilities</a></li>
+<li><a class="reference internal" href="#describecoverage">DescribeCoverage</a></li>
+<li><a class="reference internal" href="#getcoverage">GetCoverage</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="basics.html" title="previous chapter">WCS basics</a></li>
+            <li>Next: <a href="outputformats.html" title="next chapter">WCS output formats</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wcs/reference.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

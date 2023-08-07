@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuring HTTP Header Proxy Authentication &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Configuring Apache HTTPD Session Integration" href="../credentialsfromheaders/index.html" />
+    <link rel="prev" title="Configuring J2EE Authentication" href="../j2ee/index.html" /> 
+  </head><body class="security/tutorials/httpheaderproxy/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Security</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Configuring HTTP Header Proxy Authentication</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../credentialsfromheaders/index.html" title="Configuring Apache HTTPD Session Integration" accesskey="N">Next</a></li>
+  <li>
+    <a href="../j2ee/index.html" title="Configuring J2EE Authentication" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="configuring-http-header-proxy-authentication">
+<span id="security-tutorials-httpheaderproxy"></span><h1>Configuring HTTP Header Proxy Authentication<a class="headerlink" href="#configuring-http-header-proxy-authentication" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Proxy authentication is used in multi-tier system. The user/principal authenticates
+at the proxy and the proxy provides the authentication information to other services.</p>
+<p>This tutorial shows how to configure GeoServer to accept authentication information
+passed by HTTP header attribute(s). In this scenario GeoServer will do no actual authentication itself.</p>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial uses the <a class="reference external" href="http://curl.haxx.se/">curl</a> utility to issue HTTP
+request that test authentication. Install curl before proceeding.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Any utility that supports setting HTTP header attributes can be used in
+place of curl.</p>
+</div>
+</div>
+<div class="section" id="configure-the-http-header-filter">
+<h2>Configure the HTTP header filter<a class="headerlink" href="#configure-the-http-header-filter" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Start GeoServer and login to the web admin interface as the <code class="docutils literal notranslate"><span class="pre">admin</span></code> user.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Authentication</span></code> link located under the <code class="docutils literal notranslate"><span class="pre">Security</span></code> section of
+the navigation sidebar.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/digest12.jpg" src="../../../_images/digest12.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Scroll down to the <code class="docutils literal notranslate"><span class="pre">Authentication</span> <span class="pre">Filters</span></code> panel and click the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">new</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/digest22.jpg" src="../../../_images/digest22.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">HTTP</span> <span class="pre">Header</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/digest32.jpg" src="../../../_images/digest32.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Fill in the fields of the settings form as follows:</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Name</span></code> to “proxy”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Request</span> <span class="pre">header</span> <span class="pre">attribute</span> <span class="pre">to</span></code> to “sdf09rt2s”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Role</span> <span class="pre">source</span></code> to “User group service”</p></li>
+<li><p>Set the name of the user group service to “default”</p></li>
+</ul>
+</li>
+</ol>
+<p>Additional information about role services is here <a class="reference internal" href="../../usergrouprole/rolesource.html#security-rolesystem-rolesource"><span class="std std-ref">Role source and role calculation</span></a></p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/digest42.jpg" src="../../../_images/digest42.jpg" />
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The tutorial uses the obscure “sdf09rt2s” name for the header attribute.
+Why not use “user” or “username” ?. In a proxy scenario a relationship
+of trust is needed between the proxy and GeoServer. An attacker could easily
+send an HTTP request with an HTTP header attribute “user” and value “admin”
+and operate as an administrator.</p>
+<p>One possibility is to configure the network infrastructure preventing such
+requests from all IP addresses except the IP of the proxy.</p>
+<p>This tutorial uses a obscure header attribute name which should be a shared
+secret between the proxy and GeoServer. Additionally, the use of SSL is recommended,
+otherwise the shared secret is transported in plain text.</p>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Save.</p></li>
+<li><p>Back on the authentication page scroll down to the <code class="docutils literal notranslate"><span class="pre">Filter</span> <span class="pre">Chains</span></code> panel.</p></li>
+<li><p>Select “Default” from the <code class="docutils literal notranslate"><span class="pre">Request</span> <span class="pre">type</span></code> drop down.</p></li>
+<li><p>Unselect the <code class="docutils literal notranslate"><span class="pre">basic</span></code> filter and select the <code class="docutils literal notranslate"><span class="pre">proxy</span></code> filter. Position the
+the <code class="docutils literal notranslate"><span class="pre">proxy</span></code> filter before the <code class="docutils literal notranslate"><span class="pre">anonymous</span></code> filter.</p>
+<div class="figure align-center">
+<img alt="../../../_images/digest52.jpg" src="../../../_images/digest52.jpg" />
+</div>
+</li>
+<li><p>Save.</p></li>
+</ol>
+</div>
+<div class="section" id="secure-ogc-service-requests">
+<h2>Secure OGC service requests<a class="headerlink" href="#secure-ogc-service-requests" title="Permalink to this headline">¶</a></h2>
+<p>In order to test the authentication settings configured in the previous section
+a service or resource must be first secured. The <code class="docutils literal notranslate"><span class="pre">Default</span></code> filter chain is the
+chain applied to all OGC service requests so a service security rule must be
+configured.</p>
+<ol class="arabic">
+<li><p>From the GeoServer home page and click the <code class="docutils literal notranslate"><span class="pre">Services</span></code> link located under the
+<code class="docutils literal notranslate"><span class="pre">Security</span></code> section of the navigation sidebar.</p>
+<div class="figure align-center">
+<img alt="../../../_images/digest61.jpg" src="../../../_images/digest61.jpg" />
+</div>
+</li>
+<li><p>On the Service security page click the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">new</span> <span class="pre">rule</span></code> link and add a catch all
+rule that secures all OGC service requests requiring the <code class="docutils literal notranslate"><span class="pre">ADMIN</span></code>
+role.</p>
+<div class="figure align-center">
+<img alt="../../../_images/digest71.jpg" src="../../../_images/digest71.jpg" />
+</div>
+</li>
+<li><p>Save.</p></li>
+</ol>
+</div>
+<div class="section" id="test-a-proxy-login">
+<h2>Test a proxy login<a class="headerlink" href="#test-a-proxy-login" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Execute the following curl command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span>  <span class="o">-</span><span class="n">G</span> <span class="s2">&quot;http://localhost:8080/geoserver/wfs?request=getcapabilities&quot;</span>
+</pre></div>
+</div>
+<p>The result should be a 403 response signaling that access is denied. The output
+should look something like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>* About to connect() to localhost port 8080 (#0)
+*   Trying ::1... connected
+&gt; GET /geoserver/wfs?request=getcapabilities HTTP/1.1
+&gt; User-Agent: curl/7.22.0 (x86_64-pc-linux-gnu) libcurl/7.22.0 OpenSSL/1.0.1 zlib/1.2.3.4 libidn/1.23 librtmp/2.3
+&gt; Host: localhost:8080
+&gt; Accept: */*
+&gt;
+&lt; HTTP/1.1 403 Access Denied
+&lt; Content-Type: text/html; charset=iso-8859-1
+&lt; Content-Length: 1407
+&lt; Server: Jetty(6.1.8)
+&lt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=ISO-8859-1&quot;/&gt;
+&lt;title&gt;Error 403 Access Denied&lt;/title&gt;
+&lt;/head&gt;
+...
+</pre></div>
+</div>
+</li>
+<li><p>Execute the same command but specify the <code class="docutils literal notranslate"><span class="pre">--header</span></code> option.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">--</span><span class="n">header</span> <span class="s2">&quot;sdf09rt2s: admin&quot;</span> <span class="o">-</span><span class="n">G</span> <span class="s2">&quot;http://localhost:8080/geoserver/wfs?request=getcapabilities&quot;</span>
+</pre></div>
+</div>
+<p>The result should be a successful authentication and contain the normal WFS capabilities response.</p>
+</li>
+</ol>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../j2ee/index.html" title="previous chapter">Configuring J2EE Authentication</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../credentialsfromheaders/index.html" title="next chapter">Configuring Apache HTTPD Session Integration</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Configuring HTTP Header Proxy Authentication</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#configure-the-http-header-filter">Configure the HTTP header filter</a></li>
+<li><a class="reference internal" href="#secure-ogc-service-requests">Secure OGC service requests</a></li>
+<li><a class="reference internal" href="#test-a-proxy-login">Test a proxy login</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../j2ee/index.html" title="previous chapter">Configuring J2EE Authentication</a></li>
+            <li>Next: <a href="../credentialsfromheaders/index.html" title="next chapter">Configuring Apache HTTPD Session Integration</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/tutorials/httpheaderproxy/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

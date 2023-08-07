@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Passwords &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Root account" href="root.html" />
+    <link rel="prev" title="Authentication providers" href="auth/providers.html" /> 
+  </head><body class="security/passwd">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Security</a> &raquo;</li>
+    <li>Passwords</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="root.html" title="Root account" accesskey="N">Next</a></li>
+  <li>
+    <a href="auth/providers.html" title="Authentication providers" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="passwords">
+<span id="security-passwd"></span><h1>Passwords<a class="headerlink" href="#passwords" title="Permalink to this headline">¶</a></h1>
+<p>Passwords are a central aspect of any security system. This section describes how GeoServer handles passwords.</p>
+<div class="section" id="password-encryption">
+<span id="security-passwd-encryption"></span><h2>Password encryption<a class="headerlink" href="#password-encryption" title="Permalink to this headline">¶</a></h2>
+<p>A GeoServer configuration stores two types of passwords:</p>
+<ul class="simple">
+<li><p>Passwords for <strong>user accounts</strong> to access GeoServer resources</p></li>
+<li><p>Passwords used internally for <strong>accessing external services</strong> such as databases and cascading OGC services</p></li>
+</ul>
+<p>As these passwords are typically stored on disk it is strongly recommended that they be encrypted and not stored as human-readable text. GeoServer security provides four schemes for encrypting passwords: <strong>empty</strong>, <strong>plain text</strong>, <strong>Digest</strong>, and <strong>Password-based encryption (PBE)</strong>.</p>
+<p>The password encryption scheme is specified as a global setting that affects the encryption of passwords used for external resources, and as an encryption scheme for each <a class="reference internal" href="usergrouprole/usergroupservices.html#security-rolesystem-usergroupservices"><span class="std std-ref">user/group service</span></a>. The encryption scheme for external resources has to be <a class="reference internal" href="#security-passwd-reversible"><span class="std std-ref">reversible</span></a>, while the user/group services can use any scheme.</p>
+<div class="section" id="empty">
+<h3>Empty<a class="headerlink" href="#empty" title="Permalink to this headline">¶</a></h3>
+<p>The scheme is not reversible. Any password is encoded as an empty string, and as a consequence it is not possible to recalculate the plain text password. This scheme is used for user/group services in combination with an authentication mechanism using a back end system. Examples are user name/password authentication against a LDAP server or a JDBC database. In these scenarios, storing passwords locally to GeoServer does not make sense.</p>
+</div>
+<div class="section" id="plain-text">
+<h3>Plain text<a class="headerlink" href="#plain-text" title="Permalink to this headline">¶</a></h3>
+<p>Plain text passwords provide no encryption at all. In this case, passwords are human-readable by anyone who has access to the file system. For obvious reasons, this is not recommended for any but the most basic test server. A password <code class="docutils literal notranslate"><span class="pre">mypassword</span></code> is encoded as <code class="docutils literal notranslate"><span class="pre">plain:mypassword</span></code>, the prefix uniquely describing the algorithm used for encoding/decoding.</p>
+</div>
+<div class="section" id="digest">
+<h3>Digest<a class="headerlink" href="#digest" title="Permalink to this headline">¶</a></h3>
+<p>Digest encryption is not reversible. It applies, 100,000 times through an iterative process, a SHA-256 <a class="reference external" href="http://en.wikipedia.org/wiki/Cryptographic_hash_function">cryptographic hash function</a>
+to passwords. This scheme is “one-way” in that it is virtually impossible to reverse and obtain the original password from its hashed representation. Please see the section on <a class="reference internal" href="#security-passwd-reversible"><span class="std std-ref">Reversible encryption</span></a> for more information on reversibility.</p>
+<p>To protect from well known attacks, a random value called a <a class="reference external" href="http://en.wikipedia.org/wiki/Salt_%28cryptography%29">salt</a> is added to the password when generating the key. For each digesting, a separate random salt is used. Digesting the same password twice results in different hashed representations.</p>
+<p>As an example, the password <code class="docutils literal notranslate"><span class="pre">geoserver</span></code> is digested to <code class="docutils literal notranslate"><span class="pre">digest1:YgaweuS60t+mJNobGlf9hzUC6g7gGTtPEu0TlnUxFlv0fYtBuTsQDzZcBM4AfZHd</span></code>.
+<code class="docutils literal notranslate"><span class="pre">digest1</span></code> indicates the usage of digesting. The hashed representation and the salt are base 64 encoded.</p>
+</div>
+<div class="section" id="password-based-encryption">
+<h3>Password-based encryption<a class="headerlink" href="#password-based-encryption" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.javamex.com/tutorials/cryptography/password_based_encryption.shtml">Password-based encryption</a> (PBE) normally employs a user-supplied password to generate an encryption key. This scheme is reversible. A random salt described in the previous section is used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The system never uses passwords specified by users because these passwords tend to be weak. Passwords used for encryption are generated using a secure random generator and stored in the GeoServer key store. The number of possible passwords is 2^260 .</p>
+</div>
+<p>GeoServer supports two forms of PBE. <strong>Weak PBE</strong> (the GeoServer default) uses a basic encryption method that is relatively easy to crack. The encryption key is derived from the password using <a class="reference external" href="http://en.wikipedia.org/wiki/Message_Digest_Algorithm_5">MD5</a> 1000 times iteratively. The encryption algorithm itself is <a class="reference external" href="http://en.wikipedia.org/wiki/Data_Encryption_Standard">DES</a> (Data Encryption Standard). DES has an effective key length of 56 bits, which is not really a challenge for computer systems in these days.</p>
+<p><strong>Strong PBE</strong> uses a much stronger encryption method based on an <a class="reference external" href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES</a> 256-bit algorithm with <a class="reference external" href="http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation">CBC</a>. The key length is 256 bit and is derived using <a class="reference external" href="http://en.wikipedia.org/wiki/SHA-2">SHA-256</a> instead of MD5. Using Strong PBE is highly recommended.</p>
+<p>As an example, the password <code class="docutils literal notranslate"><span class="pre">geoserver</span></code> is encrypted to <code class="docutils literal notranslate"><span class="pre">crypt1:KWhO7jrTz/Gi0oTQRKsVeCmWIZY5VZaD</span></code>.
+<code class="docutils literal notranslate"><span class="pre">crypt1</span></code> indicates the usage of Weak PBE. The prefix for Strong PBE is <code class="docutils literal notranslate"><span class="pre">crypt2</span></code>. The ciphertext and the salt are base 64 encoded.</p>
+<div class="admonition note" id="security-passwd-encryption-policies">
+<p class="admonition-title">Note</p>
+<p>Strong PBE is not natively available on all Java virtual machines and may require <a class="reference internal" href="../production/java.html#java-policyfiles"><span class="std std-ref">Installing Unlimited Strength Jurisdiction Policy Files</span></a></p>
+</div>
+</div>
+<div class="section" id="reversible-encryption">
+<span id="security-passwd-reversible"></span><h3>Reversible encryption<a class="headerlink" href="#reversible-encryption" title="Permalink to this headline">¶</a></h3>
+<p>Password encryption methods can be <strong>reversible</strong>, meaning that it is possible (and desirable) to obtain the plain-text password from its encrypted version. Reversible passwords are necessary for database connections or external OGC services such as <a class="reference internal" href="../data/cascaded/wms.html#data-external-wms"><span class="std std-ref">cascading WMS</span></a> and <a class="reference internal" href="../data/cascaded/wfs.html#data-external-wfs"><span class="std std-ref">cascading WFS</span></a>, since GeoServer must be able to decode the encrypted password and pass it to the external service. Plain text and PBE passwords are reversible.</p>
+<p>Non-reversible passwords provide the highest level of security, and therefore should be used for user accounts and wherever else possible. Using password digesting is highly recommended, the installation of the unrestricted policy files is not required.</p>
+</div>
+</div>
+<div class="section" id="secret-keys-and-the-keystore">
+<span id="security-passwd-keystore"></span><h2>Secret keys and the keystore<a class="headerlink" href="#secret-keys-and-the-keystore" title="Permalink to this headline">¶</a></h2>
+<p>For a reversible password to provide a meaningful level of security, access to the password must be restricted in some way. In GeoServer, encrypting and decrypting passwords involves the generation of secret shared keys, stored in a typical Java <em>keystore</em>. GeoServer uses its own keystore for this purpose named <code class="docutils literal notranslate"><span class="pre">geoserver.jceks</span></code> which is located in the <code class="docutils literal notranslate"><span class="pre">security</span></code> directory in the GeoServer data directory. This file is stored in the <a class="reference external" href="http://www.itworld.com/nl/java_sec/07202001">JCEKS format rather than the default JKS</a>. JKS does not support storing shared keys.</p>
+<p>The GeoServer keystore is password protected with a <a class="reference internal" href="#security-master-passwd"><span class="std std-ref">Keystore password</span></a>. It is possible to access the contents of the keystore with external tools such as <a class="reference external" href="http://docs.oracle.com/javase/6/docs/technotes/tools/solaris/keytool.html">keytool</a>. For example, this following command would prompt for the keystore password and list the contents of the keystore:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ keytool -list -keystore geoserver.jceks -storetype <span class="s2">&quot;JCEKS&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="keystore-password">
+<span id="security-master-passwd"></span><h2>Keystore password<a class="headerlink" href="#keystore-password" title="Permalink to this headline">¶</a></h2>
+<p>It is also possible to set a <strong>keystore password</strong> for GeoServer. This password serves two purposes:</p>
+<ul class="simple">
+<li><p>Protect access to the <a class="reference internal" href="#security-passwd-keystore"><span class="std std-ref">keystore</span></a></p></li>
+<li><p>Protect access to the GeoServer <a class="reference internal" href="root.html#security-root"><span class="std std-ref">Root account</span></a></p></li>
+</ul>
+<p>By default, the keystore password is generated and stored in a file named <code class="docutils literal notranslate"><span class="pre">security/masterpw.info</span></code> using plain text. When upgrading from an existing GeoServer data directory (versions 2.1.x and lower), the algorithm attempts to figure out the password of a user with the role <code class="docutils literal notranslate"><span class="pre">ROLE_ADMINISTRATOR</span></code>. If such a password is found and the password length is 8 characters at minimum, GeoServer uses this password as keystore password. Again, the name of the chosen user is found in <code class="docutils literal notranslate"><span class="pre">security/masterpw.info</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The file <code class="docutils literal notranslate"><span class="pre">security/masterpw.info</span></code> is a security risk. The administrator should read this file and verify the keystore password by logging on GeoServer as the <code class="docutils literal notranslate"><span class="pre">root</span></code> user. On success, this file should be removed.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The first thing an Administrator of the System should do is dump the keystore Password generated by GeoServer, store it somewhere not accessible by anyone, and delete <code class="docutils literal notranslate"><span class="pre">security/masterpw.info</span></code> or whatever file you dumped the password to.</p>
+</div>
+<p>Refer to <a class="reference internal" href="webadmin/passwords.html#security-webadmin-masterpasswordprovider"><span class="std std-ref">Active keystore password provider</span></a> for information on how to change the keystore password.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default login to the Admin GUI and REST APIs using the Keystore Password is disabled. In order to enable it you will need to manually change the Keystore Password Provider config.xml, usually located in <code class="docutils literal notranslate"><span class="pre">security/masterpw/default/config.xml</span></code>, by adding the following statement:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>``&lt;loginEnabled&gt;true&lt;/loginEnabled&gt;``
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="password-policies">
+<span id="security-passwd-policy"></span><h2>Password policies<a class="headerlink" href="#password-policies" title="Permalink to this headline">¶</a></h2>
+<p>A password policy defines constraints on passwords such as password length, case, and required mix of character classes. Password policies are specified when adding <a class="reference internal" href="usergrouprole/usergroupservices.html#security-rolesystem-usergroupservices"><span class="std std-ref">User/group services</span></a> and are used to constrain passwords when creating new users and when changing passwords of existing users.</p>
+<p>Each user/group service uses a password policy to enforce these rules. The default GeoServer password policy implementation supports the following optional constraints:</p>
+<ul class="simple">
+<li><p>Passwords must contain at least one number</p></li>
+<li><p>Passwords must contain at least one upper case letter</p></li>
+<li><p>Passwords must contain at least one lower case letter</p></li>
+<li><p>Password minimum length</p></li>
+<li><p>Password maximum length</p></li>
+</ul>
+</div>
+<div class="section" id="parametrized-passwords">
+<h2>Parametrized Passwords<a class="headerlink" href="#parametrized-passwords" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to parametrize users’ passwords in a similar way to the catalog settings (see <a class="reference internal" href="../datadirectory/configtemplate.html#datadir-configtemplate"><span class="std std-ref">Parameterize catalog settings</span></a>). Parametrization is supported when the encryption method used to store the place holder in the password field is plain text or is reversible (pbe, strong pbe). Non reversible encoding for the placeholder (e.g. digest) is not supported. On the contrary the actual value can be defined in the <code class="docutils literal notranslate"><span class="pre">geoserver-environment.properties</span></code> with any password encoding method supported by GeoServer. Examples are provided below:</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">pwd.one</span><span class="o">=</span><span class="s">plain:clear_text_password</span>
+<span class="na">pwd.two</span><span class="o">=</span><span class="s">digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw</span>
+<span class="na">pwd.three</span><span class="o">=</span><span class="s">crypt1:xZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="auth/providers.html" title="previous chapter">Authentication providers</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="root.html" title="next chapter">Root account</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Passwords</a><ul>
+<li><a class="reference internal" href="#password-encryption">Password encryption</a><ul>
+<li><a class="reference internal" href="#empty">Empty</a></li>
+<li><a class="reference internal" href="#plain-text">Plain text</a></li>
+<li><a class="reference internal" href="#digest">Digest</a></li>
+<li><a class="reference internal" href="#password-based-encryption">Password-based encryption</a></li>
+<li><a class="reference internal" href="#reversible-encryption">Reversible encryption</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#secret-keys-and-the-keystore">Secret keys and the keystore</a></li>
+<li><a class="reference internal" href="#keystore-password">Keystore password</a></li>
+<li><a class="reference internal" href="#password-policies">Password policies</a></li>
+<li><a class="reference internal" href="#parametrized-passwords">Parametrized Passwords</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="auth/providers.html" title="previous chapter">Authentication providers</a></li>
+            <li>Next: <a href="root.html" title="next chapter">Root account</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/passwd.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

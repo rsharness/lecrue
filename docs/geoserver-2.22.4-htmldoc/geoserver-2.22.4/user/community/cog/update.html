@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>COG ImageMosaic from local storage to S3 &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Dynamic colormap generation" href="../colormap/index.html" />
+    <link rel="prev" title="ImageMosaic example with Modis COG datasets" href="mosaic.html" /> 
+  </head><body class="community/cog/update">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">COG (Cloud Optimized GeoTIFF) Documentation</a> &raquo;</li>
+    <li>COG ImageMosaic from local storage to S3</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../colormap/index.html" title="Dynamic colormap generation" accesskey="N">Next</a></li>
+  <li>
+    <a href="mosaic.html" title="ImageMosaic example with Modis COG datasets" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="cog-imagemosaic-from-local-storage-to-s3">
+<span id="tutorial-imagemosaic-update-to-s3"></span><h1>COG ImageMosaic from local storage to S3<a class="headerlink" href="#cog-imagemosaic-from-local-storage-to-s3" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial provides instructions to update an existing ImageMosaic built on top of local granules to a COG ImageMosaic with granules stored on S3 bucket.
+It is aimed to users that want to move COG granules of an ImageMosaic to a remote bucket without the need of re-harvesting the whole collection of granules.</p>
+</div>
+<div class="section" id="assumptions">
+<h2>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>An ImageMosaic store already exists, with its index based on a DB (i.e. PostGIS).</p></li>
+<li><p>Local GeoTIFF granules are already valid COGs.</p></li>
+<li><p>User has experience with uploading data on S3.</p></li>
+</ul>
+<div class="section" id="verifying-data-is-valid-cog">
+<h3>Verifying data is valid COG<a class="headerlink" href="#verifying-data-is-valid-cog" title="Permalink to this headline">¶</a></h3>
+<p>Verifying that a sample GeoTIFF is a valid COG can be achieved using COG validator service.</p>
+<ol class="arabic simple">
+<li><p>Store a sample GeoTIFF to the target bucket (or to the server location) you will use for remote serving and copy its full URL location, i.e. <a class="reference external" href="https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/2018.01.01.tif">https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/2018.01.01.tif</a>.</p></li>
+<li><p>Go to <a class="reference external" href="http://cog-validate.radiant.earth/html">COG Validator</a></p></li>
+<li><p>Paste the sample COG URL in the text box and hit the submit button.</p></li>
+<li><p>In case the sample file is a valid COG, you will get a message like this:</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">Cloud</span> <span class="pre">Optimized</span> <span class="pre">GeoTIFF</span> <span class="pre">Validator:</span> <span class="pre">result</span> <span class="pre">Validation</span> <span class="pre">succeeded</span> <span class="pre">!</span>
+<span class="pre">https://sample.s3.eu-central-1.amazonaws.com/test/cog.tif</span>
+<span class="pre">is</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">Cloud</span> <span class="pre">Optimized</span> <span class="pre">GeoTIFF.</span></code></p>
+<p>In case the file isn’t a valid COG, you can use GDAL 3.1 or above to convert your file to COG format.
+See the related <a class="reference external" href="https://gdal.org/drivers/raster/cog.html">GDAL documentation</a> for further details.</p>
+<p>Once the data has been verified, all of your granules need to be stored to an S3 bucket.</p>
+</div>
+</div>
+<div class="section" id="imagemosaic-update">
+<h2>ImageMosaic update<a class="headerlink" href="#imagemosaic-update" title="Permalink to this headline">¶</a></h2>
+<p>Next step is updating both the ImageMosaic’s config as well as the index.</p>
+<div class="section" id="imagemosaic-configuration-update">
+<h3>ImageMosaic configuration update<a class="headerlink" href="#imagemosaic-configuration-update" title="Permalink to this headline">¶</a></h3>
+<p>A few new properties need to be added to the ImageMosaic configuration to support COG.</p>
+<p>Locate the <code class="docutils literal notranslate"><span class="pre">.properties</span></code> file containing the mosaic configuration. It’s usually a <code class="docutils literal notranslate"><span class="pre">.properties</span></code> file having the same name of the parent folder.
+You may recognize it since it’s usually being autogenerated during first ImageMosaic configuration and it contains this header:</p>
+<p><code class="docutils literal notranslate"><span class="pre">#-Automagically</span> <span class="pre">created</span> <span class="pre">from</span> <span class="pre">GeoTools-</span></code>.</p>
+<p>Let’s assume it’s named <code class="file docutils literal notranslate"><span class="pre">mosaic.properties</span></code> for simplicity for future references in this documentation.
+Once located, edit that file by adding these new properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Cog=true</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SuggestedSPI=it.geosolutions.imageioimpl.plugins.cog.CogImageReaderSpi</span></code></p></li>
+</ul>
+<p>When storing your granules on a public bucket, you may stick with the default RangeReader implementation so no other flags are needed and you can skip to the ImageMosaic index update paragraph.</p>
+<p>In case you are using a private bucket instead, you need to specify additional properties to the mosaic.properties file:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CogRangeReader=it.geosolutions.imageioimpl.plugins.cog.S3RangeReader</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CogUser=S3AccessKeyID</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CogPassword=S3SecretAccessKey</span></code></p></li>
+</ul>
+<p>Where the <code class="docutils literal notranslate"><span class="pre">S3AccessKeyID</span></code> and <code class="docutils literal notranslate"><span class="pre">S3SecretAccessKey</span></code> are the actual values needed to access that bucket.</p>
+</div>
+<div class="section" id="imagemosaic-index-update">
+<h3>ImageMosaic index update<a class="headerlink" href="#imagemosaic-index-update" title="Permalink to this headline">¶</a></h3>
+<p>The next step is updating the ImageMosaic index which is a catalog of all the granules composing the mosaic.
+We need to update the location values to refer to remote URLs instead of local paths on disk.
+The location attribute initially contains the path of each granule on disk, which can be either a relative or an absolute path.
+Relative paths are relative to the ImageMosaic parent configuration folder whilst absolute paths are full paths.</p>
+<p>The <code class="file docutils literal notranslate"><span class="pre">mosaic.properties</span></code> file contains a <code class="docutils literal notranslate"><span class="pre">PathType</span></code> property set to <code class="docutils literal notranslate"><span class="pre">RELATIVE</span></code> or <code class="docutils literal notranslate"><span class="pre">ABSOLUTE</span></code>.
+On old mosaics, that property might be missing and <code class="docutils literal notranslate"><span class="pre">AbsolutePath</span></code> property exists instead with a boolean value true/false.
+Based on that, note that all the paths of the same mosaic will be either relative or absolute.</p>
+<p>To give you an example, an ImageMosaic stored at <code class="file docutils literal notranslate"><span class="pre">/var/data/imageMosaic/mosaic</span></code> with a granule at <code class="file docutils literal notranslate"><span class="pre">/var/data/imageMosaic/mosaic/2018.01.01.tif</span></code>
+may have a record in the database with location attribute equal to :</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">2018.01.01.tif</span></code> in case of relative path</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/var/data/imageMosaic/mosaic/2018.01.01.tif</span></code> in case of absolute path.</p></li>
+</ul>
+<p>The type of path affects the query to be executed to update the index.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure to backup your table for a quick recovery in case of messes with the updating query.</p>
+</div>
+<p>For this example, we are going to use the same public datasets from S3 Urls being used in the previous <a class="reference internal" href="mosaic.html#tutorial-imagemosaic-cog-landsat8"><span class="std std-ref">ImageMosaic example with Modis COG datasets</span></a> section.</p>
+<p>For location with relative paths a simple replacing query could be like this:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="k">schema</span><span class="p">.</span><span class="k">table</span> <span class="k">SET</span> <span class="k">location</span><span class="o">=</span><span class="n">CONCAT</span><span class="p">(</span>
+<span class="s1">&#39;https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/&#39;</span><span class="p">,</span> <span class="k">location</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>So we are basically prepending the S3 bucket URL to the location value.
+By this way, based on the above examples,
+<code class="docutils literal notranslate"><span class="pre">location=2018.01.01.tif</span></code> will become <code class="docutils literal notranslate"><span class="pre">location='https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/2018.01.01.tif</span></code></p>
+<p>For location with absolute path, a replacing query may be like this (for our example):</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="k">schema</span><span class="p">.</span><span class="k">table</span> <span class="k">SET</span> <span class="k">location</span><span class="o">=</span><span class="k">REPLACE</span><span class="p">(</span><span class="k">location</span><span class="p">,</span><span class="s1">&#39;/var/data/imageMosaic/mosaic/&#39;</span><span class="p">,</span>
+<span class="s1">&#39;https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="geoserver-reload">
+<h2>GeoServer reload<a class="headerlink" href="#geoserver-reload" title="Permalink to this headline">¶</a></h2>
+<p>Once everything is done, reload the GeoServer configuration.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="mosaic.html" title="previous chapter">ImageMosaic example with Modis COG datasets</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../colormap/index.html" title="next chapter">Dynamic colormap generation</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">COG ImageMosaic from local storage to S3</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#assumptions">Assumptions</a><ul>
+<li><a class="reference internal" href="#verifying-data-is-valid-cog">Verifying data is valid COG</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#imagemosaic-update">ImageMosaic update</a><ul>
+<li><a class="reference internal" href="#imagemosaic-configuration-update">ImageMosaic configuration update</a></li>
+<li><a class="reference internal" href="#imagemosaic-index-update">ImageMosaic index update</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#geoserver-reload">GeoServer reload</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="mosaic.html" title="previous chapter">ImageMosaic example with Modis COG datasets</a></li>
+            <li>Next: <a href="../colormap/index.html" title="next chapter">Dynamic colormap generation</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/cog/update.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

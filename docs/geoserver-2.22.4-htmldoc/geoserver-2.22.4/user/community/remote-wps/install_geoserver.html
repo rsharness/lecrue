@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deployment And Setup Of GeoServer With WPS Remote Plugin &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Installation Of OpenFire XMPP Server To Exchange Messages" href="install_xmpp.html" />
+    <link rel="prev" title="WPS Remote community module" href="index.html" /> 
+  </head><body class="community/remote-wps/install_geoserver">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WPS Remote community module</a> &raquo;</li>
+    <li>Deployment And Setup Of GeoServer With WPS Remote Plugin</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="install_xmpp.html" title="Installation Of OpenFire XMPP Server To Exchange Messages" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="WPS Remote community module" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="deployment-and-setup-of-geoserver-with-wps-remote-plugin">
+<span id="extensions-wps-remote-install-geoserver"></span><h1>Deployment And Setup Of GeoServer With WPS Remote Plugin<a class="headerlink" href="#deployment-and-setup-of-geoserver-with-wps-remote-plugin" title="Permalink to this headline">¶</a></h1>
+<p>The following commands will prepare a CentOS 7 Minimal ISO machine for the deployment of:</p>
+<ul>
+<li><p>GeoServer with the following plugins:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>GeoServer WPS</p></li>
+<li><p>GeoServer Remote WPS Orchestrator</p></li>
+<li><p>GeoServer Importer</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>The OS iso has been downloaded from::</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">isoredirect</span><span class="o">.</span><span class="n">centos</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">centos</span><span class="o">/</span><span class="mi">7</span><span class="o">/</span><span class="n">isos</span><span class="o">/</span><span class="n">x86_64</span><span class="o">/</span><span class="n">CentOS</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">Minimal</span><span class="o">-</span><span class="mi">1503</span><span class="o">-</span><span class="mf">01.</span><span class="n">iso</span>
+</pre></div>
+</div>
+<div class="section" id="preparation-of-the-system-standard-and-basic-os-packages">
+<h2>Preparation of the system: standard and basic OS packages<a class="headerlink" href="#preparation-of-the-system-standard-and-basic-os-packages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="hostname-and-other-useful-packages">
+<h3>Hostname and other useful packages<a class="headerlink" href="#hostname-and-other-useful-packages" title="Permalink to this headline">¶</a></h3>
+<p>Update the file <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> making sure that the ip addresses matches the name of the machine.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; yum -y install man vim openssh-clients mc zip unzip wget net-tools
+</pre></div>
+</div>
+</div>
+<div class="section" id="configure-the-java-virtual-environment">
+<h3>Configure the Java Virtual Environment<a class="headerlink" href="#configure-the-java-virtual-environment" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; wget --no-check-certificate --no-cookies --header <span class="s2">&quot;Cookie: oraclelicense=accept-securebackupcookie&quot;</span> http://download.oracle.com/otn-pub/java/jdk/8u65-b17/jdk-8u74-linux-x64.tar.gz
+
+$&gt; tar xzvf jdk-8u65-linux-x64.tar.gz
+$&gt; mkdir /usr/java
+$&gt; mv jdk1.8.0_65/ /usr/java/
+
+$&gt; alternatives --install /usr/bin/java java /usr/java/jdk1.8.0_65/bin/java <span class="m">20000</span>
+
+$&gt; alternatives --install /usr/bin/javac javac /usr/java/jdk1.8.0_65/bin/javac <span class="m">20000</span>
+
+$&gt; alternatives --install /usr/bin/jar jar /usr/java/jdk1.8.0_65/bin/jar <span class="m">20000</span>
+
+$&gt; alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.8.0_65/bin/javaws <span class="m">20000</span>
+
+$&gt; alternatives --set java /usr/java/jdk1.8.0_65/bin/java
+$&gt; alternatives --set javac /usr/java/jdk1.8.0_65/bin/javac
+$&gt; alternatives --set jar /usr/java/jdk1.8.0_65/bin/jar
+$&gt; alternatives --set javaws /usr/java/jdk1.8.0_65/bin/javaws
+
+<span class="c1"># Verify the proper installation on the JDK</span>
+
+$&gt; java -version
+  java version <span class="s2">&quot;1.8.0_65&quot;</span>
+  Java<span class="o">(</span>TM<span class="o">)</span> SE Runtime Environment <span class="o">(</span>build <span class="m">1</span>.8.0_65-b17<span class="o">)</span>
+  Java HotSpot<span class="o">(</span>TM<span class="o">)</span> <span class="m">64</span>-Bit Server VM <span class="o">(</span>build <span class="m">25</span>.65-b01, mixed mode<span class="o">)</span>
+
+$&gt; javac -version
+  javac <span class="m">1</span>.8.0_65
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-apache-tomcat">
+<h3>Installing Apache Tomcat<a class="headerlink" href="#installing-apache-tomcat" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; yum -y install tomcat-webapps
+$&gt; systemctl disable tomcat.service
+
+$&gt; cp /etc/sysconfig/tomcat /etc/sysconfig/geoserver
+$&gt; ln -s /usr/share/tomcat/ /opt/tomcat
+</pre></div>
+</div>
+<p><strong>Creating apache tomcat HOME context</strong></p>
+<p>Creating base template directory</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; mkdir -p /var/lib/tomcat/geoserver/<span class="o">{</span>bin,conf,logs,temp,webapps,work<span class="o">}</span>
+
+$&gt; cp -Rf /opt/tomcat/conf/* /var/lib/tomcat/geoserver/conf/
+</pre></div>
+</div>
+<p><strong>Creating geoserver apache tomcat BASE context</strong></p>
+<p>Make sure you already:</p>
+<ul class="simple">
+<li><p>installed tomcat (Installing apache tomcat)</p></li>
+<li><p>created the base catalina template (Creating apache tomcat HOME context)</p></li>
+</ul>
+<p>Edit <code class="docutils literal notranslate"><span class="pre">server.xml</span></code> file</p>
+<p>GeoServer is the first tomcat instance we are installing in this VM, so we can keep the default ports:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>8005 for commands to catalina instance</p></li>
+<li><p>8009 for the AJP connection port</p></li>
+<li><p>8080 for the HTTP connection port</p></li>
+</ul>
+</div></blockquote>
+<p>Remember that you may change these ports in the file <code class="docutils literal notranslate"><span class="pre">/var/lib/tomcat/geoserver/conf/server.xml</span></code></p>
+<p><strong>Final configurations</strong></p>
+<p>Set the ownership of the <code class="docutils literal notranslate"><span class="pre">geoserver/</span></code> related directories to user tomcat</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; chown tomcat: -R /var/lib/tomcat/geoserver
+$&gt; cp /etc/tomcat/tomcat.conf /etc/tomcat/geoserver.conf
+
+$&gt; vi /etc/tomcat/geoserver.conf
+
+  <span class="c1"># This variable is used to figure out if config is loaded or not.</span>
+  <span class="nv">TOMCAT_CFG_LOADED</span><span class="o">=</span><span class="s2">&quot;1&quot;</span>
+
+  <span class="c1"># In new-style instances, if CATALINA_BASE isn&#39;t specified, it will</span>
+  <span class="c1"># be constructed by joining TOMCATS_BASE and NAME.</span>
+  <span class="nv">TOMCATS_BASE</span><span class="o">=</span><span class="s2">&quot;/var/lib/tomcats/&quot;</span>
+
+  <span class="c1"># Where your java installation lives</span>
+  <span class="c1">#JAVA_HOME=&quot;/usr/lib/jvm/jre&quot;</span>
+  <span class="nv">JAVA_HOME</span><span class="o">=</span><span class="s2">&quot;/usr/java/jdk1.7.0_71&quot;</span>
+
+  <span class="c1"># Where your tomcat installation lives</span>
+  <span class="nv">CATALINA_HOME</span><span class="o">=</span><span class="s2">&quot;/usr/share/tomcat&quot;</span>
+  <span class="nv">CATALINA_BASE</span><span class="o">=</span><span class="s2">&quot;/var/lib/tomcat/geoserver&quot;</span>
+  <span class="nv">CATALINA_PID</span><span class="o">=</span><span class="nv">$CATALINA_BASE</span>/work/pidfile.pid
+
+  <span class="c1"># System-wide tmp</span>
+  <span class="nv">CATALINA_TMPDIR</span><span class="o">=</span><span class="s2">&quot;/var/cache/tomcat/temp&quot;</span>
+
+  <span class="c1"># You can pass some parameters to java here if you wish to</span>
+  <span class="c1">#JAVA_OPTS=&quot;-Xminf0.1 -Xmaxf0.3&quot;</span>
+  <span class="c1"># Use JAVA_OPTS to set java.library.path for libtcnative.so</span>
+  <span class="c1">#JAVA_OPTS=&quot;-Djava.library.path=/usr/lib&quot;</span>
+  <span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">&quot;-server -XX:SoftRefLRUPolicyMSPerMB=36000 -Xms1024m -Xmx2048m</span>
+<span class="s2">  -XX:PermSize=64m -XX:+UseConcMarkSweepGC -XX:NewSize=48m -DGEOSERVER_DATA_DIR=/storage/data/</span>
+<span class="s2">  -DENABLE_ADVANCED_PROJECTION=false -Dorg.geotools.shapefile.datetime=true -Duser.timezone=GMT</span>
+<span class="s2">  -Dorg.geotools.filter.function.simplify=true -DGEOMETRY_COLLECT_MAX_COORDINATES=50000&quot;</span>
+
+  <span class="c1"># You can change your tomcat locale here</span>
+  <span class="c1">#LANG=&quot;en_US&quot;</span>
+  <span class="c1"># Run tomcat under the Java Security Manager</span>
+  <span class="nv">SECURITY_MANAGER</span><span class="o">=</span><span class="s2">&quot;false&quot;</span>
+
+$&gt; cp /usr/lib/systemd/system/tomcat.service /usr/lib/systemd/system/geoserver.service
+
+$&gt; vi /usr/lib/systemd/system/geoserver.service
+
+  <span class="nv">EnvironmentFile</span><span class="o">=</span>/etc/tomcat/geoserver.conf
+
+$&gt; systemctl <span class="nb">enable</span> geoserver.service
+$&gt; systemctl restart geoserver.service
+
+<span class="c1"># Follow the server startup procedure and make sure everything goes smoothly through the following command</span>
+
+$&gt; tail -F /var/lib/tomcat/geoserver/logs/catalina.YYYY-MM-DD.log
+</pre></div>
+</div>
+</div>
+<div class="section" id="deploy-and-configure-geoserver">
+<h3>Deploy And Configure GeoServer<a class="headerlink" href="#deploy-and-configure-geoserver" title="Permalink to this headline">¶</a></h3>
+<p><strong>First deployment</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+<span class="c1"># Git and Maven must be installed on the system</span>
+$&gt; yum -y install git
+$&gt; yum -y install maven
+
+<span class="c1"># Verify the Maven installation and double check that the JDK recognized is the Java Sun 1.7+</span>
+$&gt; mvn -version
+
+  Apache Maven <span class="m">3</span>.0.5 <span class="o">(</span>Red Hat <span class="m">3</span>.0.5-16<span class="o">)</span>
+  Maven home: /usr/share/maven
+  Java version: <span class="m">1</span>.8.0_65, vendor: Oracle Corporation
+  Java home: /usr/java/jdk1.8.0_65/jre
+  Default locale: en_US, platform encoding: UTF-8
+  OS name: <span class="s2">&quot;linux&quot;</span>, version: <span class="s2">&quot;3.10.0-229.el7.x86_64&quot;</span>, arch: <span class="s2">&quot;amd64&quot;</span>, family: <span class="s2">&quot;unix&quot;</span>
+
+<span class="c1"># The following procedures allow to collect and compile the source code from the GIT repository.</span>
+$&gt; <span class="nb">cd</span>
+
+$&gt; git clone https://github.com/geosolutions-it/geoserver.git geoserver.src
+
+$&gt; <span class="nb">cd</span> geoserver.src/src
+
+$&gt; git checkout wps-remote
+$&gt; git pull
+
+$&gt; mvn clean install -Pwps,wps-remote,importer,security,rest-ext -DskipTests
+
+$&gt; mv web/app/target/geoserver.war /var/lib/tomcat/geoserver/webapps/
+
+$&gt; chown -Rf tomcat: /var/lib/tomcat/geoserver
+
+$&gt; mv /var/lib/tomcat/geoserver/webapps/geoserver/data/ /storage/
+
+$&gt; chown -Rf tomcat: /storage
+
+$&gt; vim /storage/data/remoteProcess.properties
+
+      <span class="c1"># Default Properties</span>
+      <span class="nv">remoteProcessStubCycleSleepTime</span> <span class="o">=</span> <span class="m">100</span>
+
+      <span class="c1"># Base path where uploaded files are stored</span>
+      <span class="c1"># . This is used only when a remote uploader is enabled on the Python</span>
+      <span class="c1"># . WPS Agent. This property represents the local base path (on the filesystem</span>
+      <span class="c1"># . of GeoServer) where to search for uploaded files.</span>
+      <span class="c1"># . If not file has been found here (or this option is not enabled), GeoServer</span>
+      <span class="c1"># . looks for absolute path and/or paths relative to the GEOSERVER DATA DIR.</span>
+      <span class="c1">#uploadedFilesBasePath = /tmp</span>
+
+      <span class="c1"># Full path to the template used to generate the OWS WMC Json output</span>
+      <span class="c1"># . This property is used only when a &quot;application/owc&quot; output type on</span>
+      <span class="c1"># . the Python WPS Agent.</span>
+      <span class="c1">#owc_wms_json_template = absolute_path/to/wmc_template.json</span>
+
+      <span class="c1"># Specific kvps for {@link RemoteProcessClient) implementations</span>
+      <span class="nv">xmpp_server</span> <span class="o">=</span> localhost
+      <span class="nv">xmpp_server_embedded</span> <span class="o">=</span> <span class="nb">false</span>
+      <span class="nv">xmpp_server_embedded_secure</span> <span class="o">=</span> <span class="nb">true</span>
+      <span class="nv">xmpp_server_embedded_certificate_file</span> <span class="o">=</span> bogus_mina_tls.cert
+      <span class="nv">xmpp_server_embedded_certificate_password</span> <span class="o">=</span> boguspw
+      <span class="nv">xmpp_port</span> <span class="o">=</span> <span class="m">5222</span>
+
+      <span class="nv">xmpp_manager_username</span> <span class="o">=</span> admin
+      <span class="nv">xmpp_manager_password</span> <span class="o">=</span> R3m0T3wP5
+
+      <span class="c1"># domain and MUC service name of the XMPP Server</span>
+      <span class="nv">xmpp_domain</span> <span class="o">=</span> geoserver.org
+      <span class="nv">xmpp_bus</span> <span class="o">=</span> conference
+
+      <span class="c1"># name, user and password of the management room</span>
+      <span class="nv">xmpp_management_channel</span> <span class="o">=</span> management
+      <span class="nv">xmpp_management_channel_user</span> <span class="o">=</span> admin
+      <span class="nv">xmpp_management_channel_pwd</span> <span class="o">=</span> R3m0T3wP5
+
+      <span class="c1"># comma separated list of available rooms for services. Those rooms&#39;names will be equal to the service and WPS Process namespace</span>
+      <span class="c1"># Avoid spaces</span>
+      <span class="nv">xmpp_service_channels</span> <span class="o">=</span> default,geosolutions
+
+      <span class="c1"># millis</span>
+      <span class="nv">xmpp_packet_reply_timeout</span> <span class="o">=</span> <span class="m">500</span>
+
+      <span class="c1"># connection keep alive</span>
+      <span class="nv">xmpp_connection_ping_interval</span> <span class="o">=</span> <span class="m">30000</span>
+      <span class="nv">xmpp_connection_ping_timeout</span> <span class="o">=</span> <span class="m">10000</span>
+      <span class="nv">xmpp_connection_ping_initial_delay</span> <span class="o">=</span> <span class="m">20000</span>
+
+      <span class="c1"># Thresholds indicating overloaded resources</span>
+      <span class="nv">xmpp_cpu_perc_threshold</span> <span class="o">=</span> <span class="m">82</span>.5
+      <span class="nv">xmpp_mem_perc_threshold</span> <span class="o">=</span> <span class="m">84</span>.6
+
+<span class="c1"># Restart GeoServer</span>
+
+$&gt; service geoserver restart
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>GeoServer won’t connect to XMPP Server until it has been correctly configured and started as explained in the next section <a class="reference internal" href="install_xmpp.html#extensions-wps-remote-install-xmpp"><span class="std std-ref">Installation Of OpenFire XMPP Server To Exchange Messages</span></a>.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">WPS Remote community module</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="install_xmpp.html" title="next chapter">Installation Of OpenFire XMPP Server To Exchange Messages</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Deployment And Setup Of GeoServer With WPS Remote Plugin</a><ul>
+<li><a class="reference internal" href="#preparation-of-the-system-standard-and-basic-os-packages">Preparation of the system: standard and basic OS packages</a><ul>
+<li><a class="reference internal" href="#hostname-and-other-useful-packages">Hostname and other useful packages</a></li>
+<li><a class="reference internal" href="#configure-the-java-virtual-environment">Configure the Java Virtual Environment</a></li>
+<li><a class="reference internal" href="#installing-apache-tomcat">Installing Apache Tomcat</a></li>
+<li><a class="reference internal" href="#deploy-and-configure-geoserver">Deploy And Configure GeoServer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">WPS Remote community module</a></li>
+            <li>Next: <a href="install_xmpp.html" title="next chapter">Installation Of OpenFire XMPP Server To Exchange Messages</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/remote-wps/install_geoserver.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Backward Mapping &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Features Templatring Rest API" href="rest.html" />
+    <link rel="prev" title="Template Configuration" href="configuration.html" /> 
+  </head><body class="community/features-templating/querying">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features-Templating Extension</a> &raquo;</li>
+    <li>Backward Mapping</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="rest.html" title="Features Templatring Rest API" accesskey="N">Next</a></li>
+  <li>
+    <a href="configuration.html" title="Template Configuration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="backward-mapping">
+<h1>Backward Mapping<a class="headerlink" href="#backward-mapping" title="Permalink to this headline">¶</a></h1>
+<p>When performing queries, using CQL filters, against layers that support a templated output, it will be possible to reference the template attributes in the CQL expressions. The plugin will take care of interpreting the CQL filter and translate it, when possible, to a data source native filter. For example, if that data source is a relational database, the CQL filter will be translated to one or multiple SQL queries that will be used to retrieve only the needed data.</p>
+<p>Consider the following GML output example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wfs:FeatureCollection</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:st=</span><span class="s">&quot;http://www.stations.org/1.0&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">numberOfFeature=</span><span class="s">&quot;0&quot;</span> <span class="na">timeStamp=</span><span class="s">&quot;2021-07-16T08:38:50.735Z&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:featureMember&gt;</span>
+     <span class="nt">&lt;st:MeteoStations</span> <span class="na">gml:id=</span><span class="s">&quot;MeteoStationsFeature.7&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;st:code&gt;</span>Station_BOL<span class="nt">&lt;/st:code&gt;</span>
+        <span class="nt">&lt;st:name&gt;</span>Bologna<span class="nt">&lt;/st:name&gt;</span>
+        <span class="nt">&lt;st:geometry&gt;</span>
+           <span class="nt">&lt;gml:Point</span> <span class="na">srsName=</span><span class="s">&quot;EPSG:4326&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:pos&gt;</span>11.34 44.5<span class="nt">&lt;/gml:pos&gt;</span>
+           <span class="nt">&lt;/gml:Point&gt;</span>
+        <span class="nt">&lt;/st:geometry&gt;</span>
+        <span class="nt">&lt;st:temperature&gt;</span>
+           <span class="nt">&lt;st:Temperature&gt;</span>
+              <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:28:31.000Z<span class="nt">&lt;/st:time&gt;</span>
+              <span class="nt">&lt;st:value&gt;</span>35.0<span class="nt">&lt;/st:value&gt;</span>
+           <span class="nt">&lt;/st:Temperature&gt;</span>
+        <span class="nt">&lt;/st:temperature&gt;</span>
+        <span class="nt">&lt;st:temperature&gt;</span>
+           <span class="nt">&lt;st:Temperature&gt;</span>
+              <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:28:55.000Z<span class="nt">&lt;/st:time&gt;</span>
+              <span class="nt">&lt;st:value&gt;</span>25.0<span class="nt">&lt;/st:value&gt;</span>
+           <span class="nt">&lt;/st:Temperature&gt;</span>
+        <span class="nt">&lt;/st:temperature&gt;</span>
+        <span class="nt">&lt;st:pressure&gt;</span>
+           <span class="nt">&lt;st:Pressure&gt;</span>
+              <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:30:26.000Z<span class="nt">&lt;/st:time&gt;</span>
+              <span class="nt">&lt;st:value&gt;</span>1019.0<span class="nt">&lt;/st:value&gt;</span>
+           <span class="nt">&lt;/st:Pressure&gt;</span>
+        <span class="nt">&lt;/st:pressure&gt;</span>
+        <span class="nt">&lt;st:pressure&gt;</span>
+           <span class="nt">&lt;st:Pressure&gt;</span>
+              <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:30:51.000Z<span class="nt">&lt;/st:time&gt;</span>
+              <span class="nt">&lt;st:value&gt;</span>1015.0<span class="nt">&lt;/st:value&gt;</span>
+           <span class="nt">&lt;/st:Pressure&gt;</span>
+        <span class="nt">&lt;/st:pressure&gt;</span>
+        <span class="nt">&lt;st:wind_speed&gt;</span>
+           <span class="nt">&lt;st:Wind_speed&gt;</span>
+              <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:29:24.000Z<span class="nt">&lt;/st:time&gt;</span>
+              <span class="nt">&lt;st:value&gt;</span>80.0<span class="nt">&lt;/st:value&gt;</span>
+           <span class="nt">&lt;/st:Wind_speed&gt;</span>
+        <span class="nt">&lt;/st:wind_speed&gt;</span>
+     <span class="nt">&lt;/st:MeteoStations&gt;</span>
+  <span class="nt">&lt;/gml:featureMember&gt;</span>
+  <span class="nt">&lt;gml:featureMember&gt;</span>
+     <span class="nt">&lt;st:MeteoStations</span> <span class="na">gml:id=</span><span class="s">&quot;MeteoStationsFeature.13&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;st:code&gt;</span>Station_ALS<span class="nt">&lt;/st:code&gt;</span>
+        <span class="nt">&lt;st:name&gt;</span>Alessandria<span class="nt">&lt;/st:name&gt;</span>
+        <span class="nt">&lt;st:geometry&gt;</span>
+           <span class="nt">&lt;gml:Point</span> <span class="na">srsName=</span><span class="s">&quot;EPSG:4326&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:pos&gt;</span>8.63 44.92<span class="nt">&lt;/gml:pos&gt;</span>
+           <span class="nt">&lt;/gml:Point&gt;</span>
+        <span class="nt">&lt;/st:geometry&gt;</span>
+        <span class="nt">&lt;st:temperature&gt;</span>
+           <span class="nt">&lt;st:Temperature&gt;</span>
+              <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:26:40.000Z<span class="nt">&lt;/st:time&gt;</span>
+              <span class="nt">&lt;st:value&gt;</span>20.0<span class="nt">&lt;/st:value&gt;</span>
+           <span class="nt">&lt;/st:Temperature&gt;</span>
+        <span class="nt">&lt;/st:temperature&gt;</span>
+        <span class="nt">&lt;st:wind_speed&gt;</span>
+           <span class="nt">&lt;st:Wind_speed&gt;</span>
+              <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:27:13.000Z<span class="nt">&lt;/st:time&gt;</span>
+              <span class="nt">&lt;st:value&gt;</span>155.0<span class="nt">&lt;/st:value&gt;</span>
+           <span class="nt">&lt;/st:Wind_speed&gt;</span>
+        <span class="nt">&lt;/st:wind_speed&gt;</span>
+     <span class="nt">&lt;/st:MeteoStations&gt;</span>
+  <span class="nt">&lt;/gml:featureMember&gt;</span>
+  <span class="nt">&lt;gml:featureMember&gt;</span>
+     <span class="nt">&lt;st:MeteoStations</span> <span class="na">gml:id=</span><span class="s">&quot;MeteoStationsFeature.21&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;st:code&gt;</span>Station_ROV<span class="nt">&lt;/st:code&gt;</span>
+        <span class="nt">&lt;st:name&gt;</span>Rovereto<span class="nt">&lt;/st:name&gt;</span>
+        <span class="nt">&lt;st:geometry&gt;</span>
+           <span class="nt">&lt;gml:Point</span> <span class="na">srsName=</span><span class="s">&quot;EPSG:4326&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;gml:pos&gt;</span>11.05 45.89<span class="nt">&lt;/gml:pos&gt;</span>
+           <span class="nt">&lt;/gml:Point&gt;</span>
+        <span class="nt">&lt;/st:geometry&gt;</span>
+     <span class="nt">&lt;/st:MeteoStations&gt;</span>
+  <span class="nt">&lt;/gml:featureMember&gt;</span>
+<span class="nt">&lt;/wfs:FeatureCollection&gt;</span>
+</pre></div>
+</div>
+<p>The following are valid CQL_FILTERS</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">st:name</span> <span class="pre">=</span> <span class="pre">'Station_BOL'</span></code>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">st:temperature.st:Temperature.st:value</span> <span class="pre">&lt;</span> <span class="pre">25</span></code>.</p></li>
+</ul>
+<p>Given this underlying GML template:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="nt">&lt;gft:Template&gt;</span>
+ <span class="nt">&lt;gft:Options&gt;</span>
+   <span class="nt">&lt;gft:Namespaces</span> <span class="na">xmlns:st=</span><span class="s">&quot;http://www.stations.org/1.0&quot;</span><span class="nt">/&gt;</span>
+ <span class="nt">&lt;/gft:Options&gt;</span>
+<span class="nt">&lt;st:MeteoStations</span> <span class="na">gml:id=</span><span class="s">&quot;${@id}&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;st:code&gt;</span>$${strConcat(&#39;Station_&#39;,st:code)}<span class="nt">&lt;/st:code&gt;</span>
+<span class="nt">&lt;st:name&gt;</span>${st:common_name}<span class="nt">&lt;/st:name&gt;</span>
+<span class="nt">&lt;st:geometry&gt;</span>${st:position}<span class="nt">&lt;/st:geometry&gt;</span>
+<span class="nt">&lt;st:temperature</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span> <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;temperature&#39;&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;st:Temperature&gt;</span>
+               <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+               <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+       <span class="nt">&lt;/st:Temperature&gt;</span>
+<span class="nt">&lt;/st:temperature&gt;</span>
+<span class="nt">&lt;st:pressure</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span>  <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;pressure&#39;&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;st:Pressure&gt;</span>
+               <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+               <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+       <span class="nt">&lt;/st:Pressure&gt;</span>
+<span class="nt">&lt;/st:pressure&gt;</span>
+<span class="nt">&lt;st:wind_speed</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span>  <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;wind speed&#39;&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;st:Wind_speed&gt;</span>
+               <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+               <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+       <span class="nt">&lt;/st:Wind_speed&gt;</span>
+<span class="nt">&lt;/st:wind_speed&gt;</span>
+<span class="nt">&lt;/st:MeteoStations&gt;</span>
+<span class="nt">&lt;/gft:Template&gt;</span>
+</pre></div>
+</div>
+<p>The above cql_filter will be internally translated to:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">strConcat('Station_',st:code)</span> <span class="pre">=</span> <span class="pre">'Station_BOL'</span></code>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">st:meteoObservations/st:MeteoObservationsFeature/st:MeteoParametersFeature/st:value</span> <span class="pre">&lt;</span> <span class="pre">25</span> <span class="pre">AND</span> <span class="pre">st:meteoObservations/st:MeteoObservationsFeature/st:MeteoParametersFeature/st:param_name</span> <span class="pre">=</span> <span class="pre">'temperature'</span></code>.</p></li>
+</ul>
+<p>As it is possible to see from the second example, if a template filter is defined for the value we want to filter by, the filter will be automatically included in the query.</p>
+<p>Backwards mapping capability is available for all the output formats. Consider the following JSON-LD output example:</p>
+<p>The following are example of valid CQL filters:</p>
+<ul class="simple">
+<li><p>gsml:GeologicUnit.description = ‘some string value’</p></li>
+<li><p>name in (“MERCIA MUDSTONE”, “UKNOWN”)</p></li>
+<li><p>gsml:positionalAccuracy.valueArray1 = “100”</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;gsp&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.opengis.net/ont/geosparql#&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;sf&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.opengis.net/ont/sf#&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;schema&quot;</span><span class="p">:</span> <span class="s2">&quot;https://schema.org/&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;dc&quot;</span><span class="p">:</span> <span class="s2">&quot;http://purl.org/dc/terms/&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;Feature&quot;</span><span class="p">:</span> <span class="s2">&quot;gsp:Feature&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;FeatureCollection&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:Collection&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;Point&quot;</span><span class="p">:</span> <span class="s2">&quot;sf:Point&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;wkt&quot;</span><span class="p">:</span> <span class="s2">&quot;gsp:asWKT&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;@container&quot;</span><span class="p">:</span> <span class="s2">&quot;@set&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:hasPart&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="s2">&quot;sf:geometry&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;dc:description&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;dc:title&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:name&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+          <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;mf2&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="p">[</span>
+              <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;gsml:MappedFeature&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature&quot;</span>
+          <span class="p">],</span>
+          <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MERCIA MUDSTONE GROUP&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;gsml:positionalAccuracy&quot;</span><span class="p">:{</span>
+              <span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="s2">&quot;100&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;valueArray&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;100&quot;</span><span class="p">,</span><span class="s2">&quot;someStaticVal&quot;</span><span class="p">]</span>
+          <span class="p">},</span>
+          <span class="nt">&quot;gsml:GeologicUnit&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;gu.25678&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Olivine basalt, tuff, microgabbro, minor sedimentary rocks&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;gsml:geologicUnitType&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ogc:def:nil:OGC::unknown&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;gsml:composition&quot;</span><span class="p">:</span> <span class="p">[</span>
+                  <span class="p">{</span>
+                      <span class="nt">&quot;gsml:compositionPart&quot;</span><span class="p">:</span> <span class="p">[</span>
+                          <span class="p">{</span>
+                              <span class="nt">&quot;gsml:role&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                  <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;interbedded component&quot;</span><span class="p">,</span>
+                                  <span class="nt">&quot;@codeSpace&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:cgi:classi...&quot;</span>
+                              <span class="p">},</span>
+                              <span class="nt">&quot;proportion&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                  <span class="nt">&quot;@dataType&quot;</span><span class="p">:</span> <span class="s2">&quot;CGI_ValueProperty&quot;</span><span class="p">,</span>
+                                  <span class="nt">&quot;CGI_TermValue&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                      <span class="nt">&quot;@dataType&quot;</span><span class="p">:</span> <span class="s2">&quot;CGI_TermValue&quot;</span><span class="p">,</span>
+                                      <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                          <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;significant&quot;</span><span class="p">,</span>
+                                          <span class="nt">&quot;@codeSpace&quot;</span><span class="p">:</span> <span class="s2">&quot;some:uri&quot;</span>
+                                      <span class="p">}</span>
+                                  <span class="p">}</span>
+                              <span class="p">},</span>
+                              <span class="nt">&quot;lithology&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                  <span class="p">{</span>
+                                      <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;cc.3&quot;</span><span class="p">,</span>
+                                      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                          <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;name_cc_3&quot;</span><span class="p">,</span>
+                                          <span class="nt">&quot;@lang&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span>
+                                      <span class="p">},</span>
+                                      <span class="nt">&quot;vocabulary&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                          <span class="nt">&quot;@href&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ogc:def:nil:OGC::missing&quot;</span>
+                                      <span class="p">}</span>
+                                  <span class="p">}</span>
+                              <span class="p">]</span>
+                          <span class="p">}</span>
+                      <span class="p">]</span>
+                  <span class="p">},</span>
+                  <span class="p">{</span>
+                      <span class="nt">&quot;gsml:compositionPart&quot;</span><span class="p">:</span> <span class="p">[</span>
+                          <span class="p">{</span>
+                              <span class="nt">&quot;gsml:role&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                  <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;interbedded component&quot;</span><span class="p">,</span>
+                                  <span class="nt">&quot;@codeSpace&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:cgi:class...&quot;</span>
+                              <span class="p">},</span>
+                              <span class="nt">&quot;proportion&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                  <span class="nt">&quot;@dataType&quot;</span><span class="p">:</span> <span class="s2">&quot;CGI_ValueProperty&quot;</span><span class="p">,</span>
+                                  <span class="nt">&quot;CGI_TermValue&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                      <span class="nt">&quot;@dataType&quot;</span><span class="p">:</span> <span class="s2">&quot;CGI_TermValue&quot;</span><span class="p">,</span>
+                                      <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                          <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;minor&quot;</span><span class="p">,</span>
+                                          <span class="nt">&quot;@codeSpace&quot;</span><span class="p">:</span> <span class="s2">&quot;some:uri&quot;</span>
+                                      <span class="p">}</span>
+                                  <span class="p">}</span>
+                              <span class="p">},</span>
+                              <span class="nt">&quot;lithology&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                  <span class="p">{</span>
+                                      <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;cc.4&quot;</span><span class="p">,</span>
+                                      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                          <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;name_cc_4&quot;</span><span class="p">,</span>
+                                          <span class="nt">&quot;@lang&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span>
+                                      <span class="p">},</span>
+                                      <span class="nt">&quot;vocabulary&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                          <span class="nt">&quot;@href&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ogc:def:nil:OGC::missing&quot;</span>
+                                      <span class="p">}</span>
+                                  <span class="p">}</span>
+                              <span class="p">]</span>
+                          <span class="p">}</span>
+                      <span class="p">]</span>
+                  <span class="p">}</span>
+              <span class="p">],</span>
+              <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{</span>
+                  <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;Polygon&quot;</span><span class="p">,</span>
+                  <span class="nt">&quot;wkt&quot;</span><span class="p">:</span> <span class="s2">&quot;POLYGON ((52.5 -1.3, 52.6 -1.3, 52.6 -1.2,...))&quot;</span>
+              <span class="p">}</span>
+          <span class="p">}</span>
+      <span class="p">}</span>
+  <span class="p">]</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>The following are example of valid CQL filters:</p>
+<ul class="simple">
+<li><p>gsml:GeologicUnit.description = ‘some string value’</p></li>
+<li><p>name in (“MERCIA MUDSTONE”, “UKNOWN”)</p></li>
+<li><p>gsml:positionalAccuracy.valueArray1 = “100”</p></li>
+</ul>
+<p>As the last example shows, to refer to elements in arrays listing simple attributes, the index of the attribute is needed, starting from 1, in the form <code class="docutils literal notranslate"><span class="pre">{attributeName}{index}</span></code>, as in <code class="docutils literal notranslate"><span class="pre">features.gsml:positionalAccuracy.valueArray1.</span></code></p>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="configuration.html" title="previous chapter">Template Configuration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="rest.html" title="next chapter">Features Templatring Rest API</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="configuration.html" title="previous chapter">Template Configuration</a></li>
+            <li>Next: <a href="rest.html" title="next chapter">Features Templatring Rest API</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/features-templating/querying.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

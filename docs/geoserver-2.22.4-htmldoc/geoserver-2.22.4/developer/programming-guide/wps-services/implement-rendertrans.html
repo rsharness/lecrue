@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Implementing a Rendering Transformation &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Testing" href="../testing/index.html" />
+    <link rel="prev" title="Implementing a WPS Process" href="implementing.html" /> 
+  </head><body class="programming-guide/wps-services/implement-rendertrans">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WPS Services</a> &raquo;</li>
+    <li>Implementing a Rendering Transformation</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../testing/index.html" title="Testing" accesskey="N">Next</a></li>
+  <li>
+    <a href="implementing.html" title="Implementing a WPS Process" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="implementing-a-rendering-transformation">
+<span id="wps-services-implement-rendertrans"></span><h1>Implementing a Rendering Transformation<a class="headerlink" href="#implementing-a-rendering-transformation" title="Permalink to this headline">¶</a></h1>
+<p><strong>Rendering Transformations</strong> are a special kind of WPS process
+which run within the GeoServer WMS rendering pipeline
+to transform data in order to provide more effective visualization.
+This section describes how to implement a rendering transformation process in Java.</p>
+<p>Rendering transformations are very general, and can transform both the content
+and the format of input data.
+Content transformation typically involves complex geospatial processing
+which requires access to the entire dataset
+(in contrast to <em>geometry transformations</em>, which operate on a single spatial feature at a time).
+Format transformation converts from vector to raster
+or vice-versa in order to produce an output
+format appropriate to the desired visualization
+(for instance, a raster for displaying continuous surfaces, or vector data for displaying discrete objects).</p>
+<p>For more information about the function and use of rendering transformations within GeoServer, refer to the
+<em>Rendering Transformations</em> section of the <em>GeoServer User Guide</em>.</p>
+<div class="section" id="lifecycle-of-a-rendering-transformation">
+<h2>Lifecycle of a Rendering Transformation<a class="headerlink" href="#lifecycle-of-a-rendering-transformation" title="Permalink to this headline">¶</a></h2>
+<p>To implement a rendering transformation it is useful to understand
+their lifecycle and operation within GeoServer.
+A rendering transformation is invoked in an SLD by providing a <code class="docutils literal notranslate"><span class="pre">&lt;Transformation&gt;</span></code> element inside a  <code class="docutils literal notranslate"><span class="pre">&lt;FeatureTypeStyle&gt;</span></code>.
+This element specifies the name of the transformation process and the names and values of
+the process parameters. As an example, the following is a portion of an SLD which uses
+the <code class="docutils literal notranslate"><span class="pre">gs:Heatmap</span></code> transformation:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>         <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>           <span class="nt">&lt;Transformation&gt;</span>
+<span class="lineno"> 3 </span>             <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;gs:Heatmap&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 4 </span>               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 5 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>data<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno"> 6 </span>               <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno"> 7 </span>               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 8 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>weightAttr<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno"> 9 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>pop2000<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">10 </span>               <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">11 </span>               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">12 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>radiusPixels<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">13 </span>                 <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">14 </span>                   <span class="nt">&lt;ogc:Literal&gt;</span>radius<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">15 </span>                   <span class="nt">&lt;ogc:Literal&gt;</span>100<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">16 </span>                 <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">17 </span>               <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">18 </span>               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">19 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>pixelsPerCell<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">20 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>10<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">21 </span>               <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">22 </span>               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">23 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>outputBBOX<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">24 </span>                 <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">25 </span>                   <span class="nt">&lt;ogc:Literal&gt;</span>wms_bbox<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">26 </span>                 <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">27 </span>               <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">28 </span>               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">29 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>outputWidth<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">30 </span>                 <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">31 </span>                   <span class="nt">&lt;ogc:Literal&gt;</span>wms_width<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">32 </span>                 <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">33 </span>               <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">34 </span>               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">35 </span>                 <span class="nt">&lt;ogc:Literal&gt;</span>outputHeight<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">36 </span>                 <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">37 </span>                   <span class="nt">&lt;ogc:Literal&gt;</span>wms_height<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">38 </span>                 <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">39 </span>               <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">40 </span>             <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">41 </span>           <span class="nt">&lt;/Transformation&gt;</span>
+<span class="lineno">42 </span>           ...
+</pre></div>
+</div>
+<p>During WMS requests which uses an SLD specifying a transformation,
+the arguments passed to the transformation process
+are assembled from the parameters and values specified in the SLD.
+Some argument values may be determined dynamically from SLD variables
+(as shown above in <strong>lines 22-40</strong>).</p>
+<p>Before the transformation process is executed, it is given an opportunity to rewrite
+the query GeoServer makes to the source datastore, via
+the optional <code class="docutils literal notranslate"><span class="pre">invertQuery</span></code> or <code class="docutils literal notranslate"><span class="pre">invertGridGeometry</span></code> methods.
+This allows a transformation to enlarge the query extent,
+since some kinds of transformations may need to include data which
+lies outside the original query window.</p>
+<p>The query is then performed against the source datastore,
+and the transformation process is executed against the resulting dataset.
+The transformation returns a computed output dataset
+of the same or different format.
+If the output has a different coordinate system (CRS) than
+the requested map it is reprojected automatically.
+Finally, the output dataset is passed on through the rendering pipeline
+to be styled by the symbolizers defined in the SLD <code class="docutils literal notranslate"><span class="pre">&lt;FeatureTypeStyle&gt;</span></code>.</p>
+</div>
+<div class="section" id="transformation-process-class">
+<h2>Transformation process class<a class="headerlink" href="#transformation-process-class" title="Permalink to this headline">¶</a></h2>
+<p>Like other WPS processes, rendering transformations are implememented as Java classes.
+A process class implements the <code class="docutils literal notranslate"><span class="pre">GSProcess</span></code> marker interface,
+and is registered with GeoServer via an <code class="docutils literal notranslate"><span class="pre">applicationContext.xml</span></code> file.
+For further information about the basic steps for creating, building and deploying a GeoServer WPS process in Java
+refer to the <a class="reference internal" href="implementing.html#wps-services-implementing"><span class="std std-ref">Implementing a WPS Process</span></a> section.</p>
+<p>WPS processes must provide metadata about themselves and their parameters.
+The easiest way to do this is to use the GeoTools annotation-based Process API,
+which uses Java annotations to specify metadata.
+For example, the code below shows the process metadata specified for the <code class="docutils literal notranslate"><span class="pre">gs:Heatmap</span></code> rendering transformation:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@DescribeProcess</span><span class="p">(</span><span class="n">title</span> <span class="o">=</span> <span class="s">&quot;Heatmap&quot;</span><span class="p">,</span>
+             <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Computes a heatmap surface over a set of irregular data points as a GridCoverage.&quot;</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HeatmapProcess</span> <span class="kd">implements</span> <span class="n">GeoServerProcess</span> <span class="p">{</span>
+</pre></div>
+</div>
+<p>GeoServer instantiates a <strong>single instance</strong> of each rendering transformation class.
+This means that rendering transformation classes must be <strong>stateless</strong>,
+since they may be called concurrently to service different requests.
+This is ensured by avoiding declaring any instance variables within the class.
+For complex transformations it may be desirable to implement an auxiliary class
+to allow the use of instance variables.</p>
+</div>
+<div class="section" id="execute-method">
+<h2>execute method<a class="headerlink" href="#execute-method" title="Permalink to this headline">¶</a></h2>
+<p>Like all process classes, a rendering transformation class must declare an <code class="docutils literal notranslate"><span class="pre">execute</span></code> method,
+which is called by GeoServer to perform the transformation.
+The signature of the <code class="docutils literal notranslate"><span class="pre">execute</span></code> method specifies the types of the input parameters
+and the process result.</p>
+<p>The declaration of the <code class="docutils literal notranslate"><span class="pre">execute</span></code> method for the Heatmap transformation is:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@DescribeResult</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;result&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;The heat map surface as a raster&quot;</span><span class="p">)</span>
+<span class="kd">public</span> <span class="n">GridCoverage2D</span> <span class="nf">execute</span><span class="p">(</span>
+
+  <span class="c1">// tranformation input data</span>
+  <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;data&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Features containing the data points&quot;</span><span class="p">)</span>
+    <span class="n">SimpleFeatureCollection</span> <span class="n">obsFeatures</span><span class="p">,</span>
+
+  <span class="c1">// process parameters</span>
+  <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;radiusPixels&quot;</span><span class="p">,</span>
+                     <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Radius to use for the kernel, in pixels&quot;</span><span class="p">)</span>
+    <span class="n">Integer</span> <span class="n">argRadiusPixels</span><span class="p">,</span>
+  <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;weightAttr&quot;</span><span class="p">,</span>
+              <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Featuretype attribute containing the point weight value&quot;</span><span class="p">,</span>
+                     <span class="n">min</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+     <span class="n">String</span> <span class="n">valueAttr</span><span class="p">,</span>
+  <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;pixelsPerCell&quot;</span><span class="p">,</span>
+                     <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Number of pixels per grid cell (default = 1)&quot;</span><span class="p">,</span>
+                     <span class="n">min</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Integer</span> <span class="n">argPixelsPerCell</span><span class="p">,</span>
+
+  <span class="c1">// output map parameters</span>
+  <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;outputBBOX&quot;</span><span class="p">,</span>
+                     <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Georeferenced bounding box of the output&quot;</span><span class="p">)</span>
+    <span class="n">ReferencedEnvelope</span> <span class="n">argOutputEnv</span><span class="p">,</span>
+  <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;outputWidth&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Width of the output raster&quot;</span><span class="p">)</span>
+    <span class="n">Integer</span> <span class="n">argOutputWidth</span><span class="p">,</span>
+  <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;outputHeight&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Height of the output raster&quot;</span><span class="p">)</span>
+    <span class="n">Integer</span> <span class="n">argOutputHeight</span><span class="p">,</span>
+
+  <span class="p">)</span> <span class="kd">throws</span> <span class="n">ProcessException</span> <span class="p">{</span>
+  <span class="p">...</span>
+</pre></div>
+</div>
+<div class="section" id="input-parameters">
+<h3>Input parameters<a class="headerlink" href="#input-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The supported process input parameters are defined as parameters to the <code class="docutils literal notranslate"><span class="pre">execute</span></code> method.
+The metadata for them is supplied via <code class="docutils literal notranslate"><span class="pre">&#64;DescribeParameter</span></code> annotations.</p>
+<p>To accept the input data to be transformed, the process must define one input parameter of type <code class="docutils literal notranslate"><span class="pre">SimpleFeatureCollection</span></code> or <code class="docutils literal notranslate"><span class="pre">GridCoverage2D</span></code>.
+In the invoking SLD only the name of this parameter is specified,
+since GeoServer provides the dataset to be transformed as the parameter value.</p>
+<p>Any number of other parameters can be defined.
+Parameters can be mandatory or optional (optional parameters have a value of <code class="docutils literal notranslate"><span class="pre">null</span></code> if not present).
+Lists of values can be accepted by defining an array-valued parameter.</p>
+<p>Some transformations require information about the request map extent and coordinate system, and request image width and height.
+Situations where these are required include:</p>
+<ul class="simple">
+<li><p>the transformation operation depends on the request resolution</p></li>
+<li><p>the transformation computes a raster result in the request coordinate system
+to ensure optimal visual quality</p></li>
+</ul>
+<p>These values can be obtained from SLD <strong>predefined variables</strong> and passed in via parameters of types
+<code class="docutils literal notranslate"><span class="pre">ReferencedEnvelope</span></code> and <code class="docutils literal notranslate"><span class="pre">Integer</span></code>.
+(See the <em>Variable Substitution in SLD</em> section in the <em>User Guide</em> for details of all predefined variables available.)</p>
+<p>In the case of the Heatmap transformation, the request resolution is used to determine the ground size of the
+<code class="docutils literal notranslate"><span class="pre">radiusPixels</span></code> parameter, and the output raster is computed in the request coordinate system
+to avoid undesired reprojection.
+To support this the transformation defines the required <code class="docutils literal notranslate"><span class="pre">outputBBOX</span></code>, <code class="docutils literal notranslate"><span class="pre">outputWidth</span></code> and <code class="docutils literal notranslate"><span class="pre">outputHeight</span></code> parameters.
+These are supplied by predefined SLD variables as shown in <strong>lines 22-40</strong> of the SLD snippet above.</p>
+</div>
+<div class="section" id="transformation-output">
+<h3>Transformation output<a class="headerlink" href="#transformation-output" title="Permalink to this headline">¶</a></h3>
+<p>The output of a transformation is a new dataset of type <code class="docutils literal notranslate"><span class="pre">SimpleFeatureCollection</span></code> or <code class="docutils literal notranslate"><span class="pre">GridCoverage2D</span></code>.
+This is specified as the return type of the <code class="docutils literal notranslate"><span class="pre">execute</span></code> method.
+Name and description metadata is provided by the <code class="docutils literal notranslate"><span class="pre">&#64;DescribeResult</span></code> annotation on the <code class="docutils literal notranslate"><span class="pre">execute</span></code> method.</p>
+<p>If the output dataset is not in the coordinate system requested for map output, GeoServer
+reprojects it automatically.
+As noted in the previous section, there may be situations where it is desirable to avoid this.
+In this case the transformation must ensure that the output has the appropriate CRS.</p>
+</div>
+</div>
+<div class="section" id="query-rewriting">
+<h2>Query rewriting<a class="headerlink" href="#query-rewriting" title="Permalink to this headline">¶</a></h2>
+<p>If required, the rendering transformation has the ability to alter the query made against the source dataset.
+This allows expanding the extent of the data to be read, which is necessary for some kinds of
+transformations (in particular, ones whose result is determined by computing
+over a spatial window around the input).  This also allows controlling query optimizations
+(for instance, ensuring that geometry decimation does not
+prevent point features from being read).</p>
+<p>Query rewriting is performed by providing one of the methods <code class="docutils literal notranslate"><span class="pre">invertQuery</span></code> or <code class="docutils literal notranslate"><span class="pre">invertGridGeometry</span></code>.</p>
+<p>These methods have the general signature of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="n">invertX</span><span class="p">(</span> <span class="p">[</span><span class="n">inputParam</span><span class="p">,]</span><span class="o">*</span> <span class="n">Query</span> <span class="n">targetQuery</span><span class="p">,</span> <span class="n">GridGeometry</span> <span class="n">targetGridGeometry</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">targetQuery</span></code> parameter is the query constructed from the original request.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">targetGridGeometry</span></code> parameter is the georeferenced extent of the requested output map.
+It is not used in the dataset query, but may be needed for use in conjunction with
+the transformation parameters to determine how to rewrite the query.
+For instance, if a parameter is specified in output units,
+the output extent information is required to transform the value into units
+applicable in the input CRS.</p>
+<p>In addition, these methods can accept any number of the input parameters
+defined for the <code class="docutils literal notranslate"><span class="pre">execute</span></code> method.
+If defined these parameters must be annotated with
+<code class="docutils literal notranslate"><span class="pre">&#64;DescribeParameter</span></code> in the same way as in the <code class="docutils literal notranslate"><span class="pre">execute</span></code> method.</p>
+<div class="section" id="invertquery-method">
+<h3>invertQuery method<a class="headerlink" href="#invertquery-method" title="Permalink to this headline">¶</a></h3>
+<p>This method is called when the rendering tranformation applies to vector data
+(the data input is of type <code class="docutils literal notranslate"><span class="pre">SimpleFeatureCollection</span></code>).</p>
+<p>The method returns a new <code class="docutils literal notranslate"><span class="pre">Query</span></code> value, which contains any required alterations of extent or query optimizations.
+This is used to query the source dataset.</p>
+<p>The Heatmap process implements the <code class="docutils literal notranslate"><span class="pre">invertQuery</span></code> method in order to enlarge the query extent
+by the ground size corresponding to the <code class="docutils literal notranslate"><span class="pre">radiusPixels</span></code> parameter.
+To allow converting the pixel size into a ground distance the input parameters providing the output map extents are also required.
+The signature of the implemented method is:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="n">Query</span> <span class="nf">invertQuery</span><span class="p">(</span>
+        <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;radiusPixels&quot;</span><span class="p">,</span>
+                       <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Radius to use for the kernel&quot;</span><span class="p">,</span> <span class="n">min</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+          <span class="n">Integer</span> <span class="n">argRadiusPixels</span><span class="p">,</span>
+        <span class="c1">// output image parameters</span>
+        <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;outputBBOX&quot;</span><span class="p">,</span>
+                       <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Georeferenced bounding box of the output&quot;</span><span class="p">)</span>
+          <span class="n">ReferencedEnvelope</span> <span class="n">argOutputEnv</span><span class="p">,</span>
+        <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;outputWidth&quot;</span><span class="p">,</span>
+                       <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Width of the output raster&quot;</span><span class="p">)</span>
+          <span class="n">Integer</span> <span class="n">argOutputWidth</span><span class="p">,</span>
+        <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;outputHeight&quot;</span><span class="p">,</span>
+                       <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Height of the output raster&quot;</span><span class="p">)</span>
+          <span class="n">Integer</span> <span class="n">argOutputHeight</span><span class="p">,</span>
+
+        <span class="n">Query</span> <span class="n">targetQuery</span><span class="p">,</span> <span class="n">GridGeometry</span> <span class="n">targetGridGeometry</span>
+   <span class="p">)</span> <span class="kd">throws</span> <span class="n">ProcessException</span> <span class="p">{</span>
+        <span class="p">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="invertgridgeometry-method">
+<h3>invertGridGeometry method<a class="headerlink" href="#invertgridgeometry-method" title="Permalink to this headline">¶</a></h3>
+<p>This method is called when the rendering tranformation applies to raster data
+(the data input is of type <code class="docutils literal notranslate"><span class="pre">GridCoverage2D</span></code>).</p>
+<p>The method returns a new <code class="docutils literal notranslate"><span class="pre">GridGeometry</span></code> value,
+which is used as the query extent against the source raster dataset.</p>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>In summary, the key features of a rendering transformation process class are:</p>
+<ul class="simple">
+<li><p>There must be an input parameter which is a <code class="docutils literal notranslate"><span class="pre">FeatureCollection</span></code> or a <code class="docutils literal notranslate"><span class="pre">GridCoverage2D</span></code></p></li>
+<li><p>It may be useful to have input parameters which provide the request map extent and image dimensions</p></li>
+<li><p>There must be a single result of type <code class="docutils literal notranslate"><span class="pre">FeatureCollection</span></code> or <code class="docutils literal notranslate"><span class="pre">GridCoverage2D</span></code></p></li>
+<li><p>The optional <code class="docutils literal notranslate"><span class="pre">invertQuery</span></code> or <code class="docutils literal notranslate"><span class="pre">invertGridGeometry</span></code> methods may be supplied to rewrite the initial data query</p></li>
+<li><p>The transformation process class must be <strong>stateless</strong></p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="implementing.html" title="previous chapter">Implementing a WPS Process</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../testing/index.html" title="next chapter">Testing</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Implementing a Rendering Transformation</a><ul>
+<li><a class="reference internal" href="#lifecycle-of-a-rendering-transformation">Lifecycle of a Rendering Transformation</a></li>
+<li><a class="reference internal" href="#transformation-process-class">Transformation process class</a></li>
+<li><a class="reference internal" href="#execute-method">execute method</a><ul>
+<li><a class="reference internal" href="#input-parameters">Input parameters</a></li>
+<li><a class="reference internal" href="#transformation-output">Transformation output</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#query-rewriting">Query rewriting</a><ul>
+<li><a class="reference internal" href="#invertquery-method">invertQuery method</a></li>
+<li><a class="reference internal" href="#invertgridgeometry-method">invertGridGeometry method</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="implementing.html" title="previous chapter">Implementing a WPS Process</a></li>
+            <li>Next: <a href="../testing/index.html" title="next chapter">Testing</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/wps-services/implement-rendertrans.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

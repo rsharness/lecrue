@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WMS settings &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WMS basics" href="basics.html" />
+    <link rel="prev" title="Web Map Service (WMS)" href="index.html" /> 
+  </head><body class="services/wms/webadmin">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+    <li>WMS settings</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="basics.html" title="WMS basics" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="Web Map Service (WMS)" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wms-settings">
+<span id="services-webadmin-wms"></span><h1>WMS settings<a class="headerlink" href="#wms-settings" title="Permalink to this headline">¶</a></h1>
+<p>This page details the configuration options for WMS in the web administration interface.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../_images/services_WMS.png" src="../../_images/services_WMS.png" />
+<p class="caption"><span class="caption-text">WMS configuration options</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="workspace">
+<h2>Workspace<a class="headerlink" href="#workspace" title="Permalink to this headline">¶</a></h2>
+<p>Select <span class="guilabel">workspace</span> empty to configure global WMS settings.</p>
+<p>See section on <a class="reference internal" href="../../data/webadmin/workspaces.html#workspace-services"><span class="std std-ref">Workspace Services</span></a> to override settings used by WMS <a class="reference internal" href="../../configuration/virtual-services.html#virtual-services"><span class="std std-ref">Virtual Services</span></a>.</p>
+</div>
+<div class="section" id="service-metadata">
+<h2>Service Metadata<a class="headerlink" href="#service-metadata" title="Permalink to this headline">¶</a></h2>
+<p>For a description of WMS services, see the section on <a class="reference internal" href="../../configuration/service-metadata/index.html#service-metadata"><span class="std std-ref">Service Metadata</span></a>.</p>
+</div>
+<div class="section" id="root-layer-information">
+<span id="services-webadmin-wms-raster-options"></span><h2>Root Layer Information<a class="headerlink" href="#root-layer-information" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-default">
+<img alt="../../_images/services_WMS_rootLayerInfo.png" src="../../_images/services_WMS_rootLayerInfo.png" />
+</div>
+<p>In this section is possible to define a title and an abstract for the root layer in the WMS capabilities. When these are left empty the WMS service title and abstract are used.</p>
+<p>It is also possible to set the flag <strong>Always include Root Layer in capabilities</strong>.
+This is checked by default, but can be unset so that the root layer is included in capabilities only when there is NOT already a single top level Layer element.
+This can be useful to allow compatibility with some WMS clients that are not happy with the two or more layer tree levels.
+This default setting can be overridden at the layer or request level.</p>
+</div>
+<div class="section" id="raster-rendering-options">
+<h2>Raster Rendering Options<a class="headerlink" href="#raster-rendering-options" title="Permalink to this headline">¶</a></h2>
+<p>The Web Map Service Interface Standard (WMS) provides a simple way to request and serve geo-registered map images. During pan and zoom operations, WMS requests generate map images through a variety of raster rendering processes. Such image manipulation is generally called resampling, interpolation, or down-sampling. GeoServer supports three resampling methods that determine how cell values of a raster are outputted. These sampling methods-Nearest Neighbor, Bilinear Interpolation and Bicubic-are available on the Default Interpolation menu.</p>
+<p><strong>Nearest Neighbor</strong> -Uses the center of nearest input cell to determine the value of the output cell. Original values are retained and no new averages are created. Because image values stay exactly the same, rendering is fast but possibly pixelated from sharp edge detail. Nearest neighbor interpolation is recommended for categorical data such as land use classification.</p>
+<p><strong>Bilinear</strong> -Determines the value of the output cell based by sampling the value of the four nearest cells by linear weighting. The closer an input cell, the higher its influence of on the output cell value. Since output values may differ from nearest input, bilinear interpolation is recommended for continuous data like elevation and raw slope values. Bilinear interpolation takes about five times as long as nearest neighbor interpolation.</p>
+<p><strong>Bicubic</strong> -Looks at the sixteen nearest cells and fits a smooth curve through the points to find the output value. Bicubic interpolation may both change the input value as well as place the output value outside of the range of input values. Bicubic interpolation is recommended for smoothing continuous data, but this incurs a processing performance overhead.</p>
+</div>
+<div class="section" id="watermark-settings">
+<h2>Watermark Settings<a class="headerlink" href="#watermark-settings" title="Permalink to this headline">¶</a></h2>
+<p>Watermarking is the process of embedding an image into a map. Watermarks are usually used for branding, copyright, and security measures. Watermarks are configured in the WMS watermarks setting section.</p>
+<p><strong>Enable Watermark</strong> -Turns on watermarking. When selected, all maps will render with the same watermark. It is not currently possible to specify watermarking on a per-layer or per-feature basis.</p>
+<p><strong>Watermark URL</strong> -Location of the graphic for the watermark. The graphic can be referenced as an absolute path (e.g., <code class="file docutils literal notranslate"><span class="pre">C:\GeoServer\watermark.png</span></code>), a relative one inside GeoServer’s data directory (e.g., <code class="file docutils literal notranslate"><span class="pre">watermark.png</span></code>), or a URL (e.g., <code class="docutils literal notranslate"><span class="pre">http://www.example.com/images/watermark.png</span></code>).</p>
+<p>Each of these methods have their own advantages and disadvantages. When using an absolute or relative link, GeoServer keeps a cached copy of the graphic in memory, and won’t continually link to the original file. This means that if the original file is subsequently deleted, GeoServer won’t register it missing until the watermark settings are edited. Using a URL might seem more convenient, but it is more I/O intensive. GeoServer will load the watermark image for every WMS request. Also, should the URL cease to be valid, the layer will not properly display.</p>
+<p><strong>Watermark Transparency</strong>–Determines the opacity level of the watermark. Numbers range between 0 (opaque) and 100 (fully invisible).</p>
+<p><strong>Watermark Position</strong> -Specifies the position of the watermark relative to the WMS request. The nine options indicate which side and corner to place the graphic (top-left, top-center, top-right, etc). The default watermark position is bottom-right. Note that the watermark will always be displayed flush with the boundary. If extra space is required, the graphic itself needs to change.</p>
+<p>Because each WMS request renders the watermark, a single tiled map positions <em>one</em> watermark relative to the view window while a tiled map positions the watermark for each tile.  The only layer specific aspect of watermarking occurs because a single tile map is one WMS request, whereas a tiled map contains many WMS requests.  (The latter watermark display resembles Google Maps faint copyright notice in their Satellite imagery.)  The following three examples demonstrate watermark position, transparency and tiling display, respectively.</p>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/services_WMS_watermark1.png" src="../../_images/services_WMS_watermark1.png" />
+<p class="caption"><span class="caption-text">Single tile watermark (aligned top-right, transparency=0)</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id3">
+<img alt="../../_images/services_WMS_watermark2.png" src="../../_images/services_WMS_watermark2.png" />
+<p class="caption"><span class="caption-text">Single tile watermark (aligned top-right, transparency=90)</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id4">
+<img alt="../../_images/services_WMS_watermark3.png" src="../../_images/services_WMS_watermark3.png" />
+<p class="caption"><span class="caption-text">Tiled watermark (aligned top-right, transparency=90)</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="svg-options">
+<h2>SVG Options<a class="headerlink" href="#svg-options" title="Permalink to this headline">¶</a></h2>
+<p>The GeoServer WMS supports SVG (Scalable Vector Graphics) as an output format. GeoServer currently supports two SVG renderers, available from the SVG producer menu.</p>
+<ol class="arabic simple">
+<li><p><em>Simple</em> -Simple SVG renderer. It has limited support for SLD styling, but is very fast.</p></li>
+<li><p><em>Batik</em> -Batik renderer (as it uses the Batik SVG Framework). It has full support for SLD styling, but is slower.</p></li>
+</ol>
+<p><strong>Enable Anti-aliasing</strong>
+Anti-aliasing is a technique for making edges appear smoother by filling in the edges of an object with pixels that are between the object’s color and the background color. Anti-aliasing creates the illusion of smoother lines and smoother selections. Turning on anti-aliasing will generally make maps look nicer, but will increase the size of the images, and will take longer to return. If you are overlaying the anti-aliased map on top of others, beware of using transparencies as the anti-aliasing process mixes with the colors behind and can create a “halo” effect.</p>
+</div>
+<div class="section" id="limited-srs-list">
+<h2>Limited SRS list<a class="headerlink" href="#limited-srs-list" title="Permalink to this headline">¶</a></h2>
+<p>Some clients can have problems processing the large list of SRS (projections) that GeoServer can support when they are all listed in the capabilities document. It is possible to add a list of needed projections in the <em>Limited SRS List</em> box. This takes the form of a list of EPSG codes separated by commas, e.g. <code class="docutils literal notranslate"><span class="pre">4326,27700</span></code>.</p>
+<div class="figure align-default" id="id5">
+<img alt="../../_images/services_WMS_srs.png" src="../../_images/services_WMS_srs.png" />
+<p class="caption"><span class="caption-text">A limited SRS list</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Output</span> <span class="pre">bounding</span> <span class="pre">box</span> <span class="pre">for</span> <span class="pre">every</span> <span class="pre">supported</span> <span class="pre">CRS</span></code> flag is only respected if a Limited SRS list has been specified.Setting this flag causes the WMS capabilities document to contain a Bounding Box for each supported CRS, for each Layer. Doing this for every CRS in the EPSG database, for each Layer in the catalog, would result in a impractically huge capabilities document.</p>
+</div>
+<div class="section" id="authorization-headers-forwarding-for-remote-slds">
+<h2>Authorization headers forwarding for remote SLDs<a class="headerlink" href="#authorization-headers-forwarding-for-remote-slds" title="Permalink to this headline">¶</a></h2>
+<p>A GetMap request may specify the style by referring a remote URL in the SLD parameter.
+There might be the case that the remote URL require same authorization headers as the current GetMap request.
+If that’s the case a list of allowed style URLs can be specified using newline as separators (URLs might be long).
+Authorization headers will be only forwarded to a remote URL when it starts with one of the specified URLs.</p>
+<div class="figure align-default" id="id6">
+<img alt="../../_images/services_WMS_remoteurlsauth.png" src="../../_images/services_WMS_remoteurlsauth.png" />
+<p class="caption"><span class="caption-text">The list of remote URLs being allowed for authorization headers forwarding.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="advanced-projection-handling-and-map-wrapping">
+<h2>Advanced projection handling and map wrapping<a class="headerlink" href="#advanced-projection-handling-and-map-wrapping" title="Permalink to this headline">¶</a></h2>
+<p>Advanced projection handling is a set of extra “smarts” applied while rendering that help getting
+a good looking map despite the data touching or crossing “difficult areas” in selected map
+projection. This includes, among others:</p>
+<ul class="simple">
+<li><p>Cutting the geometries so that they fit within the area of mathematical stability of the projection math,
+e.g., it will cut any bit at more than 45 degrees west and east from the central meridian of a
+transverse Mercator projection, or beyond 85 degrees north or south in a Mercator projection</p></li>
+<li><p>Make sure both “ends” of the world get queried for data when a map in polar stereographic is
+hitting an area that includes the dateline</p></li>
+<li><p>Ability to optionally preprocess geometries with a densify operation that allows better results when a reprojection
+operation causes a lot of deformation in the original geometry. Adding more points to the original geometry
+produces a more precise reprojected one (e.g. straight lines that become curves when reprojected).</p></li>
+</ul>
+<p>Along with advanced projection handling there is the possibility of creating a continuous map
+across the dateline, wrapping the data on the other side of the longitude range, to get a continuous
+map. This is called continuous map wrapping, and it’s enabled in Mercator and Equirectangular (plate carrée) projections.
+This also uses an heuristic to guess direction of lines that cross the dateline (west to east or east to west). The
+heuristic can be disabled using the <strong>Disable dateline wrapping heuristic</strong> option.</p>
+<p>Advanced projection handling and continuous map wrapping functionalities are rather useful, and enabled by default, but the
+tendency to generate multiple or-ed bounding boxes (to query both sides of the dateline) can cause extreme slowness in certain
+databases (e.g. Oracle), and some users might simply not like the wrapping output, thus, it’s possible to disable both functions
+in the WMS UI:</p>
+<div class="figure align-default">
+<img alt="../../_images/services_WMS_aph.png" src="../../_images/services_WMS_aph.png" />
+</div>
+<p>Continuous map wrapping is disabled if advanced projection handling is disabled.</p>
+<p>Automatic densification can slow down rendering, so it’s disabled by default, but can be enabled using the <strong>Enable automatic
+densification of geometries</strong> option.</p>
+<p>Advanced projection handling can also be disabled using the <code class="docutils literal notranslate"><span class="pre">advancedProjectionHandling</span></code> <a class="reference internal" href="vendor.html#format-options"><span class="std std-ref">Format Option</span></a>.
+Similarly, continuous map wrapping can also be disabled using the <code class="docutils literal notranslate"><span class="pre">mapWrapping</span></code> <a class="reference internal" href="vendor.html#format-options"><span class="std std-ref">Format Option</span></a>,
+automatic densification can be enabled using the <code class="docutils literal notranslate"><span class="pre">advancedProjectionHandlingDensification</span></code> <a class="reference internal" href="vendor.html#format-options"><span class="std std-ref">Format Option</span></a>,
+and the dateline heuristic can be disabled using the <code class="docutils literal notranslate"><span class="pre">disableDatelineWrappingHeuristic</span></code> <a class="reference internal" href="vendor.html#format-options"><span class="std std-ref">Format Option</span></a>.</p>
+</div>
+<div class="section" id="restricting-mime-types-for-getmap-and-getfeatureinfo-requests">
+<h2>Restricting MIME types for GetMap and GetFeatureInfo requests<a class="headerlink" href="#restricting-mime-types-for-getmap-and-getfeatureinfo-requests" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer supports restricting formats for WMS GetMap and WMS GetFeatureInfo requests. The default is to allow all MIME types for both kinds of request.</p>
+<div class="figure align-default">
+<img alt="../../_images/service_WMS_allMimeTypesAllowed.png" src="../../_images/service_WMS_allMimeTypesAllowed.png" />
+</div>
+<p>The following figure shows an example for MIME type restriction. The MIME types
+<strong>image/png</strong> and <strong>text/html;subtype=openlayers</strong> are allowed for GetMap requests, the MIME types <strong>text/html</strong> and <strong>text/plain</strong> are allowed for
+GetFeatureInfo requests. A GetMap/GetFeatureInfo request with a MIME type not allowed will result in a service exception reporting the error.</p>
+<div class="figure align-default">
+<img alt="../../_images/service_WMS_allowedMimeTypes.png" src="../../_images/service_WMS_allowedMimeTypes.png" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Activating MIME type restriction and not allowing at least one MIME type disables the particular request.</p>
+</div>
+</div>
+<div class="section" id="disabling-usage-of-dynamic-styling-in-getmap-getfeatureinfo-and-getlegendgraphic-requests">
+<h2>Disabling usage of dynamic styling in GetMap, GetFeatureInfo and GetLegendGraphic requests<a class="headerlink" href="#disabling-usage-of-dynamic-styling-in-getmap-getfeatureinfo-and-getlegendgraphic-requests" title="Permalink to this headline">¶</a></h2>
+<p>Dynamic styles can be applied to layers in GetMap, GetFeatureInfo and GetLegendGraphic requests using the SLD or SLD_BODY parameters for GET requests.</p>
+<p>In addition, GetMap POST requests can contain inline style definition for layers.</p>
+<p>The usage of dynamic styling can be restricted on a global or per virtual service basis using the <strong>Dynamic styling</strong> section.</p>
+<div class="figure align-default">
+<img alt="../../_images/service_WMS_disableDynamicStyling.png" src="../../_images/service_WMS_disableDynamicStyling.png" />
+</div>
+<p>When the flag is checked, a GetMap/GetFeatureInfo/GetLegendGraphic request with a dynamic style will result in a service exception reporting the error.</p>
+</div>
+<div class="section" id="disabling-getfeatureinfo-requests-results-reprojection">
+<h2>Disabling GetFeatureInfo requests results reprojection<a class="headerlink" href="#disabling-getfeatureinfo-requests-results-reprojection" title="Permalink to this headline">¶</a></h2>
+<p>By default GetFeatureInfo results are reproject to the map coordinate reference system. This behavior can be deactivated on a global or per virtual service basis in the <strong>GetFeatureInfo results reprojection</strong> section.</p>
+<div class="figure align-default">
+<img alt="../../_images/service_WMS_disableFeaturesReprojection.png" src="../../_images/service_WMS_disableFeaturesReprojection.png" />
+</div>
+<p>When the flag is checked, GetFeatureInfo requests results will not be reprojected and will instead used the layer coordinate reference system.</p>
+</div>
+<div class="section" id="enabling-getfeatureinfo-requests-results-html-auto-escaping">
+<h2>Enabling GetFeatureInfo requests results HTML auto-escaping<a class="headerlink" href="#enabling-getfeatureinfo-requests-results-html-auto-escaping" title="Permalink to this headline">¶</a></h2>
+<p>By default GetFeatureInfo results are printed in the HTML templates without any automatic escaping, which could result in incorrect and potentially malicious results. This behavior can be activated on a global or per virtual service basis in the <strong>GetFeatureInfo results auto-escaping</strong> section.</p>
+<div class="figure align-default">
+<img alt="../../_images/service_WMS_autoEscaping.png" src="../../_images/service_WMS_autoEscaping.png" />
+</div>
+<p>When the flag is checked, values that are printed in the HTML templates for GetFeatureInfo requests results will be automatically escaped. The default FreeMarker templates can be overridden to enable or disable auto-escaping on a per template, per block or per value basis.</p>
+</div>
+<div class="section" id="setting-remote-style-max-connection-and-request-time">
+<h2>Setting Remote Style max connection and request time<a class="headerlink" href="#setting-remote-style-max-connection-and-request-time" title="Permalink to this headline">¶</a></h2>
+<p>Remote styles max request time and connection timeout can be configured in milliseconds.</p>
+<div class="figure align-default">
+<img alt="../../_images/service_WMS_remoteStyleTime.png" src="../../_images/service_WMS_remoteStyleTime.png" />
+</div>
+<p><strong>Timeout in milliseconds</strong> -The max connection timeout in milliseconds for remote style requests.</p>
+<p><strong>Max request time in milliseconds</strong> -The max request time limit in milliseconds for remote style requests.</p>
+</div>
+<div class="section" id="mark-factory-precedence">
+<h2>Mark Factory Precedence<a class="headerlink" href="#mark-factory-precedence" title="Permalink to this headline">¶</a></h2>
+<p>Mark factories can be filtered and ordered during the rendering execution. This makes room to optimize the rendering phase by omitting unused mark factories and prioritizing the fastest ones.</p>
+<div class="figure align-default">
+<img alt="../../_images/service_WMS_markfactory.png" src="../../_images/service_WMS_markfactory.png" />
+</div>
+<p><strong>Enable Mark Factory Precedence</strong> -Enables the mark factory precedence setup.</p>
+<p><strong>Mark Factory Precedence setup</strong> -The allowed mark factories to use and its execution order.</p>
+</div>
+<div class="section" id="i18n-settings">
+<h2>i18n Settings<a class="headerlink" href="#i18n-settings" title="Permalink to this headline">¶</a></h2>
+<p>Select default language for WMS Service.</p>
+<div class="figure align-default" id="id7">
+<img alt="../../_images/i18n_default_language2.png" src="../../_images/i18n_default_language2.png" />
+<p class="caption"><span class="caption-text">Default language</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>See <a class="reference internal" href="../../configuration/internationalization/index.html#internationalization"><span class="std std-ref">Internationalization (i18n)</span></a> section for a how this setting is used.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">Web Map Service (WMS)</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="basics.html" title="next chapter">WMS basics</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WMS settings</a><ul>
+<li><a class="reference internal" href="#workspace">Workspace</a></li>
+<li><a class="reference internal" href="#service-metadata">Service Metadata</a></li>
+<li><a class="reference internal" href="#root-layer-information">Root Layer Information</a></li>
+<li><a class="reference internal" href="#raster-rendering-options">Raster Rendering Options</a></li>
+<li><a class="reference internal" href="#watermark-settings">Watermark Settings</a></li>
+<li><a class="reference internal" href="#svg-options">SVG Options</a></li>
+<li><a class="reference internal" href="#limited-srs-list">Limited SRS list</a></li>
+<li><a class="reference internal" href="#authorization-headers-forwarding-for-remote-slds">Authorization headers forwarding for remote SLDs</a></li>
+<li><a class="reference internal" href="#advanced-projection-handling-and-map-wrapping">Advanced projection handling and map wrapping</a></li>
+<li><a class="reference internal" href="#restricting-mime-types-for-getmap-and-getfeatureinfo-requests">Restricting MIME types for GetMap and GetFeatureInfo requests</a></li>
+<li><a class="reference internal" href="#disabling-usage-of-dynamic-styling-in-getmap-getfeatureinfo-and-getlegendgraphic-requests">Disabling usage of dynamic styling in GetMap, GetFeatureInfo and GetLegendGraphic requests</a></li>
+<li><a class="reference internal" href="#disabling-getfeatureinfo-requests-results-reprojection">Disabling GetFeatureInfo requests results reprojection</a></li>
+<li><a class="reference internal" href="#enabling-getfeatureinfo-requests-results-html-auto-escaping">Enabling GetFeatureInfo requests results HTML auto-escaping</a></li>
+<li><a class="reference internal" href="#setting-remote-style-max-connection-and-request-time">Setting Remote Style max connection and request time</a></li>
+<li><a class="reference internal" href="#mark-factory-precedence">Mark Factory Precedence</a></li>
+<li><a class="reference internal" href="#i18n-settings">i18n Settings</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">Web Map Service (WMS)</a></li>
+            <li>Next: <a href="basics.html" title="next chapter">WMS basics</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/webadmin.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Container Considerations &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration Considerations" href="config.html" />
+    <link rel="prev" title="Java Considerations" href="java.html" /> 
+  </head><body class="production/container">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Running in a production environment</a> &raquo;</li>
+    <li>Container Considerations</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="config.html" title="Configuration Considerations" accesskey="N">Next</a></li>
+  <li>
+    <a href="java.html" title="Java Considerations" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="container-considerations">
+<span id="production-container"></span><h1>Container Considerations<a class="headerlink" href="#container-considerations" title="Permalink to this headline">¶</a></h1>
+<p>Java web containers such as <a class="reference external" href="http://tomcat.apache.org">Tomcat</a> or <a class="reference external" href="https://www.eclipse.org/jetty/">Jetty</a> ship with configurations that allow for fast startup, but don’t always deliver the best performance.</p>
+<div class="section" id="optimize-your-jvm">
+<h2>Optimize your JVM<a class="headerlink" href="#optimize-your-jvm" title="Permalink to this headline">¶</a></h2>
+<p>Set the following performance settings in the Java virtual machine (JVM) for your container.  These settings are not specific to any container.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-Xms128m</span></code></p></td>
+<td><p>By starting with a larger heap GeoServer will not need to pause and ask the operating system for more memory during heavy load. The setting <code class="docutils literal notranslate"><span class="pre">-Xms128m</span></code> will tell the virtual machine to acquire grab a 128m heap memory on initial startup.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-Xmx756M</span></code></p></td>
+<td><p>Defines an upper limit on how much heap memory Java will request from the operating system  (use more if you have excess memory). By default, the JVM will use 1/4 of available system memory. The setting <code class="docutils literal notranslate"><span class="pre">-Xms756m</span></code> allocates 756MB of memory to GeoServer.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-XX:SoftRefLRUPolicyMSPerMB=36000</span></code></p></td>
+<td><p>Increases the lifetime of “soft references” in GeoServer.  GeoServer uses soft references to cache datastore, spatial reference systems, and other data structures. By increasing this value to <code class="docutils literal notranslate"><span class="pre">36000</span></code> (which is 36 seconds) these values will stay in memory longer increasing the effectiveness of the cache.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-XX:+UseParallelGC</span></code></p></td>
+<td><p>The default garbage collector up to Java 8, <strong>pauses the application while using several threads to recover memory</strong>. Recommended if your GeoServer will be under light load and can tolerate pauses to clean up memory.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-XX:+UseParNewGC</span></code></p></td>
+<td><p>Enables use of the concurrent mark sweep (CMS) garbage collector <strong>uses multiple threads to recover memory while the application is running</strong>. Recommended for GeoServer under continuous use, with heap sizes of less than 6GB.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">–XX:+UseG1GC</span></code></p></td>
+<td><p>The default garbage collector since Java 9. Enables use of the <a class="reference external" href="http://www.oracle.com/technetwork/java/javase/tech/g1-intro-jsp-135488.html">Garbage First Garbage Collector (G1)</a> using <strong>background threads to scan memory while the application is running</strong> prior to cleanup. Recommended for GeoServer under continuous load and heap sizes of 6GB or more. Additionally you may experiment with <code class="docutils literal notranslate"><span class="pre">-XX:+UseStringDeduplicationJVM</span></code> to ask G1 to better manage common text strings in memory.</p></td>
+</tr>
+</tbody>
+</table>
+<p>For more information about JVM configuration, see the article <a class="reference external" href="http://www.petefreitag.com/articles/gctuning/">Performance tuning garbage collection in Java</a> and <a class="reference external" href="http://blog.takipi.com/garbage-collectors-serial-vs-parallel-vs-cms-vs-the-g1-and-whats-new-in-java-8/">The 4 Java Garbage Collectors</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can only use one garbage collector at a time. Please refrain from combining garbage collectors at runtime.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you’re serving just vector data, you’ll be streaming, so having more memory won’t increase performance.  If you’re serving coverages, however, image processing will use a tile cache and benefit from more memory. As an administrator you can configure the portion of memory available as a tile cache (see the Server Config page in the <a class="reference internal" href="../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a> section) - for example to use <code class="docutils literal notranslate"><span class="pre">0.75</span></code> to allocate <code class="docutils literal notranslate"><span class="pre">75%</span></code> of the heap as a tile cache.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can try out memory settings on the command line to check settings/defaults prior to use.</p>
+<p>To check settings use <code class="docutils literal notranslate"><span class="pre">java</span> <span class="pre">-Xms128m</span> <span class="pre">-Xmx756m</span> <span class="pre">-XX:+PrintFlagsFinal</span> <span class="pre">-version</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">HeapSize</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uintx</span> <span class="n">InitialHeapSize</span>   <span class="o">:=</span> <span class="mi">134217728</span>     <span class="p">{</span><span class="n">product</span><span class="p">}</span>
+<span class="n">uintx</span> <span class="n">MaxHeapSize</span>       <span class="o">:=</span> <span class="mi">792723456</span>     <span class="p">{</span><span class="n">product</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Which when converted from bytes matches <code class="docutils literal notranslate"><span class="pre">128</span></code> MB initial heap size, and <code class="docutils literal notranslate"><span class="pre">756</span></code> MB max heap size.</p>
+<p>Check defaults for your hardware using <code class="docutils literal notranslate"><span class="pre">java</span> <span class="pre">-XX:+PrintFlagsFinal</span> <span class="pre">-version</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">HeapSize</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uintx</span> <span class="n">InitialHeapSize</span>   <span class="o">:=</span> <span class="mi">268435456</span>     <span class="p">{</span><span class="n">product</span><span class="p">}</span>
+<span class="n">uintx</span> <span class="n">MaxHeapSize</span>       <span class="o">:=</span> <span class="mi">4294967296</span>    <span class="p">{</span><span class="n">product</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The above results (from a 16 GB laptop) amount to initial heap size of 256m, and a max heap size of around 4 GB (or around 1/4 of system memory).</p>
+</div>
+</div>
+<div class="section" id="enable-the-marlin-rasterizer">
+<span id="production-container-marlin"></span><h2>Enable the Marlin rasterizer<a class="headerlink" href="#enable-the-marlin-rasterizer" title="Permalink to this headline">¶</a></h2>
+<p>In order to enable Marlin on Java 8, or to use a newer version than that provided by your JVM, add the following to the JVM startup options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>-Xbootclasspath/a:$MARLIN_JAR
+-Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">$MARLIN_JAR</span></code> is the location of the <code class="docutils literal notranslate"><span class="pre">marlin*.jar</span></code> file located in the geoserver/WEB-INF/lib directory or downloaded from the <a class="reference external" href="https://github.com/bourgesl/marlin-renderer/">Marlin project</a>.</p>
+<p>The server status page shows which renderer is being used.</p>
+</div>
+<div class="section" id="enable-cors">
+<span id="production-container-enable-cors"></span><h2>Enable CORS<a class="headerlink" href="#enable-cors" title="Permalink to this headline">¶</a></h2>
+<p>The standalone distributions of GeoServer include the Jetty application server. <a class="reference external" href="https://enable-cors.org/">Enable Cross-Origin Resource Sharing (CORS)</a> to allow JavaScript applications outside of your own domain, or web browsers, to use GeoServer.</p>
+<p>For more information on what this does and other options see the <a class="reference external" href="http://www.eclipse.org/jetty/documentation">Jetty documentation</a> or the <a class="reference external" href="https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CORS_Filter">Tomcat documentation</a>.</p>
+<p>Uncomment the following &lt;filter&gt; and &lt;filter-mapping&gt; from <code class="file docutils literal notranslate"><span class="pre">webapps/geoserver/WEB-INF/web.xml</span></code> if using Jetty:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nb">filter</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">filter</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">cross</span><span class="o">-</span><span class="n">origin</span><span class="o">&lt;/</span><span class="nb">filter</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">filter</span><span class="o">-</span><span class="n">class</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="n">eclipse</span><span class="o">.</span><span class="n">jetty</span><span class="o">.</span><span class="n">servlets</span><span class="o">.</span><span class="n">CrossOriginFilter</span><span class="o">&lt;/</span><span class="nb">filter</span><span class="o">-</span><span class="n">class</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">chainPreflight</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span><span class="n">false</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">allowedOrigins</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;*&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">allowedMethods</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span><span class="n">GET</span><span class="p">,</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="p">,</span><span class="n">HEAD</span><span class="p">,</span><span class="n">OPTIONS</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">allowedHeaders</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;*&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="nb">filter</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>or Tomcat:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nb">filter</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">filter</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">cross</span><span class="o">-</span><span class="n">origin</span><span class="o">&lt;/</span><span class="nb">filter</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">filter</span><span class="o">-</span><span class="n">class</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">catalina</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">CorsFilter</span><span class="o">&lt;/</span><span class="nb">filter</span><span class="o">-</span><span class="n">class</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">cors</span><span class="o">.</span><span class="n">allowed</span><span class="o">.</span><span class="n">origins</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;*&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">cors</span><span class="o">.</span><span class="n">allowed</span><span class="o">.</span><span class="n">methods</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span><span class="n">GET</span><span class="p">,</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="p">,</span><span class="n">HEAD</span><span class="p">,</span><span class="n">OPTIONS</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">cors</span><span class="o">.</span><span class="n">allowed</span><span class="o">.</span><span class="n">headers</span><span class="o">&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;*&lt;/</span><span class="n">param</span><span class="o">-</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">init</span><span class="o">-</span><span class="n">param</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="nb">filter</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>and regardless of application server choice uncomment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nb">filter</span><span class="o">-</span><span class="n">mapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">filter</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span><span class="n">cross</span><span class="o">-</span><span class="n">origin</span><span class="o">&lt;/</span><span class="nb">filter</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">url</span><span class="o">-</span><span class="n">pattern</span><span class="o">&gt;/*&lt;/</span><span class="n">url</span><span class="o">-</span><span class="n">pattern</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="nb">filter</span><span class="o">-</span><span class="n">mapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="java.html" title="previous chapter">Java Considerations</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="config.html" title="next chapter">Configuration Considerations</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Container Considerations</a><ul>
+<li><a class="reference internal" href="#optimize-your-jvm">Optimize your JVM</a></li>
+<li><a class="reference internal" href="#enable-the-marlin-rasterizer">Enable the Marlin rasterizer</a></li>
+<li><a class="reference internal" href="#enable-cors">Enable CORS</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="java.html" title="previous chapter">Java Considerations</a></li>
+            <li>Next: <a href="config.html" title="next chapter">Configuration Considerations</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/production/container.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

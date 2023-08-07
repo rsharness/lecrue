@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global variables affecting WMS &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GetLegendGraphic" href="get_legend_graphic/index.html" />
+    <link rel="prev" title="WMS configuration" href="configuration.html" /> 
+  </head><body class="services/wms/global">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+    <li>Global variables affecting WMS</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="get_legend_graphic/index.html" title="GetLegendGraphic" accesskey="N">Next</a></li>
+  <li>
+    <a href="configuration.html" title="WMS configuration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="global-variables-affecting-wms">
+<span id="wms-global-variables"></span><h1>Global variables affecting WMS<a class="headerlink" href="#global-variables-affecting-wms" title="Permalink to this headline">¶</a></h1>
+<p>This document details the set of global variables that can affect WMS behaviour.
+Each global variable can be set as an environment variable, as a servlet context variable, or as a Java system property, just like the well known <code class="docutils literal notranslate"><span class="pre">GEOSERVER_DATA_DIR</span></code> setting. Refer to <a class="reference internal" href="../../datadirectory/setting.html#datadir-setting"><span class="std std-ref">Setting the data directory location</span></a> for details on how a global variable can be specified.</p>
+<div class="section" id="max-filter-rules">
+<h2>MAX_FILTER_RULES<a class="headerlink" href="#max-filter-rules" title="Permalink to this headline">¶</a></h2>
+<p>A integer number (defaults to 20)
+When drawing a style containing multiple active rules the renderer combines the filters of the rules in OR and adds them to the standard bounding box filter. This behaviour is active up until the maximum number of filter rules is reached, past that the rule filters are no more added to avoid huge queries. By default up to 20 rules are combined, past 20 rules only the bounding box filter is used.
+Turning it off (setting it to 0) can be useful if the styles are mostly classifications, detrimental if the rule filters are actually filtering a good amount of data out.</p>
+</div>
+<div class="section" id="optimize-line-width">
+<h2>OPTIMIZE_LINE_WIDTH<a class="headerlink" href="#optimize-line-width" title="Permalink to this headline">¶</a></h2>
+<p>Can be <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code> (defaults to: <code class="docutils literal notranslate"><span class="pre">false</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">true</span></code> any stroke whose width is less than 1.5 pixels gets slimmed down to “zero”, which is actually not zero, but a very thin line. That was the behaviour GeoServer used to default to before the 2.0 series.
+When <code class="docutils literal notranslate"><span class="pre">false</span></code> the stroke width is not modified and it’s possible to specify widths less than one pixel. This is the default behaviour starting from the 2.0.0 release</p>
+</div>
+<div class="section" id="enable-jsonp">
+<h2>ENABLE_JSONP<a class="headerlink" href="#enable-jsonp" title="Permalink to this headline">¶</a></h2>
+<p>Can be <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code> (defaults to: <code class="docutils literal notranslate"><span class="pre">false</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">true</span></code> the JSONP (text/javascript) output format is enabled.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="configuration.html" title="previous chapter">WMS configuration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="get_legend_graphic/index.html" title="next chapter">GetLegendGraphic</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Global variables affecting WMS</a><ul>
+<li><a class="reference internal" href="#max-filter-rules">MAX_FILTER_RULES</a></li>
+<li><a class="reference internal" href="#optimize-line-width">OPTIMIZE_LINE_WIDTH</a></li>
+<li><a class="reference internal" href="#enable-jsonp">ENABLE_JSONP</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="configuration.html" title="previous chapter">WMS configuration</a></li>
+            <li>Next: <a href="get_legend_graphic/index.html" title="next chapter">GetLegendGraphic</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/global.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

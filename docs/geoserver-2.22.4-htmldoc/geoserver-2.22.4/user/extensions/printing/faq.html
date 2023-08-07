@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Cross-layer filtering" href="../querylayer/index.html" />
+    <link rel="prev" title="Protocol" href="protocol.html" /> 
+  </head><body class="extensions/printing/faq">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GeoServer Printing Module</a> &raquo;</li>
+    <li>FAQ</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../querylayer/index.html" title="Cross-layer filtering" accesskey="N">Next</a></li>
+  <li>
+    <a href="protocol.html" title="Protocol" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="faq">
+<h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<dl>
+<dt><strong>All I get in my PDF is: “ERROR: infinite table loop”. What’s wrong?</strong></dt><dd><p>Something in your page is too big. For example, the width or the height of your !map block.</p>
+</dd>
+<dt><strong>I tried to print (pylons mode) and I get a “Java error”. What’s next?</strong></dt><dd><p>Look in the apache error log, you’ll find more information.</p>
+</dd>
+<dt><strong>What are the limitations of the type 2 layers?</strong></dt><dd><p>It depends mostly on the map server you use. For the moment, GeoServer has not been extensively tested. With MapServer:</p>
+<ul class="simple">
+<li><p>The PDF output must be enabled when you compile and doesn’t work in WMS mode, only in native MapServer mode. There are some limitations. on the styling. And you must use truetype fonts.</p></li>
+<li><p>The SVG output is limited regarding the stylings you can use. For example only plain polygon fillings are supported by MapServer. If a complex styling is used, your features may appear plain black.</p></li>
+</ul>
+</dd>
+<dt><strong>I tried to change the layout and half the Map is printed off the page on the right. Or I have an empty page added. Is it a bug?</strong></dt><dd><p>It’s mostly a feature ;-) . This kind of behavior can be seen in iText, when adding a block that is too big for the page size. Try to reduce the size of your map block.</p>
+</dd>
+<dt><strong>When I look at my generated PDF in Acrobat Reader, it looks good. But, when I print it, it misses some tiles/layers, some bitmaps are just weird or there are no page printed. What’s wrong?</strong></dt><dd><p>There are three possible explanations:</p>
+<ul class="simple">
+<li><p>Your printer has not enough memory: in Acrobat’s print dialog, select “Save printer memory”</p></li>
+<li><p>Your printer firmware is buggy: upgrade it</p></li>
+<li><p>Your printer driver is buggy: upgrade it</p></li>
+</ul>
+</dd>
+<dt><strong>The module needs to go through a proxy to access the map services.</strong></dt><dd><p>It’s so 90s… you should hire some fresh guys for your IT team. ;-)</p>
+<p>You need to set some system properties (http.proxy*) when you start your java programs.</p>
+</dd>
+<dt><strong>On the browser, the scale is displayed with spaces to separate thousands and it’s against my religion. How do I put my sacred separator?</strong></dt><dd><p>By default, the browser’s configured locale is used. You can force another locale in the print widget configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">{</span>
+  <span class="nv">...</span>
+  <span class="nv">configUrl</span><span class="p p-Indicator">:</span> <span class="s">&#39;print/info.json&#39;</span><span class="p p-Indicator">,</span>
+<span class="nt">  serviceParams</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> locale</span><span class="p">:</span> <span class="s">&#39;fr_CH&#39;</span> <span class="p p-Indicator">},</span>
+  <span class="nv">...</span>
+<span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>I copied the examples and the print widgets are not working.</strong></dt><dd><p>First edit the client/examples/examples.js file and make sure the URLs are correct.</p>
+<ol class="arabic simple">
+<li><p>If you don’t want to install the server side, make sure you installed a proxy (see Configure Proxy). For example, test (must return a JSON content, not the proxy.cgi script’s content) it with an URL like that (adapt the hostname, port and path): <cite>http://localhost/cgi-bin/proxy.cgi?url=http://demo.mapfish.org/mapfishsample/trunk/print/info.json</cite></p></li>
+<li><p>If you installed the server side, make sure it works by calling the URL specified in the mapfish.SERVER_BASE_URL variable (must be the hostname/port your page is accessed through) added with <cite>/print/info.json</cite>. For example, if you have <cite>mapfish.SERVER_BASE_URL=”http://localhost/mapfish”: http://localhost/mapfish/print/info.json</cite></p></li>
+</ol>
+<p>If it still doesn’t work, use firefox, install firebug and check in the console panel that the AJAX request made by the print widget works fine.</p>
+</dd>
+</dl>
+<div class="section" id="warranty-disclaimer-and-license">
+<h2>Warranty disclaimer and license<a class="headerlink" href="#warranty-disclaimer-and-license" title="Permalink to this headline">¶</a></h2>
+<p>The authors provide these documents “AS-IS”, without warranty of any kind
+either expressed or implied.</p>
+<p>Document under <a class="reference external" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Common License Attribution-Share Alike 2.5 Generic</a>.</p>
+<p>Authors: MapFish developers.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="protocol.html" title="previous chapter">Protocol</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../querylayer/index.html" title="next chapter">Cross-layer filtering</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">FAQ</a><ul>
+<li><a class="reference internal" href="#warranty-disclaimer-and-license">Warranty disclaimer and license</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="protocol.html" title="previous chapter">Protocol</a></li>
+            <li>Next: <a href="../querylayer/index.html" title="next chapter">Cross-layer filtering</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/printing/faq.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WMS Reflector &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CQL and ECQL" href="cql/cql_tutorial.html" />
+    <link rel="prev" title="Serving Static Files" href="staticfiles.html" /> 
+  </head><body class="tutorials/wmsreflector">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>WMS Reflector</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="cql/cql_tutorial.html" title="CQL and ECQL" accesskey="N">Next</a></li>
+  <li>
+    <a href="staticfiles.html" title="Serving Static Files" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wms-reflector">
+<span id="tutorials-wmsreflector"></span><h1>WMS Reflector<a class="headerlink" href="#wms-reflector" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Standard WMS requests can be quite long and verbose. For instance the following, which returns an OpenLayers application with an 800x600 image set to display the feature <code class="docutils literal notranslate"><span class="pre">topp:states</span></code>, with bounds set to the northwestern hemisphere by providing the appropriate bounding box:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms?service=WMS&amp;request=GetMap&amp;version=1.1.1&amp;format=application/openlayers&amp;width=800&amp;height=600&amp;srs=EPSG:4326&amp;layers=topp:states&amp;styles=population&amp;bbox=-180,0,0,90
+</pre></div>
+</div>
+<p>Typing into a browser, or HTML editor, can be quite cumbersome and error prone. The WMS Reflector solves this problem nicely by using good default values for the options that you do not specify. Using the reflector one can shorten the above request to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&amp;layers=topp:states&amp;width=800
+</pre></div>
+</div>
+<p>This request only specifies that  you want the reflector (wms/reflect) to return an OpenLayers application (format=application/openlayers), that you want it to display the feature “topp:states” (layers=topp:states) and that the width should be 800 pixels (width=800). However, this will not return the exact same value as above. Instead, the reflector will zoom to the bounds of the feature and return a map that is 800 pixels wide, but with the height adjusted to the aspect ratio of the feature.</p>
+</div>
+<div class="section" id="using-the-wms-reflector">
+<h2>Using the WMS Reflector<a class="headerlink" href="#using-the-wms-reflector" title="Permalink to this headline">¶</a></h2>
+<p>To use the WMS reflector all one must do is specify <code class="docutils literal notranslate"><span class="pre">wms/reflect?</span></code> as opposed to <code class="docutils literal notranslate"><span class="pre">wms?</span></code> in a request. The only mandatory parameter to a WMS reflector call is the <span class="guilabel">layers</span> parameter. As stated above the reflector fills in sensible defaults for the rest of the parameters. The following table lists all the defaults used:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>request</p></td>
+<td><p>getmap</p></td>
+</tr>
+<tr class="row-even"><td><p>service</p></td>
+<td><p>wms</p></td>
+</tr>
+<tr class="row-odd"><td><p>version</p></td>
+<td><p>1.1.1</p></td>
+</tr>
+<tr class="row-even"><td><p>format</p></td>
+<td><p>image/png</p></td>
+</tr>
+<tr class="row-odd"><td><p>width</p></td>
+<td><p>512</p></td>
+</tr>
+<tr class="row-even"><td><p>height</p></td>
+<td><p>512 if width is not specified</p></td>
+</tr>
+<tr class="row-odd"><td><p>srs</p></td>
+<td><p>EPSG:4326</p></td>
+</tr>
+<tr class="row-even"><td><p>bbox</p></td>
+<td><p>bounds of layer(s)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Any of these defaults can be overridden when specifying the request. The <span class="guilabel">styles</span> parameter is derived by using the default style as configured by GeoServer for each <span class="guilabel">layer</span> specified in the layers parameter.</p>
+<p>Any parameter you send with a WMS request is also legitimate when requesting data from the reflector. Its strength is what it does with the parameters you do not specify, which is explored in the next section.</p>
+<p><strong>layers</strong>: This is the only mandatory parameter. It is a comma separated list of the layers you wish to include in your image or OpenLayers application.</p>
+<p><strong>format</strong>: The default output format is image/png. Alternatives include image/jpeg (good for raster backgrounds), image/png8 (8 bit colors, smaller files) and image/gif</p>
+<p><strong>width</strong>: Describes the width of the image, alternatively the size of the map in an OpenLayers. It defaults to 512 pixels and can be calculated based on the height and the aspect ratio of the bounding box.</p>
+<p><strong>height</strong>: Describes the height of the image, alternatively the map in an OpenLayers. It can be calculated based on the width and the aspect ratio of the bounding box.</p>
+<p><strong>bbox</strong>: The bounding box is automatically determined by taking the union of the bounds of the specified layers. In essence, it determines the extent of the map. By default, if you do not specify bbox, it will show you everything. If you have one layer of Los Angeles, and another of New York, it show you most of the United States. The bounding box, automatically set or specified, also determines the aspect ratio of the map. If you only specify one of width or height, the other will be determined based on the aspect ratio of the bounding box.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you specify height, width and bounding box there are zero degrees of freedom, and if the aspect ratios do not match your image will be warped.</p>
+</div>
+<p><strong>styles</strong>: You can override the default styles by providing a comma separated list with the names of styles which must be known by the server.</p>
+<p><strong>srs</strong>: The spatial reference system (SRS) parameter is somewhat difficult. If not specified the WMS Reflector will use EPSG:4326 / WGS84. It will support the native SRS of the layers as well, provided all layers share the same one.</p>
+<div class="section" id="example-1">
+<h3>Example 1<a class="headerlink" href="#example-1" title="Permalink to this headline">¶</a></h3>
+<p>Request the layer topp:states , it will come back with the default style (demographic), width (512 pixels) and height (adjusted to aspect ratio):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?layers=topp:states
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2">
+<h3>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline">¶</a></h3>
+<p>Request the layers topp:states and sf:restricted, it will come back with the default styles, and the specified width (640 pixels) and the height automatically adjusted to the aspect ratio:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?layers=topp:states,sf:restricted&amp;width=640
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-3">
+<h3>Example 3<a class="headerlink" href="#example-3" title="Permalink to this headline">¶</a></h3>
+<p>In the example above the sf:restricted layer is very difficult to see, because it is so small compared to the United States. To give the user a chance to get a better view, if they choose, we can return an OpenLayers application instead. Zoom in on South Dakota (SD) to see the restricted areas:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&amp;layers=topp:states,sf:restricted&amp;width=640
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-4">
+<h3>Example 4<a class="headerlink" href="#example-4" title="Permalink to this headline">¶</a></h3>
+<p>Now, if you mainly want to show the restricted layer, but also provide the context, you can set the bounding box for the request. The easiest way to obtain the coordinates is to use the application in example three and the coordinates at the bottom right of the map. The coordinates displayed in OpenLayers are x , y , the reflector service expects to be given bbox=minx,miny,maxx,maxy . Make sure it contains no whitespaces and users a period (“.”) as the decimal separator. In our case, it will be bbox=-103.929,44.375,-103.633,44.500</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&amp;layers=topp:states,sf:restricted&amp;width=640&amp;bbox=-103.929,44.375,-103.633,44.500
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="outputting-to-a-webpage">
+<h2>Outputting to a Webpage<a class="headerlink" href="#outputting-to-a-webpage" title="Permalink to this headline">¶</a></h2>
+<p>Say you have a webpage and you wish to include a picture that is 400 pixels wide and that shows the layer <code class="docutils literal notranslate"><span class="pre">topp:states</span></code>,  on this page.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;http://localhost:8080/geoserver/wms/reflect?layers=topp:states&amp;width=400&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+</div>
+<p>If you want the page to render in the browser before GeoServer is done, you should specify the height and width of the picture. You could just pick any approximate value, but it may be a good idea to look at the generated image first and then use those values. In the case of the layer above, the height becomes 169 pixels, so we can specify that as an attribute in the &lt;img&gt; tag:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;http://localhost:8080/geoserver/wms/reflect?layers=topp:states&amp;width=400&quot;</span> <span class="na">height</span><span class="o">=</span><span class="s">&quot;169&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;400&quot;</span><span class="p">/&gt;</span>
+</pre></div>
+</div>
+<p>If you are worried that the bounds of the layer may change, so that the height changes relative to the width, you may also want to specify the height in the URL to the reflector. This ensures the layer will always be centered and fit on the 400x169 canvas.</p>
+<p>The reflector can also create a simple instance of <a class="reference external" href="http://www.openlayers.org/">OpenLayers</a> that shows the layers you specify in your request. One possible application is to turn the image above into a link that refers to the OpenLayers instance for the same feature, which is especially handy if you think a minority of your users will want to take closer look. To link to this JavaScript application, you need to specify the output format of the reflector: <code class="docutils literal notranslate"><span class="pre">format=application/OpenLayers</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&amp;width=400
+</pre></div>
+</div>
+<p>The image above then becomes</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&amp;layers=topp:states&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;http://localhost:8080/geoserver/wms/reflect?layers=topp:states&amp;width=400&quot;</span> <span class="na">height</span><span class="o">=</span><span class="s">&quot;169&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;400&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>(The a-tags are on separate lines for clarity,  they will in fact result in a space in front and after the image).</p>
+</div>
+<div class="section" id="openlayers-in-an-iframe">
+<h2>OpenLayers in an iframe<a class="headerlink" href="#openlayers-in-an-iframe" title="Permalink to this headline">¶</a></h2>
+<p>Many people do not like iframes, and for good reasons, but they may be appropriate in this case. The following example will run OpenLayers in an iframe.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">iframe</span> <span class="na">src </span><span class="o">=</span><span class="s">&quot;http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&amp;layers=topp:states&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;100%&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">iframe</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Alternatively, you can open OpenLayers in a separate webpage and choose “View Source code” in your browser. By copying the HTML you can insert the OpenLayers client in your own page without using an iframe.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="staticfiles.html" title="previous chapter">Serving Static Files</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="cql/cql_tutorial.html" title="next chapter">CQL and ECQL</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WMS Reflector</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#using-the-wms-reflector">Using the WMS Reflector</a><ul>
+<li><a class="reference internal" href="#example-1">Example 1</a></li>
+<li><a class="reference internal" href="#example-2">Example 2</a></li>
+<li><a class="reference internal" href="#example-3">Example 3</a></li>
+<li><a class="reference internal" href="#example-4">Example 4</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outputting-to-a-webpage">Outputting to a Webpage</a></li>
+<li><a class="reference internal" href="#openlayers-in-an-iframe">OpenLayers in an iframe</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="staticfiles.html" title="previous chapter">Serving Static Files</a></li>
+            <li>Next: <a href="cql/cql_tutorial.html" title="next chapter">CQL and ECQL</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/wmsreflector.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

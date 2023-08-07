@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction to SLD &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Working with SLD" href="working.html" />
+    <link rel="prev" title="SLD Styling" href="index.html" /> 
+  </head><body class="styling/sld/introduction">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+    <li>Introduction to SLD</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="working.html" title="Working with SLD" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="SLD Styling" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="introduction-to-sld">
+<span id="sld-intro"></span><h1>Introduction to SLD<a class="headerlink" href="#introduction-to-sld" title="Permalink to this headline">¶</a></h1>
+<p>Geospatial data has no intrinsic visual component.
+In order to see data, it must be styled.
+Styling specifies color, thickness, and other visible attributes used to render data on a map.</p>
+<p>In GeoServer, styling is accomplished using a markup language called <a class="reference external" href="http://www.opengeospatial.org/standards/sld">Styled Layer Descriptor</a>, or SLD for short.
+SLD is an XML-based markup language and is very powerful, although somewhat complex.
+This page gives an introduction to the capabilities of SLD and how it works within GeoServer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since GeoServer uses SLD exclusively for styling, the terms “SLD” and “style” will often be used interchangeably.</p>
+</div>
+<div class="section" id="sld-concepts">
+<h2>SLD Concepts<a class="headerlink" href="#sld-concepts" title="Permalink to this headline">¶</a></h2>
+<p>In GeoServer styling is most often specified using XML <strong>SLD style documents</strong>.
+Style documents are associated with GeoServer <strong>layers</strong> (<strong>featuretypes</strong>)
+to specify how they should be <strong>rendered</strong>.
+A style document specifies a single <strong>named layer</strong>
+and a <strong>user style</strong> for it.
+The layer and style can have metadata elements
+such as a <strong>name</strong> identifying them,
+a <strong>title</strong> for displaying them,
+and an <strong>abstract</strong> describing them in detail.
+Within the top-level style are one or more <strong>feature type styles</strong>,
+which act as “virtual layers” to provide control over
+rendering order (allowing styling effects such as cased lines for roads).
+Each feature type style contains one or more <strong>rules</strong>,
+which control how styling is applied based
+on feature attributes and zoom level.
+Rules select applicable features by using
+<strong>filters</strong>, which are logical conditions containing <strong>predicates</strong>, <strong>expressions</strong>
+and <strong>filter functions</strong>.
+To specify the details of styling for individual features,
+rules contain any number of <strong>symbolizers</strong>.
+Symbolizers specify styling for <strong>points</strong>, <strong>lines</strong> and <strong>polygons</strong>,
+as well as <strong>rasters</strong> and <strong>text labels</strong>.</p>
+<p>For more information refer to the <a class="reference internal" href="reference/index.html#sld-reference"><span class="std std-ref">SLD Reference</span></a>.</p>
+</div>
+<div class="section" id="types-of-styling">
+<h2>Types of styling<a class="headerlink" href="#types-of-styling" title="Permalink to this headline">¶</a></h2>
+<p>Vector data that GeoServer can serve consists of three classes of shapes:  <strong>Points, lines, and polygons</strong>.
+Lines (one dimensional shapes) are the simplest, as they have only the edge to style (also known as “stroke”).
+Polygons, two dimensional shapes, have an edge and an inside (also known as a “fill”), both of which can be styled differently.
+Points, even though they lack dimension, have both an edge and a fill (not to mention a size) that can be styled.
+For fills, color can be specified; for strokes, color and thickness can be specified.</p>
+<p>GeoServer also serves raster data.  This can be styled with a wide variety of
+control over color palette, opacity, contrast and other parameters.</p>
+<p>More advanced styling is possible as well.
+Points can be specified with well-known shapes like circles, squares, stars, and even custom graphics or text.
+Lines can be styled with a dash styles and hashes.
+Polygons can be filled with a custom tiled graphics.
+Styling can be based on attributes in the data, so that certain features are styled differently.
+Text labels on features are possible as well.
+Styling can also be determined by zoom level, so that features are displayed in a way appropriate to
+their apparent size.
+The possibilities are vast.</p>
+</div>
+<div class="section" id="a-basic-style-example">
+<h2>A basic style example<a class="headerlink" href="#a-basic-style-example" title="Permalink to this headline">¶</a></h2>
+<p>A good way to learn about SLD is to study styling examples.
+The following is a simple SLD that can be applied to a layer that contains points,
+to style them as red circles with a size of 6 pixels.
+(This is the first example in the <a class="reference internal" href="cookbook/points.html#sld-cookbook-points"><span class="std std-ref">Points</span></a> section of the <a class="reference internal" href="cookbook/index.html#sld-cookbook"><span class="std std-ref">SLD Cookbook</span></a>.)</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="lineno"> 2 </span><span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+<span class="lineno"> 3 </span>    <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;</span>
+<span class="lineno"> 4 </span>    <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span>
+<span class="lineno"> 5 </span>    <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+<span class="lineno"> 6 </span>    <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+<span class="lineno"> 7 </span>    <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 8 </span>  <span class="nt">&lt;NamedLayer&gt;</span>
+<span class="lineno"> 9 </span>    <span class="nt">&lt;Name&gt;</span>Simple point<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">10 </span>    <span class="nt">&lt;UserStyle&gt;</span>
+<span class="lineno">11 </span>      <span class="nt">&lt;Title&gt;</span>GeoServer SLD Cook Book: Simple point<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno">12 </span>      <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno">13 </span>        <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">14 </span>          <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno">15 </span>            <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno">16 </span>              <span class="nt">&lt;Mark&gt;</span>
+<span class="lineno">17 </span>                <span class="nt">&lt;WellKnownName&gt;</span>circle<span class="nt">&lt;/WellKnownName&gt;</span>
+<span class="lineno">18 </span>                <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">19 </span>                  <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FF0000<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">20 </span>                <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">21 </span>              <span class="nt">&lt;/Mark&gt;</span>
+<span class="lineno">22 </span>              <span class="nt">&lt;Size&gt;</span>6<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">23 </span>            <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">24 </span>          <span class="nt">&lt;/PointSymbolizer&gt;</span>
+<span class="lineno">25 </span>        <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">26 </span>      <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+<span class="lineno">27 </span>    <span class="nt">&lt;/UserStyle&gt;</span>
+<span class="lineno">28 </span>  <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="lineno">29 </span><span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+<p>Although the example looks long, only a few lines are really important to understand.
+<strong>Line 14</strong> states that a “PointSymbolizer” is to be used to style data as points.
+<strong>Lines 15-17</strong> state that points are to be styled using a graphic shape specified by a “well known name”, in this case a circle.
+SLD provides names for many shapes such as “square”, “star”, “triangle”, etc.
+<strong>Lines 18-20</strong> specify the shape should be filled with a color of <code class="docutils literal notranslate"><span class="pre">#FF0000</span></code> (red).
+This is an RGB color code, written in hexadecimal, in the form of #RRGGBB.
+Finally, <strong>line 22</strong> specifies that the size of the shape is 6 pixels in width.
+The rest of the structure contains metadata about the style, such as a name identifying the style
+and a title for use in legends.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In SLD documents some tags have prefixes, such as <code class="docutils literal notranslate"><span class="pre">ogc:</span></code>.
+This is because they are defined in <strong>XML namespaces</strong>.
+The top-level <code class="docutils literal notranslate"><span class="pre">StyledLayerDescriptor</span></code> tag (<strong>lines 2-7</strong>) specifies two XML namespaces, one called <code class="docutils literal notranslate"><span class="pre">xmlns</span></code>, and one called <code class="docutils literal notranslate"><span class="pre">xmlns:ogc</span></code>.
+The first namespace is the default for the document, so tags belonging to it do not need a prefix.
+Tags belonging to the second require the prefix <code class="docutils literal notranslate"><span class="pre">ogc:</span></code>.
+In fact, the namespace prefixes can be any identifier.
+The first namespace could be called <code class="docutils literal notranslate"><span class="pre">xmlns:sld</span></code> (as it often is) and then all the tags in this example would require an <code class="docutils literal notranslate"><span class="pre">sld:</span></code> prefix.
+The key point is that tags need to have the prefix for the namespace they belong to.</p>
+</div>
+<p>See the <a class="reference internal" href="cookbook/index.html#sld-cookbook"><span class="std std-ref">SLD Cookbook</span></a> for more examples of styling with SLD.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">SLD Styling</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="working.html" title="next chapter">Working with SLD</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Introduction to SLD</a><ul>
+<li><a class="reference internal" href="#sld-concepts">SLD Concepts</a></li>
+<li><a class="reference internal" href="#types-of-styling">Types of styling</a></li>
+<li><a class="reference internal" href="#a-basic-style-example">A basic style example</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">SLD Styling</a></li>
+            <li>Next: <a href="working.html" title="next chapter">Working with SLD</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/introduction.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

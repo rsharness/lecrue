@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoServer Printing Module &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="OGR based WFS Output Format" href="../ogr.html" /> 
+  </head><body class="extensions/printing/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+    <li>GeoServer Printing Module</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="configuration.html" title="Configuration" accesskey="N">Next</a></li>
+  <li>
+    <a href="../ogr.html" title="OGR based WFS Output Format" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="geoserver-printing-module">
+<h1>GeoServer Printing Module<a class="headerlink" href="#geoserver-printing-module" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">printing</span></code> module for GeoServer allows easy hosting of the Mapfish
+printing service within a GeoServer instance.  The Mapfish printing module
+provides an HTTP API for printing that is useful within JavaScript mapping
+applications.  User interface components for interacting with the print service
+are available from the Mapfish and GeoExt projects.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Visit the <a class="reference external" href="http://geoserver.org/download">website download</a> page, locate your release, and download:  <a class="reference external" href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.22.4/extensions/geoserver-2.22.4-printing-plugin.zip">geoserver-2.22.4-printing-plugin.zip</a></p></li>
+<li><p>Extract the contents of the ZIP archive into the <code class="file docutils literal notranslate"><span class="pre">/WEB-INF/lib/</span></code> in the
+GeoServer webapp.  For example, if you have installed the GeoServer binary to
+<code class="file docutils literal notranslate"><span class="pre">/opt/geoserver-2.20/</span></code>, the printing extension JAR files should be
+placed in <code class="file docutils literal notranslate"><span class="pre">/opt/geoserver-2.20/webapps/geoserver/WEB-INF/lib/</span></code>.</p></li>
+<li><p>After extracting the extension, restart GeoServer in order for the changes to
+take effect.  All further configuration can be done with GeoServer running.</p></li>
+</ul>
+</div>
+<div class="section" id="verifying-installation">
+<h2>Verifying Installation<a class="headerlink" href="#verifying-installation" title="Permalink to this headline">¶</a></h2>
+<p>On the first startup after installation, GeoServer should create a print module
+configuration file in <code class="file docutils literal notranslate"><em><span class="pre">GEOSERVER_DATA_DIR</span></em><span class="pre">/printing/config.yaml</span></code>.
+Checking for this file’s existence is a quick way to verify the module is
+installed properly.  It is safe to edit this file; in fact there is currently
+no way to modify the print module settings other than by opening this
+configuration file in a text editor.</p>
+<p>If the module is installed and configured properly, then you will also be able
+to retrieve a list of configured printing parameters from
+<a class="reference external" href="http://localhost:8080/geoserver/pdf/info.json">http://localhost:8080/geoserver/pdf/info.json</a> .  This service must be working
+properly for JavaScript clients to use the printing service.</p>
+<p>Finally, you can test printing in this <a class="reference download internal" download="" href="../../_downloads/4ccfbb571ea292e90fd9c79e8450b0b0/print-example.html"><code class="xref download docutils literal notranslate"><span class="pre">sample</span> <span class="pre">page</span></code></a>. You can load it directly to attempt to produce a
+map from a GeoServer running at <a class="reference external" href="http://localhost:8080/geoserver/">http://localhost:8080/geoserver/</a>.  If you are
+running at a different host and port, you can download the file and
+modify it with your HTML editor of choice to use the proper URL.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This sample script points at the development version of GeoExt.  You can
+modify it for production use, but if you are going to do so you should also
+host your own, minified build of GeoExt and OpenLayers.  The libraries used
+in the sample are subject to change without notice, so pages using them may
+change behavior without warning.</p>
+</div>
+</div>
+<div class="section" id="mapfish-documentation">
+<h2>MapFish documentation<a class="headerlink" href="#mapfish-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">Protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html#multiple-maps-on-a-single-page">Multiple maps on a single page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html#layers-params">Layers Params</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../ogr.html" title="previous chapter">OGR based WFS Output Format</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="configuration.html" title="next chapter">Configuration</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GeoServer Printing Module</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#verifying-installation">Verifying Installation</a></li>
+<li><a class="reference internal" href="#mapfish-documentation">MapFish documentation</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../ogr.html" title="previous chapter">OGR based WFS Output Format</a></li>
+            <li>Next: <a href="configuration.html" title="next chapter">Configuration</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/printing/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

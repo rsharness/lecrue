@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STAC data store &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SOLR data store" href="../solr/index.html" />
+    <link rel="prev" title="Installing the STAC data store" href="install.html" /> 
+  </head><body class="community/stac-datastore/data-store">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">STAC Datastore extension</a> &raquo;</li>
+    <li>STAC data store</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../solr/index.html" title="SOLR data store" accesskey="N">Next</a></li>
+  <li>
+    <a href="install.html" title="Installing the STAC data store" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="stac-data-store">
+<span id="id1"></span><h1>STAC data store<a class="headerlink" href="#stac-data-store" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuring-a-store">
+<h2>Configuring a Store<a class="headerlink" href="#configuring-a-store" title="Permalink to this headline">¶</a></h2>
+<p>In addition to the parameters common to each <code class="docutils literal notranslate"><span class="pre">DataStore</span></code> configuration such as <code class="docutils literal notranslate"><span class="pre">workspace</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code>, and the common HTTP connector parameters, such as connection pooling, using GZIP, user name and password, the page shows the following connection parameters in the dedicated section:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">landingPage</span></code>: this should point to the landing page of the target STAC API</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fetchSize</span></code>: how many items the store will try to fetch per page. The actual number is in control of the server, the store will simply try to suggest this value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">featureTypeItems</span></code>: how many items to read in order to guess the structure of the feature type (GeoServer in general needs a predictable structure)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hardLimit</span></code>: maximum amount of items to fetch from the STAC store, in any request (it’s a good idea to pose a limit, as many STAC APIs host millions of items, and the data transfer is not particularly efficient due to the large size of items, and the paged transfer)</p></li>
+</ul>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/configuration.png" src="../../_images/configuration.png" />
+<p class="caption"><span class="caption-text">STAC datastore configuration</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>STAC items are multi-temporal, so it’s advisable to configure the time dimension when setting
+up the layer, using the <code class="docutils literal notranslate"><span class="pre">datetime</span></code> attribute. This will allow time navigation and reduce the
+number of items returned to a more manageable subset:</p>
+<div class="figure align-default" id="id3">
+<img alt="../../_images/time-vector.png" src="../../_images/time-vector.png" />
+<p class="caption"><span class="caption-text">Setting up time for the layers</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="mosaicking-images-from-a-stac-store">
+<h2>Mosaicking images from a STAC store<a class="headerlink" href="#mosaicking-images-from-a-stac-store" title="Permalink to this headline">¶</a></h2>
+<p>STAC items may point to actual image files among its “assets” data structure. Assets are a top
+level object, not part of the Feature properties, that the store makes available to the image mosaic
+for image mosaicking purposes. The images in question must be Cloud Optimized GeoTIFFs and the
+COG plugin must be installed in GeoServer.</p>
+<p>The STAC store can then be used as the index of an image mosaic, setting up two configuration files:</p>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">datastore.properties</span></code> pointing at the configured STAC server.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">indexer.properties</span></code> indicating the collection to use, setup for the COG usage, and the location of the asset providing the images.</p></li>
+</ul>
+<div class="section" id="simple-mosaic-setup">
+<h3>Simple mosaic setup<a class="headerlink" href="#simple-mosaic-setup" title="Permalink to this headline">¶</a></h3>
+<p>Here is an example <code class="docutils literal notranslate"><span class="pre">datastore.properties</span></code>, pointing at an existing STAC store already configured in GeoServer:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">StoreName</span><span class="o">=</span><span class="n">stac</span>\<span class="p">:</span><span class="n">dlr</span><span class="o">-</span><span class="n">eoc</span>
+</pre></div>
+</div>
+<p>And here is an <code class="docutils literal notranslate"><span class="pre">indexer.properties</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MosaicCRS</span><span class="o">=</span><span class="n">EPSG</span>\<span class="p">:</span><span class="mi">4326</span>
+<span class="n">TimeAttribute</span><span class="o">=</span><span class="n">datetime</span>
+<span class="n">AbsolutePath</span><span class="o">=</span><span class="n">true</span>
+<span class="n">Name</span><span class="o">=</span><span class="n">WSF_2019</span>
+<span class="n">Cog</span><span class="o">=</span><span class="n">true</span>
+<span class="n">Heterogeneous</span><span class="o">=</span><span class="n">true</span>
+<span class="n">HeterogeneousCRS</span><span class="o">=</span><span class="n">false</span>
+<span class="n">TypeName</span><span class="o">=</span><span class="n">WSF_2019</span>
+<span class="n">UseExistingSchema</span><span class="o">=</span><span class="n">true</span>
+<span class="n">LocationAttribute</span><span class="o">=</span><span class="n">assets</span><span class="o">/</span><span class="n">wsf2019</span><span class="o">/</span><span class="n">href</span>
+<span class="n">MaxInitTiles</span><span class="o">=</span><span class="mi">10</span>
+</pre></div>
+</div>
+<p>Notes about the file contents:</p>
+<ul class="simple">
+<li><p>The time dimension is set up and linked to the <code class="docutils literal notranslate"><span class="pre">datetime</span></code> attribute</p></li>
+<li><p>The mosaic is setup to allow heterogeneous resolution images, but in this particular case, assumes that all images are in the same CRS.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">TypeName</span></code> property points to the target STAC collection.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">LocationAttribute</span></code> uses a JSONPointer to the desired asset URL.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MaxInitTiles</span></code> is configured so that the image mosaic does not try to scan the entire index to figure out
+a common image structure, only the first 10 items returned by the STAC API will be used for auto-configuration.</p></li>
+</ul>
+</div>
+<div class="section" id="multi-band-mosaic-setup">
+<h3>Multi-band mosaic setup<a class="headerlink" href="#multi-band-mosaic-setup" title="Permalink to this headline">¶</a></h3>
+<p>It’s also possible to mosaic images whose bands are offered as separate images and in different
+coordinate reference systems, with a more complex setup. Here is an example for a false color
+Sentinel 2 mosaic, using a coverage view to merge the images back into a single RGB composite.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">datastore.properties</span></code> configures two new properties, enabling query caching (as the coverage
+view machinery will load each band in turn, repeating the same queries):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">StoreName</span><span class="o">=</span><span class="n">stac</span>\<span class="p">:</span><span class="n">dlr</span><span class="o">-</span><span class="n">loose</span>
+<span class="n">QueryCacheMaxAge</span><span class="o">=</span><span class="mi">10000</span>
+<span class="n">QueryCacheMaxFeatures</span><span class="o">=</span><span class="mi">1000</span>
+</pre></div>
+</div>
+<p>The indexer must instead be provided in XML format, to configure multiple coverage and their
+attributes:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</span>
+<span class="nt">&lt;Indexer&gt;</span>
+  <span class="nt">&lt;domains&gt;</span>
+     <span class="nt">&lt;domain</span> <span class="na">name=</span><span class="s">&quot;time&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;attributes&gt;&lt;attribute&gt;</span>datetime<span class="nt">&lt;/attribute&gt;&lt;/attributes&gt;</span>
+     <span class="nt">&lt;/domain&gt;</span>
+     <span class="nt">&lt;domain</span> <span class="na">name=</span><span class="s">&quot;crs&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;attributes&gt;&lt;attribute&gt;</span>proj:epsg<span class="nt">&lt;/attribute&gt;&lt;/attributes&gt;</span>
+     <span class="nt">&lt;/domain&gt;</span>
+  <span class="nt">&lt;/domains&gt;</span>
+  <span class="nt">&lt;coverages&gt;</span>
+    <span class="nt">&lt;coverage&gt;</span>
+      <span class="nt">&lt;name&gt;</span>B04<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;domains&gt;</span>
+        <span class="nt">&lt;domain</span> <span class="na">ref=</span><span class="s">&quot;time&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;domain</span> <span class="na">ref=</span><span class="s">&quot;crs&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/domains&gt;</span>
+      <span class="nt">&lt;parameters&gt;</span>
+          <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;LocationAttribute&quot;</span> <span class="na">value=</span><span class="s">&quot;assets/B04/href&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/parameters&gt;</span>
+    <span class="nt">&lt;/coverage&gt;</span>
+    <span class="nt">&lt;coverage&gt;</span>
+      <span class="nt">&lt;name&gt;</span>B03<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;domains&gt;</span>
+        <span class="nt">&lt;domain</span> <span class="na">ref=</span><span class="s">&quot;time&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;domain</span> <span class="na">ref=</span><span class="s">&quot;crs&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/domains&gt;</span>
+      <span class="nt">&lt;parameters&gt;</span>
+          <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;LocationAttribute&quot;</span> <span class="na">value=</span><span class="s">&quot;assets/B03/href&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/parameters&gt;</span>
+    <span class="nt">&lt;/coverage&gt;</span>
+    <span class="nt">&lt;coverage&gt;</span>
+      <span class="nt">&lt;name&gt;</span>B02<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;domains&gt;</span>
+        <span class="nt">&lt;domain</span> <span class="na">ref=</span><span class="s">&quot;time&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;domain</span> <span class="na">ref=</span><span class="s">&quot;crs&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/domains&gt;</span>
+      <span class="nt">&lt;parameters&gt;</span>
+          <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;LocationAttribute&quot;</span> <span class="na">value=</span><span class="s">&quot;assets/B02/href&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/parameters&gt;</span>
+    <span class="nt">&lt;/coverage&gt;</span>
+  <span class="nt">&lt;/coverages&gt;</span>
+  <span class="nt">&lt;parameters&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;MosaicCRS&quot;</span> <span class="na">value=</span><span class="s">&quot;EPSG:4326&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;AbsolutePath&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;Cog&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;Heterogeneous&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;HeterogeneousCRS&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;UseExistingSchema&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;TypeName&quot;</span> <span class="na">value=</span><span class="s">&quot;S2_L2A_MSI_COG&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">&quot;MaxInitTiles&quot;</span> <span class="na">value=</span><span class="s">&quot;10&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/parameters&gt;</span>
+<span class="nt">&lt;/Indexer&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Some notes about the configuration:</p>
+<ul class="simple">
+<li><p>The time and crs attributes are declared as dimensions.</p></li>
+<li><p>Each coverage has a different <code class="docutils literal notranslate"><span class="pre">LocationAttribute</span></code> specification.</p></li>
+<li><p>The mosaic heterogeneous CRS support is enabled.</p></li>
+</ul>
+<p>Once the mosaic is configured in GeoServer, create a new coverage view setting up the bands
+according to the desired order:</p>
+<div class="figure align-default" id="id4">
+<img alt="../../_images/coverage-view.png" src="../../_images/coverage-view.png" />
+<p class="caption"><span class="caption-text">Creating a coverage view from a multi-band mosaic</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>Also remember to configure the time dimension for this layer, for the same reasons explained
+in the vector data section above.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install.html" title="previous chapter">Installing the STAC data store</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../solr/index.html" title="next chapter">SOLR data store</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">STAC data store</a><ul>
+<li><a class="reference internal" href="#configuring-a-store">Configuring a Store</a></li>
+<li><a class="reference internal" href="#mosaicking-images-from-a-stac-store">Mosaicking images from a STAC store</a><ul>
+<li><a class="reference internal" href="#simple-mosaic-setup">Simple mosaic setup</a></li>
+<li><a class="reference internal" href="#multi-band-mosaic-setup">Multi-band mosaic setup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install.html" title="previous chapter">Installing the STAC data store</a></li>
+            <li>Next: <a href="../solr/index.html" title="next chapter">SOLR data store</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/stac-datastore/data-store.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

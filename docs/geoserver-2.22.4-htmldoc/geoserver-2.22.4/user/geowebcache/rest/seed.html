@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seeding and Truncating &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Disk Quota" href="diskquota.html" />
+    <link rel="prev" title="Managing Layers" href="layers.html" /> 
+  </head><body class="geowebcache/rest/seed">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">GeoWebCache</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GeoWebCache REST API</a> &raquo;</li>
+    <li>Seeding and Truncating</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="diskquota.html" title="Disk Quota" accesskey="N">Next</a></li>
+  <li>
+    <a href="layers.html" title="Managing Layers" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="seeding-and-truncating">
+<span id="gwc-rest-seed"></span><h1>Seeding and Truncating<a class="headerlink" href="#seeding-and-truncating" title="Permalink to this headline">¶</a></h1>
+<p>The GeoWebCache REST API provides a RESTful interface through which users can add or remove tiles from the cache on a per-layer basis.</p>
+<div class="section" id="operations">
+<h2>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h2>
+<p>URL: <code class="docutils literal notranslate"><span class="pre">/gwc/rest/seed/&lt;layer&gt;.&lt;format&gt;</span></code></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Action</p></th>
+<th class="head"><p>Return Code</p></th>
+<th class="head"><p>Formats</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p>Return the status of the seeding threads</p></td>
+<td><p>200</p></td>
+<td><p>JSON</p></td>
+</tr>
+<tr class="row-odd"><td><p>POST</p></td>
+<td><p>Issue a seed or truncate task request</p></td>
+<td><p>200</p></td>
+<td><p>XML, JSON</p></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>DELETE</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Representations</strong>:</p>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../_downloads/263b64422154383a58a820af3a249cea/seed_xml.txt"><code class="xref download docutils literal notranslate"><span class="pre">XML</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../_downloads/d18e83d63b87a994e58ef7f5117347cb/seed_json.txt"><code class="xref download docutils literal notranslate"><span class="pre">JSON</span></code></a></p></li>
+</ul>
+<p>The examples below use the <a class="reference external" href="http://curl.haxx.se/">cURL</a> tool, though the examples apply to any HTTP-capable tool or library.</p>
+<div class="section" id="seeding">
+<h3>Seeding<a class="headerlink" href="#seeding" title="Permalink to this headline">¶</a></h3>
+<p>The following XML request initiates a seeding task:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -v -u admin:geoserver -XPOST -H &quot;Content-type: text/xml&quot; -d &#39;&lt;seedRequest&gt;&lt;name&gt;nurc:Arc_Sample&lt;/name&gt;&lt;srs&gt;&lt;number&gt;4326&lt;/number&gt;&lt;/srs&gt;&lt;zoomStart&gt;1&lt;/zoomStart&gt;&lt;zoomStop&gt;12&lt;/zoomStop&gt;&lt;format&gt;image/png&lt;/format&gt;&lt;type&gt;truncate&lt;/type&gt;&lt;threadCount&gt;2&lt;/threadCount&gt;&lt;/seedRequest&gt;&#39;  &quot;http://localhost:8080/geoserver/gwc/rest/seed/nurc:Arc_Sample.xml&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">About</span> <span class="n">to</span> <span class="n">connect</span><span class="p">()</span> <span class="n">to</span> <span class="n">localhost</span> <span class="n">port</span> <span class="mi">8080</span> <span class="p">(</span><span class="c1">#0)</span>
+<span class="o">*</span>   <span class="n">Trying</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">...</span> <span class="n">connected</span>
+<span class="o">*</span> <span class="n">Connected</span> <span class="n">to</span> <span class="n">localhost</span> <span class="p">(</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">)</span> <span class="n">port</span> <span class="mi">8080</span> <span class="p">(</span><span class="c1">#0)</span>
+<span class="o">*</span> <span class="n">Server</span> <span class="n">auth</span> <span class="n">using</span> <span class="n">Basic</span> <span class="k">with</span> <span class="n">user</span> <span class="s1">&#39;admin&#39;</span>
+<span class="o">&gt;</span> <span class="n">POST</span> <span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">gwc</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">seed</span><span class="o">/</span><span class="n">nurc</span><span class="p">:</span><span class="n">Arc_Sample</span><span class="o">.</span><span class="n">xml</span> <span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span>
+<span class="o">&gt;</span> <span class="n">Authorization</span><span class="p">:</span> <span class="n">Basic</span> <span class="n">YWRtaW46Z2Vvc2VydmVy</span>
+<span class="o">&gt;</span> <span class="n">User</span><span class="o">-</span><span class="n">Agent</span><span class="p">:</span> <span class="n">curl</span><span class="o">/</span><span class="mf">7.21</span><span class="o">.</span><span class="mi">3</span> <span class="p">(</span><span class="n">x86_64</span><span class="o">-</span><span class="n">pc</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span><span class="p">)</span> <span class="n">libcurl</span><span class="o">/</span><span class="mf">7.21</span><span class="o">.</span><span class="mi">3</span> <span class="n">OpenSSL</span><span class="o">/</span><span class="mf">0.9</span><span class="o">.</span><span class="mi">8</span><span class="n">o</span> <span class="n">zlib</span><span class="o">/</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">3.4</span> <span class="n">libidn</span><span class="o">/</span><span class="mf">1.18</span>
+<span class="o">&gt;</span> <span class="n">Host</span><span class="p">:</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span>
+<span class="o">&gt;</span> <span class="n">Accept</span><span class="p">:</span> <span class="o">*/*</span>
+<span class="o">&gt;</span> <span class="n">Content</span><span class="o">-</span><span class="nb">type</span><span class="p">:</span> <span class="n">text</span><span class="o">/</span><span class="n">xml</span>
+<span class="o">&gt;</span> <span class="n">Content</span><span class="o">-</span><span class="n">Length</span><span class="p">:</span> <span class="mi">209</span>
+<span class="o">&gt;</span>
+<span class="o">&lt;</span> <span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span> <span class="mi">200</span> <span class="n">OK</span>
+</pre></div>
+</div>
+<p>The following is a more complete XML fragment for a seed request, including parameter filters:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;seedRequest&gt;</span>
+  <span class="nt">&lt;name&gt;</span>topp:states<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;bounds&gt;</span>
+    <span class="nt">&lt;coords&gt;</span>
+      <span class="nt">&lt;double&gt;</span>-2495667.977678598<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;double&gt;</span>-2223677.196231552<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;double&gt;</span>3291070.6104286816<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;double&gt;</span>959189.3312465074<span class="nt">&lt;/double&gt;</span>
+    <span class="nt">&lt;/coords&gt;</span>
+  <span class="nt">&lt;/bounds&gt;</span>
+
+  <span class="c">&lt;!-- These are listed on http://localhost:8080/geoserver/gwc/demo --&gt;</span>
+  <span class="nt">&lt;gridSetId&gt;</span>EPSG:2163<span class="nt">&lt;/gridSetId&gt;</span>
+  <span class="nt">&lt;zoomStart&gt;</span>0<span class="nt">&lt;/zoomStart&gt;</span>
+  <span class="nt">&lt;zoomStop&gt;</span>2<span class="nt">&lt;/zoomStop&gt;</span>
+  <span class="nt">&lt;format&gt;</span>image/png<span class="nt">&lt;/format&gt;</span>
+
+  <span class="c">&lt;!-- type can be seed, reseed, or truncate --&gt;</span>
+  <span class="nt">&lt;type&gt;</span>truncate<span class="nt">&lt;/type&gt;</span>
+
+  <span class="c">&lt;!-- Number of seeding threads to run in parallel.</span>
+<span class="c">       If type == truncate only one thread will be used</span>
+<span class="c">       regardless of this parameter --&gt;</span>
+  <span class="nt">&lt;threadCount&gt;</span>1<span class="nt">&lt;/threadCount&gt;</span>
+  <span class="c">&lt;!-- Parameter filters --&gt;</span>
+  <span class="nt">&lt;parameters&gt;</span>
+    <span class="nt">&lt;entry&gt;</span>
+      <span class="nt">&lt;string&gt;</span>STYLES<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;string&gt;</span>pophatch<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;entry&gt;</span>
+      <span class="nt">&lt;string&gt;</span>CQL_FILTER<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;string&gt;</span>TOTPOP &gt; 10000<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;/entry&gt;</span>
+  <span class="nt">&lt;/parameters&gt;</span>
+<span class="nt">&lt;/seedRequest&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="truncating">
+<h3>Truncating<a class="headerlink" href="#truncating" title="Permalink to this headline">¶</a></h3>
+<p>The following XML request initiates a truncating task:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -v -u admin:geoserver -XPOST -H &quot;Content-type: application/json&quot; -d &quot;{&#39;seedRequest&#39;:{&#39;name&#39;:&#39;topp:states&#39;,&#39;bounds&#39;:{&#39;coords&#39;:{ &#39;double&#39;:[&#39;-124.0&#39;,&#39;22.0&#39;,&#39;66.0&#39;,&#39;72.0&#39;]}},&#39;srs&#39;:{&#39;number&#39;:4326},&#39;zoomStart&#39;:1,&#39;zoomStop&#39;:12,&#39;format&#39;:&#39;image\/png&#39;,&#39;type&#39;:&#39;truncate&#39;,&#39;threadCount&#39;:4}}}&quot;  &quot;http://localhost:8080/geoserver/gwc/rest/seed/nurc:Arc_Sample.json&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">About</span> <span class="n">to</span> <span class="n">connect</span><span class="p">()</span> <span class="n">to</span> <span class="n">localhost</span> <span class="n">port</span> <span class="mi">8080</span> <span class="p">(</span><span class="c1">#0)</span>
+<span class="o">*</span>   <span class="n">Trying</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">...</span> <span class="n">connected</span>
+<span class="o">*</span> <span class="n">Connected</span> <span class="n">to</span> <span class="n">localhost</span> <span class="p">(</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">)</span> <span class="n">port</span> <span class="mi">8080</span> <span class="p">(</span><span class="c1">#0)</span>
+<span class="o">*</span> <span class="n">Server</span> <span class="n">auth</span> <span class="n">using</span> <span class="n">Basic</span> <span class="k">with</span> <span class="n">user</span> <span class="s1">&#39;admin&#39;</span>
+<span class="o">&gt;</span> <span class="n">POST</span> <span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">gwc</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">seed</span><span class="o">/</span><span class="n">nurc</span><span class="p">:</span><span class="n">Arc_Sample</span><span class="o">.</span><span class="n">json</span> <span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span>
+<span class="o">&gt;</span> <span class="n">Authorization</span><span class="p">:</span> <span class="n">Basic</span> <span class="n">YWRtaW46Z2Vvc2VydmVy</span>
+<span class="o">&gt;</span> <span class="n">User</span><span class="o">-</span><span class="n">Agent</span><span class="p">:</span> <span class="n">curl</span><span class="o">/</span><span class="mf">7.21</span><span class="o">.</span><span class="mi">3</span> <span class="p">(</span><span class="n">x86_64</span><span class="o">-</span><span class="n">pc</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span><span class="p">)</span> <span class="n">libcurl</span><span class="o">/</span><span class="mf">7.21</span><span class="o">.</span><span class="mi">3</span> <span class="n">OpenSSL</span><span class="o">/</span><span class="mf">0.9</span><span class="o">.</span><span class="mi">8</span><span class="n">o</span> <span class="n">zlib</span><span class="o">/</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">3.4</span> <span class="n">libidn</span><span class="o">/</span><span class="mf">1.18</span>
+<span class="o">&gt;</span> <span class="n">Host</span><span class="p">:</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span>
+<span class="o">&gt;</span> <span class="n">Accept</span><span class="p">:</span> <span class="o">*/*</span>
+<span class="o">&gt;</span> <span class="n">Content</span><span class="o">-</span><span class="nb">type</span><span class="p">:</span> <span class="n">application</span><span class="o">/</span><span class="n">json</span>
+<span class="o">&gt;</span> <span class="n">Content</span><span class="o">-</span><span class="n">Length</span><span class="p">:</span> <span class="mi">205</span>
+<span class="o">&gt;</span>
+<span class="o">&lt;</span> <span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span> <span class="mi">200</span> <span class="n">OK</span>
+<span class="o">&lt;</span> <span class="n">Date</span><span class="p">:</span> <span class="n">Fri</span><span class="p">,</span> <span class="mi">14</span> <span class="n">Oct</span> <span class="mi">2011</span> <span class="mi">22</span><span class="p">:</span><span class="mi">09</span><span class="p">:</span><span class="mi">21</span> <span class="n">GMT</span>
+<span class="o">&lt;</span> <span class="n">Server</span><span class="p">:</span> <span class="n">Noelios</span><span class="o">-</span><span class="n">Restlet</span><span class="o">-</span><span class="n">Engine</span><span class="o">/</span><span class="mf">1.0</span><span class="o">..</span><span class="mi">8</span>
+<span class="o">&lt;</span> <span class="n">Transfer</span><span class="o">-</span><span class="n">Encoding</span><span class="p">:</span> <span class="n">chunked</span>
+<span class="o">&lt;</span>
+<span class="o">*</span> <span class="n">Connection</span> <span class="c1">#0 to host localhost left intact</span>
+<span class="o">*</span> <span class="n">Closing</span> <span class="n">connection</span> <span class="c1">#0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="querying-running-tasks">
+<h2>Querying running tasks<a class="headerlink" href="#querying-running-tasks" title="Permalink to this headline">¶</a></h2>
+<p>URL: <code class="docutils literal notranslate"><span class="pre">/gwc/rest/seed[/&lt;layer&gt;].json</span></code></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Action</p></th>
+<th class="head"><p>Return Code</p></th>
+<th class="head"><p>Formats</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p>Get the global or per layer state of running and pending tasks</p></td>
+<td><p>200</p></td>
+<td><p>JSON</p></td>
+</tr>
+<tr class="row-odd"><td><p>POST</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>DELETE</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="getting-current-state-of-the-seeding-threads">
+<h3>Getting current state of the seeding threads<a class="headerlink" href="#getting-current-state-of-the-seeding-threads" title="Permalink to this headline">¶</a></h3>
+<p>Sending a GET request to the <code class="docutils literal notranslate"><span class="pre">/gwc/rest/seed.json</span></code> resource returns a list of pending (scheduled) and running tasks for all the layers.</p>
+<p>Sending a GET request to the <code class="docutils literal notranslate"><span class="pre">/gwc/rest/seed/&lt;layer</span> <span class="pre">name&gt;.json</span></code> resource returns a list of pending (scheduled) and running tasks for that specific layer.</p>
+<p>The returned content is a JSON array of the form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;long-array-array&quot;</span><span class="p">:[[</span><span class="o">&lt;</span><span class="n">long</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">long</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">long</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">long</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">long</span><span class="o">&gt;</span><span class="p">],</span><span class="o">...</span><span class="p">]}</span>
+</pre></div>
+</div>
+<p>If there are no pending or running tasks, the returned array is empty:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;long-array-array&quot;</span><span class="p">:[]}</span>
+</pre></div>
+</div>
+<p>The returned array of arrays contains one array per seeding/truncating task.
+The meaning of each long value in each thread array is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">tiles</span> <span class="n">processed</span><span class="p">,</span> <span class="n">total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">tiles</span> <span class="n">to</span> <span class="n">process</span><span class="p">,</span> <span class="n">estimated</span> <span class="n">remaining</span> <span class="n">time</span> <span class="p">(</span><span class="ow">in</span> <span class="n">seconds</span><span class="p">),</span> <span class="n">Task</span> <span class="n">ID</span><span class="p">,</span> <span class="n">Task</span> <span class="n">status</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">Task</span> <span class="pre">Status</span></code> value will be one of the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="mi">1</span> <span class="o">=</span> <span class="n">ABORTED</span>
+ <span class="mi">0</span> <span class="o">=</span> <span class="n">PENDING</span>
+ <span class="mi">1</span> <span class="o">=</span> <span class="n">RUNNING</span>
+ <span class="mi">2</span> <span class="o">=</span> <span class="n">DONE</span>
+</pre></div>
+</div>
+<p>The example below returns the current state of tasks for the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> layer:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -u &lt;user&gt;:&lt;password&gt; -v -XGET http://localhost:8080/geoserver/gwc/rest/seed/topp:states.json</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;long-array-array&quot;</span><span class="p">:[[</span><span class="mi">17888</span><span class="p">,</span><span class="mi">44739250</span><span class="p">,</span><span class="mi">18319</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">17744</span><span class="p">,</span><span class="mi">44739250</span><span class="p">,</span><span class="mi">18468</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">16608</span><span class="p">,</span><span class="mi">44739250</span><span class="p">,</span><span class="mi">19733</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">]]}</span>
+</pre></div>
+</div>
+<p>In the above response, tasks <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">2</span></code>  for the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> layer are running, and
+tasks <code class="docutils literal notranslate"><span class="pre">3</span></code> and <code class="docutils literal notranslate"><span class="pre">4</span></code> are in a pending state waiting for an available thread.</p>
+<p>The example below returns a list of tasks for all the layers.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -u &lt;user&gt;:&lt;password&gt; -XGET http://localhost:8080/geoserver/gwc/rest/seed.json</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;long-array-array&quot;</span><span class="p">:[[</span><span class="mi">2240</span><span class="p">,</span><span class="mi">327426</span><span class="p">,</span><span class="mi">1564</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2368</span><span class="p">,</span><span class="mi">327426</span><span class="p">,</span><span class="mi">1477</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2272</span><span class="p">,</span><span class="mi">327426</span><span class="p">,</span><span class="mi">1541</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2176</span><span class="p">,</span><span class="mi">327426</span><span class="p">,</span><span class="mi">1611</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1056</span><span class="p">,</span><span class="mi">15954794690</span><span class="p">,</span><span class="mi">79320691</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1088</span><span class="p">,</span><span class="mi">15954794690</span><span class="p">,</span><span class="mi">76987729</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1040</span><span class="p">,</span><span class="mi">15954794690</span><span class="p">,</span><span class="mi">80541010</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1104</span><span class="p">,</span><span class="mi">15954794690</span><span class="p">,</span><span class="mi">75871965</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">1</span><span class="p">]]}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="terminating-running-tasks">
+<h2>Terminating running tasks<a class="headerlink" href="#terminating-running-tasks" title="Permalink to this headline">¶</a></h2>
+<p>URL: <code class="docutils literal notranslate"><span class="pre">/gwc/rest/seed[/&lt;layer&gt;]</span></code></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Action</p></th>
+<th class="head"><p>Return Code</p></th>
+<th class="head"><p>Formats</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>POST</p></td>
+<td><p>Issue a kill running and/or pending tasks request</p></td>
+<td><p>200</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>DELETE</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>A POST request to the <code class="docutils literal notranslate"><span class="pre">/gwc/rest/seed</span></code> resource terminates pending and/or running tasks for <strong>all layers</strong>. A POST request to the <code class="docutils literal notranslate"><span class="pre">/gwc/rest/seed/&lt;layername&gt;</span></code> resource terminates pending and/or running tasks for a specific layer.</p>
+<p>It is possible to terminate individual or all pending and/or running tasks. Use the parameter <code class="docutils literal notranslate"><span class="pre">kill_all</span></code> with one of the following values: <code class="docutils literal notranslate"><span class="pre">running</span></code>, <code class="docutils literal notranslate"><span class="pre">pending</span></code>, or <code class="docutils literal notranslate"><span class="pre">all</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For backward compatibility, the <code class="docutils literal notranslate"><span class="pre">kill_all</span></code> parameter value <code class="docutils literal notranslate"><span class="pre">1</span></code> is also accepted and is equivalent to <code class="docutils literal notranslate"><span class="pre">running</span></code>.</p>
+</div>
+<p>The following request terminates all running seed and truncate tasks.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -v -u admin:geoserver -d &quot;kill_all=all&quot;  &quot;http://localhost:8080/geoserver/gwc/rest/seed&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">About</span> <span class="n">to</span> <span class="n">connect</span><span class="p">()</span> <span class="n">to</span> <span class="n">localhost</span> <span class="n">port</span> <span class="mi">8080</span> <span class="p">(</span><span class="c1">#0)</span>
+<span class="o">*</span>   <span class="n">Trying</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">...</span> <span class="n">connected</span>
+<span class="o">&lt;</span> <span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span> <span class="mi">200</span> <span class="n">OK</span>
+<span class="o">&lt;</span> <span class="n">Date</span><span class="p">:</span> <span class="n">Fri</span><span class="p">,</span> <span class="mi">14</span> <span class="n">Oct</span> <span class="mi">2011</span> <span class="mi">22</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mi">04</span> <span class="n">GMT</span>
+<span class="o">&lt;</span> <span class="n">Server</span><span class="p">:</span> <span class="n">Noelios</span><span class="o">-</span><span class="n">Restlet</span><span class="o">-</span><span class="n">Engine</span><span class="o">/</span><span class="mf">1.0</span><span class="o">..</span><span class="mi">8</span>
+<span class="o">&lt;</span> <span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="p">:</span> <span class="n">text</span><span class="o">/</span><span class="n">html</span><span class="p">;</span> <span class="n">charset</span><span class="o">=</span><span class="n">ISO</span><span class="o">-</span><span class="mi">8859</span><span class="o">-</span><span class="mi">1</span>
+<span class="o">&lt;</span> <span class="n">Content</span><span class="o">-</span><span class="n">Length</span><span class="p">:</span> <span class="mi">426</span>
+<span class="o">&lt;</span>
+<span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+<span class="o">...</span>
+<span class="o">*</span> <span class="n">Connection</span> <span class="c1">#0 to host localhost left intact</span>
+<span class="o">*</span> <span class="n">Closing</span> <span class="n">connection</span> <span class="c1">#0</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="layers.html" title="previous chapter">Managing Layers</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="diskquota.html" title="next chapter">Disk Quota</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Seeding and Truncating</a><ul>
+<li><a class="reference internal" href="#operations">Operations</a><ul>
+<li><a class="reference internal" href="#seeding">Seeding</a></li>
+<li><a class="reference internal" href="#truncating">Truncating</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#querying-running-tasks">Querying running tasks</a><ul>
+<li><a class="reference internal" href="#getting-current-state-of-the-seeding-threads">Getting current state of the seeding threads</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#terminating-running-tasks">Terminating running tasks</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="layers.html" title="previous chapter">Managing Layers</a></li>
+            <li>Next: <a href="diskquota.html" title="next chapter">Disk Quota</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/geowebcache/rest/seed.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KML Scoring &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Web Feature Service (WFS)" href="../../../wfs/index.html" />
+    <link rel="prev" title="KML Regionation" href="kmlregionation.html" /> 
+  </head><body class="services/wms/googleearth/features/kmlscoring">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Google Earth</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features</a> &raquo;</li>
+    <li>KML Scoring</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../../../wfs/index.html" title="Web Feature Service (WFS)" accesskey="N">Next</a></li>
+  <li>
+    <a href="kmlregionation.html" title="KML Regionation" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="kml-scoring">
+<span id="ge-feature-kml-scoring"></span><h1>KML Scoring<a class="headerlink" href="#kml-scoring" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>KML scoring only applies when using the super-overlay mode <code class="docutils literal notranslate"><span class="pre">refresh</span></code>.  See <a class="reference internal" href="kmlsuperoverlays.html#ge-feature-kml-super-overlays"><span class="std std-ref">KML Super-Overlays</span></a> for more information.</p>
+</div>
+<p>GeoServer can return KML in one of two forms. The first is as a number of placemark elements (vectors). Each placemark corresponds to a feature in the underlying dataset. This form only applies to vector datasets.</p>
+<p>The second form is as an overlay (image). In this form the rendering is done by the GeoServer WMS and only the resulting graphic is sent to Google Earth. This is the only form available for raster datasets, but can be applied to vector datasets as well.</p>
+<p>There are advantages to and disadvantages to each output mode when rendering vector data.  Placemarks look nicer, but there can be performance problems with Google Earth if the data set is large. Overlays put less of a strain on Google Earth, but aren’t as nice looking.</p>
+<p>The following shows the same dataset rendered in Placemark form on the top and Overlay form on the bottom.</p>
+<div class="figure align-center">
+<img alt="../../../../_images/vector1.png" src="../../../../_images/vector1.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../../../_images/raster.png" src="../../../../_images/raster.png" />
+</div>
+<p>KML scoring is the process of determining whether to render features as rasters or as vectors.</p>
+<div class="section" id="the-kmscore-attribute">
+<h2>The kmscore attribute<a class="headerlink" href="#the-kmscore-attribute" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer makes the determination on whether to render a layer as raster or vector based on how many features are in the data set and an attribute called <code class="docutils literal notranslate"><span class="pre">kmscore</span></code>.  The <code class="docutils literal notranslate"><span class="pre">kmscore</span></code> attribute determines the maximum amount of vector features rendered.  It is calculated by this formula:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">maximum</span> <span class="n">number</span> <span class="n">of</span> <span class="n">features</span> <span class="o">=</span> <span class="mi">10</span><span class="o">^</span><span class="p">(</span><span class="n">kmscore</span><span class="o">/</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following table shows the values of this threshold for various values of the <code class="docutils literal notranslate"><span class="pre">kmscore</span></code> parameter:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>kmscore</strong></p></td>
+<td><p><strong>Maximum # of features</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>Force overlay/raster output</p></td>
+</tr>
+<tr class="row-odd"><td><p>10</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>20</p></td>
+<td><p>21</p></td>
+</tr>
+<tr class="row-odd"><td><p>30</p></td>
+<td><p>100</p></td>
+</tr>
+<tr class="row-even"><td><p>40</p></td>
+<td><p>Approx. 450</p></td>
+</tr>
+<tr class="row-odd"><td><p>50</p></td>
+<td><p>(<em>default</em>) Approx. 2150</p></td>
+</tr>
+<tr class="row-even"><td><p>60</p></td>
+<td><p>Approx. 10,000</p></td>
+</tr>
+<tr class="row-odd"><td><p>70</p></td>
+<td><p>Approx. 45,000</p></td>
+</tr>
+<tr class="row-even"><td><p>80</p></td>
+<td><p>Approx. 200,000</p></td>
+</tr>
+<tr class="row-odd"><td><p>90</p></td>
+<td><p>Approx. 1,000,000</p></td>
+</tr>
+<tr class="row-even"><td><p>100</p></td>
+<td><p>Force placemark/vector output</p></td>
+</tr>
+</tbody>
+</table>
+<p>The syntax for specifying <code class="docutils literal notranslate"><span class="pre">kmscore</span></code> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kmscore</span><span class="o">=&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">&lt;value&gt;</span></code> is an integer between 0 and 100.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/kml?layers=topp:states&amp;mode=refresh&amp;kmscore=20
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">kmscore</span></code> attribute will be ignored if using a reflector mode other than <code class="docutils literal notranslate"><span class="pre">refresh</span></code>.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="kmlregionation.html" title="previous chapter">KML Regionation</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../../../wfs/index.html" title="next chapter">Web Feature Service (WFS)</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">KML Scoring</a><ul>
+<li><a class="reference internal" href="#the-kmscore-attribute">The kmscore attribute</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="kmlregionation.html" title="previous chapter">KML Regionation</a></li>
+            <li>Next: <a href="../../../wfs/index.html" title="next chapter">Web Feature Service (WFS)</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/features/kmlscoring.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

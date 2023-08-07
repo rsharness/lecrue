@@ -1,0 +1,787 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cite Test Guide &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Translating GeoServer" href="../translation.html" />
+    <link rel="prev" title="Release Testing Checklist" href="../release-testing-checklist/index.html" /> 
+  </head><body class="cite-test-guide/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+    <li>Cite Test Guide</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../translation.html" title="Translating GeoServer" accesskey="N">Next</a></li>
+  <li>
+    <a href="../release-testing-checklist/index.html" title="Release Testing Checklist" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="cite-test-guide">
+<span id="id1"></span><h1><a class="toc-backref" href="#id12">Cite Test Guide</a><a class="headerlink" href="#cite-test-guide" title="Permalink to this headline">¶</a></h1>
+<p>A step by step guide to the GeoServer Compliance Interoperability Test Engine (CITE).</p>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#cite-test-guide" id="id12">Cite Test Guide</a></p>
+<ul>
+<li><p><a class="reference internal" href="#check-out-cite-suite-tests" id="id13">Check out CITE suite tests</a></p></li>
+<li><p><a class="reference internal" href="#requirements" id="id14">Requirements:</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#cite-automation-tests-with-docker" id="id15">CITE automation tests with docker</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id16">Requirements:</a></p></li>
+<li><p><a class="reference internal" href="#steps" id="id17">Steps:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#set-up-the-environment" id="id18">Set-up the environment.</a></p></li>
+<li><p><a class="reference internal" href="#running-the-suite-tests" id="id19">Running the suite tests.</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#run-cite-test-suites-in-local-pc" id="id20">Run CITE Test Suites in local pc</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id4" id="id21">Requirements:</a></p></li>
+<li><p><a class="reference internal" href="#run-wfs-1-0-tests" id="id22">Run WFS 1.0 tests</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id5" id="id23">Requirements:</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#run-wfs-1-1-tests" id="id24">Run WFS 1.1 tests</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id6" id="id25">Requirements:</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#run-wms-1-1-tests" id="id26">Run WMS 1.1 tests</a></p></li>
+<li><p><a class="reference internal" href="#run-wcs-1-0-tests" id="id27">Run WCS 1.0 tests</a></p></li>
+<li><p><a class="reference internal" href="#run-wcs-1-1-tests" id="id28">Run WCS 1.1 tests</a></p></li>
+<li><p><a class="reference internal" href="#run-wms-1-3-tests" id="id29">Run WMS 1.3 tests</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="check-out-cite-suite-tests">
+<h2><a class="toc-backref" href="#id13">Check out CITE suite tests</a><a class="headerlink" href="#check-out-cite-suite-tests" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The CITE suite tests are available at <a class="reference external" href="https://github.com/opengeospatial">Open Geospatial Consortium</a>.</p>
+</div>
+</div>
+<div class="section" id="requirements">
+<h2><a class="toc-backref" href="#id14">Requirements:</a><a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/geosolutions-it/geoserver">GeoServer instance</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/geosolutions-it/teamengine-docker">Teamengine Web Application</a>, with a set of CITE suite tests.</p></li>
+<li><p>make</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="cite-automation-tests-with-docker">
+<h1><a class="toc-backref" href="#id15">CITE automation tests with docker</a><a class="headerlink" href="#cite-automation-tests-with-docker" title="Permalink to this headline">¶</a></h1>
+<p>How to run the CITE Test suites with
+<a class="reference external" href="https://www.docker.com">docker</a>.</p>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id16">Requirements:</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Running the tests requires a linux system with <a class="reference external" href="https://www.docker.com">docker</a>, <a class="reference external" href="https://docs.docker.com/compose/install">docker-compose</a>, and git installed on it.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The CITE tools are available in the build/cite folder of the <a class="reference external" href="https://github.com/geoserver/geoserver/tree/master/build/cite">GeoServer Git repository</a>:</p>
+</div>
+</div>
+<div class="section" id="steps">
+<h2><a class="toc-backref" href="#id17">Steps:</a><a class="headerlink" href="#steps" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="set-up-the-environment">
+<h3><a class="toc-backref" href="#id18">Set-up the environment.</a><a class="headerlink" href="#set-up-the-environment" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Clone the repository.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/geoserver/geoserver.git
+</pre></div>
+</div>
+</li>
+<li><p>Go to cite directory.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> geoserver/build/cite
+</pre></div>
+</div>
+</li>
+<li><p>Inside you will find a structure, like below, with a list of directories which contains the name of the suites to run.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cite
+<span class="p">|</span>-- forms
+<span class="p">|</span>-- geoserver
+<span class="p">|</span>-- run-test.sh
+<span class="p">|</span>-- wcs10
+<span class="p">|</span>-- wcs11
+<span class="p">|</span>-- wfs10
+<span class="p">|</span>-- wms11
+<span class="p">|</span>-- wms13
+<span class="p">|</span>-- wfs11
+<span class="p">|</span>-- interactive
+<span class="p">|</span>-- logs
+<span class="p">|</span>-- docker-compose.yml
+<span class="p">|</span>-- postgres
+<span class="p">|</span>-- README.md
+<span class="sb">`</span>-- Makefile
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="running-the-suite-tests">
+<h3><a class="toc-backref" href="#id19">Running the suite tests.</a><a class="headerlink" href="#running-the-suite-tests" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>There are 2 ways to run the suites. One is running with <code class="docutils literal notranslate"><span class="pre">make</span></code> that will
+automate all the commands, and the second one is running the test through WebUI:</p>
+<ol class="arabic">
+<li><p>Running it through <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>:</p>
+<ul>
+<li><p>run <code class="docutils literal notranslate"><span class="pre">make</span></code> in the console, it will give you the list of commands
+to run.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make
+</pre></div>
+</div>
+</li>
+<li><p>the output will like this:</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nf">clean</span><span class="o">:</span> <span class="k">$(</span><span class="nv">suite</span><span class="k">)</span>         <span class="n">Will</span> <span class="n">Clean</span> <span class="n">the</span> <span class="n">Environment</span> <span class="n">of</span> <span class="n">previous</span> <span class="n">runs</span>.
+<span class="nf">build</span><span class="o">:</span> <span class="k">$(</span><span class="nv">suite</span><span class="k">)</span>         <span class="n">Will</span> <span class="n">Build</span> <span class="n">the</span> <span class="n">GeoServer</span> <span class="n">Docker</span> <span class="n">Image</span> <span class="n">for</span> <span class="n">the</span> <span class="n">Environment</span>.
+<span class="nf">test</span><span class="o">:</span> <span class="k">$(</span><span class="nv">suite</span><span class="k">)</span>      <span class="n">Will</span> <span class="n">running</span> <span class="n">the</span> <span class="n">Suite</span> <span class="n">test</span> <span class="n">with</span> <span class="n">teamengine</span>.
+<span class="nf">webUI</span><span class="o">:</span> <span class="k">$(</span><span class="nv">suite</span><span class="k">)</span>              <span class="n">Will</span> <span class="n">running</span> <span class="n">the</span> <span class="n">Suite</span> <span class="n">test</span> <span class="n">with</span> <span class="n">teamengine</span>.
+</pre></div>
+</div>
+</li>
+<li><p>Choose which test to run, this is an example:</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The first Docker build may take a long time.</p>
+</div>
+<div class="highlight-SHELL notranslate"><div class="highlight"><pre><span></span><span class="nv">suite</span><span class="o">=</span>wcs10
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>Valid values for the suite parameter are:</dt><dd><ul class="simple">
+<li><p>wcs10</p></li>
+<li><p>wcs11</p></li>
+<li><p>wfs10</p></li>
+<li><p>wfs11</p></li>
+<li><p>wms11</p></li>
+<li><p>wms13</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+</li>
+<li><p>Choose which GeoServer war file to test by setting the <code class="docutils literal notranslate"><span class="pre">war_url</span></code> environment variable inside the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>, ex:</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="n">war_url</span> <span class="o">=</span> <span class="s">&quot;https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>if you don’t want to do it inside the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> you have the option of adding the variable in the command when you build the docker images.</p>
+</div>
+<ul>
+<li><p>To clean the local environment.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make clean
+</pre></div>
+</div>
+</li>
+<li><p>To build the geoserver docker image locally.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make build <span class="nv">suite</span><span class="o">=</span>&lt;suite-name&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Alternative, with the <code class="docutils literal notranslate"><span class="pre">war_url</span></code> variable include:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">build</span> <span class="n">suite</span><span class="o">=&lt;</span><span class="n">suite</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span> <span class="n">war_url</span><span class="o">=&lt;</span><span class="n">url</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">geoserver</span><span class="o">-</span><span class="n">war</span><span class="o">-</span><span class="n">file</span><span class="o">-</span><span class="n">desired</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>To run the suite test.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make <span class="nb">test</span> <span class="nv">suite</span><span class="o">=</span>&lt;suite-name&gt;
+</pre></div>
+</div>
+</li>
+<li><p>To run the full automate workflow.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make clean build <span class="nb">test</span> <span class="nv">suite</span><span class="o">=</span>&lt;suite-name&gt;
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+</ol>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="run-cite-test-suites-in-local-pc">
+<h1><a class="toc-backref" href="#id20">Run CITE Test Suites in local pc</a><a class="headerlink" href="#run-cite-test-suites-in-local-pc" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I assume that you have a standalone geoserver running.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Details to consider when you are running the tests:</p>
+<ul class="simple">
+<li><p>The Default username/password for the teamengine webUI are <strong>teamengine/teamengine</strong>.</p></li>
+<li><p>the default url for the teamengine webUI is <a class="reference external" href="http://localhost:8888/teamengine/">http://localhost:8888/teamengine/</a></p></li>
+<li><p>The output of the old suite tests might not appear in the Result page. So you should click on the link below <strong>detailed old test report</strong>, to get the full report. Ex.</p></li>
+</ul>
+<img alt="../_images/old-report.png" src="../_images/old-report.png" />
+<img alt="../_images/full-report.png" src="../_images/full-report.png" />
+<ul class="simple">
+<li><p>Since you are running teamengine inside a container, the localhost in the url of geoserver for the tests can’t be used, for that, get the ip of host where the geoserver is running. You will use it later.</p></li>
+<li><p>after you log in to teamengine webUI you have to create a session.</p></li>
+</ul>
+<img alt="../_images/seccion.png" src="../_images/seccion.png" />
+<ul class="simple">
+<li><p>to run the tests you have to choose which one you want, and then click on <strong>Start a new test session</strong>. This is an example:</p></li>
+</ul>
+<img alt="../_images/tewfs-1_0a.png" src="../_images/tewfs-1_0a.png" />
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id21">Requirements:</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>GeoServer running.</p></li>
+<li><p>PostgreSQL with PostGIS extension installed. (only for the WFS Tests Suites)</p></li>
+<li><p>Teamengine Running in docker container.</p></li>
+</ul>
+<ol class="arabic">
+<li><p>Clone the repository:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/geoserver/geoserver.git
+</pre></div>
+</div>
+</li>
+<li><p>Change directory to the <code class="docutils literal notranslate"><span class="pre">cite</span></code></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> geoserver/build/cite
+</pre></div>
+</div>
+</li>
+<li><p>Check the commands available:</p>
+<ul class="simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span></code> to check:</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>you should get an output as following:</p></li>
+</ul>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nf">clean</span><span class="o">:</span> <span class="k">$(</span><span class="nv">suite</span><span class="k">)</span>          <span class="n">Will</span> <span class="n">Clean</span> <span class="n">the</span> <span class="n">Environment</span> <span class="n">of</span> <span class="n">previous</span> <span class="n">runs</span>.
+<span class="nf">build</span><span class="o">:</span> <span class="k">$(</span><span class="nv">suite</span><span class="k">)</span>          <span class="n">Will</span> <span class="n">Build</span> <span class="n">the</span> <span class="n">GeoServer</span> <span class="n">Docker</span> <span class="n">Image</span> <span class="n">for</span> <span class="n">the</span> <span class="n">Environment</span>.
+<span class="nf">test</span><span class="o">:</span> <span class="k">$(</span><span class="nv">suite</span><span class="k">)</span>           <span class="n">Will</span> <span class="n">running</span> <span class="n">the</span> <span class="n">Suite</span> <span class="n">test</span> <span class="n">with</span> <span class="n">teamengine</span>.
+<span class="nf">webUI</span><span class="o">:</span> <span class="k">$(</span><span class="nv">suite</span><span class="k">)</span>          <span class="n">Will</span> <span class="n">running</span> <span class="n">the</span> <span class="n">Suite</span> <span class="n">test</span> <span class="n">with</span> <span class="n">teamengine</span>.
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="run-wfs-1-0-tests">
+<h2><a class="toc-backref" href="#id22">Run WFS 1.0 tests</a><a class="headerlink" href="#run-wfs-1-0-tests" title="Permalink to this headline">¶</a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Running WFS 1.0 tests require PostgreSQL with PostGIS extension installed in the system.</p>
+</div>
+<div class="section" id="id5">
+<h3><a class="toc-backref" href="#id23">Requirements:</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><cite>GeoServer running</cite></p></li>
+<li><p>teamengine</p></li>
+<li><p>PostgreSQL</p></li>
+<li><p>PostGIS</p></li>
+</ul>
+<ol class="arabic">
+<li><p>Prepare the environment:</p>
+<ul class="simple">
+<li><p>login to postgresql and create a user named “cite”.</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">createuser</span> <span class="n">cite</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Create a database named “cite”, owned by the “cite” user:</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">createdb</span> <span class="n">cite</span> <span class="n">own</span> <span class="k">by</span> <span class="n">cite</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>enter to the database and enable the postgis extension:</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">create</span> <span class="n">extension</span> <span class="n">postgis</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Change directory to the citewfs-1.0 data directory and execute the script cite_data_postgis2.sql:</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;path of geoserver repository&gt;
+psql -U cite cite &lt; build/cite/wfs10/citewfs-1.0/cite_data_postgis2.sql
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Start GeoServer with the citewfs-1.0 data directory. Example:</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If the postgresql server is not in the same host of the geoserver, you have to change the <cite>&lt;entry key=”host”&gt;localhost&lt;/entry&gt;</cite> in the <cite>datastore.xml</cite> file, located inside each workspace directory. ex.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>&lt;path of geoserver repository&gt;/build/cite/wfs10/citewfs-1.0/workspaces/cgf/cgf/datastore.xml</p>
+</div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;root of geoserver install&gt;
+<span class="nb">export</span> <span class="nv">GEOSERVER_DATA_DIR</span><span class="o">=</span>&lt;path of geoserver repository&gt;/build/cite/wfs10/citewfs-1.0
+./bin/startup.sh
+</pre></div>
+</div>
+</li>
+<li><p>Start the test:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make webUI
+</pre></div>
+</div>
+</li>
+<li><p>Go to the browser and open the teamengine <a class="reference external" href="http://localhost:8888/teamengine">webUI</a>.</p>
+<ul class="simple">
+<li><p>click on the <strong>Sign in</strong> button and enter the user and password.</p></li>
+<li><p>after creating the session, and choosing the test, enter the following parameters:</p></li>
+</ul>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">Capabilities</span> <span class="pre">URL</span></code> <a class="reference external" href="http:/">http:/</a>/&lt;ip-of-the-geoserver&gt;:8080/geoserver/wfs?request=getcapabilities&amp;service=wfs&amp;version=1.0.0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Enable</span> <span class="pre">tests</span> <span class="pre">with</span> <span class="pre">multiple</span> <span class="pre">namespaces</span></code> tests included</p>
+<img alt="../_images/tewfs-1_0.png" src="../_images/tewfs-1_0.png" />
+</li>
+</ol>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="run-wfs-1-1-tests">
+<h2><a class="toc-backref" href="#id24">Run WFS 1.1 tests</a><a class="headerlink" href="#run-wfs-1-1-tests" title="Permalink to this headline">¶</a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Running WFS 1.1 tests requires PostgreSQL with PostGIS extension installed in the system.</p>
+</div>
+<div class="section" id="id6">
+<h3><a class="toc-backref" href="#id25">Requirements:</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>GeoServer</p></li>
+<li><p>teamengine</p></li>
+<li><p>Posgresql</p></li>
+<li><p>PostGIS</p></li>
+</ul>
+<ol class="arabic">
+<li><p>Prepare the environment:</p>
+<ul class="simple">
+<li><p>login to postgresql and create a user named “cite”.</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">createuser</span> <span class="n">cite</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Create a database named “cite”, owned by the “cite” user:</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">createdb</span> <span class="n">cite</span> <span class="n">own</span> <span class="k">by</span> <span class="n">cite</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>enter to the database and enable the postgis extension:</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">create</span> <span class="n">extension</span> <span class="n">postgis</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Change directory to the citewfs-1.1 data directory and execute the script dataset-sf0-postgis2.sql:</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;path of geoserver repository&gt;
+psql -U cite cite &lt; build/cite/wfs11/citewfs-1.1/dataset-sf0-postgis2.sql
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Start GeoServer with the citewfs-1.1 data directory. Example:</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If the postgresql server is not in the same host of the geoserver, you have to change the <cite>&lt;entry key=”host”&gt;localhost&lt;/entry&gt;</cite> in the <cite>datastore.xml</cite> file, located inside each workspace directory. ex.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>&lt;path of geoserver repository&gt;/build/cite/wfs11/citewfs-1.1/workspaces/cgf/cgf/datastore.xml</p>
+</div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;path of geoserver install&gt;
+<span class="nb">export</span> <span class="nv">GEOSERVER_DATA_DIR</span><span class="o">=</span>&lt;path of geoserver repository&gt;/build/cite/wfs11/citewfs-1.1
+./bin/startup.sh
+</pre></div>
+</div>
+</li>
+<li><p>Start the test:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make webUI
+</pre></div>
+</div>
+</li>
+<li><p>Go to the browser and open the teamengine <a class="reference external" href="http://localhost:8888/teamengine">webUI</a>.</p>
+<ul class="simple">
+<li><p>click on the <strong>Sign in</strong> button and enter the user and password.</p></li>
+<li><p>after creating the session, and choosing the test, enter the following parameters:</p></li>
+</ul>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">Capabilities</span> <span class="pre">URL</span></code> <a class="reference external" href="http:/">http:/</a>/&lt;ip-of-the-geoserver&gt;:8080/geoserver/wfs?service=wfs&amp;request=getcapabilities&amp;version=1.1.0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Supported</span> <span class="pre">Conformance</span> <span class="pre">Classes</span></code>:</p>
+<ul class="simple">
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">WFS-Transaction</span></code> is <em>checked</em></p></li>
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">WFS-Locking</span></code> is <em>checked</em></p></li>
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">WFS-Xlink</span></code> is <em>unchecked</em></p></li>
+</ul>
+<img alt="../_images/tewfs-1_1a.png" src="../_images/tewfs-1_1a.png" />
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GML</span> <span class="pre">Simple</span> <span class="pre">Features</span></code>: <code class="docutils literal notranslate"><span class="pre">SF-0</span></code></p></li>
+</ol>
+<img alt="../_images/tewfs-1_1b.png" src="../_images/tewfs-1_1b.png" />
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="run-wms-1-1-tests">
+<h2><a class="toc-backref" href="#id26">Run WMS 1.1 tests</a><a class="headerlink" href="#run-wms-1-1-tests" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Prepare the environment:</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Start GeoServer with the citewms-1.1 data directory. Example:</p></li>
+</ul>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;root of geoserver install&gt;
+<span class="nb">export</span> <span class="nv">GEOSERVER_DATA_DIR</span><span class="o">=</span>&lt;path of geoserver repository&gt;/build/cite/wms11/citewms-1.1
+./bin/startup.sh
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Start the test:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make webUI
+</pre></div>
+</div>
+</li>
+<li><p>Go to the browser and open the teamengine <a class="reference external" href="http://localhost:8888/teamengine">webUI</a>.</p>
+<ul class="simple">
+<li><p>click on the <strong>Sign in</strong> button and enter the user and password.</p></li>
+<li><p>after creating the session, and choosing the test, enter the following parameters:</p></li>
+</ul>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">Capabilities</span> <span class="pre">URL</span></code></p>
+<blockquote>
+<div><p><a class="reference external" href="http:/">http:/</a>/&lt;ip-of-the-geoserver&gt;:8080/geoserver/wms?service=wms&amp;request=getcapabilities&amp;version=1.1.1</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UpdateSequence</span> <span class="pre">Values</span></code>:</p>
+<ul class="simple">
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">Automatic</span></code> is selected</p></li>
+<li><p>“2” for <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">that</span> <span class="pre">is</span> <span class="pre">lexically</span> <span class="pre">higher</span></code></p></li>
+<li><p>“0” for <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">that</span> <span class="pre">is</span> <span class="pre">lexically</span> <span class="pre">lower</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Certification</span> <span class="pre">Profile</span></code> : <code class="docutils literal notranslate"><span class="pre">QUERYABLE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Optional</span> <span class="pre">Tests</span></code>:</p>
+<ul class="simple">
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">Recommendation</span> <span class="pre">Support</span></code> is <em>checked</em></p></li>
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">GML</span> <span class="pre">FeatureInfo</span></code> is <em>checked</em></p></li>
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">Fees</span> <span class="pre">and</span> <span class="pre">Access</span> <span class="pre">Constraints</span></code> is <em>checked</em></p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">BoundingBox</span> <span class="pre">Constraints</span></code> ensure <code class="docutils literal notranslate"><span class="pre">Either</span></code> is selected</p></li>
+</ul>
+</li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">OK</span></code></p></li>
+</ol>
+<img alt="../_images/tewms-1_1a.png" src="../_images/tewms-1_1a.png" />
+<img alt="../_images/tewms-1_1b.png" src="../_images/tewms-1_1b.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="run-wcs-1-0-tests">
+<h2><a class="toc-backref" href="#id27">Run WCS 1.0 tests</a><a class="headerlink" href="#run-wcs-1-0-tests" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Prepare the environment:</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Start GeoServer with the citewcs-1.0 data directory. Example:</p></li>
+</ul>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;root of geoserver install&gt;
+<span class="nb">export</span> <span class="nv">GEOSERVER_DATA_DIR</span><span class="o">=</span>&lt;path of geoserver repository&gt;/build/cite/wcs10/citewcs-1.0
+./bin/startup.sh
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Start the test:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make webUI
+</pre></div>
+</div>
+</li>
+<li><p>Go to the browser and open the teamengine <a class="reference external" href="http://localhost:8888/teamengine">webUI</a>.</p>
+<ul class="simple">
+<li><p>click on the <strong>Sign in</strong> button and enter the user and password.</p></li>
+<li><p>after creating the session, and choosing the test, enter the following parameters:</p></li>
+</ul>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">Capabilities</span> <span class="pre">URL</span></code>:</p>
+<blockquote>
+<div><p><a class="reference external" href="http:/">http:/</a>/&lt;ip-of-the-geoserver&gt;:8080/geoserver/wcs?service=wcs&amp;request=getcapabilities&amp;version=1.0.0</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MIME</span> <span class="pre">Header</span> <span class="pre">Setup</span></code>: “image/tiff”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Update</span> <span class="pre">Sequence</span> <span class="pre">Values</span></code>:</p>
+<ul class="simple">
+<li><p>“2” for <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">that</span> <span class="pre">is</span> <span class="pre">lexically</span> <span class="pre">higher</span></code></p></li>
+<li><p>“0” for <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">that</span> <span class="pre">is</span> <span class="pre">lexically</span> <span class="pre">lower</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Grid</span> <span class="pre">Resolutions</span></code>:</p>
+<ul class="simple">
+<li><p>“0.1” for <code class="docutils literal notranslate"><span class="pre">RESX</span></code></p></li>
+<li><p>“0.1” for <code class="docutils literal notranslate"><span class="pre">RESY</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Options</span></code>:</p>
+<ul class="simple">
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">Verify</span> <span class="pre">that</span> <span class="pre">the</span> <span class="pre">server</span> <span class="pre">supports</span> <span class="pre">XML</span> <span class="pre">encoding</span></code> is <em>checked</em></p></li>
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">Verify</span> <span class="pre">that</span> <span class="pre">the</span> <span class="pre">server</span> <span class="pre">supports</span> <span class="pre">range</span> <span class="pre">set</span> <span class="pre">axis</span></code> is <em>checked</em></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Schemas</span></code>:</p>
+<ul class="simple">
+<li><p>Ensure that <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">server</span> <span class="pre">implements</span> <span class="pre">the</span> <span class="pre">original</span> <span class="pre">schemas</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">WCS</span> <span class="pre">1.0.0</span> <span class="pre">specification</span> <span class="pre">(OGC</span> <span class="pre">03-065</span></code> is selected</p></li>
+</ul>
+</li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">OK</span></code></p></li>
+</ol>
+<img alt="../_images/tewcs-1_0a.png" src="../_images/tewcs-1_0a.png" />
+<img alt="../_images/tewcs-1_0b.png" src="../_images/tewcs-1_0b.png" />
+<img alt="../_images/tewcs-1_0c.png" src="../_images/tewcs-1_0c.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="run-wcs-1-1-tests">
+<h2><a class="toc-backref" href="#id28">Run WCS 1.1 tests</a><a class="headerlink" href="#run-wcs-1-1-tests" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Prepare the environment:</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Start GeoServer with the citewcs-1.1 data directory. Example:</p></li>
+</ul>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;root of geoserver install&gt;
+<span class="nb">export</span> <span class="nv">GEOSERVER_DATA_DIR</span><span class="o">=</span>&lt;root of geoserver sources&gt;/build/cite/wcs11/citewcs-1.1
+./bin/startup.sh
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Start the test:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make webUI
+</pre></div>
+</div>
+</li>
+<li><p>Go to the browser and open the teamengine <a class="reference external" href="http://localhost:8888/teamengine">webUI</a>.</p>
+<ul class="simple">
+<li><p>click on the <strong>Sign in</strong> button and enter the user and password.</p></li>
+<li><p>after creating the session, and choosing the test, enter the following parameters:</p></li>
+</ul>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">Capabilities</span> <span class="pre">URL</span></code>:</p>
+<blockquote>
+<div><p><a class="reference external" href="http:/">http:/</a>/&lt;ip-of-the-geoserver&gt;:8080/geoserver/wcs</p>
+</div></blockquote>
+</li>
+</ol>
+<p>Click <code class="docutils literal notranslate"><span class="pre">Next</span></code></p>
+<img alt="../_images/tewcs-1_1a.png" src="../_images/tewcs-1_1a.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="run-wms-1-3-tests">
+<h2><a class="toc-backref" href="#id29">Run WMS 1.3 tests</a><a class="headerlink" href="#run-wms-1-3-tests" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Prepare the environment:</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Start GeoServer with the citewcs-1.3 data directory. Example:</p></li>
+</ul>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;root of geoserver install&gt;
+<span class="nb">export</span> <span class="nv">GEOSERVER_DATA_DIR</span><span class="o">=</span>&lt;root of geoserver sources&gt;/build/cite/wms13/citewms-1.3
+./bin/startup.sh
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Start the test:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make webUI
+</pre></div>
+</div>
+</li>
+<li><p>Go to the browser and open the teamengine <a class="reference external" href="http://localhost:8888/teamengine">webUI</a>.</p>
+<ul class="simple">
+<li><p>click on the <strong>Sign in</strong> button and enter the user and password.</p></li>
+<li><p>after creating the session, and choosing the test, enter the following parameters:</p></li>
+</ul>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">Capabilities</span> <span class="pre">URL</span></code>:</p>
+<blockquote>
+<div><p><a class="reference external" href="http:/">http:/</a>/&lt;ip-of-the-geoserver&gt;:8080/geoserver/wms?service=wms&amp;request=getcapabilities&amp;version=1.3.0</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UpdateSequence</span> <span class="pre">Values</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Automatic</span></code> <em>checked</em></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Options</span></code>:</p>
+<ul class="simple">
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">BASIC</span></code> is <em>checked</em></p></li>
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">QUERYABLE</span></code> is <em>checked</em></p></li>
+</ul>
+</li>
+</ol>
+<p>Click <code class="docutils literal notranslate"><span class="pre">OK</span></code></p>
+<img alt="../_images/tewms-1_3.png" src="../_images/tewms-1_3.png" />
+</li>
+</ol>
+<span class="target" id="teamengine"><span id="commandline"></span></span></div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../release-testing-checklist/index.html" title="previous chapter">Release Testing Checklist</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../translation.html" title="next chapter">Translating GeoServer</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Cite Test Guide</a><ul>
+<li><a class="reference internal" href="#check-out-cite-suite-tests">Check out CITE suite tests</a></li>
+<li><a class="reference internal" href="#requirements">Requirements:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cite-automation-tests-with-docker">CITE automation tests with docker</a><ul>
+<li><a class="reference internal" href="#id2">Requirements:</a></li>
+<li><a class="reference internal" href="#steps">Steps:</a><ul>
+<li><a class="reference internal" href="#set-up-the-environment">Set-up the environment.</a></li>
+<li><a class="reference internal" href="#running-the-suite-tests">Running the suite tests.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#run-cite-test-suites-in-local-pc">Run CITE Test Suites in local pc</a><ul>
+<li><a class="reference internal" href="#id4">Requirements:</a></li>
+<li><a class="reference internal" href="#run-wfs-1-0-tests">Run WFS 1.0 tests</a><ul>
+<li><a class="reference internal" href="#id5">Requirements:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#run-wfs-1-1-tests">Run WFS 1.1 tests</a><ul>
+<li><a class="reference internal" href="#id6">Requirements:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#run-wms-1-1-tests">Run WMS 1.1 tests</a></li>
+<li><a class="reference internal" href="#run-wcs-1-0-tests">Run WCS 1.0 tests</a></li>
+<li><a class="reference internal" href="#run-wcs-1-1-tests">Run WCS 1.1 tests</a></li>
+<li><a class="reference internal" href="#run-wms-1-3-tests">Run WMS 1.3 tests</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../release-testing-checklist/index.html" title="previous chapter">Release Testing Checklist</a></li>
+            <li>Next: <a href="../translation.html" title="next chapter">Translating GeoServer</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/cite-test-guide/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

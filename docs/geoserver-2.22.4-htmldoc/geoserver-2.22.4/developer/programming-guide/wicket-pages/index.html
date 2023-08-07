@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wicket Development In GeoServer &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Extension Points" href="../extension-points/index.html" />
+    <link rel="prev" title="Implementing a Wicket UI Extension" href="../web-ui/implementing.html" /> 
+  </head><body class="programming-guide/wicket-pages/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+    <li>Wicket Development In GeoServer</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../extension-points/index.html" title="Extension Points" accesskey="N">Next</a></li>
+  <li>
+    <a href="../web-ui/implementing.html" title="Implementing a Wicket UI Extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wicket-development-in-geoserver">
+<h1>Wicket Development In GeoServer<a class="headerlink" href="#wicket-development-in-geoserver" title="Permalink to this headline">¶</a></h1>
+<p>This page explains the steps to follow in creating a page for the Wicket-based configuration interface in GeoServer 2.  For more information on Wicket, check out the project site at <a class="reference external" href="http://wicket.apache.org/">http://wicket.apache.org/</a>.</p>
+<div class="section" id="adding-a-page">
+<h2>Adding a Page<a class="headerlink" href="#adding-a-page" title="Permalink to this headline">¶</a></h2>
+<p>In Wicket, each page has one corresponding Java class.  To add a page, you need to create a new class that extends <code class="docutils literal notranslate"><span class="pre">org.geoserver.web.GeoServerBasePage</span></code>.  You will also want to create a link somewhere that brings the user to your page.  (In general, Wicket pages do not have reliable URLs, so you must explicitly create a link in an existing page and let Wicket generate the proper URL.)  In the case where your class does not require arguments to its constructor, you can insert a link using Spring.  Creating links in Spring requires that your page link text be internationalizable.  We’ll discuss internationalization in more depth later.  The simplest possible Wicket extension for GeoServer involves 3 files.  There is a Java class definition (this would be in <code class="file docutils literal notranslate"><span class="pre">src/main/java/org/geoserver/web/example/MyPage.java</span></code>).</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.web.example</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.geoserver.web.GeoServerBasePage</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyPage</span> <span class="kd">extends</span> <span class="n">GeoServerBasePage</span> <span class="p">{</span>
+    <span class="c1">// We will fill in the rest later, for now the page can just be blank</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>There would also need to be a Spring application context document (<code class="file docutils literal notranslate"><span class="pre">src/main/java/applicationContext.xml</span></code>):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.web.MenuPageInfo&quot;</span> <span class="na">id=</span><span class="s">&quot;myPageLink&quot;</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!-- An internal identifier for the link component --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span> <span class="na">value=</span><span class="s">&quot;mypage&quot;</span><span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- The i18n key for the link title --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;titleKey&quot;</span> <span class="na">value=</span><span class="s">&quot;org.geoserver.web.example.MyPage.page.title&quot;</span><span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- The i18n key for a longer description of the page --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;descriptionKey&quot;</span> <span class="na">value=</span><span class="s">&quot;org.geoserver.web.example.MyPage.page.description&quot;</span><span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- The fully qualified name of the page class --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;componentClass&quot;</span> <span class="na">value=</span><span class="s">&quot;org.geoserver.web.example.MyPage&quot;</span><span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- Optional, an icon to display alongside the link. --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;icon&quot;</span> <span class="na">value=</span><span class="s">&quot;imgs/some-image.png&quot;</span><span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- Optional, the category in which the link should be grouped. --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;category&quot;</span> <span class="na">ref=</span><span class="s">&quot;someCategory&quot;</span><span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- Optional, a key used to order the links in the menu. --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;order&quot;</span> <span class="na">value=</span><span class="s">&quot;100&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+<p>The third necessary file is the default dictionary for internationalized strings, at <code class="file docutils literal notranslate"><span class="pre">src/main/resources/GeoServerApplication.properties</span></code>:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="na">org.geoserver.web.example.MyPage.page.title</span><span class="o">=</span><span class="s">My Example Page</span>
+<span class="na">org.geoserver.web.example.MyPage.page.description</span><span class="o">=</span><span class="s">An example page for developers trying to extend the GeoServer UI.</span>
+</pre></div>
+</div>
+<p>If you create a jar with these three files and add it to the GeoServer classpath, you should see the new link in the left-hand menu.</p>
+</div>
+<div class="section" id="adding-to-a-page">
+<h2>Adding to a Page<a class="headerlink" href="#adding-to-a-page" title="Permalink to this headline">¶</a></h2>
+<p>At this point you’ve added a page to the UI, but it’s not very interesting. In Wicket, pages provide their content with an HTML file stored with the same name as the Java code except for the extension. There are a few details about these files that differ from standard HTML; for one thing, they must be valid XML for Wicket’s parser to work. In addition, Wicket uses a few “special” elements to specify where the Java code should hook into the HTML. The following are used quite extensively in the GeoServer administrative console.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 65%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Wicket Element</strong></p></td>
+<td><p><strong>Purpose</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;foo</span> <span class="pre">wicket:id=&quot;bar&quot;&gt;&lt;/foo&gt;</span></code></p></td>
+<td><p>A wicket:id attribute tells Wicket the name to be used for an element when attaching Wicket Components</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;wicket:child/&gt;</span></code></p></td>
+<td><p>Requires no contents, but specifies that classes extending this page can insert content at this position.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;wicket:extend&gt;&lt;/wicket:extend&gt;</span></code></p></td>
+<td><p>Specifies that the enclosed content will be inserted into a parent page at the point indicated by &lt;wicket:child/&gt;</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;wicket:panel&gt;&lt;/wicket:panel&gt;</span></code></p></td>
+<td><p>Similar to <code class="docutils literal notranslate"><span class="pre">wicket:extend</span></code>, but used in creating custom components rather than extending pages.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;wicket:head&gt;&lt;/wicket:head&gt;</span></code></p></td>
+<td><p>Indicates a section (like a CSS or JavaScript include) that should be added to the header of pages that include this markup (can be used for pages or panels).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;wicket:link&gt;&lt;/wicket:link&gt;</span></code></p></td>
+<td><p>Encloses sections in which Wicket will rewrite links to pages, CSS files, and other resources that it manages.  (This lets you refer to resources using paths relative to the Java source and not the rendered HTML.)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;wicket:message</span> <span class="pre">key=&quot;i18nKey&quot;&gt;</span> <span class="pre">Default</span> <span class="pre">Text</span> <span class="pre">&lt;/wicket:message&gt;</span></code></p></td>
+<td><p>Tells Wicket to look up a string in the internationalization database and replace the provided text if one is found.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Wicket provides quite a few components, of which several can be seen in the <a class="reference external" href="http://wicketstuff.org/wicket13/compref/">Wicket Component Reference</a>.  In general, Wicket components require a Model object which handles the getting, setting, and conversion to/from String of the value associated with a component.  For the purposes of this example, we will focus on one of the simplest, the Label, which simply replaces the contents of the element it is bound to with a value provided at runtime.  Continuing the example from above, we can pass a String to the Label’s constructor and it is transparently converted to a Model:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.web.example</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.geoserver.web.GeoServerBasePage</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.wicket.markup.html.basic.Label</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyPage</span> <span class="kd">extends</span> <span class="n">GeoServerBasePage</span><span class="p">{</span>
+    <span class="kd">public</span> <span class="nf">MyPage</span><span class="p">(){</span>
+        <span class="n">add</span><span class="p">(</span><span class="k">new</span> <span class="n">Label</span><span class="p">(</span><span class="s">&quot;label&quot;</span><span class="p">,</span> <span class="s">&quot;Hello World&quot;</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The corresponding HTML source would live at <code class="file docutils literal notranslate"><span class="pre">src/main/java/org/geoserver/web/example/MyPage.html</span></code>:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">wicket:extend</span><span class="p">&gt;</span>
+    Greetings, GeoServer User! My message for you is <span class="p">&lt;</span><span class="nt">span</span> <span class="na">wicket:id</span><span class="o">=</span><span class="s">&quot;label&quot;</span><span class="p">&gt;</span> thanks for using GeoServer <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>.
+    <span class="p">&lt;/</span><span class="nt">wicket:extend</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Of course, there are much more complicated (and useful) things we can do with Wicket, but this example demonstrates the most common usage; just adding some behavior to an HTML element.</p>
+</div>
+<div class="section" id="adding-a-link-outside-the-navigation-menu">
+<h2>Adding a Link Outside the Navigation Menu<a class="headerlink" href="#adding-a-link-outside-the-navigation-menu" title="Permalink to this headline">¶</a></h2>
+<p>Of course, we can’t have everything in the sidebar menu; for one thing, it defines only a static set of links while GeoServer is bound to contain lots of resources that vary from configuration to configuration.  For another, some pages need to have arguments to their constructors.  If you want to add a custom link to some page, you can use a Wicket Link component and customize the <code class="docutils literal notranslate"><span class="pre">onClick</span></code> behavior to call the appropriate constructor.  (You can use <code class="docutils literal notranslate"><span class="pre">setResponsePage</span></code> in other methods that handle user input as well, such as on form submits.  Check the Wicket documentation for more information.)  An example:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">//...</span>
+<span class="kn">import</span> <span class="nn">org.apache.wicket.markup.html.link.Link</span><span class="p">;</span>
+<span class="c1">//...</span>
+
+<span class="n">add</span><span class="p">(</span><span class="k">new</span> <span class="n">Link</span><span class="p">(</span><span class="s">&quot;link&quot;</span><span class="p">){</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="p">(){</span>
+        <span class="n">setResponsePage</span><span class="p">(</span><span class="k">new</span> <span class="n">MyPage</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>The corresponding HTML would look like:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>Follow this lovely <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;#&quot;</span> <span class="na">wicket:id</span><span class="o">=</span><span class="s">&quot;link&quot;</span><span class="p">&gt;</span>link<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>.
+</pre></div>
+</div>
+</div>
+<div class="section" id="making-it-internationalizable">
+<h2>Making it Internationalizable<a class="headerlink" href="#making-it-internationalizable" title="Permalink to this headline">¶</a></h2>
+<p>In the GeoServer UI, we use a customized resource lookup utility within Wicket to allow any module to provide resource strings.  All you need to do is include your <abbr title="Internationalization">i18n</abbr> values in a Java Properties file named <code class="docutils literal notranslate"><span class="pre">GeoServerApplication.properties</span></code> in the <code class="docutils literal notranslate"><span class="pre">resources</span></code> directory of your <code class="docutils literal notranslate"><span class="pre">src</span></code> directory (ie, <code class="file docutils literal notranslate"><em><span class="pre">project</span></em><span class="pre">/src/main/resources/GeoServerApplication.properties</span></code>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;wicket:message&gt;</span></code> element makes it quite easy to make text internationalizable, but in the event that you need to insert a value into a sentence at a position that changes dependent on the language, you’ll need to use something more complicated.</p>
+<p>In Wicket, <abbr title="Internationalization">i18n</abbr> value strings can define parameters which provide the ability to place dynamic values into internationalized strings.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="http://wicket.apache.org/docs/wicket-1.3.2/wicket/apidocs/org/apache/wicket/model/StringResourceModel.html">http://wicket.apache.org/docs/wicket-1.3.2/wicket/apidocs/org/apache/wicket/model/StringResourceModel.html</a> for details.</p>
+</div>
+</div>
+<div class="section" id="adding-resources">
+<h2>Adding Resources<a class="headerlink" href="#adding-resources" title="Permalink to this headline">¶</a></h2>
+<p>Often in HTML, you will need to include assets such as CSS files, JavaScript libraries, or images to include in your page.  Wicket allows you to specify URLs to these relative to your Java source file, using relative paths enclosed in <code class="docutils literal notranslate"><span class="pre">&lt;wicket:link&gt;</span></code> tags.  Wicket will rewrite these links at runtime to use the correct path.  However, such resources are not inherited from parent classes, so if you need to include a resource in multiple packages you will need to extract the functionality that uses it to a new class that can be shared between the two.  See the <code class="docutils literal notranslate"><span class="pre">XMLEditor</span></code> component in the core module of GeoServer’s UI for an example of a component that does this.</p>
+</div>
+<div class="section" id="ui-design-guidelines">
+<h2>UI Design Guidelines<a class="headerlink" href="#ui-design-guidelines" title="Permalink to this headline">¶</a></h2>
+<p>A brief listing of UI design guidelines for Wicket pages in GeoServer follows.</p>
+<blockquote>
+<div><dl>
+<dt>Forms</dt><dd><p>In forms, group each field as an item in an unordered list with a label and a form field.  For radio buttons and checkboxes, the label should come after the field; for all others the label should precede the field.  For example:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;foo&quot;</span><span class="p">&gt;&lt;</span><span class="nt">wicket:message</span> <span class="na">key</span><span class="o">=</span><span class="s">&quot;foo&quot;</span><span class="p">&gt;</span> Foo <span class="p">&lt;/</span><span class="nt">wicket:message</span><span class="p">&gt;&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">wicket:id</span><span class="o">=</span><span class="s">&quot;foo&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">input</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</dd>
+<dt>Avoid requiring special knowledge from the user.</dt><dd><p>For example, where a list of values is required, provide a widget that allows manipulating the list one element at a time rather than expecting a comma-separated list of values.</p>
+</dd>
+<dt>Custom Components</dt><dd><p>We recommend creating a reusable Wicket component for any complex values that might need to be edited by users, such as a bounding box or a list of free strings.  By extracting this into a component, it is much simpler to provide consistent, rich editing for users.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../web-ui/implementing.html" title="previous chapter">Implementing a Wicket UI Extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../extension-points/index.html" title="next chapter">Extension Points</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Wicket Development In GeoServer</a><ul>
+<li><a class="reference internal" href="#adding-a-page">Adding a Page</a></li>
+<li><a class="reference internal" href="#adding-to-a-page">Adding to a Page</a></li>
+<li><a class="reference internal" href="#adding-a-link-outside-the-navigation-menu">Adding a Link Outside the Navigation Menu</a></li>
+<li><a class="reference internal" href="#making-it-internationalizable">Making it Internationalizable</a></li>
+<li><a class="reference internal" href="#adding-resources">Adding Resources</a></li>
+<li><a class="reference internal" href="#ui-design-guidelines">UI Design Guidelines</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../web-ui/implementing.html" title="previous chapter">Implementing a Wicket UI Extension</a></li>
+            <li>Next: <a href="../extension-points/index.html" title="next chapter">Extension Points</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/wicket-pages/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

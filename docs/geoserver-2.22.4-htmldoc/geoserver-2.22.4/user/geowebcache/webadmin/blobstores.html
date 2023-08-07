@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlobStores &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Using GeoWebCache" href="../using.html" />
+    <link rel="prev" title="Disk Quotas" href="diskquotas.html" /> 
+  </head><body class="geowebcache/webadmin/blobstores">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">GeoWebCache</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GeoWebCache settings</a> &raquo;</li>
+    <li>BlobStores</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../using.html" title="Using GeoWebCache" accesskey="N">Next</a></li>
+  <li>
+    <a href="diskquotas.html" title="Disk Quotas" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="blobstores">
+<span id="gwc-webadmin-blobstores"></span><h1>BlobStores<a class="headerlink" href="#blobstores" title="Permalink to this headline">¶</a></h1>
+<p>BlobStores allow us to configure how and where GeoWebCache will store its cached data on a per-layer basis. This page allows us to define the different BlobStores present in the system. BlobStores can be created, modified and removed from here.</p>
+<div class="figure align-default">
+<img alt="../../_images/blobstores.png" src="../../_images/blobstores.png" />
+</div>
+<div class="section" id="general">
+<h2>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="identifier">
+<h3>Identifier<a class="headerlink" href="#identifier" title="Permalink to this headline">¶</a></h3>
+<p>Each BlobStore has a unique identifier.</p>
+</div>
+<div class="section" id="blobstore-type">
+<h3>BlobStore Type<a class="headerlink" href="#blobstore-type" title="Permalink to this headline">¶</a></h3>
+<p>There can be different BlobStore types to use different ways of storage. There is only standard support for File BlobStores. Plugins may add additional types.</p>
+</div>
+<div class="section" id="enabled">
+<h3>Enabled<a class="headerlink" href="#enabled" title="Permalink to this headline">¶</a></h3>
+<p>Disabled BlobStores will not be loaded. Disabling a BlobStore will disable caching for all layers and layergroups assigned to that BlobStore.</p>
+</div>
+<div class="section" id="default">
+<h3>Default<a class="headerlink" href="#default" title="Permalink to this headline">¶</a></h3>
+<p>There should always be one default BlobStore, which cannot be removed. The default BlobStore will be used by all layers not assigned to a specific BlobStore. Removing a BlobStore will cause all layers assigned to this BlobStore to use the default BlobStore until specified otherwise.</p>
+</div>
+</div>
+<div class="section" id="file-blobstore">
+<h2>File BlobStore<a class="headerlink" href="#file-blobstore" title="Permalink to this headline">¶</a></h2>
+<p>These store data on a disk in a specified directory.</p>
+<div class="figure align-default">
+<img alt="../../_images/fileblobstore.png" src="../../_images/fileblobstore.png" />
+</div>
+<p>It is also possible to choose the tile file layout:</p>
+<ul class="simple">
+<li><p>GeoWebCache default uses a path structure reducing the number of items in each directory, by splitting long lists in groups. In  particular, the layout is <code class="docutils literal notranslate"><span class="pre">z/xc_yc/x_y.ext</span></code> where <code class="docutils literal notranslate"><span class="pre">xc=x/(2^(z/2))</span></code>, <code class="docutils literal notranslate"><span class="pre">yc=y/(2^(z/2))</span></code>. In other words, the tiles are split into square areas, the number of square areas growing with the zoom level, and each square being assigned to a intermediate directory. The Y coordinates are numbered from the south northwards.</p></li>
+<li><p>TMS uses a TMS layout, that is, <code class="docutils literal notranslate"><span class="pre">z/y/x.ext</span></code> where the Y coordinates are numbered from the south northwards.</p></li>
+<li><p>XYZ uses a “slippy map”, or “Google Maps like” layout, that is, <code class="docutils literal notranslate"><span class="pre">z/y/x.ext</span></code> where the Y coordinates originate top left and grow southwards (opposite of TMS and GWC default order).</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When switching file layout type, the tile directories won’t be deleted, it’s up to the admin to clean up the tiles on the file system, GeoServer/GWC won’t do it automatically.</p>
+</div>
+<div class="section" id="base-directory">
+<h3>Base Directory<a class="headerlink" href="#base-directory" title="Permalink to this headline">¶</a></h3>
+<p>The directory where the cached data is stored.</p>
+</div>
+<div class="section" id="disk-block-size">
+<h3>Disk block size<a class="headerlink" href="#disk-block-size" title="Permalink to this headline">¶</a></h3>
+<p>This setting determines how the tile cache calculates disk usage. The value for this setting should be equivalent to the disk block size of the storage medium where the cache is located. The default block size is <strong>4096 bytes</strong>.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="diskquotas.html" title="previous chapter">Disk Quotas</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../using.html" title="next chapter">Using GeoWebCache</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">BlobStores</a><ul>
+<li><a class="reference internal" href="#general">General</a><ul>
+<li><a class="reference internal" href="#identifier">Identifier</a></li>
+<li><a class="reference internal" href="#blobstore-type">BlobStore Type</a></li>
+<li><a class="reference internal" href="#enabled">Enabled</a></li>
+<li><a class="reference internal" href="#default">Default</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#file-blobstore">File BlobStore</a><ul>
+<li><a class="reference internal" href="#base-directory">Base Directory</a></li>
+<li><a class="reference internal" href="#disk-block-size">Disk block size</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="diskquotas.html" title="previous chapter">Disk Quotas</a></li>
+            <li>Next: <a href="../using.html" title="next chapter">Using GeoWebCache</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/geowebcache/webadmin/blobstores.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

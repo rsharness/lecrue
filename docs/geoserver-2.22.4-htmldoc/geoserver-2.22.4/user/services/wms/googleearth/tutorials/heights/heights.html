@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heights Templates &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/default.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Time" href="../time/time.html" />
+    <link rel="prev" title="KML Placemark Templates" href="../kmlplacemark/index.html" /> 
+  </head><body class="services/wms/googleearth/tutorials/heights/heights">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Google Earth</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Heights Templates</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../time/time.html" title="Time" accesskey="N">Next</a></li>
+  <li>
+    <a href="../kmlplacemark/index.html" title="KML Placemark Templates" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="heights-templates">
+<span id="tutorials-heights"></span><h1>Heights Templates<a class="headerlink" href="#heights-templates" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Height Templates in KML allow you to use an attribute of your data as the ‘height’ of features in Google Earth.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This tutorial assumes that GeoServer is running on <a class="reference external" href="http://localhost:8080">http://localhost:8080</a>.</p>
+</div>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>For the purposes of this tutorial, you just need to have GeoServer with the release configuration, and Google Earth installed.  Google Earth is available for free from &lt;<a class="reference external" href="http://earth.google.com/">http://earth.google.com/</a> &lt;<a class="reference external" href="http://earth.google.com/">http://earth.google.com/</a>&gt;`_.</p>
+</div>
+<div class="section" id="step-one">
+<h2>Step One<a class="headerlink" href="#step-one" title="Permalink to this headline">¶</a></h2>
+<p>By default GeoServer renders all features with 0 height, so they appear to lay flat on the world’s surface in Google Earth.</p>
+<p>To view the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> layer (packaged with all releases of GeoServer) in Google Earth, the easiest way is to use a network link.  In Google Earth, under <span class="guilabel">Places</span>, right-click on <span class="guilabel">Temporary Places</span>, and go to <span class="menuselection">Add ‣ Network Link</span>.  In the dialog box, fill in <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> as the <span class="guilabel">Name</span>, and the following URL as the <span class="guilabel">Link</span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?layers=topp:states&amp;format=application/vnd.google-earth.kml+xml
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<img alt="../../../../../_images/height-none.png" src="../../../../../_images/height-none.png" />
+<p class="caption"><span class="caption-text"><em>topp:states in Google Earth</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="step-two">
+<h2>Step Two<a class="headerlink" href="#step-two" title="Permalink to this headline">¶</a></h2>
+<p>An interesting value to use for the height would be the population of each state (so that more populated states appear taller on the map).  We can do this by creating a file called <code class="docutils literal notranslate"><span class="pre">height.ftl</span></code> in the GeoServer data directory under <code class="docutils literal notranslate"><span class="pre">workspaces/topp/states_shapefile/states</span></code>.  To set the population value, we enter the following text inside this new file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${PERSONS.value}
+</pre></div>
+</div>
+<p>This uses the value of the <code class="docutils literal notranslate"><span class="pre">PERSONS</span></code> attribute as the height for each feature.  To admire our handiwork, we can refresh our view by right-clicking on our temporary place (called <code class="docutils literal notranslate"><span class="pre">topp:states</span></code>) and selecting <span class="guilabel">Refresh</span>:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../../../../_images/height-toomuch.png" src="../../../../../_images/height-toomuch.png" />
+<p class="caption"><span class="caption-text"><em>Height by Population</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="step-three">
+<h2>Step Three<a class="headerlink" href="#step-three" title="Permalink to this headline">¶</a></h2>
+<p>Looking at our population map, we see that California dwarfs the rest of the nation, and in general all of the states are too tall for us to see the heights from a convenient angle.  In order to scale things down to a more manageable size, we can divide all height values by 100.  Just change the template we wrote earlier to read:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${PERSONS.value / 100}
+</pre></div>
+</div>
+<p>Refreshing our view once again, we see that our height field has disappeared.  Looking at the GeoServer log (in the data directory under logs/geoserver.log) we see something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Caused</span> <span class="n">by</span><span class="p">:</span> <span class="n">freemarker</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">NonNumericalException</span><span class="p">:</span> <span class="n">Error</span> <span class="n">on</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="n">column</span> <span class="mi">3</span> <span class="ow">in</span> <span class="n">height</span><span class="o">.</span><span class="n">ftl</span>
+<span class="n">Expression</span> <span class="n">PERSONS</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">numerical</span>
+</pre></div>
+</div>
+<p>However, we know that the <code class="docutils literal notranslate"><span class="pre">PERSONS</span></code> field is numeric, even if it is declared in the shapefile as a string value.  To force a conversion, we can append <code class="docutils literal notranslate"><span class="pre">?number</span></code>, like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${PERSONS.value?number / 100}
+</pre></div>
+</div>
+<p>One final <span class="guilabel">Refresh</span> brings us to a nicely sized map of the US:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../../../../_images/height-math.png" src="../../../../../_images/height-math.png" />
+<p class="caption"><span class="caption-text"><em>Scaled Height</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="step-four">
+<h2>Step Four<a class="headerlink" href="#step-four" title="Permalink to this headline">¶</a></h2>
+<p>There are still a couple of tweaks we can make.  The default is to create a ‘solid’ look for features with height, but Google Earth can also create floating polygons that are disconnected from the ground.  To turn off the ‘connect to ground’ functionality, add a format option called ‘extrude’ whose value is ‘false’.  That is, change the <span class="guilabel">Link</span> in the Network Link to be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?layers=topp:states&amp;format=application/vnd.google-earth.kml%2Bxml&amp;format_options=extrude:false
+</pre></div>
+</div>
+<p>We also have a few options for how Google Earth interprets the height field.  By default, the height is interpreted as relative to the ground, but we can also set the heights relative to sea level, or to be ignored (useful for reverting to the ‘flat’ look without erasing your template).  This is controlled with a format option named altitudeMode, whose values are summarized below.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>altitudeMode</strong></p></td>
+<td><p><strong>Purpose</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>altitudeMode</p></td>
+<td><p>Interpret height as relative to ground level</p></td>
+</tr>
+<tr class="row-odd"><td><p>absolute</p></td>
+<td><p>Interpret height as relative to sea level</p></td>
+</tr>
+<tr class="row-even"><td><p>clampToGround</p></td>
+<td><p>Ignore height entirely</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../kmlplacemark/index.html" title="previous chapter">KML Placemark Templates</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../time/time.html" title="next chapter">Time</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Heights Templates</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#step-one">Step One</a></li>
+<li><a class="reference internal" href="#step-two">Step Two</a></li>
+<li><a class="reference internal" href="#step-three">Step Three</a></li>
+<li><a class="reference internal" href="#step-four">Step Four</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../kmlplacemark/index.html" title="previous chapter">KML Placemark Templates</a></li>
+            <li>Next: <a href="../time/time.html" title="next chapter">Time</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/tutorials/heights/heights.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

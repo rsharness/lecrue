@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WMS configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Global variables affecting WMS" href="global.html" />
+    <link rel="prev" title="Non Standard AUTO Namespace" href="nonstandardautonamespace.html" /> 
+  </head><body class="services/wms/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+    <li>WMS configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="global.html" title="Global variables affecting WMS" accesskey="N">Next</a></li>
+  <li>
+    <a href="nonstandardautonamespace.html" title="Non Standard AUTO Namespace" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wms-configuration">
+<span id="id1"></span><h1>WMS configuration<a class="headerlink" href="#wms-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="layer-groups">
+<h2>Layer Groups<a class="headerlink" href="#layer-groups" title="Permalink to this headline">¶</a></h2>
+<p>A Layer Group is a group of layers that can be referred to by one layer name.  For example, if you put three layers (call them layer_A, layer_B, and layer_C) under the one “Layer Group” layer, then when a user makes a WMS getMap request for that group name, they will get a map of those three layers.</p>
+<p>For information on configuring Layer Groups in the Web Administration Interface see <a class="reference internal" href="../../data/webadmin/layergroups.html#data-webadmin-layergroups"><span class="std std-ref">Layer Groups</span></a></p>
+</div>
+<div class="section" id="request-limits">
+<span id="wms-configuration-limits"></span><h2>Request limits<a class="headerlink" href="#request-limits" title="Permalink to this headline">¶</a></h2>
+<p>The request limit options allow the administrator to limit the resources consumed by each WMS <code class="docutils literal notranslate"><span class="pre">GetMap</span></code> request.</p>
+<p>The following table shows the option names, a description, and the minimum GeoServer version at which the option is available (older versions will ignore it if set).</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 80%" />
+<col style="width: 10%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Version</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Max rendering memory (KB)</strong></p></td>
+<td><p>Sets the maximum amount of memory a single GetMap request is allowed to use (in kilobytes). The limit is checked before request execution by estimating how much memory would be required to produce the output in the format requested.  For example, for an image format the estimate is based on the size of the required rendering memory (which is determined by the image size, the pixel bit depth, and the number of active FeatureTypeStyles at the requested scale).  If the estimated memory size is below the limit, the request is executed; otherwise it is cancelled.</p></td>
+<td><p>1.7.5</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Max rendering time (s)</strong></p></td>
+<td><p>Sets the maximum amount of time GeoServer will spend processing a request (in seconds). This time limits the “blind processing” portion of the request, that is, the time taken to read data and compute the output result (which may occur concurrently). If the execution time reaches the limit, the request is cancelled.  The time required to write results back to the client is not limited by this parameter, since this is determined by the (unknown) network latency between the server and the client. For example, in the case of PNG/JPEG image generation, this option limits the data reading and rendering time, but not the time taken to write the image out.</p></td>
+<td><p>1.7.5</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Max rendering errors (count)</strong></p></td>
+<td><p>Sets the maximum amount of rendering errors tolerated by a GetMap request. By default GetMap makes a best-effort attempt to serve the result, ignoring invalid features, reprojection errors and the like. Setting a limit on the number of errors ignored can make it easier to notice issues, and conserves CPU cycles by reducing the errors which must be handled and logged</p></td>
+<td><p>1.7.5</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Max number of dimension values</strong></p></td>
+<td><p>Sets the maximum number of dimension (time, elevation, custom) values that a client can request in a GetMap/GetFeatureInfo request (the work to be done is usually proportional to said number of times, and the list of values is kept in memory during the processing)</p></td>
+<td><p>2.14.0</p></td>
+</tr>
+</tbody>
+</table>
+<p>The default value of each limit is <code class="docutils literal notranslate"><span class="pre">0</span></code>, which specifies that the limit is not applied.</p>
+<p>If any of the request limits is exceeded, the GetMap operation is cancelled and a <code class="docutils literal notranslate"><span class="pre">ServiceException</span></code> is returned to the client.</p>
+<p>When setting the above limits it is suggested that peak conditions be taken into consideration.
+For example, under normal circumstances a GetMap request may take less than a second.  Under high load it is acceptable for it to take longer, but it’s usually not desirable to allow a request to go on for 30 minutes.</p>
+<p>The following table shows examples of reasonable values for the request limits:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 10%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Value</strong></p></td>
+<td><p><strong>Rationale</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>maxRequestMemory</p></td>
+<td><p>16384</p></td>
+<td><p>16MB are sufficient to render a 2048x2048 image at 4 bytes per pixel (full color and transparency), or a 8x8 meta-tile when using GeoWebCache or TileCache. Note that the rendering process uses a separate memory buffer for each FeatureTypeStyle in an SLD, so this also affects the maximum image size. For example, if an SLD contains two FeatureTypeStyle elements in order to draw cased lines for a highway, the maximum image size will be limited to 1448x1448 (the memory requirement increases with the product of the image dimensions, so halving the memory decreases image dimensions by only about 30%)</p></td>
+</tr>
+<tr class="row-odd"><td><p>maxRenderingTime</p></td>
+<td><p>120</p></td>
+<td><p>A request that processes for a full two minutes is probably rendering too many features, regardless of the current server load. This may be caused by a request against a big layer using a style that does not have suitable scale dependencies</p></td>
+</tr>
+<tr class="row-even"><td><p>maxRenderingErrors</p></td>
+<td><p>100</p></td>
+<td><p>Encountering 100 errors is probably the result of a request trying to reproject a big data set into a projection that is not appropriate for the output extent, resulting in many reprojection failures.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="layergroup-capabilities-settings">
+<h2>LayerGroup Capabilities Settings<a class="headerlink" href="#layergroup-capabilities-settings" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 78%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Default LayerGroup Style In GetCapabilities</p></td>
+<td><p>Enable/disable the encoding of the default LayerGroup style in GetCapabilties responses for LayerGroup with mode Named Tree, Container Tree, Earth Observation Tree. Single and Opaque groups are not affected by the option and will always show the default style. By default the option is set to enabled.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="nonstandardautonamespace.html" title="previous chapter">Non Standard AUTO Namespace</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="global.html" title="next chapter">Global variables affecting WMS</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WMS configuration</a><ul>
+<li><a class="reference internal" href="#layer-groups">Layer Groups</a></li>
+<li><a class="reference internal" href="#request-limits">Request limits</a></li>
+<li><a class="reference internal" href="#layergroup-capabilities-settings">LayerGroup Capabilities Settings</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="nonstandardautonamespace.html" title="previous chapter">Non Standard AUTO Namespace</a></li>
+            <li>Next: <a href="global.html" title="next chapter">Global variables affecting WMS</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

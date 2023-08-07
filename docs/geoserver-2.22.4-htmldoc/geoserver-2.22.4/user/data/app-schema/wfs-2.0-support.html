@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WFS 2.0 Support &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Joining Support For Performance" href="joining.html" />
+    <link rel="prev" title="WMS Support" href="wms-support.html" /> 
+  </head><body class="data/app-schema/wfs-2.0-support">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>WFS 2.0 Support</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="joining.html" title="Joining Support For Performance" accesskey="N">Next</a></li>
+  <li>
+    <a href="wms-support.html" title="WMS Support" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wfs-2-0-support">
+<span id="app-schema-wfs20-support"></span><h1>WFS 2.0 Support<a class="headerlink" href="#wfs-2-0-support" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="resolving">
+<span id="app-schema-resolve"></span><h2>Resolving<a class="headerlink" href="#resolving" title="Permalink to this headline">¶</a></h2>
+<p>Local resolve is supported in app-schema. This can be done by setting the ‘resolve’ parameter to either ‘local’ or ‘all’. (Remote Resolving is not supported.)
+The parameter ‘resolveDepth’ specifies how many levels of references will be resolved. The parameter ‘resolveTimeOut’ may be used to specify, in seconds,
+an upper limit to how long app-schema should search for the feature needed for resolving. If the time out limit is reached, the feature is not resolved.</p>
+<p>When resolving without Feature Chaining (see below), a GML ID is extracted from the x-link reference and a brute force is done on all feature types to find a feature with this GML ID.
+The extraction of this GML ID from the Xlink Reference is done using the following rules:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>In case of a URN: The GML ID comes after last colon in the URN. Make sure that the  <em>full</em> GML ID is included after the last colon (including a possible feature type prefix).</p></li>
+<li><p>In case of a URL: The GML ID comes after the # symbol.</p></li>
+</ul>
+</div></blockquote>
+<p>Failing to respect one of these rules will result in failure of resolve.</p>
+<div class="section" id="resolving-and-feature-chaining-by-reference">
+<h3>Resolving and Feature Chaining By Reference<a class="headerlink" href="#resolving-and-feature-chaining-by-reference" title="Permalink to this headline">¶</a></h3>
+<p>The ‘resolve’ and ‘resolveDepth’ parameters may also be used in the case of <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining-by-reference"><span class="std std-ref">Multi-valued properties by reference (xlink:href)</span></a>.
+In this case, no brute force will take place, but resolving will instruct App-Schema to do full feature chaining rather than inserting a reference. The URI will not be used to find the feature,
+but the feature chaining parameters specified in the mapping, as with normal feature chaining. Because of this, the parameter ‘resolveTimeOut’ will be ignored in this case.</p>
+<p>However, be aware that every feature can only appear once in a response. If resolving would break this rule, for example with circular references, the encoder will change the resolved feature back
+to an (internal) x-link reference.</p>
+</div>
+</div>
+<div class="section" id="getpropertyvalue">
+<h2>GetPropertyValue<a class="headerlink" href="#getpropertyvalue" title="Permalink to this headline">¶</a></h2>
+<p>The GetPropertyValue request is now fully supported. Resolving is also possible in this request, following the same rules as described above.</p>
+</div>
+<div class="section" id="paging">
+<h2>Paging<a class="headerlink" href="#paging" title="Permalink to this headline">¶</a></h2>
+<p>Paging is now supported in App-Schema. There are a few exceptions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Paging is only supported for data stores with JDBC back ends and will not work for data stores with property files. It has been tested with Oracle and PostGIS databases.</p></li>
+<li><p>Paging with filters involving attributes that are mapped to functions will not be supported, as this cannot be translated into SQL.</p></li>
+</ul>
+</div></blockquote>
+<p>For more efficient SQL queries generation, please set <code class="docutils literal notranslate"><span class="pre">isDenormalised</span></code> to false where applicable (when a one to one database table is used). See <a class="reference internal" href="mapping-file.html#app-schema-mapping-file"><span class="std std-ref">Mapping File</span></a>.</p>
+</div>
+<div class="section" id="numbermatched">
+<h2>NumberMatched<a class="headerlink" href="#numbermatched" title="Permalink to this headline">¶</a></h2>
+<p>The numberMatched valued in a GetFeature response contains the number of features that matches the criterion of the request. App-Schema supports it in the following cases:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>When the App-Schema underlying dataStores are JDBC dataStore, with the exception of the cases where the query has a filter that cannot be translated to SQL query and PropertyName points to a nested attribute.</p></li>
+<li><p>When the App-Schema underlying dataStores are different from JDBC dataStore and the query doesn’t have filters.</p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="wms-support.html" title="previous chapter">WMS Support</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="joining.html" title="next chapter">Joining Support For Performance</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WFS 2.0 Support</a><ul>
+<li><a class="reference internal" href="#resolving">Resolving</a><ul>
+<li><a class="reference internal" href="#resolving-and-feature-chaining-by-reference">Resolving and Feature Chaining By Reference</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getpropertyvalue">GetPropertyValue</a></li>
+<li><a class="reference internal" href="#paging">Paging</a></li>
+<li><a class="reference internal" href="#numbermatched">NumberMatched</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="wms-support.html" title="previous chapter">WMS Support</a></li>
+            <li>Next: <a href="joining.html" title="next chapter">Joining Support For Performance</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/wfs-2.0-support.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

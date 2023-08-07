@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication to OWS and REST services &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Authentication providers" href="providers.html" />
+    <link rel="prev" title="Authenticating to the Web Admin Interface" href="web.html" /> 
+  </head><body class="security/auth/owsrest">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Security</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Authentication</a> &raquo;</li>
+    <li>Authentication to OWS and REST services</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="providers.html" title="Authentication providers" accesskey="N">Next</a></li>
+  <li>
+    <a href="web.html" title="Authenticating to the Web Admin Interface" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="authentication-to-ows-and-rest-services">
+<span id="security-auth-owsrest"></span><h1>Authentication to OWS and REST services<a class="headerlink" href="#authentication-to-ows-and-rest-services" title="Permalink to this headline">¶</a></h1>
+<p>OWS and REST services are stateless and have no inherent awareness of “session”, so the authentication scheme for these services requires the client to supply credentials on every request. That said, “session integration” is supported, meaning that if a session already exists on the server (from a concurrent <a class="reference internal" href="web.html#security-auth-webadmin"><span class="std std-ref">authenticated web admin session</span></a>) it will be used for authentication. This scheme allows GeoServer to avoid the overhead of session creation for OWS and REST services.</p>
+<p>The default GeoServer configuration ships with support for <a class="reference external" href="http://en.wikipedia.org/wiki/Basic_access_authentication">HTTP Basic authentication</a>  for services.</p>
+<p>The typical process of authentication is as follows:</p>
+<ol class="arabic simple">
+<li><p>User makes a service request without supplying any credentials</p></li>
+<li><p>If the user is accessing an unsecured resource, the request is handled normally</p></li>
+<li><p>If the user is accessing a secured resource:</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>An HTTP 401 status code is sent back to the client, typically forcing the client to prompt for credentials.</p></li>
+<li><p>The service request is then repeated with the appropriate credentials included, usually in the HTTP header as with Basic Authentication.</p></li>
+<li><p>If the user has sufficient privileges to access the resource the request is handled normally, otherwise, a HTTP 404 status code is returned to the client.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>Subsequent requests should include the original user credentials</p></li>
+</ol>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following describes the authentication chain for an OWS service:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/auth_chain_ogc1.png" src="../../_images/auth_chain_ogc1.png" />
+<p class="caption"><span class="caption-text"><em>The OWS service authentication chain</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>In this example the filter chain consists of three filters:</p>
+<ul class="simple">
+<li><p><strong>Session</strong>—Handles “session integration”, recognizing existing sessions (but <em>not</em> creating new sessions)</p></li>
+<li><p><strong>Basic Auth</strong>—Extracts Basic Authentication credentials from request HTTP header</p></li>
+<li><p><strong>Anonymous</strong>—Handles anonymous access</p></li>
+</ul>
+<p>The provider chain is made up of two providers:</p>
+<ul class="simple">
+<li><p><strong>Root</strong>—<a class="reference internal" href="../root.html#security-root"><span class="std std-ref">Root account</span></a> has a special “super user” provider. As this account is rarely used, this provider is rarely invoked.</p></li>
+<li><p><strong>Username/password</strong>—Performs username/password authentication against a user database</p></li>
+</ul>
+<p>To illustrate how the elements of the various chains work, here are some example OWS requests.</p>
+<div class="section" id="anonymous-wms-getcapabilities-request">
+<h3>Anonymous WMS GetCapabilities request<a class="headerlink" href="#anonymous-wms-getcapabilities-request" title="Permalink to this headline">¶</a></h3>
+<p>This example shows the process for when a WMS client makes an anonymous GetCapabilities request.</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/auth_chain_ogc2.png" src="../../_images/auth_chain_ogc2.png" />
+<p class="caption"><span class="caption-text"><em>Authentication chain for a WMS client making an anonymous GetCapabilities request</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <em>Session</em> filter looks for an existing session, but finds none, so processing continues. The <em>Basic Auth</em> filter looks for the Basic Authorization header in the request, but as the request is anonymous, the filter finds none. Finally, the <em>Anonymous</em> filter executes and authenticates the request anonymously. Since GetCapabilities is a “discovery” operation it is typically not locked down, even on a secure server. Assuming this is the case here, the anonymous request succeeds, returning the capabilities response to the client. The provider chain is not invoked.</p>
+</div>
+<div class="section" id="anonymous-wms-getmap-request-for-a-secured-layer">
+<h3>Anonymous WMS GetMap request for a secured layer<a class="headerlink" href="#anonymous-wms-getmap-request-for-a-secured-layer" title="Permalink to this headline">¶</a></h3>
+<p>This example shows the process invoked when a WMS client makes an anonymous GetMap request for a secured layer</p>
+<p>The chain executes exactly as described above. The <em>Session</em> filter looks for an existing session, but finds none, so processing continues. The <em>Basic Auth</em> filter looks for the Basic Authorization header in the request, but as the request is anonymous, the filter finds none. Finally, the <em>Anonymous</em> filter executes and authenticates the request anonymously. However, in this case the layer being accessed is a secured resource, so the handling of the GetMap request fails. The server returns an exception accompanied with a HTTP 401 status code, which usually triggers the client presenting the user with a login dialog.</p>
+</div>
+<div class="section" id="wms-getmap-request-with-user-supplied-credentials">
+<h3>WMS GetMap request with user-supplied credentials<a class="headerlink" href="#wms-getmap-request-with-user-supplied-credentials" title="Permalink to this headline">¶</a></h3>
+<p>This example shows the process invoked when a WMS client gathers credentials from the user and reissues the previous request for a secured layer.</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/auth_chain_ogc3.png" src="../../_images/auth_chain_ogc3.png" />
+<p class="caption"><span class="caption-text"><em>Authentication chain for a WMS client making a GetMap request with user-supplied credentials</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <em>Session</em> filter executes as described above, and does nothing. The <em>Basic Auth</em> filter finds the authorization header in the request, extracts the credentials for it, and invokes the provider chain. Processing moves to the <em>Username/password</em> provider that does the actual authentication. If the credentials have the necessary privileges to access the layer, the processing of the request continues normally and the GetMap request succeeds, returning the map response. If the credentials are not sufficient, the HTTP 401 status code will be supplied instead, which may again trigger the login dialog on the client side.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="web.html" title="previous chapter">Authenticating to the Web Admin Interface</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="providers.html" title="next chapter">Authentication providers</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Authentication to OWS and REST services</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#anonymous-wms-getcapabilities-request">Anonymous WMS GetCapabilities request</a></li>
+<li><a class="reference internal" href="#anonymous-wms-getmap-request-for-a-secured-layer">Anonymous WMS GetMap request for a secured layer</a></li>
+<li><a class="reference internal" href="#wms-getmap-request-with-user-supplied-credentials">WMS GetMap request with user-supplied credentials</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="web.html" title="previous chapter">Authenticating to the Web Admin Interface</a></li>
+            <li>Next: <a href="providers.html" title="next chapter">Authentication providers</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/auth/owsrest.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

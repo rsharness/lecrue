@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GSR Usage &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Functionality" href="functionality.html" />
+    <link rel="prev" title="Installing the GeoServer GSR extension" href="installing.html" /> 
+  </head><body class="community/gsr/usage">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GSR Extension</a> &raquo;</li>
+    <li>GSR Usage</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="functionality.html" title="Functionality" accesskey="N">Next</a></li>
+  <li>
+    <a href="installing.html" title="Installing the GeoServer GSR extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="gsr-usage">
+<h1>GSR Usage<a class="headerlink" href="#gsr-usage" title="Permalink to this headline">¶</a></h1>
+<p>Currently basic FeatureServer and MapServer functionality work. Each GeoServer workspace is considered
+an ArcGIS® “service” for the purposes of the API. ArcGIS® URLs look like this in GeoServer:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/gsr/services/topp/MapServer/">http://localhost:8080/geoserver/gsr/services/topp/MapServer/</a>
+<a class="reference external" href="http://localhost:8080/geoserver/gsr/services/topp/FeatureServer/">http://localhost:8080/geoserver/gsr/services/topp/FeatureServer/</a></p>
+<p>Where topp is the workspace name.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.</p>
+</div>
+<div class="section" id="cors">
+<h2>CORS<a class="headerlink" href="#cors" title="Permalink to this headline">¶</a></h2>
+<p>When using the official JS API, CORS detection does not work correctly. You will need to add
+your server manually to the list of CORS enabled servers:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">require</span><span class="p">([</span><span class="s2">&quot;esri/config&quot;</span><span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">esriConfig</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">esriConfig</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">corsEnabledServers</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&quot;localhost:9191&quot;</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>CORS support also needs to be enabled on the server. Without these settings, it
+will attempt to use JSONP, which may not be as well supported.</p>
+<p>For information on enabling CORS in GeoServer, see <a class="reference external" href="http://suite.opengeo.org/docs/latest/sysadmin/cors/index.html">here</a>.</p>
+</div>
+<div class="section" id="web-mercator-spatial-reference">
+<h2>Web Mercator Spatial Reference<a class="headerlink" href="#web-mercator-spatial-reference" title="Permalink to this headline">¶</a></h2>
+<p>The official APIs use Spatial Reference 102100 as Web Mercator. In order for this to work,
+add the following custom projection to your <cite>data_dir/user_projections/epsg.properties</cite> file:</p>
+<p><code class="docutils literal notranslate"><span class="pre">102100=PROJCS[&quot;WGS</span> <span class="pre">84</span> <span class="pre">/</span> <span class="pre">Pseudo-Mercator&quot;,GEOGCS[&quot;Popular</span> <span class="pre">Visualisation</span> <span class="pre">CRS&quot;,</span>
+<span class="pre">DATUM[&quot;Popular_Visualisation_Datum&quot;,SPHEROID[&quot;Popular</span> <span class="pre">Visualisation</span> <span class="pre">Sphere&quot;,6378137,0,</span>
+<span class="pre">AUTHORITY[&quot;EPSG&quot;,&quot;7059&quot;]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY[&quot;EPSG&quot;,&quot;6055&quot;]],</span>
+<span class="pre">PRIMEM[&quot;Greenwich&quot;,0,AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],UNIT[&quot;degree&quot;,0.01745329251994328,</span>
+<span class="pre">AUTHORITY[&quot;EPSG&quot;,&quot;9122&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;4055&quot;]],UNIT[&quot;metre&quot;,1,AUTHORITY[&quot;EPSG&quot;,&quot;9001&quot;]],</span>
+<span class="pre">PROJECTION[&quot;Mercator_1SP&quot;],PARAMETER[&quot;central_meridian&quot;,0],PARAMETER[&quot;scale_factor&quot;,1],</span>
+<span class="pre">PARAMETER[&quot;false_easting&quot;,0],PARAMETER[&quot;false_northing&quot;,0],AUTHORITY[&quot;EPSG&quot;,&quot;3785&quot;],</span>
+<span class="pre">AXIS[&quot;X&quot;,EAST],AXIS[&quot;Y&quot;,NORTH]]</span></code></p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="installing.html" title="previous chapter">Installing the GeoServer GSR extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="functionality.html" title="next chapter">Functionality</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GSR Usage</a><ul>
+<li><a class="reference internal" href="#cors">CORS</a></li>
+<li><a class="reference internal" href="#web-mercator-spatial-reference">Web Mercator Spatial Reference</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="installing.html" title="previous chapter">Installing the GeoServer GSR extension</a></li>
+            <li>Next: <a href="functionality.html" title="next chapter">Functionality</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/gsr/usage.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

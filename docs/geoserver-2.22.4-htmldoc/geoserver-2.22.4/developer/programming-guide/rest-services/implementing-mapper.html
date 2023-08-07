@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Implementing a REST PathMapper &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Web User Interface" href="../web-ui/index.html" />
+    <link rel="prev" title="Implementing a RESTful Service with Reflection" href="implementing-reflection.html" /> 
+  </head><body class="programming-guide/rest-services/implementing-mapper">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">REST Services</a> &raquo;</li>
+    <li>Implementing a REST PathMapper</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../web-ui/index.html" title="Web User Interface" accesskey="N">Next</a></li>
+  <li>
+    <a href="implementing-reflection.html" title="Implementing a RESTful Service with Reflection" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="implementing-a-rest-pathmapper">
+<span id="rest-services-implementing-mapper"></span><h1>Implementing a REST PathMapper<a class="headerlink" href="#implementing-a-rest-pathmapper" title="Permalink to this headline">¶</a></h1>
+<p>In this section is described how to implement a new <em>RESTUploadPathMapper</em> sub-class.
+A <em>RESTUploadPathMapper</em> object is used for mapping the path of the uploaded files following new remapping policy. An example could be a Regular Expression remapping
+based on the input file name.</p>
+<p>This is the <em>RESTUploadPathMapper</em> interface:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span>
+ <span class="o">*</span> <span class="n">Plugin</span> <span class="n">interface</span> <span class="n">used</span> <span class="n">to</span> <span class="n">transform</span> <span class="n">the</span> <span class="n">position</span> <span class="n">of</span> <span class="n">files</span> <span class="n">during</span> <span class="n">rest</span> <span class="n">uploads</span>
+ <span class="o">*/</span>
+<span class="n">public</span> <span class="n">interface</span> <span class="n">RESTUploadPathMapper</span><span class="p">{</span>
+        <span class="o">/**</span>
+         <span class="o">*</span> <span class="n">Remaps</span> <span class="n">the</span> <span class="n">position</span> <span class="n">of</span> <span class="n">a</span> <span class="n">store</span> <span class="n">path</span><span class="o">.</span> <span class="n">The</span> <span class="n">implementor</span> <span class="ow">is</span> <span class="n">free</span> <span class="n">to</span> <span class="n">append</span><span class="p">,</span> <span class="n">modify</span>
+         <span class="o">*</span> <span class="ow">or</span> <span class="n">replace</span> <span class="n">the</span> <span class="n">store</span> <span class="n">root</span> <span class="n">directory</span><span class="p">,</span> <span class="n">REST</span> <span class="n">upload</span> <span class="n">will</span> <span class="n">append</span> <span class="n">workspace</span><span class="o">/</span><span class="n">store</span> <span class="n">to</span>
+         <span class="o">*</span> <span class="n">it</span>
+         <span class="o">*</span>
+         <span class="o">*</span> <span class="nd">@throws</span> <span class="n">IOException</span>
+         <span class="o">*/</span>
+        <span class="n">public</span> <span class="n">void</span> <span class="n">mapStorePath</span><span class="p">(</span><span class="n">StringBuilder</span> <span class="n">rootDir</span><span class="p">,</span> <span class="n">String</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">String</span> <span class="n">store</span><span class="p">,</span>
+                <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">storeParams</span><span class="p">)</span> <span class="n">throws</span> <span class="n">IOException</span><span class="p">;</span>
+
+        <span class="o">/**</span>
+         <span class="o">*</span> <span class="n">Remaps</span> <span class="n">the</span> <span class="n">position</span> <span class="n">of</span> <span class="n">a</span> <span class="n">file</span> <span class="n">inside</span> <span class="n">a</span> <span class="n">store</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="p">,</span> <span class="n">a</span> <span class="n">image</span> <span class="n">being</span> <span class="n">harvested</span> <span class="n">into</span>
+         <span class="o">*</span> <span class="n">a</span> <span class="n">mosaic</span><span class="o">.</span> <span class="n">The</span> <span class="n">implementor</span> <span class="ow">is</span> <span class="n">free</span> <span class="n">to</span> <span class="n">alter</span> <span class="n">the</span> <span class="n">item</span> <span class="n">path</span><span class="o">.</span>
+         <span class="o">*</span>
+         <span class="o">*</span> <span class="nd">@throws</span> <span class="n">IOException</span>
+         <span class="o">*/</span>
+        <span class="n">public</span> <span class="n">void</span> <span class="n">mapItemPath</span><span class="p">(</span><span class="n">String</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">String</span> <span class="n">store</span><span class="p">,</span>
+                <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">storeParams</span><span class="p">,</span> <span class="n">StringBuilder</span> <span class="n">itemPath</span><span class="p">,</span> <span class="n">String</span> <span class="n">itemName</span><span class="p">)</span> <span class="n">throws</span> <span class="n">IOException</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Each implementation must follows these rules:</p>
+<ul>
+<li><p>Remapping of the Root Directory requires to create a final root of the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${rootDirectory}/workspace/store
+</pre></div>
+</div>
+</li>
+<li><p>Developers can choose both the relative path of the file (if it is inside a zip directory structure) and the filename itself.</p></li>
+<li><p>File remapping cannot return directories.</p></li>
+<li><p>If additional parameters are required, they can be stored inside the Metadata Map of the Global, WorkSpace or Store settings.</p></li>
+</ul>
+<p>The steps for creating a new <strong>RESTUploadPathMapper</strong> implementation are:</p>
+<ol class="arabic">
+<li><p>Extend the base implementation <em>RESTUploadPathMapperImpl</em> and create the desired PathMapper.</p></li>
+<li><p>Configure it as a Spring Bean inside the <em>applicationContext</em>. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">bean</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;ECQLRUPathMapper&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;org.geoserver.rest.ecql.RESTUploadECQLPathMapper&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">constructor</span><span class="o">-</span><span class="n">arg</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;catalog&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">bean</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>If any optional parameter requires to be configured, then a GUI panel must be created using Wicket. The panel will be added to the Global and WorkSpace Settings configuration page.</p>
+<p>The steps for creating the GUI panel are:</p>
+<ol class="arabic">
+<li><p>Creation of a new extension of the <em>SettingsPluginPanel</em> class.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that this panel must extract the parameters from the Metadata Map of the <em>settings</em> object.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p>Definition of a Spring Bean which will be an instance of the <em>SettingsPluginPanelInfo</em> class and will have the class defined above as component class (<em>priority</em> property can be avoided). For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">bean</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;restECQLSettingsPanel&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;org.geoserver.web.data.settings.SettingsPluginPanelInfo&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span><span class="n">This</span> <span class="n">bean</span> <span class="n">adds</span> <span class="n">the</span> <span class="n">necessary</span> <span class="n">form</span> <span class="n">fields</span> <span class="n">to</span> <span class="n">REST</span> <span class="n">Settings</span><span class="o">&lt;/</span><span class="n">description</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">property</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;id&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;restECQLSettingsPanel&quot;</span><span class="o">/&gt;</span>
+  <span class="o">&lt;</span><span class="nb">property</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;titleKey&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;restECQLsettings&quot;</span><span class="o">/&gt;</span>
+  <span class="o">&lt;</span><span class="nb">property</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;componentClass&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;org.geoserver.rest.web.RESTECQLSettingsPanel&quot;</span><span class="o">/&gt;</span>
+  <span class="o">&lt;</span><span class="nb">property</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;priority&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">bean</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Then the result will be added at the bottom of the GeoServer <em>Global Settings</em> and <em>Edit WorkSpace</em> Pages:</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/settings.png" src="../../_images/settings.png" />
+</div>
+</div></blockquote>
+</li>
+</ol>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="implementing-reflection.html" title="previous chapter">Implementing a RESTful Service with Reflection</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../web-ui/index.html" title="next chapter">Web User Interface</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Implementing a REST PathMapper</a><ul>
+<li><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="implementing-reflection.html" title="previous chapter">Implementing a RESTful Service with Reflection</a></li>
+            <li>Next: <a href="../web-ui/index.html" title="next chapter">Web User Interface</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/rest-services/implementing-mapper.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

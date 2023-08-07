@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overview &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Implementing a Wicket UI Extension" href="implementing.html" />
+    <link rel="prev" title="Web User Interface" href="index.html" /> 
+  </head><body class="programming-guide/web-ui/overview">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web User Interface</a> &raquo;</li>
+    <li>Overview</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="implementing.html" title="Implementing a Wicket UI Extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="Web User Interface" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="overview">
+<span id="wicket-ui-overview"></span><h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer uses a web application framework known as
+<a class="reference external" href="http://wicket.apache.org//">Wicket</a> for its user interface. Wicket differs
+from most Java web frameworks in that it is component based rather than JSP
+template based. This makes Wicket a more natural web framework for many Java
+programmers who are more familiar with Swing programming than web programming.</p>
+<div class="section" id="plug-ins">
+<h2>Plug-ins<a class="headerlink" href="#plug-ins" title="Permalink to this headline">¶</a></h2>
+<p>Because of its component based nature Wicket components can be loaded from the
+classpath. Which means that web applications can be built in a modular fashion,
+rather than in a monolithic fashion.</p>
+<p>GeoServer takes this concept one step further to provide a pluggable user
+interface, in which Wicket components can be plugged in via Spring and the
+regular GeoServer plug-in mechanism.</p>
+<p>Each component that is plugged in is described by a <strong>component descriptor</strong>.
+A component descriptor is an instance of the <code class="docutils literal notranslate"><span class="pre">org.geoserver.web.ComponentInfo</span></code>
+class:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">public</span> <span class="n">abstract</span> <span class="k">class</span> <span class="nc">ComponentInfo</span><span class="o">&lt;</span><span class="n">C</span> <span class="n">extends</span> <span class="n">Component</span><span class="o">&gt;</span> <span class="n">implements</span> <span class="n">Serializable</span> <span class="p">{</span>
+
+    <span class="o">/**</span>
+     <span class="o">*</span> <span class="n">the</span> <span class="nb">id</span> <span class="n">of</span> <span class="n">the</span> <span class="n">component</span>
+     <span class="o">*/</span>
+    <span class="n">String</span> <span class="nb">id</span><span class="p">;</span>
+    <span class="o">/**</span>
+     <span class="o">*</span> <span class="n">the</span> <span class="n">title</span> <span class="n">of</span> <span class="n">the</span> <span class="n">component</span>
+     <span class="o">*/</span>
+    <span class="n">String</span> <span class="n">title</span><span class="p">;</span>
+    <span class="o">/**</span>
+     <span class="o">*</span> <span class="n">The</span> <span class="n">description</span> <span class="n">of</span> <span class="n">the</span> <span class="n">component</span>
+     <span class="o">*/</span>
+    <span class="n">String</span> <span class="n">description</span><span class="p">;</span>
+    <span class="o">/**</span>
+     <span class="o">*</span> <span class="n">the</span> <span class="k">class</span> <span class="nc">of</span> <span class="n">the</span> <span class="n">component</span>
+     <span class="o">*/</span>
+    <span class="n">Class</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span> <span class="n">componentClass</span><span class="p">;</span>
+    
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>A <code class="docutils literal notranslate"><span class="pre">ComponentInfo</span></code> instance contains meta information about the component
+being plugged in such as its title and description, as well as the class which
+implements the component.</p>
+<p>Each subclass of <code class="docutils literal notranslate"><span class="pre">ComponentInfo</span></code> represents a specific
+<a class="reference internal" href="../extension-points/index.html#extension-points"><span class="std std-ref">extension point</span></a>.  For instance the class
+<code class="docutils literal notranslate"><span class="pre">org.geoserver.web.MenuPageInfo</span></code> represents the extension point for “main”
+pages, ie pages that are linked to from the main menu of the application.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">Web User Interface</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="implementing.html" title="next chapter">Implementing a Wicket UI Extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Overview</a><ul>
+<li><a class="reference internal" href="#plug-ins">Plug-ins</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">Web User Interface</a></li>
+            <li>Next: <a href="implementing.html" title="next chapter">Implementing a Wicket UI Extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/web-ui/overview.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

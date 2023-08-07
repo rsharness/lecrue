@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manifests &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Keystore Password" href="masterpassword.html" />
+    <link rel="prev" title="Resource reset" href="reset.html" /> 
+  </head><body class="rest/api/manifests">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">REST</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">REST configuration API reference</a> &raquo;</li>
+    <li>Manifests</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="masterpassword.html" title="Keystore Password" accesskey="N">Next</a></li>
+  <li>
+    <a href="reset.html" title="Resource reset" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="manifests">
+<span id="rest-api-manifests"></span><h1>Manifests<a class="headerlink" href="#manifests" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer provides a REST service to expose a listing of all loaded JARs and resources on the running instance. This is useful for bug reports and to keep track of extensions deployed into the application. There are two endpoints for accessing this information:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">about/manifest</span></code>—Retrieves details on all loaded JARs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">about/version</span></code>—Retrieves details for the high-level components: GeoSever, GeoTools, and GeoWebCache</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">about/status</span></code>-Retrieves details for the status of all loaded and configured modules</p></li>
+</ul>
+<div class="section" id="about-manifest-format">
+<h2><code class="docutils literal notranslate"><span class="pre">/about/manifest[.&lt;format&gt;]</span></code><a class="headerlink" href="#about-manifest-format" title="Permalink to this headline">¶</a></h2>
+<p>This endpoint retrieves details on all loaded JARs.</p>
+<p>All the GeoServer manifest JARs are marked with the property <code class="docutils literal notranslate"><span class="pre">GeoServerModule</span></code> and classified by type, so you can use filtering capabilities to search for a set of manifests using regular expressions (see the <a class="reference internal" href="#rest-api-manifests-manifest"><span class="std std-ref">manifest</span></a> parameter) or a type category (see the <a class="reference internal" href="#rest-api-manifests-key"><span class="std std-ref">key</span></a> and <a class="reference internal" href="#rest-api-manifests-value"><span class="std std-ref">value</span></a> parameter).</p>
+<p>The available types are <code class="docutils literal notranslate"><span class="pre">core</span></code>, <code class="docutils literal notranslate"><span class="pre">extension</span></code>, or <code class="docutils literal notranslate"><span class="pre">community</span></code>. To filter modules by a particular type, append a request with <code class="docutils literal notranslate"><span class="pre">key=GeoServerModule&amp;value=&lt;type&gt;</span></code></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Action</p></th>
+<th class="head"><p>Status Code</p></th>
+<th class="head"><p>Formats</p></th>
+<th class="head"><p>Default Format</p></th>
+<th class="head"><p>Parameters</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p>List all manifests into the classpath</p></td>
+<td><p>200</p></td>
+<td><p>HTML, XML, JSON</p></td>
+<td><p>HTML</p></td>
+<td><p><a class="reference internal" href="#rest-api-manifests-manifest"><span class="std std-ref">manifest</span></a>, <a class="reference internal" href="#rest-api-manifests-key"><span class="std std-ref">key</span></a>, <a class="reference internal" href="#rest-api-manifests-value"><span class="std std-ref">value</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>POST</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>DELETE</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>The model is very simple and is shared between the version and the resource requests to parse both requests.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">about</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">resource</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{NAME}</span><span class="s2">&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="p">{</span><span class="n">KEY</span><span class="p">}</span><span class="o">&gt;</span><span class="p">{</span><span class="n">VALUE</span><span class="p">}</span><span class="o">&lt;/</span><span class="p">{</span><span class="n">KEY</span><span class="p">}</span><span class="o">&gt;</span>
+    <span class="o">...</span>
+  <span class="o">&lt;/</span><span class="n">resource</span><span class="o">&gt;</span>
+  <span class="o">...</span>
+<span class="o">&lt;/</span><span class="n">about</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>You can customize the results adding a properties file called <code class="file docutils literal notranslate"><span class="pre">manifest.properties</span></code> into the root of the data directory.
+Below is the default implementation that is used when no custom properties file is present:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resourceNameRegex</span><span class="o">=.+/</span><span class="p">(</span><span class="o">.*</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">jar</span><span class="o">|</span><span class="n">war</span><span class="p">)</span>
+<span class="n">resourceAttributeExclusions</span><span class="o">=</span><span class="n">Import</span><span class="o">-</span><span class="n">Package</span><span class="p">,</span><span class="n">Export</span><span class="o">-</span><span class="n">Package</span><span class="p">,</span><span class="n">Class</span><span class="o">-</span><span class="n">Path</span><span class="p">,</span><span class="n">Require</span><span class="o">-</span><span class="n">Bundle</span>
+<span class="n">versionAttributeInclusions</span><span class="o">=</span><span class="n">Project</span><span class="o">-</span><span class="n">Version</span><span class="p">:</span><span class="n">Version</span><span class="p">,</span><span class="n">Build</span><span class="o">-</span><span class="n">Timestamp</span><span class="p">,</span><span class="n">Git</span><span class="o">-</span><span class="n">Revision</span><span class="p">,</span>
+  <span class="n">Specification</span><span class="o">-</span><span class="n">Version</span><span class="p">:</span><span class="n">Version</span><span class="p">,</span><span class="n">Implementation</span><span class="o">-</span><span class="n">Version</span><span class="p">:</span><span class="n">Git</span><span class="o">-</span><span class="n">Revision</span>
+</pre></div>
+</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">resourceNameRegex</span></code>—Group(1) will be used to match the attribute name of the resource.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">resourceAttributeExclusions</span></code>—Comma-separated list of properties to exclude (deny-list), used to exclude parameters that are too verbose such that the resource properties list is left open. Users can add their JARs (with custom properties) having the complete list of properties.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">versionAttributeInclusions</span></code>—Comma-separated list of properties to include (allow-list). Also supports renaming properties (using <code class="docutils literal notranslate"><span class="pre">key:replace</span></code>) which is used to align the output of the <code class="docutils literal notranslate"><span class="pre">versions</span></code> request to the output of the web page. The model uses a map to store attributes, so the last attribute found in the manifest file will be used.</p></li>
+</ul>
+<div class="section" id="manifest">
+<span id="rest-api-manifests-manifest"></span><h4><code class="docutils literal notranslate"><span class="pre">manifest</span></code><a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">manifest</span></code> parameter is used to filter over resulting resource (manifest) names attribute using Java regular expressions.</p>
+</div>
+<div class="section" id="key">
+<span id="rest-api-manifests-key"></span><h4><code class="docutils literal notranslate"><span class="pre">key</span></code><a class="headerlink" href="#key" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">key</span></code> parameter is used to filter over resulting resource (manifest) properties name. It can be combined with the <code class="docutils literal notranslate"><span class="pre">value</span></code> parameter.</p>
+</div>
+<div class="section" id="value">
+<span id="rest-api-manifests-value"></span><h4><code class="docutils literal notranslate"><span class="pre">value</span></code><a class="headerlink" href="#value" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">value</span></code> parameter is used to filter over resulting resource (manifest) properties value. It can be combined with the <code class="docutils literal notranslate"><span class="pre">key</span></code> parameter.</p>
+</div>
+</div>
+</div>
+<div class="section" id="about-version-format">
+<h2><code class="docutils literal notranslate"><span class="pre">/about/version[.&lt;format&gt;]</span></code><a class="headerlink" href="#about-version-format" title="Permalink to this headline">¶</a></h2>
+<p>This endpoint shows only the details for the high-level components: GeoServer, GeoTools, and GeoWebCache.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Action</p></th>
+<th class="head"><p>Status Code</p></th>
+<th class="head"><p>Formats</p></th>
+<th class="head"><p>Default Format</p></th>
+<th class="head"><p>Parameters</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p>List GeoServer, GeoWebCache and GeoTools manifests</p></td>
+<td><p>200</p></td>
+<td><p>HTML, XML, JSON</p></td>
+<td><p>HTML</p></td>
+<td><p><a class="reference internal" href="#rest-api-manifests-manifest"><span class="std std-ref">manifest</span></a>, <a class="reference internal" href="#rest-api-manifests-key"><span class="std std-ref">key</span></a>, <a class="reference internal" href="#rest-api-manifests-value"><span class="std std-ref">value</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>POST</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>DELETE</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="about-status-format">
+<h2><code class="docutils literal notranslate"><span class="pre">/about/status[.&lt;format&gt;]</span></code><a class="headerlink" href="#about-status-format" title="Permalink to this headline">¶</a></h2>
+<p>This endpoint shows the status details of all installed and configured modules.Status details always include human readable name, and module name. Optional details include version, availability, status message, and links to documentation.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Action</p></th>
+<th class="head"><p>Status Code</p></th>
+<th class="head"><p>Formats</p></th>
+<th class="head"><p>Default Format</p></th>
+<th class="head"><p>Parameters</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p>List module statuses</p></td>
+<td><p>200</p></td>
+<td><p>HTML, XML, JSON</p></td>
+<td><p>HTML</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>POST</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>DELETE</p></td>
+<td></td>
+<td><p>405</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="reset.html" title="previous chapter">Resource reset</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="masterpassword.html" title="next chapter">Keystore Password</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Manifests</a><ul>
+<li><a class="reference internal" href="#about-manifest-format"><code class="docutils literal notranslate"><span class="pre">/about/manifest[.&lt;format&gt;]</span></code></a><ul>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#manifest"><code class="docutils literal notranslate"><span class="pre">manifest</span></code></a></li>
+<li><a class="reference internal" href="#key"><code class="docutils literal notranslate"><span class="pre">key</span></code></a></li>
+<li><a class="reference internal" href="#value"><code class="docutils literal notranslate"><span class="pre">value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#about-version-format"><code class="docutils literal notranslate"><span class="pre">/about/version[.&lt;format&gt;]</span></code></a></li>
+<li><a class="reference internal" href="#about-status-format"><code class="docutils literal notranslate"><span class="pre">/about/status[.&lt;format&gt;]</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="reset.html" title="previous chapter">Resource reset</a></li>
+            <li>Next: <a href="masterpassword.html" title="next chapter">Keystore Password</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/rest/api/manifests.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

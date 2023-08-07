@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paletted Images &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Serving Static Files" href="../staticfiles.html" />
+    <link rel="prev" title="Raster GetFeatureInfo Response Customization" href="../GetFeatureInfo/raster.html" /> 
+  </head><body class="tutorials/palettedimage/palettedimage">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Paletted Images</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../staticfiles.html" title="Serving Static Files" accesskey="N">Next</a></li>
+  <li>
+    <a href="../GetFeatureInfo/raster.html" title="Raster GetFeatureInfo Response Customization" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="paletted-images">
+<span id="tutorials-palettedimages"></span><h1>Paletted Images<a class="headerlink" href="#paletted-images" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer has the ability to output high quality 256 color images. This tutorial introduces you to the palette concepts, the various image generation options, and offers a quality/resource comparison of them in different situations.</p>
+<div class="section" id="what-are-paletted-images">
+<h2>What are Paletted Images?<a class="headerlink" href="#what-are-paletted-images" title="Permalink to this headline">¶</a></h2>
+<p>Some image formats, such as GIF or PNG, can use a palette, which is a table of (usually) 256 colors to allow for better compression. Basically, instead of representing each pixel with its full color triplet, which takes 24bits (plus eventual 8 more for transparency), they use a 8 bit index that represent the position inside the palette, and thus the color.</p>
+<p>This allows for images that are 3-4 times smaller than the standard images, with the limitation that only 256 different colors can appear on the image itself. Depending of the actual map, this may be a very stringent limitation, visibly degrading the image quality, or it may be that the output cannot be differentiated from a full color image. For many maps, one can easily find 256 representative colors.</p>
+<p>In the latter case, the smaller footprint of paletted images is usually a big gain in both performance and costs, because more data can be served with the same internet connection, and the clients will obtain responses faster.</p>
+</div>
+<div class="section" id="formats-and-antialiasing">
+<h2>Formats and Antialiasing<a class="headerlink" href="#formats-and-antialiasing" title="Permalink to this headline">¶</a></h2>
+<p>Internet standards offer a variety of image formats, all having different strong and weak points. The three most common formats are:</p>
+<ul class="simple">
+<li><p><strong>JPEG</strong>: a lossy format with tunable compression. JPEG is best suited for imagery layers, where the pixel color varies continuously from one pixel to the next one, and allows for the best compressed outputs. On the contrary, it’s not suited to most vector layers, because even slight compression generates visible artifacts on uniform color areas.</p></li>
+<li><p><strong>PNG</strong>: a non lossy format allowing for both full color and paletted. In full color images each pixel is encoded as a 24bits integer with full transparency information (so PNG images can be translucent), in paletted mode each pixel is an 8 bit index into a 256 color table (the palette). This format is best suited to vector layers, especially in the paletted version. The full color version is sometimes referred as PNG24, the paletted version as PNG8.</p></li>
+<li><p><strong>GIF</strong>: a non lossy format with a 256 color palette, best suited for vector layers. Does not support translucency, but allows for fully transparent pixels.</p></li>
+</ul>
+<p>So, as it turns out, paletted images can be used with profit on vector data sets, either using the PNG8 or GIF formats.</p>
+<p>Antialiasing plays a role too. Let’s take a road layer, where each road is depicted by a solid gray line, 2 pixels thick. One may think this layer needs only 2 colors: the background one (eventually transparent) and gray. In fact, this is true only if no antialiasing is enabled. Antialiasing will smooth the borders of the line giving a softer, better looking shape, and it will do so by adding pixels with an intermediate color, thus increasing the number of colors that are needed to fully display the image.</p>
+<p>The following zoom of an image shows antialiasing in action:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/antialiasing.png" src="../../_images/antialiasing.png" />
+<p class="caption"><span class="caption-text"><em>Antialiasing</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>These output formats, if no other parameters are provided, do compute the optimal palette on the fly. As you’ll see, this is an expensive process (CPU bound), but as you’ll see, depending on the speed of the network connecting the server and the client, the extra cost can be ignored (especially if the bottleneck can be found in the network instead of the server CPU).</p>
+<p>Optimal palette computation is anyways a repetitive work that can be done up front: a user can compute the optimal palette once, and tell GeoServer to use it. There are three ways to do so:</p>
+<ol class="arabic">
+<li><p>Use the <a class="reference external" href="http://www.intuitive.com/coolweb/colors.html">internet safe palette</a>, a standard palette built in into GeoServer, by appending <code class="docutils literal notranslate"><span class="pre">palette=safe</span></code> to the <code class="docutils literal notranslate"><span class="pre">GetMap</span></code> request.</p></li>
+<li><p>Provide a palette by example. In this case, the user will generate an 256 color images using an external program (such as Photoshop), and then will save it into the <code class="docutils literal notranslate"><span class="pre">$GEOSERVER_DATA_DIR/palettes</span></code> directory. The sample file can be either in GIF or PNG format. If the file is named mypalette.gif or mypalette.png, the user will be able to refer it appending <code class="docutils literal notranslate"><span class="pre">palette=mypalette</span></code> to the GetMap request. GeoServer will load the palette from the file and use it.</p></li>
+<li><p>Provide a palette file.  The palette file must be in JASC-PAL format, and have a <code class="docutils literal notranslate"><span class="pre">.pal</span></code> extension. This file type can be generated by applications such as Paint Shop Pro and IrfanView, but also can be generated manually in a text editor. The process is just as before, but this time only the palette file will be stored into <code class="docutils literal notranslate"><span class="pre">$GEOSERVER_DATA_DIR/palettes</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GeoServer does not support palette files in Microsoft Palette format, despite having the same <code class="docutils literal notranslate"><span class="pre">.pal</span></code> file extension.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="an-example-with-vector-data">
+<h2>An Example with Vector Data<a class="headerlink" href="#an-example-with-vector-data" title="Permalink to this headline">¶</a></h2>
+<p>Enough theory, let’s have a look at how to deal with paletted images in practice. We’ll use the <code class="docutils literal notranslate"><span class="pre">tiger-ny</span></code> basemap to gather some numbers, and in particular the following map request:</p>
+<p>And we’ll change various parameters in order to play with formats and palettes. Here goes the sampler:</p>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/png</span></code> | Size: 257 KB | Map generation time: 0.3s</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/tiger-ny-png24.png" src="../../_images/tiger-ny-png24.png" />
+<p class="caption"><span class="caption-text"><em>The standard PNG full color output</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/png8</span></code> | Size: 60 KB | Map generation time: 0.6s</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/tiger-ny-png8.png" src="../../_images/tiger-ny-png8.png" />
+<p class="caption"><span class="caption-text"><em>The PNG8 output</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/png</span></code> | Size: 257 KB | Map generation time: 0.3s</p>
+<div class="figure align-center" id="id4">
+<img alt="../../_images/tiger-ny-png-safe-palette.png" src="../../_images/tiger-ny-png-safe-palette.png" />
+<p class="caption"><span class="caption-text"><em>PNG + internet safe palette</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/png</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">palette=nyp</span></code> | Size: 56KB | Map generation time: 0.3s</p>
+<div class="figure align-center" id="id5">
+<img alt="../../_images/tiger-ny-png-custom-palette.png" src="../../_images/tiger-ny-png-custom-palette.png" />
+<p class="caption"><span class="caption-text"><em>PNG + `custom palette &lt;http://geoserver.org/download/attachments/1278244/nyp.pal?version=1&gt;`_</em></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>The attachments include also the GIF outputs, whose size, appearance and generation time does not differ significantly from the PNG outputs.</p>
+<p>As we can see, depending on the choice we have a variation on the image quality, size and generation time (which has been recorded using the FasterFox Firefox extension timer, with the browser sitting on the same box as the server). Using <code class="docutils literal notranslate"><span class="pre">palette=xxx</span></code> provides the best match in speed and size, though using the built-in internet safe palette altered the colors. Then again, the real gain can be seen only by assuming a certain connection speed between the server and the client, and adding the time required to move the image to the client. The following table provides some results:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Configuration</strong></p></td>
+<td><p><strong>GT(s)</strong></p></td>
+<td><p><strong>File size (kb)</strong></p></td>
+<td><p><strong>TT 256kbit/s</strong></p></td>
+<td><p><strong>TT 1MBit/s</strong></p></td>
+<td><p><strong>TT 4MBit/s</strong></p></td>
+<td><p><strong>TT 20MBit/s</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>tiger-ny-png</p></td>
+<td><p>0,36</p></td>
+<td><p>257</p></td>
+<td><p>8,39</p></td>
+<td><p>2,42</p></td>
+<td><p>0,87</p></td>
+<td><p>0,46</p></td>
+</tr>
+<tr class="row-odd"><td><p>tyger-ny-png8</p></td>
+<td><p>0,6</p></td>
+<td><p>60</p></td>
+<td><p>2,48</p></td>
+<td><p>1,08</p></td>
+<td><p>0,72</p></td>
+<td><p>0,62</p></td>
+</tr>
+<tr class="row-even"><td><p>tiger-ny-png + safe palette</p></td>
+<td><p>0,3</p></td>
+<td><p>56</p></td>
+<td><p>22,05</p></td>
+<td><p>0,75</p></td>
+<td><p>0,41</p></td>
+<td><p>0,32</p></td>
+</tr>
+<tr class="row-odd"><td><p>tiger-ny-png + custom palette</p></td>
+<td><p>0,3</p></td>
+<td><p>59</p></td>
+<td><p>2,14</p></td>
+<td><p>0,77</p></td>
+<td><p>0,42</p></td>
+<td><p>0,32</p></td>
+</tr>
+</tbody>
+</table>
+<p>Legend:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GT</span></code>: map generation time on the same box</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TT</span> <span class="pre">&lt;speed&gt;</span></code>: total time needed for a client to show the image, assuming an internet connection of the given speed. This time is a sum of the image generation time and the transfer time, that is, <code class="docutils literal notranslate"><span class="pre">GT</span> <span class="pre">+</span> <span class="pre">sizeInKbytes</span> <span class="pre">*</span> <span class="pre">8/</span> <span class="pre">speedInKbits</span></code>.</p></li>
+</ul>
+<p>As the table shows, the full color PNG image takes usually a lot more time than other formats, unless it’s being served over a fast network (and even in this case, one should consider network congestion as well). The png8 output format proves to be a good choice if the connection is slow, whilst the extra work done in looking up an optimal palette always pays back in faster map delivery.</p>
+</div>
+<div class="section" id="generating-the-custom-palette">
+<h2>Generating the custom palette<a class="headerlink" href="#generating-the-custom-palette" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="file docutils literal notranslate"><span class="pre">nyp.pal</span></code> file has been generated using IrfanView, on Windows:</p>
+<ul class="simple">
+<li><p>open the png 24 bit version of the image</p></li>
+<li><p>use Image/Decrease Color Depth and set 256 colors</p></li>
+<li><p>use Image/Palette/Export to save the palette</p></li>
+</ul>
+</div>
+<div class="section" id="an-example-with-raster-data">
+<h2>An example with raster data<a class="headerlink" href="#an-example-with-raster-data" title="Permalink to this headline">¶</a></h2>
+<p>To give you an example when paletted images may not fit the bill, let’s consider the sf:dem coverage from the sample data, and repeat the same operation as before.</p>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/png</span></code> Size: 117 KB | Map generation time: 0.2s</p>
+<div class="figure align-center" id="id6">
+<img alt="../../_images/dem-png24.png" src="../../_images/dem-png24.png" />
+<p class="caption"><span class="caption-text"><em>The standard PNG full color output.</em></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/jpeg</span></code> Size: 23KB | Map generation time: 0.12s</p>
+<div class="figure align-center" id="id7">
+<img alt="../../_images/dem-jpeg.jpg" src="../../_images/dem-jpeg.jpg" />
+<p class="caption"><span class="caption-text"><em>JPEG output</em></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/png8</span></code> Size: 60 KB | Map generation time: 0.5s</p>
+<div class="figure align-center" id="id8">
+<img alt="../../_images/dem-png8.png" src="../../_images/dem-png8.png" />
+<p class="caption"><span class="caption-text"><em>The PNG8 output.</em></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/png</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">palette=dem-png8</span></code> Size: 48KB | Map generation time: 0.15s</p>
+<div class="figure align-center" id="id9">
+<img alt="../../_images/dem-png-custom-palette.png" src="../../_images/dem-png-custom-palette.png" />
+<p class="caption"><span class="caption-text"><em>PNG + custom palette (using the png8 output as the palette).</em></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<p><strong>Parameters</strong>:<code class="docutils literal notranslate"><span class="pre">FORMAT=image/png</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">palette=safe</span></code> Size: 17KB | Map generation time: 0.15s</p>
+<div class="figure align-center" id="id10">
+<img alt="../../_images/dem-png-safe-palette.png" src="../../_images/dem-png-safe-palette.png" />
+<p class="caption"><span class="caption-text"><em>PNG + internet safe palette.</em></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+<p>As the sample shows, the JPEG output has the same quality as the full color image, is generated faster and uses only 1/5 of its size.  On the other hand, the version using the internet safe palette is fast and small, but the output is totally ruined. Everything considered, JPEG is the clear winner, sporting good quality, fast image generation and a size that’s half of the best png output we can get.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../GetFeatureInfo/raster.html" title="previous chapter">Raster GetFeatureInfo Response Customization</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../staticfiles.html" title="next chapter">Serving Static Files</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Paletted Images</a><ul>
+<li><a class="reference internal" href="#what-are-paletted-images">What are Paletted Images?</a></li>
+<li><a class="reference internal" href="#formats-and-antialiasing">Formats and Antialiasing</a></li>
+<li><a class="reference internal" href="#an-example-with-vector-data">An Example with Vector Data</a></li>
+<li><a class="reference internal" href="#generating-the-custom-palette">Generating the custom palette</a></li>
+<li><a class="reference internal" href="#an-example-with-raster-data">An example with raster data</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../GetFeatureInfo/raster.html" title="previous chapter">Raster GetFeatureInfo Response Customization</a></li>
+            <li>Next: <a href="../staticfiles.html" title="next chapter">Serving Static Files</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/palettedimage/palettedimage.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

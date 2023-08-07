@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WPS Operations &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WPS Service page" href="administration.html" />
+    <link rel="prev" title="Installing the WPS extension" href="install.html" /> 
+  </head><body class="services/wps/operations">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Processing Service (WPS)</a> &raquo;</li>
+    <li>WPS Operations</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="administration.html" title="WPS Service page" accesskey="N">Next</a></li>
+  <li>
+    <a href="install.html" title="Installing the WPS extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wps-operations">
+<span id="id1"></span><h1>WPS Operations<a class="headerlink" href="#wps-operations" title="Permalink to this headline">¶</a></h1>
+<p>WPS defines three operations for the discovery and execution of geospatial processes.
+The operations are:</p>
+<ul class="simple">
+<li><p>GetCapabilities</p></li>
+<li><p>DescribeProcess</p></li>
+<li><p>Execute</p></li>
+</ul>
+<div class="section" id="getcapabilities">
+<span id="wps-getcaps"></span><h2>GetCapabilities<a class="headerlink" href="#getcapabilities" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>GetCapabilities</strong> operation requests details of the service offering,
+including service metadata and metadata describing the available processes.
+The response is an XML document called the <strong>capabilities document</strong>.</p>
+<p>The required parameters, as in all OGC GetCapabilities requests, are <code class="docutils literal notranslate"><span class="pre">service=WPS</span></code>, <code class="docutils literal notranslate"><span class="pre">version=1.0.0</span></code> and <code class="docutils literal notranslate"><span class="pre">request=GetCapabilities</span></code>.</p>
+<p>An example of a GetCapabilities request is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/ows?
+  service=WPS&amp;
+  version=1.0.0&amp;
+  request=GetCapabilities
+</pre></div>
+</div>
+</div>
+<div class="section" id="describeprocess">
+<h2>DescribeProcess<a class="headerlink" href="#describeprocess" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>DescribeProcess</strong> operation requests a description of a WPS process available through the service.</p>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">identifier</span></code> specifies the process to describe.
+Multiple processes can be requested, separated by commas (for example, <code class="docutils literal notranslate"><span class="pre">identifier=JTS:buffer,gs:Clip</span></code>).
+At least one process must be specified.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As with all OGC parameters, the keys (<code class="docutils literal notranslate"><span class="pre">request</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, etc) are case-insensitive, and the values (<code class="docutils literal notranslate"><span class="pre">GetCapabilities</span></code>, <code class="docutils literal notranslate"><span class="pre">JTS:buffer</span></code>, etc.) are case-sensitive.  GeoServer is generally more relaxed about case, but it is best to follow the specification.</p>
+</div>
+<p>The response is an XML document containing metadata about each requested process, including the following:</p>
+<ul class="simple">
+<li><p>Process name, title and abstract</p></li>
+<li><p>For each input and output parameter: identifier, title, abstract, multiplicity, and supported datatype and format</p></li>
+</ul>
+<p>An example request for the process <code class="docutils literal notranslate"><span class="pre">JTS:buffer</span></code> is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/ows?
+  service=WPS&amp;
+  version=1.0.0&amp;
+  request=DescribeProcess&amp;
+  identifier=JTS:buffer
+</pre></div>
+</div>
+<p>The response XML document contains the following information:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Title</strong></p></td>
+<td><p>“Buffers a geometry using a certain distance”</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Inputs</strong></p></td>
+<td><p><strong>geom</strong>: “The geometry to be buffered” <em>(geometry, mandatory)</em></p>
+<p><strong>distance</strong>: “The distance (same unit of measure as the geometry)” <em>(double, mandatory)</em></p>
+<p><strong>quadrant segments</strong>: “Number of quadrant segments. Use &gt; 0 for round joins, 0 for flat joins, &lt; 0 for mitred joins” <em>(integer, optional)</em></p>
+<p><strong>capstyle</strong>: “The buffer cap style, round, flat, square” <em>(literal value, optional)</em></p>
+</td>
+</tr>
+<tr class="row-odd"><td><p><strong>Output formats</strong></p></td>
+<td><p>One of the GeoServer supported formats for Geometry encoding</p></td>
+</tr>
+</tbody>
+</table>
+<p>In general, GeoServer processes use complex objects as inputs and objects, like geometries,
+feature collections and raster data.</p>
+<p>The formats available for input and output of each of those complex processes are commonly
+managed by Process Parameter IO classes, generic encoders/decoders that are attached to each
+process by the WPS machinery.</p>
+<p>In the core of GeoServer WPS, the following PPIOs are available:</p>
+<ul class="simple">
+<li><p>For geometries, GML 2 and 3, GeoJSON, Well Known Text.</p></li>
+<li><p>For feature collections, GML2 and 3, GeoJSON, Zipped shapefile, and KML.</p></li>
+<li><p>For rasters, GeoTIFF, PNG, JPEG.</p></li>
+</ul>
+<p>The set of PPIOs can be extended by installing plugins.
+For example, the <a class="reference internal" href="../../extensions/dxf/index.html#dxf"><span class="std std-ref">DXF extension</span></a> comes with a PPIO that can encode feature collections in DXF:
+when plugged in, most processes generating feature collections in output will offer to
+encode them also in DXF.</p>
+</div>
+<div class="section" id="execute">
+<h2>Execute<a class="headerlink" href="#execute" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>Execute</strong> operation is a request to perform the process
+with specified input values and required output data items.
+The request may be made as either a GET URL, or a POST with an XML request document.
+Because the request has a complex structure, the POST form is more typically used.</p>
+<p>The inputs and outputs required for the request depend on the process being executed.
+GeoServer provides a wide variety of processes to process geometry, features, and coverage data.
+For more information see the section <a class="reference internal" href="processes/index.html#wps-processes"><span class="std std-ref">Process Cookbook</span></a>.</p>
+<p>Below is an example of a <code class="docutils literal notranslate"><span class="pre">Execute</span></code> POST request.
+The example process (<code class="docutils literal notranslate"><span class="pre">JTS:buffer</span></code>) takes as input
+a geometry <code class="docutils literal notranslate"><span class="pre">geom</span></code> (in this case the point <code class="docutils literal notranslate"><span class="pre">POINT(0</span> <span class="pre">0)</span></code>),
+a <code class="docutils literal notranslate"><span class="pre">distance</span></code> (with the value <code class="docutils literal notranslate"><span class="pre">10</span></code>),
+a quantization factor <code class="docutils literal notranslate"><span class="pre">quadrantSegments</span></code> (here set to be 1),
+and a <code class="docutils literal notranslate"><span class="pre">capStyle</span></code> (specified as <code class="docutils literal notranslate"><span class="pre">flat</span></code>).
+The <code class="docutils literal notranslate"><span class="pre">&lt;ResponseForm&gt;</span></code> element specifies the format for the single output <code class="docutils literal notranslate"><span class="pre">result</span></code> to be GML 3.1.1.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>JTS:buffer<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>geom<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:ComplexData</span> <span class="na">mimeType=</span><span class="s">&quot;application/wkt&quot;</span><span class="nt">&gt;</span><span class="cp">&lt;![CDATA[POINT(0 0)]]&gt;</span><span class="nt">&lt;/wps:ComplexData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>distance<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>10<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>quadrantSegments<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>1<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>capStyle<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>flat<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;application/gml-3.1.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+<p>The process performs a buffer operation using the supplied inputs,
+and returns the outputs as specified.
+The response from the request is (with numbers rounded for clarity):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="nt">&lt;gml:Polygon</span> <span class="na">xmlns:sch=</span><span class="s">&quot;http://www.ascc.net/xml/schematron&quot;</span>
+ <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+ <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:exterior&gt;</span>
+    <span class="nt">&lt;gml:LinearRing&gt;</span>
+      <span class="nt">&lt;gml:posList&gt;</span>
+        10.0 0.0
+        0.0 -10.0
+        -10.0 0.0
+        0.0 10.0
+        10.0 0.0
+      <span class="nt">&lt;/gml:posList&gt;</span>
+    <span class="nt">&lt;/gml:LinearRing&gt;</span>
+  <span class="nt">&lt;/gml:exterior&gt;</span>
+<span class="nt">&lt;/gml:Polygon&gt;</span>
+</pre></div>
+</div>
+<p>For help in generating WPS requests you can use the built-in interactive <a class="reference internal" href="requestbuilder.html#wps-request-builder"><span class="std std-ref">WPS Request Builder</span></a>.</p>
+</div>
+<div class="section" id="dismiss">
+<h2>Dismiss<a class="headerlink" href="#dismiss" title="Permalink to this headline">¶</a></h2>
+<p>According to the WPS specification, an asynchronous process execution returns a back link to a status
+location that the client can ping to get progress report about the process, and eventually retrieve
+its final results.</p>
+<p>In GeoServer this link is implemented as a pseudo-operation called <code class="docutils literal notranslate"><span class="pre">GetExecutionStatus</span></code>, and the link
+has the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://host:port/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">executionId</span></code> identifies the running request, and can be used in a the <code class="docutils literal notranslate"><span class="pre">Dismiss</span></code> vendor
+operation in order to cancel the execution of the process:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://host:port/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=Dismiss&amp;executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb">http://host:port/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=Dismiss&amp;executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb</a></p>
+</div></blockquote>
+<p>Upon receipt GeoServer will do its best to stop the running process, and subsequent calls to <code class="docutils literal notranslate"><span class="pre">Dismiss</span></code>
+or <code class="docutils literal notranslate"><span class="pre">GetExecutionStatus</span></code> will report that the executionId is not known anymore.
+Internally, GeoServer will stop any process that attempts to report progress, and poison input and
+outputs to break the execution of the process, but the execution of processes that already got their
+inputs, and are not reporting their progress back, will continue until their natural end.</p>
+<p>For example, let’s consider the “geo:Buffer” process, possibly working against a very large input
+GML geometry, to be fetched from another host. The process itself does a single call to a  JTS function,
+which cannot report progress. Here are three possible scenarios, depending on when the Dismiss operation is invoked:</p>
+<ul class="simple">
+<li><p>Dismiss is invoked while the GML is being retrieved, in this case the execution will stop immediately</p></li>
+<li><p>Dismiss is invoked while the process is doing the buffering, in this case, the execution will stop as soon as the buffering is completed</p></li>
+<li><p>Dismiss is invoked while the output GML is being encoded, also in this case the execution will stop immediately</p></li>
+</ul>
+</div>
+<div class="section" id="getexecutions">
+<h2>GetExecutions<a class="headerlink" href="#getexecutions" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is an extension of the GeoServer WPS Service. This operation is specific to this GeoServer instance.</p>
+</div>
+<p>This specific operation allows a client to recognize the list of WPS Executions.</p>
+<div class="figure align-center">
+<img alt="../../_images/getExecutions_001.png" src="../../_images/getExecutions_001.png" />
+</div>
+<p>The client makes a simple “GetExecutions” request to the WPS Server, in order to get back an XML document containing the list of current Execution Statuses.</p>
+<p>It is also possible to filter the “GetExecutions” request along with simple parameters, in order to refine the output and get back only the executions status we are looking for.</p>
+<p>Adding a bit more to this, AUTHORIZATION headers must be sent along with the “GetExecutions” request; the WPS Server will be able, if the security subsystem is available and enable on the latter, to prove the list resources to the client itself.</p>
+<p>The operation will return only the list of available Executions the logged in user has started, except in the case it is an Administrator. In that case he will be able to get the whole list.</p>
+<p>If the “lineage” option of the WPS Execute Request has been specified, the client will be able to retrieve the Execute Inputs values provided to the process Identifier.</p>
+<div class="section" id="statusinfo-document">
+<h3>StatusInfo Document<a class="headerlink" href="#statusinfo-document" title="Permalink to this headline">¶</a></h3>
+<p>Refers to <a class="reference external" href="http://docs.opengeospatial.org/is/14-065/14-065.html">http://docs.opengeospatial.org/is/14-065/14-065.html</a> section 9.5 and extends it.</p>
+<p>The StatusInfo document is used to provide identification and status information about jobs on a WPS server. The operation adds additional fields to the StatusInfo Document reporting also the WPS Process Identifier and other information on estimated execution and expiration time.</p>
+<div class="figure align-center">
+<img alt="../../_images/getExecutions_002.png" src="../../_images/getExecutions_002.png" />
+</div>
+</div>
+<div class="section" id="getexecutionsoperation">
+<h3>GetExecutionsOperation<a class="headerlink" href="#getexecutionsoperation" title="Permalink to this headline">¶</a></h3>
+<p>The GetExecutions Operation allows WPS clients to retrieve the list of available process jobs running on a WPS instance. The output is returned in the form of an XML document.</p>
+<p>The GetExecutions Operation returns only the list of available Executions the logged in user has started, except in the case it is an Administrator. In that case he will be able to get the whole list.</p>
+<div class="figure align-center">
+<img alt="../../_images/getExecutions_003.png" src="../../_images/getExecutions_003.png" />
+</div>
+</div>
+<div class="section" id="getexecutionsrequest">
+<h3>GetExecutionsRequest<a class="headerlink" href="#getexecutionsrequest" title="Permalink to this headline">¶</a></h3>
+<p>The GetExecutions Request is a common structure for synchronous execution. It inherits basic properties from the RequestBaseType and contains additional elements that allow to filter out, refine and order the list of available Process Jobs.</p>
+<div class="figure align-center">
+<img alt="../../_images/getExecutions_004.png" src="../../_images/getExecutions_004.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/getExecutions_005.png" src="../../_images/getExecutions_005.png" />
+</div>
+</div>
+<div class="section" id="getexecutionsresponse">
+<h3>GetExecutionsResponse<a class="headerlink" href="#getexecutionsresponse" title="Permalink to this headline">¶</a></h3>
+<p>The GetExecutionsResponse it is always in the form of an XML document. Except in case of Exception, the response document will contain a list of StatusInfo elements filtered, refined or ordered accordingly to the specified parameters.</p>
+</div>
+<div class="section" id="response-paging">
+<h3>Response paging<a class="headerlink" href="#response-paging" title="Permalink to this headline">¶</a></h3>
+<p>Response paging is the ability of a client to scroll through a set of response values, N values at-a-time much like one scrolls through the response from a search engine one page at a time.</p>
+<p>Similar to the WFS 2.0.0 response paging mechanism (see section “7.7.4.4 Response paging” of the specification), the output will show to the client the following attributes as part of the response document.</p>
+<div class="figure align-center">
+<img alt="../../_images/getExecutions_006.png" src="../../_images/getExecutions_006.png" />
+</div>
+</div>
+<div class="section" id="getexecutionsexceptions">
+<h3>GetExecutionsExceptions<a class="headerlink" href="#getexecutionsexceptions" title="Permalink to this headline">¶</a></h3>
+<p>When a WPS server encounters an error while performing an GetExecutionsResponse, it shall return an exception report as specified in clause 8 of [OGC 06-121r9]. If appropriate, the server shall use additional exception codes as defined in this section.</p>
+<div class="figure align-center">
+<img alt="../../_images/getExecutions_007.png" src="../../_images/getExecutions_007.png" />
+</div>
+</div>
+<div class="section" id="retrieve-the-wps-execute-input-values">
+<h3>Retrieve the WPS Execute Input values<a class="headerlink" href="#retrieve-the-wps-execute-input-values" title="Permalink to this headline">¶</a></h3>
+<p>The GetExecutions Operations tries (best-effort) to retrieve the Input values specified from the Execute Request <strong>iff</strong> the <code class="docutils literal notranslate"><span class="pre">lineage</span></code> option has been provided to the Execute Request.</p>
+<p>Example requests with the <code class="docutils literal notranslate"><span class="pre">lineage</span></code> option active</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>JTS:convexHull<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>geom<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;application/wkt&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://www.geo-solutions.it/geoserver/wfs?&quot;</span> <span class="na">method=</span><span class="s">&quot;GET&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:ResponseDocument</span> <span class="na">lineage=</span><span class="s">&quot;true&quot;</span> <span class="na">storeExecuteResponse=</span><span class="s">&quot;true&quot;</span> <span class="na">status=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;wps:Output</span> <span class="na">asReference=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;/wps:Output&gt;</span>
+    <span class="nt">&lt;/wps:ResponseDocument&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>gs:BufferFeatureCollection<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>features<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wps&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;wps:Body&gt;</span>
+            <span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;ows:Identifier&gt;</span>gs:CollectGeometries<span class="nt">&lt;/ows:Identifier&gt;</span>
+              <span class="nt">&lt;wps:DataInputs&gt;</span>
+                <span class="nt">&lt;wps:Input&gt;</span>
+                  <span class="nt">&lt;ows:Identifier&gt;</span>features<span class="nt">&lt;/ows:Identifier&gt;</span>
+                  <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wfs&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;wps:Body&gt;</span>
+                      <span class="nt">&lt;wfs:GetFeature</span> <span class="na">service=</span><span class="s">&quot;WFS&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">outputFormat=</span><span class="s">&quot;GML2&quot;</span> <span class="na">xmlns:geonode=</span><span class="s">&quot;http://www.geonode.org/&quot;</span><span class="nt">&gt;</span>
+                        <span class="nt">&lt;wfs:Query</span> <span class="na">typeName=</span><span class="s">&quot;geonode:san_andres_y_providencia_administrative&quot;</span><span class="nt">/&gt;</span>
+                      <span class="nt">&lt;/wfs:GetFeature&gt;</span>
+                    <span class="nt">&lt;/wps:Body&gt;</span>
+                  <span class="nt">&lt;/wps:Reference&gt;</span>
+                <span class="nt">&lt;/wps:Input&gt;</span>
+              <span class="nt">&lt;/wps:DataInputs&gt;</span>
+              <span class="nt">&lt;wps:ResponseForm&gt;</span>
+                <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">lineage=</span><span class="s">&quot;true&quot;</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml; subtype=gml/3.1.1&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+                <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+              <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+            <span class="nt">&lt;/wps:Execute&gt;</span>
+        <span class="nt">&lt;/wps:Body&gt;</span>
+      <span class="nt">&lt;/wps:Reference&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>distance<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>0.005<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:ResponseDocument</span> <span class="na">lineage=</span><span class="s">&quot;true&quot;</span> <span class="na">storeExecuteResponse=</span><span class="s">&quot;true&quot;</span> <span class="na">status=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;wps:Output</span> <span class="na">asReference=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;/wps:Output&gt;</span>
+    <span class="nt">&lt;/wps:ResponseDocument&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>gs:Clip<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>features<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wfs&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;wps:Body&gt;</span>
+          <span class="nt">&lt;wfs:GetFeature</span> <span class="na">service=</span><span class="s">&quot;WFS&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">outputFormat=</span><span class="s">&quot;GML2&quot;</span> <span class="na">xmlns:geonode=</span><span class="s">&quot;http://www.geonode.org/&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;wfs:Query</span> <span class="na">typeName=</span><span class="s">&quot;geonode:san_andres_y_providencia_administrative&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;/wfs:GetFeature&gt;</span>
+        <span class="nt">&lt;/wps:Body&gt;</span>
+      <span class="nt">&lt;/wps:Reference&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>clip<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:ComplexData</span> <span class="na">mimeType=</span><span class="s">&quot;application/json&quot;</span><span class="nt">&gt;</span><span class="cp">&lt;![CDATA[{&quot;type&quot;:&quot;MultiLineString&quot;,&quot;coordinates&quot;:[[[-81.8254,12.199],[-81.8162,12.1827],[-81.812,12.1653],[-81.8156,12.1465],[-81.8269,12.1321],[-81.8433,12.123],[-81.8614,12.119],[-81.8795,12.1232],[-81.8953,12.1336],[-81.9049,12.1494],[-81.9087,12.1673],[-81.9054,12.1864],[-81.8938,12.2004],[-81.8795,12.2089],[-81.8593,12.2136],[-81.8399,12.2096],[-81.8254,12.199]],[[-81.6565,12.635],[-81.6808,12.6391],[-81.7085,12.6262],[-81.739,12.6046],[-81.7611,12.5775],[-81.775,12.5397],[-81.7708,12.5207],[-81.7667,12.4971],[-81.7701,12.4748],[-81.7646,12.4504],[-81.739,12.4369],[-81.7022,12.4389],[-81.6835,12.4578],[-81.6794,12.4883],[-81.6676,12.5153],[-81.651,12.541],[-81.66,12.5552],[-81.6489,12.5762],[-81.6274,12.5931],[-81.6309,12.6181],[-81.6565,12.635]],[[-81.2954,13.3496],[-81.3004,13.3132],[-81.3143,13.29],[-81.3413,13.2755],[-81.3731,13.2674],[-81.4058,13.2657],[-81.4335,13.2633],[-81.4531,13.2771],[-81.4574,13.3079],[-81.4663,13.3257],[-81.463,13.3476],[-81.447,13.3674],[-81.4228,13.3879],[-81.412,13.4126],[-81.403,13.4375],[-81.391,13.4582],[-81.3674,13.4687],[-81.3503,13.4574],[-81.3205,13.448],[-81.2941,13.4177],[-81.2846,13.3878],[-81.2954,13.3496]],[[-79.9333,14.9856],[-79.9333,15.5028]]]}]]&gt;</span><span class="nt">&lt;/wps:ComplexData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:ResponseDocument</span> <span class="na">lineage=</span><span class="s">&quot;true&quot;</span> <span class="na">storeExecuteResponse=</span><span class="s">&quot;true&quot;</span> <span class="na">status=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;wps:Output</span> <span class="na">asReference=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;/wps:Output&gt;</span>
+    <span class="nt">&lt;/wps:ResponseDocument&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install.html" title="previous chapter">Installing the WPS extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="administration.html" title="next chapter">WPS Service page</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WPS Operations</a><ul>
+<li><a class="reference internal" href="#getcapabilities">GetCapabilities</a></li>
+<li><a class="reference internal" href="#describeprocess">DescribeProcess</a></li>
+<li><a class="reference internal" href="#execute">Execute</a></li>
+<li><a class="reference internal" href="#dismiss">Dismiss</a></li>
+<li><a class="reference internal" href="#getexecutions">GetExecutions</a><ul>
+<li><a class="reference internal" href="#statusinfo-document">StatusInfo Document</a></li>
+<li><a class="reference internal" href="#getexecutionsoperation">GetExecutionsOperation</a></li>
+<li><a class="reference internal" href="#getexecutionsrequest">GetExecutionsRequest</a></li>
+<li><a class="reference internal" href="#getexecutionsresponse">GetExecutionsResponse</a></li>
+<li><a class="reference internal" href="#response-paging">Response paging</a></li>
+<li><a class="reference internal" href="#getexecutionsexceptions">GetExecutionsExceptions</a></li>
+<li><a class="reference internal" href="#retrieve-the-wps-execute-input-values">Retrieve the WPS Execute Input values</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install.html" title="previous chapter">Installing the WPS extension</a></li>
+            <li>Next: <a href="administration.html" title="next chapter">WPS Service page</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wps/operations.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,587 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3.2. Lines &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="3.3. Polygons" href="polygon.html" />
+    <link rel="prev" title="3.1. CSS Quickstart" href="css.html" /> 
+  </head><body class="styling/workshop/css/linestring">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling Workshop</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U"><span class="section-number">3. </span>CSS Styling Workbook</a> &raquo;</li>
+    <li>3.2. Lines</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="polygon.html" title="<span class="section-number">3.3. </span>Polygons" accesskey="N">Next</a></li>
+  <li>
+    <a href="css.html" title="<span class="section-number">3.1. </span>CSS Quickstart" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="lines">
+<span id="styling-workshop-css-line"></span><h1><span class="section-number">3.2. </span>Lines<a class="headerlink" href="#lines" title="Permalink to this headline">¶</a></h1>
+<p>We will start our tour of CSS styling by looking at the representation of lines.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../../_images/LineSymbology.svg" src="../../../_images/LineSymbology.svg" /><p class="caption"><span class="caption-text">LineString Geometry</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Review of line symbology:</p>
+<ul class="simple">
+<li><p>Lines are used to represent physical details that are too small to be represented at the current scale. Line work can also be used to model non-physical ideas such as network connectivity, or the boundary between land-use classifications. <strong>The visual width of lines do not change depending on scale.</strong></p></li>
+<li><p>Lines are recording as LineStrings or Curves depending on the geometry model used.</p></li>
+<li><p>SLD uses a <strong>LineSymbolizer</strong> record how the shape of a line is drawn. The primary characteristic documented is the <strong>Stroke</strong> used to draw each segment between vertices.</p></li>
+<li><p>Labeling of line work is anchored to the midpoint of the line. GeoServer provides an option to allow label rotation aligned with line segments.</p></li>
+</ul>
+<p>For our exercises we are going to be using simple CSS documents, often consisting of a single rule, in order to focus on the properties used for line symbology.</p>
+<p>Each exercise makes use of the <code class="docutils literal notranslate"><span class="pre">ne:roads</span></code> layer.</p>
+<p>Reference:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../css/properties.html#css-properties-line"><span class="std std-ref">Line Symbology</span></a> (User Manual | CSS Property Listing)</p></li>
+<li><p><a class="reference internal" href="../../css/cookbook/line.html#css-cookbook-lines"><span class="std std-ref">Lines</span></a> (User Manual | CSS Cookbook)</p></li>
+<li><p><a class="reference internal" href="../../sld/reference/linesymbolizer.html#sld-reference-linesymbolizer"><span class="std std-ref">LineString</span></a> (User Manual | SLD Reference )</p></li>
+</ul>
+<div class="section" id="stroke">
+<h2><span class="section-number">3.2.1. </span>Stroke<a class="headerlink" href="#stroke" title="Permalink to this headline">¶</a></h2>
+<p>The only mandatory property for representation of linework is <strong>stroke</strong>. This is a <strong>key property</strong>; its presence triggers the generation of an appropriate LineSymbolizer.</p>
+<div class="figure align-default" id="id2">
+<img alt="../../../_images/LineStringStroke_CSS.svg" src="../../../_images/LineStringStroke_CSS.svg" /><p class="caption"><span class="caption-text">Basic Stroke Properties</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The use of <strong>stroke</strong> as a key property prevents CSS from having the idea of a default line color (as the <strong>stroke</strong> information must be supplied each time).</p>
+<ol class="arabic">
+<li><p>Navigate to the <strong>CSS Styles</strong> page.</p></li>
+<li><p>Click <span class="guilabel">Choose a different layer</span> and select <kbd class="kbd docutils literal notranslate">ne:roads</kbd> from the list.</p></li>
+<li><p>Click <span class="guilabel">Create a new style</span> and choose the following:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><th class="stub"><p>Workspace for new layer:</p></th>
+<td><p><kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">No</kbd> <kbd class="kbd docutils literal notranslate">workspace</kbd></kbd></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>New style name:</p></th>
+<td><p><kbd class="kbd docutils literal notranslate">line_example</kbd></p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p>Replace the generated CSS definition with the following <strong>stroke</strong> example:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="c">/* @title Line</span>
+<span class="c"> * @abstract Example line symbolization</span>
+<span class="c"> */</span>
+ <span class="o">*</span> <span class="p">{</span>
+   <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Click <span class="guilabel">Submit</span> and then the <span class="guilabel">Map</span> tab for an initial preview.</p>
+<p>You can use this tab to follow along as the style is edited, it will refresh each time <span class="guilabel">Submit</span> is pressed.</p>
+<img alt="../../../_images/line.png" src="../../../_images/line.png" />
+</li>
+<li><p>You can look at the <span class="guilabel">SLD</span> tab at any time to see the generated SLD. Currently it is showing a straight forward LineSymbolizer generated from the CSS <strong>stroke</strong> property:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;sld:UserStyle&gt;</span>
+   <span class="nt">&lt;sld:Name&gt;</span>Default Styler<span class="nt">&lt;/sld:Name&gt;</span>
+   <span class="nt">&lt;sld:FeatureTypeStyle&gt;</span>
+      <span class="nt">&lt;sld:Name&gt;</span>name<span class="nt">&lt;/sld:Name&gt;</span>
+      <span class="nt">&lt;sld:Rule&gt;</span>
+         <span class="nt">&lt;sld:Title&gt;</span>Line<span class="nt">&lt;/sld:Title&gt;</span>
+         <span class="nt">&lt;sld:Abstract&gt;</span>Example line symboloization<span class="nt">&lt;/sld:Abstract&gt;</span>
+         <span class="nt">&lt;sld:LineSymbolizer&gt;</span>
+            <span class="nt">&lt;sld:Stroke&gt;</span>
+               <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000ff<span class="nt">&lt;/sld:CssParameter&gt;</span>
+            <span class="nt">&lt;/sld:Stroke&gt;</span>
+         <span class="nt">&lt;/sld:LineSymbolizer&gt;</span>
+      <span class="nt">&lt;/sld:Rule&gt;</span>
+   <span class="nt">&lt;/sld:FeatureTypeStyle&gt;</span>
+<span class="nt">&lt;/sld:UserStyle&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Additional properties cane be used fine-tune appearance. Use <strong>stroke-width</strong> to specify the width of the line.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="c">/* @title Line</span>
+<span class="c"> * @abstract Example line symbolization</span>
+<span class="c"> */</span>
+ <span class="o">*</span> <span class="p">{</span>
+   <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+<span class="hll">   <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">2</span><span class="kt">px</span><span class="p">;</span>
+</span> <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <strong>stroke-dasharray</strong> is used to define breaks rendering the line as a dot dash pattern.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="c">/* @title Line</span>
+<span class="c"> * @abstract Example line symbolization</span>
+<span class="c"> */</span>
+ <span class="o">*</span> <span class="p">{</span>
+   <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+   <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">2</span><span class="kt">px</span><span class="p">;</span>
+<span class="hll">   <span class="n">stroke-dasharray</span><span class="p">:</span> <span class="mi">5</span> <span class="mi">2</span><span class="p">;</span>
+</span> <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Check the <span class="guilabel">Map</span> tab to preview the result.</p>
+<img alt="../../../_images/line_stroke.png" src="../../../_images/line_stroke.png" />
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The GeoServer rendering engine is quite sophisticated and allows the use of units of measure (such as <kbd class="kbd docutils literal notranslate">m</kbd> or <kbd class="kbd docutils literal notranslate">ft</kbd>). While we are using pixels in this example, real world units will be converted using the current scale.</p>
+</div>
+</div>
+<div class="section" id="z-index">
+<h2><span class="section-number">3.2.2. </span>Z-Index<a class="headerlink" href="#z-index" title="Permalink to this headline">¶</a></h2>
+<p>The next exercise shows how to work around a limitation when using multiple strokes to render a line.</p>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/LineStringZOrder_CSS.svg" src="../../../_images/LineStringZOrder_CSS.svg" /><p class="caption"><span class="caption-text">Use of Z-Index</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<ol class="arabic">
+<li><p>Providing two strokes is often used to provide a contrasting edge (called casing) to thick line work.</p>
+<p>Update <code class="docutils literal notranslate"><span class="pre">line_example</span></code> with the following:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">black</span><span class="p">,</span> <span class="mh">#8080E6</span><span class="p">;</span>
+  <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">5</span><span class="kt">px</span><span class="p">,</span> <span class="mi">3</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>If you look carefully you can see a problem with our initial attempt. The junctions of each line show that the casing outlines each line individually, making the lines appear randomly overlapped. Ideally we would like to control this process, only making use of this effect for overpasses.</p>
+<img alt="../../../_images/line_zorder_1.png" src="../../../_images/line_zorder_1.png" />
+</li>
+<li><p>The <strong>z-index</strong> parameter allows a draw order to be supplied. This time all the thick black lines are dawn first (at z-index 0) followed by the thinner blue lines (at z-index 1).</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">black</span><span class="p">,</span> <span class="mh">#8080E6</span><span class="p">;</span>
+  <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">5</span><span class="kt">px</span><span class="p">,</span> <span class="mi">3</span><span class="kt">px</span><span class="p">;</span>
+  <span class="k">z-index</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>If you look carefully you can see the difference.</p>
+<img alt="../../../_images/line_zorder_2.png" src="../../../_images/line_zorder_2.png" />
+</li>
+<li><p>By using <strong>z-index</strong> we have been able to simulate line casing.</p>
+<img alt="../../../_images/line_zorder_3.png" src="../../../_images/line_zorder_3.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="label">
+<h2><span class="section-number">3.2.3. </span>Label<a class="headerlink" href="#label" title="Permalink to this headline">¶</a></h2>
+<p>Our next example is significant as it introduces the how text labels are generated.</p>
+<div class="figure align-default" id="id4">
+<img alt="../../../_images/LineStringLabel_CSS.svg" src="../../../_images/LineStringLabel_CSS.svg" /><p class="caption"><span class="caption-text">Use of Label Property</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>This is also our first example making use of a dynamic style (where the value of a property is defined by an attribute from your data).</p>
+<ol class="arabic">
+<li><p>To enable LineString labeling we will need to use the key properties for both <strong>stroke</strong> and <strong>label</strong>.</p>
+<p>Update <code class="docutils literal notranslate"><span class="pre">line_example</span></code> with the following:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+<span class="hll">  <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+</span><span class="hll">  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The SLD standard documents the default label position for each kind of Geometry. For LineStrings the initial label is positioned on the midway point of the line.</p>
+<img alt="../../../_images/line_label_1.png" src="../../../_images/line_label_1.png" />
+</li>
+<li><p>We have used an expression to calculate a property value for label. The <strong>label</strong> property is generated dynamically from the <kbd class="kbd docutils literal notranslate">name</kbd> attribute. Expressions are supplied within square brackets, making use of Constraint Query Language (CQL) syntax.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+<span class="hll">  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Additional properties can be supplied to fine-tune label presentation:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-offset</span><span class="p">:</span> <span class="mi">7</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <strong>font-fill</strong> property is set to <kbd class="kbd docutils literal notranslate">black</kbd> provides the label color.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+<span class="hll">  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+</span>  <span class="n">label-offset</span><span class="p">:</span> <span class="mi">7</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <strong>label-offset</strong> property is used to adjust the starting position used for labeling.</p>
+<p>Normally the displacement offset is supplied using two numbers (allowing an x and y offset from the midway point used for LineString labeling).</p>
+<p>When labeling a LineString there is a special twist: by specifying a single number for <strong>label-offset</strong> we can ask the rendering engine to position our label a set distance away from the LineString.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+<span class="hll">  <span class="n">label-offset</span><span class="p">:</span> <span class="mi">7</span><span class="kt">px</span><span class="p">;</span>
+</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>When used in this manner the rotation of the label will be adjusted automatically to match the LineString.</p>
+<img alt="../../../_images/line_label_2.png" src="../../../_images/line_label_2.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="how-labeling-works">
+<h2><span class="section-number">3.2.4. </span>How Labeling Works<a class="headerlink" href="#how-labeling-works" title="Permalink to this headline">¶</a></h2>
+<p>The rendering engine collects all the generated labels during the rendering of each layer. Then, during labeling, the engine sorts through the labels performing collision avoidance (to prevent labels overlapping). Finally the rendering engine draws the labels on top of the map. Even with collision avoidance you can spot areas where labels are so closely spaced that the result is hard to read.</p>
+<p>To take greater control over the GeoServer rendering engine we can use extra parameters.</p>
+<ol class="arabic">
+<li><p>The ability to take control of the labeling process is exactly the kind of hint a extra parameter is intended for.</p>
+<p>Update <code class="docutils literal notranslate"><span class="pre">line_example</span></code> with the following:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-offset</span><span class="p">:</span> <span class="mi">7</span><span class="kt">px</span><span class="p">;</span>
+  <span class="n">label-padding</span><span class="p">:</span> <span class="mi">10</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The parameter <strong>label-padding</strong> provides additional space around our label for use in collision avoidance.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-offset</span><span class="p">:</span> <span class="mi">7</span><span class="kt">px</span><span class="p">;</span>
+<span class="hll">  <span class="n">label-padding</span><span class="p">:</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Each label is now separated from its neighbor, improving legibility.</p>
+<img alt="../../../_images/line_label_3.png" src="../../../_images/line_label_3.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="scale">
+<h2><span class="section-number">3.2.5. </span>Scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h2>
+<p>This section explores the use of attribute selectors and the <kbd class="kbd docutils literal notranslate">&#64;scale</kbd> selector together to simplify the road dataset for display.</p>
+<ol class="arabic">
+<li><p>Replace the <cite>line_example</cite> CSS definition with:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="nt">scalerank</span> <span class="o">&lt;</span> <span class="nt">4</span><span class="o">]</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>And use the <span class="guilabel">Map</span> tab to preview the result.</p>
+<img alt="../../../_images/line_04_scalerank.png" src="../../../_images/line_04_scalerank.png" />
+</li>
+<li><p>The <strong>scalerank</strong> attribute is provided by the Natural Earth dataset to allow control of the level of detail based on scale. Our selector short-listed all content with scalerank 4 or lower, providing a nice quick preview when we are zoomed out.</p></li>
+<li><p>In addition to testing feature attributes, selectors can also be used to check the state of the rendering engine.</p>
+<p>Replace your CSS with the following:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&gt;</span> <span class="nt">35000000</span><span class="o">]</span> <span class="p">{</span>
+   <span class="nt">stroke</span><span class="o">:</span> <span class="nt">black</span><span class="o">;</span>
+<span class="p">}</span>
+<span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&lt;</span> <span class="nt">35000000</span><span class="o">]</span> <span class="p">{</span>
+   <span class="nt">stroke</span><span class="o">:</span> <span class="nt">blue</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>As you adjust the scale in the <span class="guilabel">Map</span> preview (using the mouse scroll wheel) the color will change between black and blue. You can read the current scale in the bottom right corner, and the legend will change to reflect the current style.</p>
+<img alt="../../../_images/line_05_scale.png" src="../../../_images/line_05_scale.png" />
+</li>
+<li><p>Putting these two ideas together allows control of level detail based on scale:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&lt;</span> <span class="nt">9000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">scalerank</span> <span class="o">&gt;</span> <span class="nt">7</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="o">:</span> <span class="p">#</span><span class="nn">888888</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&lt;</span> <span class="nt">17000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">scalerank</span> <span class="o">=</span> <span class="nt">7</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="o">:</span> <span class="p">#</span><span class="nn">777777</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&lt;</span> <span class="nt">35000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">scalerank</span> <span class="o">=</span> <span class="nt">6</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="o">:</span> <span class="p">#</span><span class="nn">444444</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&gt;</span> <span class="nt">9000000</span><span class="o">]</span> <span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&lt;</span> <span class="nt">70000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">scalerank</span> <span class="o">=</span> <span class="nt">5</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="o">:</span> <span class="p">#</span><span class="nn">000055</span><span class="o">;</span>
+<span class="p">}</span>
+<span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&lt;</span> <span class="nt">9000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">scalerank</span> <span class="o">=</span> <span class="nt">5</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="o">:</span> <span class="p">#</span><span class="nn">000055</span><span class="o">;</span>
+  <span class="nt">stroke-width</span><span class="o">:</span> <span class="nt">2</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&gt;</span> <span class="nt">35000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">scalerank</span> <span class="o">&lt;</span> <span class="nt">4</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="o">:</span> <span class="nt">black</span><span class="o">;</span>
+<span class="p">}</span>
+<span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&gt;</span> <span class="nt">9000000</span><span class="o">]</span> <span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&lt;=</span> <span class="nt">35000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">scalerank</span> <span class="o">&lt;</span> <span class="nt">4</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="o">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">stroke-width</span><span class="o">:</span> <span class="nt">2</span>
+<span class="p">}</span>
+<span class="o">[</span><span class="p">@</span><span class="k">scale</span> <span class="o">&lt;=</span> <span class="nt">9000000</span><span class="o">]</span> <span class="o">[</span><span class="nt">scalerank</span> <span class="o">&lt;</span> <span class="nt">4</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nt">stroke</span><span class="o">:</span> <span class="nt">black</span><span class="o">;</span>
+  <span class="nt">stroke-width</span><span class="o">:</span> <span class="nt">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>As shown above selectors can be combined in the same rule:</p>
+<ul class="simple">
+<li><p>Selectors separated by blank-space are combined CQL Filter AND</p></li>
+<li><p>Selectors separated by a comma are combined using CQL Filter OR</p></li>
+</ul>
+<p>Our first rule <cite>[&#64;scale &lt; 9000000] [scalerank &gt; 7]</cite> checks that the scale is less than 9M AND scalerank is greater than 7.</p>
+<img alt="../../../_images/line_06_adjust.png" src="../../../_images/line_06_adjust.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="bonus">
+<h2><span class="section-number">3.2.6. </span>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
+<p>Finished early? Here are some opportunities to explore what we have learned, and extra challenges requiring creativity and research.</p>
+<p>In a classroom setting please divide the challenges between teams (this allows us to work through all the material in the time available).</p>
+<div class="section" id="explore-follow-line-option">
+<h3><span class="section-number">3.2.6.1. </span>Explore Follow Line Option<a class="headerlink" href="#explore-follow-line-option" title="Permalink to this headline">¶</a></h3>
+<p>Options can be used to enable some quite useful effects, while still providing a style that can be used by other applications.</p>
+<ol class="arabic">
+<li><p>Update <cite>line_example</cite> with the following:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="mh">#ededff</span><span class="p">;</span>
+  <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="kc">level</span><span class="p">]</span> <span class="s2">&quot; &quot;</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-follow-line</span><span class="p">:</span> <span class="n">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The property <strong>stroke-width</strong> has been used to make our line thicker in order to provide a backdrop for our label.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="mh">#ededff</span><span class="p">;</span>
+<span class="hll">  <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">10</span><span class="p">;</span>
+</span>  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="kc">level</span><span class="p">]</span> <span class="s2">&quot; &quot;</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-follow-line</span><span class="p">:</span> <span class="n">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <strong>label</strong> property combines combine several CQL expressions together for a longer label.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="mh">#ededff</span><span class="p">;</span>
+  <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">10</span><span class="p">;</span>
+<span class="hll">  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="kc">level</span><span class="p">]</span> <span class="s2">&quot; &quot;</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+</span>  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-follow-line</span><span class="p">:</span> <span class="n">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The combined <strong>label</strong> property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">level</span><span class="p">]</span> <span class="s2">&quot; &quot;</span> <span class="p">[</span><span class="n">name</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Is internally represented with the <strong>Concatenate</strong> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Concatenate</span><span class="p">(</span><span class="n">level</span><span class="p">,</span><span class="s1">&#39; #&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span>
+</pre></div>
+</div>
+</li>
+<li><p>The property <strong>label-follow-line</strong> provides the ability of have a label exactly follow a LineString character by character.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="mh">#ededff</span><span class="p">;</span>
+  <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="kc">level</span><span class="p">]</span> <span class="s2">&quot; &quot;</span> <span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+<span class="hll">  <span class="n">label-follow-line</span><span class="p">:</span> <span class="n">true</span><span class="p">;</span>
+</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The result is a new appearance for our roads.</p>
+<img alt="../../../_images/line_label_4.png" src="../../../_images/line_label_4.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-sld-generation">
+<span id="css-line-q0"></span><h3><span class="section-number">3.2.6.2. </span>Challenge SLD Generation<a class="headerlink" href="#challenge-sld-generation" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>Generate the SLD for the following CSS.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>What is unusual about the SLD code for this example?</p>
+</li>
+<li><p>Challenge: What is unusual about the generated SLD? Can you explain why it still works as expected?</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#css-line-a0"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-classification">
+<span id="css-line-q1"></span><h3><span class="section-number">3.2.6.3. </span>Challenge Classification<a class="headerlink" href="#challenge-classification" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>The roads <strong>type</strong> attribute provides classification information.</p>
+<p>You can <strong>Layer Preview</strong> to inspect features to determine available values for type.</p>
+</li>
+<li><p><strong>Challenge:</strong> Create a new style adjust road appearance based on <strong>type</strong>.</p>
+<img alt="../../../_images/line_type.png" src="../../../_images/line_type.png" />
+<p>Hint: The available values are ‘Major Highway’,’Secondary Highway’,’Road’ and ‘Unknown’.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#css-line-a1"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-sld-z-index-generation">
+<span id="css-line-q2"></span><h3><span class="section-number">3.2.6.4. </span>Challenge SLD Z-Index Generation<a class="headerlink" href="#challenge-sld-z-index-generation" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>Review the SLD generated by the <strong>z-index</strong> example.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">black</span><span class="p">,</span> <span class="mh">#8080E6</span><span class="p">;</span>
+  <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">5</span><span class="kt">px</span><span class="p">,</span> <span class="mi">3</span><span class="kt">px</span><span class="p">;</span>
+  <span class="k">z-index</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p><em>Challenge:</em> There is an interesting trick in the generated SLD, can you explain how it works?</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#css-line-a2"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-label-shields">
+<span id="css-line-q3"></span><h3><span class="section-number">3.2.6.5. </span>Challenge Label Shields<a class="headerlink" href="#challenge-label-shields" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>The traditional presentation of roads in the US is the use of a shield symbol, with the road number marked on top.</p>
+<img alt="../../../_images/line_shield.png" src="../../../_images/line_shield.png" />
+</li>
+<li><p><em>Challenge:</em> Have a look at the documentation and reproduce this technique.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#css-line-a3"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="css.html" title="previous chapter"><span class="section-number">3.1. </span>CSS Quickstart</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="polygon.html" title="next chapter"><span class="section-number">3.3. </span>Polygons</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">3.2. Lines</a><ul>
+<li><a class="reference internal" href="#stroke">3.2.1. Stroke</a></li>
+<li><a class="reference internal" href="#z-index">3.2.2. Z-Index</a></li>
+<li><a class="reference internal" href="#label">3.2.3. Label</a></li>
+<li><a class="reference internal" href="#how-labeling-works">3.2.4. How Labeling Works</a></li>
+<li><a class="reference internal" href="#scale">3.2.5. Scale</a></li>
+<li><a class="reference internal" href="#bonus">3.2.6. Bonus</a><ul>
+<li><a class="reference internal" href="#explore-follow-line-option">3.2.6.1. Explore Follow Line Option</a></li>
+<li><a class="reference internal" href="#challenge-sld-generation">3.2.6.2. Challenge SLD Generation</a></li>
+<li><a class="reference internal" href="#challenge-classification">3.2.6.3. Challenge Classification</a></li>
+<li><a class="reference internal" href="#challenge-sld-z-index-generation">3.2.6.4. Challenge SLD Z-Index Generation</a></li>
+<li><a class="reference internal" href="#challenge-label-shields">3.2.6.5. Challenge Label Shields</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="css.html" title="previous chapter"><span class="section-number">3.1. </span>CSS Quickstart</a></li>
+            <li>Next: <a href="polygon.html" title="next chapter"><span class="section-number">3.3. </span>Polygons</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/workshop/css/linestring.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration Considerations &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Considerations" href="data.html" />
+    <link rel="prev" title="Container Considerations" href="container.html" /> 
+  </head><body class="production/config">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Running in a production environment</a> &raquo;</li>
+    <li>Configuration Considerations</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="data.html" title="Data Considerations" accesskey="N">Next</a></li>
+  <li>
+    <a href="container.html" title="Container Considerations" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="configuration-considerations">
+<span id="production-config"></span><h1>Configuration Considerations<a class="headerlink" href="#configuration-considerations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="use-production-logging">
+<h2>Use production logging<a class="headerlink" href="#use-production-logging" title="Permalink to this headline">¶</a></h2>
+<p>Logging may visibly affect the performance of your server. High logging levels are often necessary to track down issues, but by default you should run with low levels.  (You can switch the logging levels while GeoServer is running.)</p>
+<p>You can change the logging level in the <a class="reference internal" href="../configuration/globalsettings.html#config-globalsettings-log-profile"><span class="std std-ref">Logging Profile</span></a>.  You will want to choose the <code class="docutils literal notranslate"><span class="pre">PRODUCTION</span></code> logging configuration, where only problems are written to the log files.</p>
+</div>
+<div class="section" id="set-a-service-strategy">
+<h2>Set a service strategy<a class="headerlink" href="#set-a-service-strategy" title="Permalink to this headline">¶</a></h2>
+<p>A service strategy is the method in which output is served to the client.  This is a balance between proper form (being absolutely sure of reporting errors with the proper OGC codes, etc) and speed (serving output as quickly as possible).  This is a decision to be made based on the function that GeoServer is providing.  You can configure the service strategy by modifying the <code class="file docutils literal notranslate"><span class="pre">web.xml</span></code> file of your GeoServer instance.</p>
+<p>The possible strategies are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Strategy</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SPEED</span></code></p></td>
+<td><p>Serves output right away. This is the fastest strategy, but proper OGC errors are usually omitted.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BUFFER</span></code></p></td>
+<td><p>Stores the whole result in memory, and then serves it after the output is complete.  This ensures proper OGC error reporting, but delays the response quite a bit and can exhaust memory if the response is large.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FILE</span></code></p></td>
+<td><p>Similar to <code class="docutils literal notranslate"><span class="pre">BUFFER</span></code>, but stores the whole result in a file instead of in memory. Slower than <code class="docutils literal notranslate"><span class="pre">BUFFER</span></code>, but ensures there won’t be memory issues.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PARTIAL-BUFFER</span></code></p></td>
+<td><p>A balance between <code class="docutils literal notranslate"><span class="pre">BUFFER</span></code> and <code class="docutils literal notranslate"><span class="pre">SPEED</span></code>, this strategy tries to buffer in memory a few KB of response, then serves the full output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="personalize-your-server">
+<h2>Personalize your server<a class="headerlink" href="#personalize-your-server" title="Permalink to this headline">¶</a></h2>
+<p>This is isn’t a performance consideration, but is just as important.  In order to make GeoServer as useful as possible, you should customize the server’s metadata to your organization.  It may be tempting to skip some of the configuration steps, and leave in the same keywords and abstract as the sample, but this will only confuse potential users.</p>
+<p>Suggestions:</p>
+<ul class="simple">
+<li><p>Fill out the WFS, WMS, and WCS <a class="reference internal" href="../configuration/service-metadata/index.html#service-metadata"><span class="std std-ref">Service Metadata</span></a> sections (this info will be broadcast as part of the capabilities documents)</p></li>
+<li><p>Serve your data with your own namespace (and provide a correct URI)</p></li>
+<li><p>Remove default layers (such as <code class="docutils literal notranslate"><span class="pre">topp:states</span></code>)</p></li>
+</ul>
+</div>
+<div class="section" id="configure-service-limits">
+<h2>Configure service limits<a class="headerlink" href="#configure-service-limits" title="Permalink to this headline">¶</a></h2>
+<p>Make sure clients cannot request an inordinate amount of resources from your server.</p>
+<p>In particular:</p>
+<ul class="simple">
+<li><p>Set the <a class="reference internal" href="../services/wfs/webadmin.html#services-webadmin-wfs"><span class="std std-ref">maximum amount of features</span></a> returned by each WFS GetFeature request (this can also be set on a per featuretype basis by modifying the <a class="reference internal" href="../data/webadmin/layers.html#data-webadmin-layers"><span class="std std-ref">layer publishing wfs settings</span></a>).</p></li>
+<li><p>Set the <a class="reference internal" href="../services/wms/configuration.html#wms-configuration"><span class="std std-ref">WMS request limits</span></a> so that no request will consume too much memory or too much time</p></li>
+<li><p>Set <a class="reference internal" href="../services/wps/administration.html#webadmin-wps"><span class="std std-ref">WPS limits</span></a>, so no process will consume too much memory or too much time. You may also limit the <a class="reference internal" href="../services/wps/security.html#wps-security"><span class="std std-ref">size input parameters</span></a> for further control.</p></li>
+</ul>
+</div>
+<div class="section" id="set-security-for-data-modification">
+<h2>Set security for data modification<a class="headerlink" href="#set-security-for-data-modification" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer includes support for WFS-T (transactions) by default, which lets users modify your data.</p>
+<p>If you don’t want your database modified, you can turn off transactions in the <a class="reference internal" href="../services/wfs/webadmin.html#services-webadmin-wfs"><span class="std std-ref">WFS settings</span></a>. Set the <span class="guilabel">Service Level</span> to <code class="docutils literal notranslate"><span class="pre">Basic</span></code>. For extra security, we recommend any database access use datastore credentials providing read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).</p>
+<p>If you would like some users to be able to modify data, set the service level <span class="guilabel">Service Level</span> to <code class="docutils literal notranslate"><span class="pre">Transactional</span></code> (or <code class="docutils literal notranslate"><span class="pre">Complete</span></code>) and use <a class="reference internal" href="../security/service.html#security-service"><span class="std std-ref">Service Security</span></a> to limit access to the <cite>WFS.Transaction</cite> operation.</p>
+<p>If you would like some users to be able to modify some but not all of your data, set the <span class="guilabel">Service Level</span> to <code class="docutils literal notranslate"><span class="pre">Transactional</span></code> (or <code class="docutils literal notranslate"><span class="pre">Complete</span></code>), and use <a class="reference internal" href="../security/layer.html#security-layer"><span class="std std-ref">Layer security</span></a> to limit write access to specific layers. Data security can be used to allow write access based on workspace, datastore, or layer security.</p>
+</div>
+<div class="section" id="cache-your-data">
+<h2>Cache your data<a class="headerlink" href="#cache-your-data" title="Permalink to this headline">¶</a></h2>
+<p>Server-side caching of WMS tiles is the best way to increase performance.  In caching, pre-rendered tiles will be saved, eliminating the need for redundant WMS calls.  There are several ways to set up WMS caching for GeoServer.  GeoWebCache is the simplest method, as it comes bundled with GeoServer.  (See the section on <a class="reference internal" href="../geowebcache/index.html#gwc"><span class="std std-ref">GeoWebCache</span></a> for more details.)  Another option is <a class="reference external" href="http://tilecache.org">TileCache</a>.</p>
+<p>You can also use a more generic non-spatial caching system, such as <a class="reference external" href="http://www.opensymphony.com/oscache/">OSCache</a> (an embedded cache service) or <a class="reference external" href="http://www.squid-cache.org">Squid</a> (a web cache proxy).</p>
+<p>Caching is also possible for WFS layers, in a very limited fashion. For DataStores that don’t have a quick way to determine feature counts (e.g. shapefiles), enabling caching can prevent querying a store twice during a single request. To enable caching, set the Java system property <code class="docutils literal notranslate"><span class="pre">org.geoserver.wfs.getfeature.cachelimit</span></code> to a positive integer. Any data sets that are smaller than the cache limit will be cached for the duration of a request, which will prevent the dataset from being queried a second time for the feature count. Note that this may adversely affect some types of DataStores, as it bypasses any feature count optimizations that may exist.</p>
+</div>
+<div class="section" id="welcome-page-selectors">
+<h2>Welcome page selectors<a class="headerlink" href="#welcome-page-selectors" title="Permalink to this headline">¶</a></h2>
+<p>The workspace and layer selectors migth take a lot of time to fill up against large catalogs. Because of this, GeoServer tries to limit the time taken to fill them (by default, 5 seconds), and the amount of items in them (by default, <code class="docutils literal notranslate"><span class="pre">1000</span></code>), and will fall back on simple text fields if the time limit is reached.</p>
+<p>In some situations, that won’t be enough and the page might get stuck anyways. The following properties can be used to tweak the behavior:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GeoServerHomePage.selectionMode</span></code> : can be set to <code class="docutils literal notranslate"><span class="pre">text</span></code> to always use simple text fields, <code class="docutils literal notranslate"><span class="pre">dropdown</span></code> to always use dropdowns, or <code class="docutils literal notranslate"><span class="pre">auto</span></code> to use the default automatic behavior.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GeoServerHomePage.selectionTimeout</span></code> : the time limit in milliseconds, defaults to <code class="docutils literal notranslate"><span class="pre">5000</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GeoServerHomePage.selectionMaxItems</span></code> : the maximum number of items to show in the dropdowns, defaults to <code class="docutils literal notranslate"><span class="pre">1000</span></code>.</p></li>
+</ul>
+<p>When using <code class="docutils literal notranslate"><span class="pre">text</span></code> selection mode the page description is static, no longer offering of available workspace and layers.</p>
+<div class="figure align-default" id="id1">
+<img alt="../_images/selector_text.png" src="../_images/selector_text.png" />
+<p class="caption"><span class="caption-text">Welcome page text selection mode</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="disable-the-geoserver-web-administration-interface">
+<h2>Disable the GeoServer web administration interface<a class="headerlink" href="#disable-the-geoserver-web-administration-interface" title="Permalink to this headline">¶</a></h2>
+<p>In some circumstances, you might want to completely disable the web administration interface.  There are two ways of doing this:</p>
+<ul class="simple">
+<li><p>Set the Java system property <code class="docutils literal notranslate"><span class="pre">GEOSERVER_CONSOLE_DISABLED</span></code> to true by adding <code class="docutils literal notranslate"><span class="pre">-DGEOSERVER_CONSOLE_DISABLED=true</span></code> to your container’s JVM options</p></li>
+<li><p>Remove all of the <code class="file docutils literal notranslate"><span class="pre">gs-web*-.jar</span></code> files from <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="disable-the-auto-complete-on-web-administration-interface-login">
+<h2>Disable the Auto-complete on web administration interface login<a class="headerlink" href="#disable-the-auto-complete-on-web-administration-interface-login" title="Permalink to this headline">¶</a></h2>
+<p>To disable the Auto Complete on Web Admin login form:</p>
+<ul class="simple">
+<li><p>Set the Java system property <code class="docutils literal notranslate"><span class="pre">geoserver.login.autocomplete</span></code> to off by adding <code class="docutils literal notranslate"><span class="pre">-Dgeoserver.login.autocomplete=off</span></code> to your container’s JVM options</p></li>
+<li><p>If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.</p></li>
+</ul>
+</div>
+<div class="section" id="x-frame-options-policy">
+<h2>X-Frame-Options Policy<a class="headerlink" href="#x-frame-options-policy" title="Permalink to this headline">¶</a></h2>
+<p>In order to prevent clickjacking attacks GeoServer defaults to setting the X-Frame-Options HTTP
+header to SAMEORIGIN. This prevents GeoServer from being embedded into an iFrame, which prevents certain
+kinds of security vulnerabilities. See the <a class="reference external" href="https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet">OWASP Clickjacking entry</a> for details.</p>
+<p>If you wish to change this behavior you can do so through the following properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">geoserver.xframe.shouldSetPolicy</span></code>: controls whether the X-Frame-Options filter should be set at all. Default is true.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">geoserver.xframe.policy</span></code>: controls what the set the X-Frame-Options header to. Default is <code class="docutils literal notranslate"><span class="pre">SAMEORIGIN</span></code> valid options are <code class="docutils literal notranslate"><span class="pre">DENY</span></code>, <code class="docutils literal notranslate"><span class="pre">SAMEORIGIN</span></code> and <code class="docutils literal notranslate"><span class="pre">ALLOW-FROM</span></code> [uri]</p></li>
+</ul>
+<p>These properties can be set either via Java system property, command line argument (-D), environment
+variable or web.xml init parameter.</p>
+</div>
+<div class="section" id="ows-serviceexception-xml-mimetype">
+<h2>OWS ServiceException XML mimeType<a class="headerlink" href="#ows-serviceexception-xml-mimetype" title="Permalink to this headline">¶</a></h2>
+<p>By default, OWS Service Exception XML responses have content-type set to <code class="docutils literal notranslate"><span class="pre">application/xml</span></code>.</p>
+<p>In case you want it set to <code class="docutils literal notranslate"><span class="pre">text/xml</span></code> instead, you need to setup the Java System properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-Dows10.exception.xml.responsetype=text/xml</span></code> for OWS 1.0.0 version</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-Dows11.exception.xml.responsetype=text/xml</span></code> for OWS 1.1.0 version</p></li>
+</ul>
+</div>
+<div class="section" id="external-entities-resolution">
+<span id="production-config-external-entities"></span><h2>External Entities Resolution<a class="headerlink" href="#external-entities-resolution" title="Permalink to this headline">¶</a></h2>
+<p>When processing XML documents from service requests (POST requests, and GET requests with FILTER and SLD_BODY parameters) XML entity resolution is used to obtain any referenced documents. This is most commonly seen when the XML request provides the location of an XSD schema location for validation).</p>
+<p>GeoServer provides a number of facilities to control external entity resolution:</p>
+<ul>
+<li><p>By default <cite>http</cite> and <cite>https</cite> entity resolution is unrestricted, with access to local <cite>file</cite> references prevented.</p></li>
+<li><p>To restrict <cite>http</cite> and <cite>https</cite> entity resolution:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">DENTITY_RESOLUTION_ALLOWLIST</span>
+</pre></div>
+</div>
+<p>The built-in allow list includes w3c, ogc, and inspire schema locations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">|</span><span class="n">schemas</span><span class="o">.</span><span class="n">opengis</span><span class="o">.</span><span class="n">net</span><span class="o">|</span><span class="n">www</span><span class="o">.</span><span class="n">opengis</span><span class="o">.</span><span class="n">net</span><span class="o">|</span><span class="n">inspire</span><span class="o">.</span><span class="n">ec</span><span class="o">.</span><span class="n">europa</span><span class="o">.</span><span class="n">eu</span><span class="o">/</span><span class="n">schemas</span>
+</pre></div>
+</div>
+<p>In addition the proxy base url is included, if available from global settings.</p>
+<p>Access to local <cite>file</cite> references remains restricted.</p>
+</li>
+<li><p>To allow additional external entity <cite>http</cite> and <cite>https</cite> locations use a comma or bar separated list:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">DENTITY_RESOLUTION_ALLOWLIST</span><span class="o">=</span><span class="n">server1</span><span class="o">|</span><span class="n">server2</span><span class="o">|</span><span class="n">server3</span><span class="o">/</span><span class="n">schemas</span>
+</pre></div>
+</div>
+</li>
+<li><p>To turn off all restrictions (allowing <code class="docutils literal notranslate"><span class="pre">http</span></code>, <code class="docutils literal notranslate"><span class="pre">https</span></code>, and <code class="docutils literal notranslate"><span class="pre">file</span></code> references) use the global setting <a class="reference internal" href="../configuration/globalsettings.html#config-globalsettings-external-entities"><span class="std std-ref">Unrestricted XML External Entity Resolution</span></a>.</p>
+<p>This setting prevents <code class="docutils literal notranslate"><span class="pre">ENTITY_RESOLUTION_ALLOWLIST</span></code> from being used.</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="container.html" title="previous chapter">Container Considerations</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="data.html" title="next chapter">Data Considerations</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Configuration Considerations</a><ul>
+<li><a class="reference internal" href="#use-production-logging">Use production logging</a></li>
+<li><a class="reference internal" href="#set-a-service-strategy">Set a service strategy</a></li>
+<li><a class="reference internal" href="#personalize-your-server">Personalize your server</a></li>
+<li><a class="reference internal" href="#configure-service-limits">Configure service limits</a></li>
+<li><a class="reference internal" href="#set-security-for-data-modification">Set security for data modification</a></li>
+<li><a class="reference internal" href="#cache-your-data">Cache your data</a></li>
+<li><a class="reference internal" href="#welcome-page-selectors">Welcome page selectors</a></li>
+<li><a class="reference internal" href="#disable-the-geoserver-web-administration-interface">Disable the GeoServer web administration interface</a></li>
+<li><a class="reference internal" href="#disable-the-auto-complete-on-web-administration-interface-login">Disable the Auto-complete on web administration interface login</a></li>
+<li><a class="reference internal" href="#x-frame-options-policy">X-Frame-Options Policy</a></li>
+<li><a class="reference internal" href="#ows-serviceexception-xml-mimetype">OWS ServiceException XML mimeType</a></li>
+<li><a class="reference internal" href="#external-entities-resolution">External Entities Resolution</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="container.html" title="previous chapter">Container Considerations</a></li>
+            <li>Next: <a href="data.html" title="next chapter">Data Considerations</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/production/config.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JDBC Primary/Replica &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Shared File System Primary/Replica" href="SharedFolder.html" />
+    <link rel="prev" title="HOWTO configure ActiveMQ broker" href="activemqBroker.html" /> 
+  </head><body class="community/jms-cluster/activemq/JDBC">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">JMS based Clustering</a> &raquo;</li>
+    <li>JDBC Primary/Replica</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="SharedFolder.html" title="Shared File System Primary/Replica" accesskey="N">Next</a></li>
+  <li>
+    <a href="activemqBroker.html" title="HOWTO configure ActiveMQ broker" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="jdbc-primary-replica">
+<h1>JDBC Primary/Replica<a class="headerlink" href="#jdbc-primary-replica" title="Permalink to this headline">¶</a></h1>
+<p>If you are using pure JDBC and not using the high performance journal then you are generally relying on your database as your single point of failure and persistence engine. If you do not have really high performance requirements this approach can make a lot of sense as you have a single persistence engine to backup and manage etc.</p>
+<div class="section" id="startup">
+<h2>Startup<a class="headerlink" href="#startup" title="Permalink to this headline">¶</a></h2>
+<p>When using just JDBC as the data source you can use a Primary/Replica approach, running as many brokers as you wish as this diagram shows. On startup one primary grabs an exclusive lock in the broker database - all other brokers are replicas and pause waiting for the exclusive lock.</p>
+<div class="figure align-center">
+<img alt="../../../_images/Startup.png" src="../../../_images/Startup.png" />
+</div>
+<p>Clients should be using the Failover Transport to connect to the available brokers. e.g. using a URL something like the following
+failover:(tcp://broker1:61616,tcp://broker2:61616,tcp://broker3:61616)
+Only the primary broker starts up its transport connectors and so the clients can only connect to the primary.</p>
+</div>
+<div class="section" id="primary-failure">
+<h2>Primary failure<a class="headerlink" href="#primary-failure" title="Permalink to this headline">¶</a></h2>
+<p>If the primary looses connection to the database or looses the exclusive lock then it immediately shuts down. If a primary shuts down or fails, one of the other replicas will grab the lock and so the topology switches to the following diagram</p>
+<div class="figure align-center">
+<img alt="../../../_images/MasterFailed.png" src="../../../_images/MasterFailed.png" />
+</div>
+<p>One of the other replicas immediately grabs the exclusive lock on the database to then commences becoming the primary, starting all of its transport connectors.
+Clients lose connection to the stopped primary and then the failover transport tries to connect to the available brokers - of which the only one available is the new primary.
+Primary restart
+At any time you can restart other brokers which join the cluster and start as replicas waiting to become a primary if the primary is shutdown or a failure occurs. So the following topology is created after a restart of an old primary…</p>
+</div>
+<div class="section" id="configuring-jdbc-primary-replica">
+<h2>Configuring JDBC Primary/Replica<a class="headerlink" href="#configuring-jdbc-primary-replica" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<img alt="../../../_images/MasterRestarted.png" src="../../../_images/MasterRestarted.png" />
+</div>
+<p>By default if you use the &lt;jdbcPersistenceAdapter/&gt; to avoid the high performance journal you will be using JDBC Primary/Replica by default. You just need to run more than one broker and point the client side URIs to them to get primary/replica. This works because they both try an acquire an exclusive lock on a shared table in the database and only one will succeed.</p>
+<p>The following example shows how to configure the ActiveMQ broker in JDBC Primary/Replica mode</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;beans&gt;</span>
+
+  <span class="c">&lt;!-- Allows us to use system properties as variables in this configuration file --&gt;</span>
+  <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.springframework.beans.factory.config.PropertyPlaceholderConfigurer&quot;</span><span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;broker</span> <span class="na">xmlns=</span><span class="s">&quot;http://activemq.apache.org/schema/core&quot;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;destinationPolicy&gt;</span>
+      <span class="nt">&lt;policyMap&gt;&lt;policyEntries&gt;</span>
+
+          <span class="nt">&lt;policyEntry</span> <span class="na">topic=</span><span class="s">&quot;FOO.&gt;&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;dispatchPolicy&gt;</span>
+              <span class="nt">&lt;strictOrderDispatchPolicy</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/dispatchPolicy&gt;</span>
+            <span class="nt">&lt;subscriptionRecoveryPolicy&gt;</span>
+              <span class="nt">&lt;lastImageSubscriptionRecoveryPolicy</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/subscriptionRecoveryPolicy&gt;</span>
+          <span class="nt">&lt;/policyEntry&gt;</span>
+
+      <span class="nt">&lt;/policyEntries&gt;&lt;/policyMap&gt;</span>
+    <span class="nt">&lt;/destinationPolicy&gt;</span>
+
+
+    <span class="nt">&lt;persistenceAdapter&gt;</span>
+        <span class="nt">&lt;jdbcPersistenceAdapter</span> <span class="na">dataDirectory=</span><span class="s">&quot;${activemq.base}/activemq-data&quot;</span><span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!--</span>
+<span class="c">        &lt;jdbcPersistenceAdapter dataDirectory=&quot;activemq-data&quot; dataSource=&quot;#oracle-ds&quot;/&gt;</span>
+<span class="c">        --&gt;</span>
+    <span class="nt">&lt;/persistenceAdapter&gt;</span>
+
+    <span class="nt">&lt;transportConnectors&gt;</span>
+      <span class="nt">&lt;transportConnector</span> <span class="na">name=</span><span class="s">&quot;default&quot;</span> <span class="na">uri=</span><span class="s">&quot;tcp://localhost:61616&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/transportConnectors&gt;</span>
+
+  <span class="nt">&lt;/broker&gt;</span>
+
+  <span class="c">&lt;!--  This xbean configuration file supports all the standard spring xml configuration options --&gt;</span>
+
+  <span class="c">&lt;!-- Postgres DataSource Sample Setup --&gt;</span>
+  <span class="c">&lt;!--</span>
+<span class="c">  &lt;bean id=&quot;postgres-ds&quot; class=&quot;org.postgresql.ds.PGPoolingDataSource&quot;&gt;</span>
+<span class="c">    &lt;property name=&quot;serverName&quot; value=&quot;localhost&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;databaseName&quot; value=&quot;activemq&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;portNumber&quot; value=&quot;0&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;user&quot; value=&quot;activemq&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;password&quot; value=&quot;activemq&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;dataSourceName&quot; value=&quot;postgres&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;initialConnections&quot; value=&quot;1&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;maxConnections&quot; value=&quot;10&quot;/&gt;</span>
+<span class="c">  &lt;/bean&gt;</span>
+<span class="c">  --&gt;</span>
+
+  <span class="c">&lt;!-- MySql DataSource Sample Setup --&gt;</span>
+  <span class="c">&lt;!--</span>
+<span class="c">  &lt;bean id=&quot;mysql-ds&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;</span>
+<span class="c">    &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost/activemq?relaxAutoCommit=true&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;username&quot; value=&quot;activemq&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;password&quot; value=&quot;activemq&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;poolPreparedStatements&quot; value=&quot;true&quot;/&gt;</span>
+<span class="c">  &lt;/bean&gt;</span>
+<span class="c">  --&gt;</span>
+
+  <span class="c">&lt;!-- Oracle DataSource Sample Setup --&gt;</span>
+  <span class="c">&lt;!--</span>
+<span class="c">  &lt;bean id=&quot;oracle-ds&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;</span>
+<span class="c">    &lt;property name=&quot;driverClassName&quot; value=&quot;oracle.jdbc.driver.OracleDriver&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;url&quot; value=&quot;jdbc:oracle:thin:@localhost:1521:AMQDB&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;username&quot; value=&quot;scott&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;password&quot; value=&quot;tiger&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;poolPreparedStatements&quot; value=&quot;true&quot;/&gt;</span>
+<span class="c">  &lt;/bean&gt;</span>
+<span class="c">  --&gt;</span>
+
+  <span class="c">&lt;!-- Embedded Derby DataSource Sample Setup --&gt;</span>
+  <span class="c">&lt;!--</span>
+<span class="c">  &lt;bean id=&quot;derby-ds&quot; class=&quot;org.apache.derby.jdbc.EmbeddedDataSource&quot;&gt;</span>
+<span class="c">    &lt;property name=&quot;databaseName&quot; value=&quot;derbydb&quot;/&gt;</span>
+<span class="c">    &lt;property name=&quot;createDatabase&quot; value=&quot;create&quot;/&gt;</span>
+<span class="c">  &lt;/bean&gt;</span>
+<span class="c">  --&gt;</span>
+
+<span class="nt">&lt;/beans&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="activemqBroker.html" title="previous chapter">HOWTO configure ActiveMQ broker</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="SharedFolder.html" title="next chapter">Shared File System Primary/Replica</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">JDBC Primary/Replica</a><ul>
+<li><a class="reference internal" href="#startup">Startup</a></li>
+<li><a class="reference internal" href="#primary-failure">Primary failure</a></li>
+<li><a class="reference internal" href="#configuring-jdbc-primary-replica">Configuring JDBC Primary/Replica</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="activemqBroker.html" title="previous chapter">HOWTO configure ActiveMQ broker</a></li>
+            <li>Next: <a href="SharedFolder.html" title="next chapter">Shared File System Primary/Replica</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/jms-cluster/activemq/JDBC.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

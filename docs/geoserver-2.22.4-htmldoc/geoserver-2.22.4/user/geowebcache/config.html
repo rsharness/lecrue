@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Seeding and refreshing" href="seeding.html" />
+    <link rel="prev" title="Using GeoWebCache" href="using.html" /> 
+  </head><body class="geowebcache/config">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GeoWebCache</a> &raquo;</li>
+    <li>Configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="seeding.html" title="Seeding and refreshing" accesskey="N">Next</a></li>
+  <li>
+    <a href="using.html" title="Using GeoWebCache" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="configuration">
+<span id="gwc-config"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>GeoWebCache is automatically configured for use with GeoServer using the most common options, with no setup required. All communication between GeoServer and GeoWebCache happens by passing messages inside the JVM.</p>
+<p>By default, all layers served by GeoServer will be known to GeoWebCache. See the <a class="reference internal" href="webadmin/layers.html#gwc-webadmin-layers"><span class="std std-ref">Tile Layers</span></a> page to test the configuration.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Version 2.2.0 of GeoServer introduced changes to the configuration of the integrated GeoWebCache.</p>
+</div>
+<div class="section" id="integrated-user-interface">
+<h2>Integrated user interface<a class="headerlink" href="#integrated-user-interface" title="Permalink to this headline">¶</a></h2>
+<p>GeoWebCache has a full integrated web-based configuration. See the <a class="reference internal" href="webadmin/index.html#gwc-webadmin"><span class="std std-ref">GeoWebCache settings</span></a> section in the <a class="reference internal" href="../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>.</p>
+</div>
+<div class="section" id="determining-tiled-layers">
+<h2>Determining tiled layers<a class="headerlink" href="#determining-tiled-layers" title="Permalink to this headline">¶</a></h2>
+<p>In versions of GeoServer prior to 2.2.0, the GeoWebCache integration was done in a such way that every GeoServer layer and layer group was forced to have an associated GeoWebCache tile layer. In addition, every such tile layer was forcedly published in the EPSG:900913 and EPSG:4326 gridsets with PNG and JPEG output formats.</p>
+<p>It is possible to selectively turn caching on or off for any layer served through GeoServer. This setting can be configured in the <a class="reference internal" href="webadmin/layers.html#gwc-webadmin-layers"><span class="std std-ref">Tile Layers</span></a> section of the <a class="reference internal" href="../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>.</p>
+</div>
+<div class="section" id="configuration-files">
+<h2>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to configure most aspects of cached layers through the <a class="reference internal" href="webadmin/index.html#gwc-webadmin"><span class="std std-ref">GeoWebCache settings</span></a> section in the <a class="reference internal" href="../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a> or the <a class="reference internal" href="rest/index.html#gwc-rest"><span class="std std-ref">GeoWebCache REST API</span></a>.</p>
+<p>GeoWebCache keeps the configuration for each GeoServer tiled layer separately, inside the <code class="file docutils literal notranslate"><span class="pre">&lt;data_dir&gt;/gwc-layers/</span></code> directory. There is one XML file for each tile layer. These files contain a different syntax from the <code class="docutils literal notranslate"><span class="pre">&lt;wmsLayer&gt;</span></code> syntax in the standalone version and are <em>not</em> meant to be edited by hand. Instead you can configure tile layers on the <a class="reference internal" href="webadmin/layers.html#gwc-webadmin-layers"><span class="std std-ref">Tile Layers</span></a> page or through the <a class="reference internal" href="rest/index.html#gwc-rest"><span class="std std-ref">GeoWebCache REST API</span></a>.</p>
+<p>Configuration for the defined gridsets is saved in <code class="file docutils literal notranslate"><span class="pre">&lt;data_dir&gt;/gwc/geowebcache.xml`</span></code> so that the integrated GeoWebCache can continue to serve externally-defined tile layers from WMS services outside GeoServer.</p>
+<p>If upgrading from a version prior to 2.2.0, a migration process is run which creates a tile layer configuration for all the available layers and layer groups in GeoServer with the old defaults. From that point on, you should configure the tile layers on the <a class="reference internal" href="webadmin/layers.html#gwc-webadmin-layers"><span class="std std-ref">Tile Layers</span></a> page.</p>
+</div>
+<div class="section" id="changing-the-cache-directory">
+<h2>Changing the cache directory<a class="headerlink" href="#changing-the-cache-directory" title="Permalink to this headline">¶</a></h2>
+<p>GeoWebCache will automatically store cached tiles in a <code class="docutils literal notranslate"><span class="pre">gwc</span></code> directory inside your GeoServer data directory. To set a different directory, stop GeoServer (if it is running) and add the following code to your GeoServer <code class="file docutils literal notranslate"><span class="pre">web.xml</span></code> file (located in the <code class="file docutils literal notranslate"><span class="pre">WEB-INF</span></code> directory):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;context-param&gt;</span>
+   <span class="nt">&lt;param-name&gt;</span>GEOWEBCACHE_CACHE_DIR<span class="nt">&lt;/param-name&gt;</span>
+   <span class="nt">&lt;param-value&gt;</span>C:\temp<span class="nt">&lt;/param-value&gt;</span>
+<span class="nt">&lt;/context-param&gt;</span>
+</pre></div>
+</div>
+<p>Change the path inside <code class="docutils literal notranslate"><span class="pre">&lt;param-value&gt;</span></code> to the desired cache path (such as <code class="file docutils literal notranslate"><span class="pre">C:\temp</span></code> or <code class="file docutils literal notranslate"><span class="pre">/tmp</span></code>). Restart GeoServer when done.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure GeoServer has write access in this directory.</p>
+</div>
+</div>
+<div class="section" id="geowebcache-with-multiple-geoserver-instances">
+<h2>GeoWebCache with multiple GeoServer instances<a class="headerlink" href="#geowebcache-with-multiple-geoserver-instances" title="Permalink to this headline">¶</a></h2>
+<p>For stability reasons, it is not recommended to use the embedded GeoWebCache with multiple GeoServer instances. If you want to configure GeoWebCache as a front-end for multiple instances of GeoServer, we recommend using the <a class="reference external" href="http://geowebcache.org">standalone GeoWebCache</a>.</p>
+</div>
+<div class="section" id="geoserver-data-security">
+<span id="gwc-data-security"></span><h2>GeoServer Data Security<a class="headerlink" href="#geoserver-data-security" title="Permalink to this headline">¶</a></h2>
+<p>GWC Data Security is an option that can be turned on and turned off through the <a class="reference internal" href="webadmin/defaults.html#gwc-webadmin-defaults"><span class="std std-ref">Caching defaults</span></a> page. By default it is turned off.</p>
+<p>When turned on, the embedded GWC will do a data security check before calling GeoWebCache, i.e. verify whether the user actually has access to the layer, and reject the request if this is not the case.
+In the case of WMS-C requests, there is also limited support for data access limit filters, only with respect to geographic boundaries (all other types of data access limits will be ignored).
+The embedded GWC will reject requests for which the requested bounding box is (partly) inaccessible. It is only possible to request a tile within a bounding box that is fully accessible.
+This behaviour is different from the regular WMS, which will filter the data before serving it.
+However, if the integrated WMS/WMS-C is used, the request will be forwarded back to WMS and give the desired result.</p>
+<p>When using the default GeoServer security system, rules cannot combine data security with service security. However, when using a security subsystem it may be possible
+to make such particular combinations. In this case the WMS-C service inherits all security rules from the regular WMS service; while all other GWC services will get their security
+from rules associated with the ‘GWC’ service itself.</p>
+</div>
+<div class="section" id="configuring-in-memory-caching">
+<h2>Configuring In Memory Caching<a class="headerlink" href="#configuring-in-memory-caching" title="Permalink to this headline">¶</a></h2>
+<p>GWC In Memory Caching is a new feature which allows to cache GWC tiles in memory reducing their access time. User can also choose to avoid to store the files on the disk if needed.
+For enabling/disabling these features the user may see the related section on the TileCaching <a class="reference internal" href="webadmin/defaults.html#gwc-webadmin-defaults"><span class="std std-ref">Caching defaults</span></a> page.</p>
+<p>Actually there are only two Caching methods:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Guava Caching</p></li>
+<li><p>Hazelcast Caching</p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="guava-cache">
+<h3>Guava Cache<a class="headerlink" href="#guava-cache" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://code.google.com/p/guava-libraries/wiki/CachesExplained">Guava</a> Cache provides a local in-memory cache to use for a single GeoServer instance. For configuring Guava Caching the user must only edit the configuration parameters in the <em>Caching Defaults</em> page.</p>
+</div>
+<div class="section" id="hazelcast-cache">
+<h3>Hazelcast Cache<a class="headerlink" href="#hazelcast-cache" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://docs.hazelcast.org/docs/3.3/manual/html/">Hazelcast</a> is an open-source API for distributed structures like clusters. GWC supports this API for creating a distributed in memory cache.
+At the time of writing, Hazelcast requires the installation of the <em>gs-gwc-distributed</em> plugin in the <cite>WEB_INF/lib</cite> directory of your geoserver application. This plugin can be found at the following <a class="reference external" href="https://build.geoserver.org/geoserver/main/community-latest/">link</a>.</p>
+<p>There are 2 ways for configuring distributed caching in GWC:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Using an XML file called <em>hazelcast.xml</em>. This file must be located in a directory indicated by the JVM parameter <strong>hazelcast.config.dir</strong></p></li>
+<li><p>Directly, by configuring a bean inside the GeoServer application context</p></li>
+</ul>
+</div></blockquote>
+<p>Both the 2 configurations should define the following parameters:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The Hazelcast configuration requires a Map object with name <em>CacheProviderMap</em></p></li>
+<li><p>Map eviction policy must be <em>LRU</em> or <em>LFU</em></p></li>
+<li><p>Map configuration must have a fixed size defined in Mb</p></li>
+<li><p>Map configuration must have <strong>USED_HEAP_SIZE</strong> as <em>MaxSizePolicy</em></p></li>
+</ol>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Be careful that all the cluster instances have the same configuration, because different configurations may result in incorrect Hazelcast behaviour.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In order to avoid missing tiles, the cluster instances should access the same data.</p>
+</div>
+<div class="section" id="configuration-with-hazelcast-xml">
+<h4>Configuration with <em>hazelcast.xml</em><a class="headerlink" href="#configuration-with-hazelcast-xml" title="Permalink to this headline">¶</a></h4>
+<p>Here can be found an example file:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;hazelcast</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.hazelcast.com/schema/config hazelcast-config-2.3.xsd&quot;</span>
+                   <span class="na">xmlns=</span><span class="s">&quot;http://www.hazelcast.com/schema/config&quot;</span>
+                   <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;group&gt;</span>
+        <span class="nt">&lt;name&gt;</span>cacheCluster<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;password&gt;</span>geoserverCache<span class="nt">&lt;/password&gt;</span>
+  <span class="nt">&lt;/group&gt;</span>
+
+  <span class="nt">&lt;network&gt;</span>
+        <span class="c">&lt;!--</span>
+<span class="c">                Typical usage: multicast enabled with port auto-increment enabled</span>
+<span class="c">                or tcp-ip enabled with port auto-increment disabled. Note that you</span>
+<span class="c">                must choose between multicast and tcp-ip. Another option could be</span>
+<span class="c">                aws, but will not be described here.</span>
+
+<span class="c">        --&gt;</span>
+        <span class="nt">&lt;port</span> <span class="na">auto-increment=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>5701<span class="nt">&lt;/port&gt;</span>
+                <span class="nt">&lt;join&gt;</span>
+                         <span class="nt">&lt;multicast</span> <span class="na">enabled=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+                                <span class="nt">&lt;multicast-group&gt;</span>224.2.2.3<span class="nt">&lt;/multicast-group&gt;</span>
+                                <span class="nt">&lt;multicast-port&gt;</span>54327<span class="nt">&lt;/multicast-port&gt;</span>
+                        <span class="nt">&lt;/multicast&gt;</span>
+                        <span class="nt">&lt;tcp-ip</span> <span class="na">enabled=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+                                <span class="nt">&lt;interface&gt;</span>192.168.1.32<span class="nt">&lt;/interface&gt;</span>
+                                <span class="nt">&lt;interface&gt;</span>192.168.1.110<span class="nt">&lt;/interface&gt;</span>
+                        <span class="nt">&lt;/tcp-ip&gt;</span>
+                <span class="nt">&lt;/join&gt;</span>
+  <span class="nt">&lt;/network&gt;</span>
+
+  <span class="nt">&lt;map</span> <span class="na">name=</span><span class="s">&quot;CacheProviderMap&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;eviction-policy&gt;</span>LRU<span class="nt">&lt;/eviction-policy&gt;</span>
+                <span class="nt">&lt;max-size</span> <span class="na">policy=</span><span class="s">&quot;USED_HEAP_SIZE&quot;</span><span class="nt">&gt;</span>16<span class="nt">&lt;/max-size&gt;</span>
+  <span class="nt">&lt;/map&gt;</span>
+
+<span class="nt">&lt;/hazelcast&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="configuration-with-applicationcontext">
+<h4>Configuration with ApplicationContext<a class="headerlink" href="#configuration-with-applicationcontext" title="Permalink to this headline">¶</a></h4>
+<p>For configuring caching directly from the GeoServer application context, the user must edit the file <em>geowebcache-distributed.xml</em> inside the <em>gs-gwc</em> jar file. More informations about using
+Spring with Hazelcast can be found in the <a class="reference external" href="http://docs.hazelcast.org/docs/3.3/manual/html/springintegration.html">Hazelcast related documentation</a>. The modified application context is presented
+below:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;hz:hazelcast</span> <span class="na">id=</span><span class="s">&quot;instance1&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;hz:config&gt;</span>
+                <span class="nt">&lt;hz:group</span> <span class="na">name=</span><span class="s">&quot;dev&quot;</span> <span class="na">password=</span><span class="s">&quot;password&quot;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;hz:network</span> <span class="na">port=</span><span class="s">&quot;5701&quot;</span> <span class="na">port-auto-increment=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+                        <span class="nt">&lt;hz:join&gt;</span>
+                                <span class="nt">&lt;hz:multicast</span> <span class="na">enabled=</span><span class="s">&quot;true&quot;</span> <span class="na">multicast-group=</span><span class="s">&quot;224.2.2.3&quot;</span>
+                                        <span class="na">multicast-port=</span><span class="s">&quot;54327&quot;</span> <span class="nt">/&gt;</span>
+                        <span class="nt">&lt;hz:tcp-ip</span> <span class="na">enabled=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+                          <span class="nt">&lt;hz:members&gt;</span>10.10.1.2, 10.10.1.3<span class="nt">&lt;/hz:members&gt;</span>
+                        <span class="nt">&lt;/hz:tcp-ip&gt;</span>
+                        <span class="nt">&lt;/hz:join&gt;</span>
+                <span class="nt">&lt;/hz:network&gt;</span>
+                <span class="nt">&lt;hz:map</span> <span class="na">name=</span><span class="s">&quot;CacheProviderMap&quot;</span> <span class="na">max-size=</span><span class="s">&quot;16&quot;</span> <span class="na">eviction-policy=</span><span class="s">&quot;LRU&quot;</span>
+                        <span class="na">max-size-policy=</span><span class="s">&quot;USED_HEAP_SIZE&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/hz:config&gt;</span>
+<span class="nt">&lt;/hz:hazelcast&gt;</span>
+
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;HazelCastLoader1&quot;</span>
+        <span class="na">class=</span><span class="s">&quot;org.geowebcache.storage.blobstore.memory.distributed.HazelcastLoader&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;instance&quot;</span> <span class="na">ref=</span><span class="s">&quot;instance1&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;HazelCastCacheProvider1&quot;</span>
+        <span class="na">class=</span><span class="s">&quot;org.geowebcache.storage.blobstore.memory.distributed.HazelcastCacheProvider&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">ref=</span><span class="s">&quot;HazelCastLoader1&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="optional-configuration-parameters">
+<h4>Optional configuration parameters<a class="headerlink" href="#optional-configuration-parameters" title="Permalink to this headline">¶</a></h4>
+<p>In this section are described other available configuration parameters to configure:</p>
+<blockquote>
+<div><ul>
+<li><p>Cache expiration time:</p>
+<blockquote>
+<div><blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;map</span> <span class="na">name=</span><span class="s">&quot;CacheProviderMap&quot;</span><span class="nt">&gt;</span>
+...
+
+        <span class="nt">&lt;time-to-live-seconds&gt;</span>0<span class="nt">&lt;/time-to-live-seconds&gt;</span>
+        <span class="nt">&lt;max-idle-seconds&gt;</span>0<span class="nt">&lt;/max-idle-seconds&gt;</span>
+
+<span class="nt">&lt;/map&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Where <em>time-to-live-seconds</em> indicates how many seconds an entry can stay in cache and <em>max-idle-seconds</em> indicates how many seconds an entry may be not accessed before being evicted.</p>
+</div></blockquote>
+</li>
+<li><p>Near Cache.</p>
+<blockquote>
+<div><blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;map</span> <span class="na">name=</span><span class="s">&quot;CacheProviderMap&quot;</span><span class="nt">&gt;</span>
+...
+<span class="nt">&lt;near-cache&gt;</span>
+  <span class="c">&lt;!--</span>
+<span class="c">        Same configuration parameters of the Hazelcast Map. Note that size indicates the maximum number of</span>
+<span class="c">        entries in the near cache. A value of Integer.MAX_VALUE indicates no limit on the maximum</span>
+<span class="c">        size.</span>
+<span class="c">  --&gt;</span>
+  <span class="nt">&lt;max-size&gt;</span>5000<span class="nt">&lt;/max-size&gt;</span>
+  <span class="nt">&lt;time-to-live-seconds&gt;</span>0<span class="nt">&lt;/time-to-live-seconds&gt;</span>
+  <span class="nt">&lt;max-idle-seconds&gt;</span>60<span class="nt">&lt;/max-idle-seconds&gt;</span>
+  <span class="nt">&lt;eviction-policy&gt;</span>LRU<span class="nt">&lt;/eviction-policy&gt;</span>
+
+  <span class="c">&lt;!--</span>
+<span class="c">        Indicates if a cached entry can be evicted if the same value is modified in the Hazelcast Map. Default is true.</span>
+<span class="c">  --&gt;</span>
+  <span class="nt">&lt;invalidate-on-change&gt;</span>true<span class="nt">&lt;/invalidate-on-change&gt;</span>
+
+  <span class="c">&lt;!--</span>
+<span class="c">        Indicates if local entries must be cached. Default is false.</span>
+<span class="c">  --&gt;</span>
+  <span class="nt">&lt;cache-local-entries&gt;</span>false<span class="nt">&lt;/cache-local-entries&gt;</span>
+<span class="nt">&lt;/near-cache&gt;</span>
+
+<span class="nt">&lt;/map&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Near Cache is a local cache for each cluster instance which is used for caching entries in the other cluster instances. This behaviour avoids requesting those entries each time by executing a remote call. This feature could be helpful in order to improve Hazelcast Cache performance.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A value of <em>max-size</em> bigger or equal to Integer.MAX_VALUE cannot be used in order to avoid an uncontrollable growth of the cache size.</p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="using.html" title="previous chapter">Using GeoWebCache</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="seeding.html" title="next chapter">Seeding and refreshing</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#integrated-user-interface">Integrated user interface</a></li>
+<li><a class="reference internal" href="#determining-tiled-layers">Determining tiled layers</a></li>
+<li><a class="reference internal" href="#configuration-files">Configuration files</a></li>
+<li><a class="reference internal" href="#changing-the-cache-directory">Changing the cache directory</a></li>
+<li><a class="reference internal" href="#geowebcache-with-multiple-geoserver-instances">GeoWebCache with multiple GeoServer instances</a></li>
+<li><a class="reference internal" href="#geoserver-data-security">GeoServer Data Security</a></li>
+<li><a class="reference internal" href="#configuring-in-memory-caching">Configuring In Memory Caching</a><ul>
+<li><a class="reference internal" href="#guava-cache">Guava Cache</a></li>
+<li><a class="reference internal" href="#hazelcast-cache">Hazelcast Cache</a><ul>
+<li><a class="reference internal" href="#configuration-with-hazelcast-xml">Configuration with <em>hazelcast.xml</em></a></li>
+<li><a class="reference internal" href="#configuration-with-applicationcontext">Configuration with ApplicationContext</a></li>
+<li><a class="reference internal" href="#optional-configuration-parameters">Optional configuration parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="using.html" title="previous chapter">Using GeoWebCache</a></li>
+            <li>Next: <a href="seeding.html" title="next chapter">Seeding and refreshing</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/geowebcache/config.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

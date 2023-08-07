@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoRSS &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GetFeatureInfo Templates" href="../GetFeatureInfo/index.html" />
+    <link rel="prev" title="Freemarker Templates" href="../freemarker.html" /> 
+  </head><body class="tutorials/georss/georss">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>GeoRSS</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../GetFeatureInfo/index.html" title="GetFeatureInfo Templates" accesskey="N">Next</a></li>
+  <li>
+    <a href="../freemarker.html" title="Freemarker Templates" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="georss">
+<span id="tutorials-georss"></span><h1>GeoRSS<a class="headerlink" href="#georss" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer supports <a class="reference external" href="http://georss.org/">GeoRSS</a> as an output format allowing you to serve features as an RSS feed.</p>
+<div class="section" id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>If you are using a web browser which can render RSS feeds simply visit the URL <a class="reference external" href="http://localhost:8080/geoserver/wms/reflect?layers=states&amp;format=rss">http://localhost:8080/geoserver/wms/reflect?layers=states&amp;format=rss</a>  in your browser. This is assuming a local GeoServer instance is running with an out of the box configuration. You should see a result that looks more or less like this:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/browser1.png" src="../../_images/browser1.png" />
+<p class="caption"><span class="caption-text"><em>topp:states rss feed</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="templating">
+<h2>Templating<a class="headerlink" href="#templating" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer uses FreeMarker templates to customize the returned GeoRSS feed. If you are not familiar with FreeMarker templates you may wish to read the <a class="reference internal" href="../freemarker.html#tutorial-freemarkertemplate"><span class="std std-ref">Freemarker Templates</span></a> tutorial, and the <a class="reference internal" href="../../services/wms/googleearth/tutorials/kmlplacemark/index.html#getutorial-kmlplacemark"><span class="std std-ref">KML Placemark Templates</span></a> page, which has simple examples.</p>
+<p>Three template files are currently supported:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">title.ftl</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description.ftl</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">link.ftl</span></code></p></li>
+</ul>
+<p>Each of these files may be used to customize the associated field in the GeoRSS feed.</p>
+</div>
+<div class="section" id="ajax-map-mashups">
+<h2>Ajax Map Mashups<a class="headerlink" href="#ajax-map-mashups" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For Ajax map mashups to work, the GeoServer instance must be visible to the Internet (i.e. using the address <code class="docutils literal notranslate"><span class="pre">localhost</span></code> will not work).</p>
+</div>
+</div>
+<div class="section" id="google-maps">
+<h2>Google Maps<a class="headerlink" href="#google-maps" title="Permalink to this headline">¶</a></h2>
+<p>How to create a Google Maps mashup with a GeoRSS overlay produced by GeoServer.</p>
+<ol class="arabic">
+<li><p>Obtain a <a class="reference external" href="http://www.google.com/apis/maps/signup.html">Google Maps API Key</a> from Google.</p></li>
+<li><p>Create an html file called <code class="docutils literal notranslate"><span class="pre">gmaps.html</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org    R/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;/&gt;
+    &lt;title&gt;Google Maps JavaScript API Example&lt;    itle&gt;
+    &lt;script src=&quot;http://maps.google.com/maps?file=api&amp;amp;v=2.x&amp;amp;key=&lt;INSERT MAPS API KEY HERE&gt;&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+
+    &lt;script type=&quot;text/javascript&quot;&gt;
+    //&lt;![CDATA[
+        function load() {
+            if (GBrowserIsCompatible()) {
+                var map = new GMap2(document.getElementById(&quot;map&quot;));
+                map.addControl(new GLargeMapControl());
+                map.setCenter(new GLatLng(40,-98), 4);
+                var geoXml = new GGeoXml(&quot;&lt;INSERT GEOSERVER URL HERE&gt;/geoserver/wms/reflect?layers=states&amp;format=rss&quot;);
+                map.addOverlay(geoXml);
+            }
+        }
+    //]]&gt;
+    &lt;/script&gt;
+
+    &lt;/head&gt;
+    &lt;body onload=&quot;load()&quot; onunload=&quot;GUnload()&quot;&gt;
+        &lt;div id=&quot;map&quot; style=&quot;width: 800px; height: 600px&quot;&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Visit <code class="docutils literal notranslate"><span class="pre">gmaps.html</span></code> in your web browser.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The version of the google maps api must be <strong>2.x</strong>, and not just <strong>2</strong> You must insert your specific maps api key, and geoserver base url</p>
+</div>
+</div>
+<div class="section" id="yahoo-maps">
+<h2>Yahoo Maps<a class="headerlink" href="#yahoo-maps" title="Permalink to this headline">¶</a></h2>
+<p>How to create a Yahoo! Maps mashup with a GeoRSS overlay produced by GeoServer.</p>
+<ol class="arabic">
+<li><p>Obtain a &lt;Yahoo Maps Application ID &lt;<a class="reference external" href="http://search.yahooapis.com/webservices/register_application">http://search.yahooapis.com/webservices/register_application</a>&gt;`_ from Yahoo.</p></li>
+<li><p>Create an html file called <code class="docutils literal notranslate"><span class="pre">ymaps.html</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;html&gt;
+    &lt;head&gt;
+    &lt;title&gt;Yahoo! Maps GeoRSS Overlay Example&lt;    itle&gt;
+    &lt;script src=&quot;http://api.maps.yahoo.com/ajaxymap?v=3.0&amp;appid=&lt;INSERT APPLICATION ID HERE&gt;&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; language=&quot;JavaScript&quot;&gt;
+
+        function StartYMap() {
+            var map = new YMap(document.getElementById(&#39;ymap&#39;));
+            map.addPanControl();
+            map.addZoomShort();
+
+            function doStart(eventObj) {
+                var defaultEventObject = eventObj;
+                //eventObj.ThisMap [map object]
+                //eventObj.URL [argument]
+                //eventObj.Data [processed input]
+            }
+
+            function doEnd(eventObj) {
+                var defaultEventObject = eventObj;
+                //eventObj.ThisMap [map object]
+                //eventObj.URL [argument]
+                //eventObj.Data [processed input]
+                map.smoothMoveByXY(new YCoordPoint(10,50));
+            }
+
+            YEvent.Capture(map,EventsList.onStartGeoRSS, function(eventObj) { doStart(eventObj); });
+            YEvent.Capture(map,EventsList.onEndGeoRSS, function(eventObj) { doEnd(eventObj); });
+
+            map.addOverlay(new YGeoRSS(&#39;http://&lt;INSERT GEOSERVER URL HERE&gt;/geoserver/wms/reflect?layers=states&amp;format=rss&#39;));
+        }
+
+    window.onload = StartYMap;
+     &lt;/script&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+           &lt;div id=&quot;ymap&quot; style=&quot;width: 800px; height: 600px; left:2px; top:2px&quot;&gt;&lt;/div&gt;
+     &lt;/body&gt;
+&lt;/html&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Visit <code class="docutils literal notranslate"><span class="pre">ymaps.html</span></code> in your web browser.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The version of the yahoo maps api must be <strong>3.0</strong> You must insert your specific application id, and geoserver base url</p>
+</div>
+</div>
+<div class="section" id="microsoft-virtual-earth">
+<h2>Microsoft Virtual Earth<a class="headerlink" href="#microsoft-virtual-earth" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Non Internet Explorer Users*: GeoRSS overlays are only supported in Internet Explorer, versions greater than 5.5.</p>
+</div>
+<p>How to create a Microsoft Virtual Earth mashup with a GeoRSS overlay produced by GeoServer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To access a GeoRSS feed from Microsoft Virtual Earth the file (ve.html) must be accessed from a Web Server, IE. It will not work if run from local disk.</p>
+</div>
+<ol class="arabic">
+<li><p>Create an html file called <code class="docutils literal notranslate"><span class="pre">ve.html</span></code>.  <strong>Note</strong>: You must insert your specific maps api key, and geoserver base url:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;http://dev.virtualearth.net/mapcontrol/v4/mapcontrol.js&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">script</span><span class="o">&gt;</span>
+     <span class="n">var</span> <span class="nb">map</span><span class="p">;</span>
+
+     <span class="n">function</span> <span class="n">OnPageLoad</span><span class="p">()</span>
+     <span class="p">{</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="n">new</span> <span class="n">VEMap</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">);</span>
+        <span class="nb">map</span><span class="o">.</span><span class="n">LoadMap</span><span class="p">();</span>
+
+        <span class="n">var</span> <span class="n">veLayerSpec</span> <span class="o">=</span> <span class="n">new</span> <span class="n">VELayerSpecification</span><span class="p">();</span>
+        <span class="n">veLayerSpec</span><span class="o">.</span><span class="n">Type</span> <span class="o">=</span> <span class="n">VELayerType</span><span class="o">.</span><span class="n">GeoRSS</span><span class="p">;</span>
+        <span class="n">veLayerSpec</span><span class="o">.</span><span class="n">ID</span> <span class="o">=</span> <span class="s1">&#39;Hazards&#39;</span><span class="p">;</span>
+    <span class="n">veLayerSpec</span><span class="o">.</span><span class="n">LayerSource</span> <span class="o">=</span> <span class="s1">&#39;http://&lt;INSERT GEOSERVER URL HERE&gt;/geoserver/wms/reflect?layers=states&amp;format=rss&#39;</span><span class="p">;</span>
+    <span class="n">veLayerSpec</span><span class="o">.</span><span class="n">Method</span> <span class="o">=</span> <span class="s1">&#39;get&#39;</span><span class="p">;</span>
+    <span class="nb">map</span><span class="o">.</span><span class="n">AddLayer</span><span class="p">(</span><span class="n">veLayerSpec</span><span class="p">);</span>
+    <span class="p">}</span>
+   <span class="o">&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+ <span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span>
+ <span class="o">&lt;</span><span class="n">body</span> <span class="n">onload</span><span class="o">=</span><span class="s2">&quot;OnPageLoad();&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;map&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;position:relative;width:800px;height:600px;&quot;</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+
+<span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Visit <code class="docutils literal notranslate"><span class="pre">ve.html</span></code> in your web browser. You should see the following:</p></li>
+</ol>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/ve.png" src="../../_images/ve.png" />
+<p class="caption"><span class="caption-text"><em>Virtual Earth</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../freemarker.html" title="previous chapter">Freemarker Templates</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../GetFeatureInfo/index.html" title="next chapter">GetFeatureInfo Templates</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GeoRSS</a><ul>
+<li><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li><a class="reference internal" href="#templating">Templating</a></li>
+<li><a class="reference internal" href="#ajax-map-mashups">Ajax Map Mashups</a></li>
+<li><a class="reference internal" href="#google-maps">Google Maps</a></li>
+<li><a class="reference internal" href="#yahoo-maps">Yahoo Maps</a></li>
+<li><a class="reference internal" href="#microsoft-virtual-earth">Microsoft Virtual Earth</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../freemarker.html" title="previous chapter">Freemarker Templates</a></li>
+            <li>Next: <a href="../GetFeatureInfo/index.html" title="next chapter">GetFeatureInfo Templates</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/georss/georss.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

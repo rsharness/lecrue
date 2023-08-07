@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Uploading a new image mosaic &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Uploading an app-schema mapping file" href="appschema.html" />
+    <link rel="prev" title="Stores" href="stores.html" /> 
+  </head><body class="rest/imagemosaic">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">REST</a> &raquo;</li>
+    <li>Uploading a new image mosaic</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="appschema.html" title="Uploading an app-schema mapping file" accesskey="N">Next</a></li>
+  <li>
+    <a href="stores.html" title="Stores" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="uploading-a-new-image-mosaic">
+<span id="rest-imagemosaic"></span><h1>Uploading a new image mosaic<a class="headerlink" href="#uploading-a-new-image-mosaic" title="Permalink to this headline">¶</a></h1>
+<p><strong>Upload a ZIP file containing a mosaic definition and granule(s)</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPUT</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type:application/zip&quot;</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">binary</span> <span class="nd">@polyphemus</span><span class="o">.</span><span class="n">zip</span>
+   <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">topp</span><span class="o">/</span><span class="n">coveragestores</span><span class="o">/</span><span class="n">polyphemus</span><span class="o">/</span><span class="n">file</span><span class="o">.</span><span class="n">imagemosaic</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">200</span> <span class="n">OK</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="updating-an-image-mosaic-contents">
+<h1>Updating an image mosaic contents<a class="headerlink" href="#updating-an-image-mosaic-contents" title="Permalink to this headline">¶</a></h1>
+<p><strong>Harvest (or reharvest) a single file into the mosaic and update the mosaic index</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/plain&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="s2">&quot;file:///path/to/the/file/polyphemus_20130302.nc&quot;</span>
+   <span class="s2">&quot;http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/poly-incremental/external.imagemosaic&quot;</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+<p><strong>Harvest (or reharvest) a whole directory into the mosaic and update the mosaic index</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/plain&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="s2">&quot;file:///path/to/the/mosaic/folder&quot;</span>
+   <span class="s2">&quot;http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/poly-incremental/external.imagemosaic&quot;</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="listing-image-mosaic-details">
+<h1>Listing image mosaic details<a class="headerlink" href="#listing-image-mosaic-details" title="Permalink to this headline">¶</a></h1>
+<p><strong>Retrieve the image mosaic index structure</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XGET</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index.xml&quot;</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>   <span class="nt">&lt;Schema&gt;</span>
+  <span class="nt">&lt;attributes&gt;</span>
+    <span class="nt">&lt;Attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>the_geom<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
+      <span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
+      <span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>org.locationtech.jts.geom.Polygon<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/Attribute&gt;</span>
+    <span class="nt">&lt;Attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>location<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
+      <span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
+      <span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>java.lang.String<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/Attribute&gt;</span>
+    <span class="nt">&lt;Attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>imageindex<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
+      <span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
+      <span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>java.lang.Integer<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/Attribute&gt;</span>
+    <span class="nt">&lt;Attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>time<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
+      <span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
+      <span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>java.sql.Timestamp<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/Attribute&gt;</span>
+    <span class="nt">&lt;Attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>elevation<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
+      <span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
+      <span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>java.lang.Double<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/Attribute&gt;</span>
+    <span class="nt">&lt;Attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>fileDate<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
+      <span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
+      <span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>java.sql.Timestamp<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/Attribute&gt;</span>
+    <span class="nt">&lt;Attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>updated<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;minOccurs&gt;</span>0<span class="nt">&lt;/minOccurs&gt;</span>
+      <span class="nt">&lt;maxOccurs&gt;</span>1<span class="nt">&lt;/maxOccurs&gt;</span>
+      <span class="nt">&lt;nillable&gt;</span>true<span class="nt">&lt;/nillable&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>java.sql.Timestamp<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/Attribute&gt;</span>
+  <span class="nt">&lt;/attributes&gt;</span>
+  <span class="nt">&lt;atom:link</span> <span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span> <span class="na">rel=</span><span class="s">&quot;alternate&quot;</span> <span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml&quot;</span> <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/Schema&gt;</span>
+</pre></div>
+</div>
+<p><strong>Retrieve the existing granule information</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XGET</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml?limit=2&quot;</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wfs:FeatureCollection</span> <span class="na">xmlns:gf=</span><span class="s">&quot;http://www.geoserver.org/rest/granules&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:boundedBy&gt;</span>
+    <span class="nt">&lt;gml:Box</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:coord&gt;</span>
+        <span class="nt">&lt;gml:X&gt;</span>5.0<span class="nt">&lt;/gml:X&gt;</span>
+        <span class="nt">&lt;gml:Y&gt;</span>45.0<span class="nt">&lt;/gml:Y&gt;</span>
+      <span class="nt">&lt;/gml:coord&gt;</span>
+      <span class="nt">&lt;gml:coord&gt;</span>
+        <span class="nt">&lt;gml:X&gt;</span>14.875<span class="nt">&lt;/gml:X&gt;</span>
+        <span class="nt">&lt;gml:Y&gt;</span>50.9375<span class="nt">&lt;/gml:Y&gt;</span>
+      <span class="nt">&lt;/gml:coord&gt;</span>
+    <span class="nt">&lt;/gml:Box&gt;</span>
+  <span class="nt">&lt;/gml:boundedBy&gt;</span>
+  <span class="nt">&lt;gml:featureMember&gt;</span>
+    <span class="nt">&lt;gf:NO2</span> <span class="na">fid=</span><span class="s">&quot;NO2.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gf:the_geom&gt;</span>
+        <span class="nt">&lt;gml:Polygon&gt;</span>
+          <span class="nt">&lt;gml:outerBoundaryIs&gt;</span>
+            <span class="nt">&lt;gml:LinearRing&gt;</span>
+              <span class="nt">&lt;gml:coordinates&gt;</span>5.0,45.0 5.0,50.9375 14.875,50.9375 14.875,45.0 5.0,45.0<span class="nt">&lt;/gml:coordinates&gt;</span>
+            <span class="nt">&lt;/gml:LinearRing&gt;</span>
+          <span class="nt">&lt;/gml:outerBoundaryIs&gt;</span>
+        <span class="nt">&lt;/gml:Polygon&gt;</span>
+      <span class="nt">&lt;/gf:the_geom&gt;</span>
+      <span class="nt">&lt;gf:location&gt;</span>polyphemus_20130301.nc<span class="nt">&lt;/gf:location&gt;</span>
+      <span class="nt">&lt;gf:imageindex&gt;</span>336<span class="nt">&lt;/gf:imageindex&gt;</span>
+      <span class="nt">&lt;gf:time&gt;</span>2013-03-01T00:00:00Z<span class="nt">&lt;/gf:time&gt;</span>
+      <span class="nt">&lt;gf:elevation&gt;</span>10.0<span class="nt">&lt;/gf:elevation&gt;</span>
+      <span class="nt">&lt;gf:fileDate&gt;</span>2013-03-01T00:00:00Z<span class="nt">&lt;/gf:fileDate&gt;</span>
+      <span class="nt">&lt;gf:updated&gt;</span>2013-04-11T10:54:31Z<span class="nt">&lt;/gf:updated&gt;</span>
+    <span class="nt">&lt;/gf:NO2&gt;</span>
+  <span class="nt">&lt;/gml:featureMember&gt;</span>
+  <span class="nt">&lt;gml:featureMember&gt;</span>
+    <span class="nt">&lt;gf:NO2</span> <span class="na">fid=</span><span class="s">&quot;NO2.2&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gf:the_geom&gt;</span>
+        <span class="nt">&lt;gml:Polygon&gt;</span>
+          <span class="nt">&lt;gml:outerBoundaryIs&gt;</span>
+            <span class="nt">&lt;gml:LinearRing&gt;</span>
+              <span class="nt">&lt;gml:coordinates&gt;</span>5.0,45.0 5.0,50.9375 14.875,50.9375 14.875,45.0 5.0,45.0<span class="nt">&lt;/gml:coordinates&gt;</span>
+            <span class="nt">&lt;/gml:LinearRing&gt;</span>
+          <span class="nt">&lt;/gml:outerBoundaryIs&gt;</span>
+        <span class="nt">&lt;/gml:Polygon&gt;</span>
+      <span class="nt">&lt;/gf:the_geom&gt;</span>
+      <span class="nt">&lt;gf:location&gt;</span>polyphemus_20130301.nc<span class="nt">&lt;/gf:location&gt;</span>
+      <span class="nt">&lt;gf:imageindex&gt;</span>337<span class="nt">&lt;/gf:imageindex&gt;</span>
+      <span class="nt">&lt;gf:time&gt;</span>2013-03-01T00:00:00Z<span class="nt">&lt;/gf:time&gt;</span>
+      <span class="nt">&lt;gf:elevation&gt;</span>35.0<span class="nt">&lt;/gf:elevation&gt;</span>
+      <span class="nt">&lt;gf:fileDate&gt;</span>2013-03-01T00:00:00Z<span class="nt">&lt;/gf:fileDate&gt;</span>
+      <span class="nt">&lt;gf:updated&gt;</span>2013-04-11T10:54:31Z<span class="nt">&lt;/gf:updated&gt;</span>
+    <span class="nt">&lt;/gf:NO2&gt;</span>
+  <span class="nt">&lt;/gml:featureMember&gt;</span>
+<span class="nt">&lt;/wfs:FeatureCollection&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="removing-image-mosaic-granules">
+<h1>Removing image mosaic granules<a class="headerlink" href="#removing-image-mosaic-granules" title="Permalink to this headline">¶</a></h1>
+<p><strong>Remove all the granules originating from a particular file</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XDELETE</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml?filter=location=&#39;polyphemus_20130301.nc&#39;&quot;</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">200</span> <span class="n">OK</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="uploading-an-empty-mosaic">
+<h1>Uploading an empty mosaic<a class="headerlink" href="#uploading-an-empty-mosaic" title="Permalink to this headline">¶</a></h1>
+<p><strong>Upload an archive with the definition of an mosaic, but with no granules</strong></p>
+<p>Given a <a class="reference download internal" download="" href="../_downloads/0cf1e7b7cc947758f51d38a9a338d0e4/empty.zip"><code class="xref download docutils literal notranslate"><span class="pre">empty.zip</span></code></a> file containing:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">datastore.properties</span></code> (PostGIS connection parameters)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">indexer.xml</span></code> (Mosaic indexer; note the <code class="docutils literal notranslate"><span class="pre">CanBeEmpty=true</span></code> parameter)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polyphemus-test.xml</span></code> (Auxiliary file used by the NetCDF reader to parse schemas and tables)</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure to update the <code class="docutils literal notranslate"><span class="pre">datastore.properties</span></code> file with your connection parameters and refresh the ZIP before uploading it.</p>
+</div>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -XPUT -H &quot;Content-type:application/zip&quot; --data-binary @empty.zip
+   http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/file.imagemosaic?configure=none
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">configure=none</span></code> parameter allows for future configuration after harvesting.</p>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">200</span> <span class="n">OK</span>
+</pre></div>
+</div>
+<p><strong>Configure a coverage on the mosaic</strong></p>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">coverageconfig.xml</span></code>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;coverage&gt;</span>
+  <span class="nt">&lt;nativeCoverageName&gt;</span>NO2<span class="nt">&lt;/nativeCoverageName&gt;</span>
+  <span class="nt">&lt;name&gt;</span>NO2<span class="nt">&lt;/name&gt;</span>
+<span class="nt">&lt;/coverage&gt;</span>
+</pre></div>
+</div>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/xml&quot;</span> <span class="o">-</span><span class="n">d</span> <span class="o">@</span><span class="s2">&quot;/path/to/coverageconfig.xml&quot;</span> <span class="s2">&quot;http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/coverages&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When specifying only the coverage name, the coverage will be automatically configured.</p>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="stores.html" title="previous chapter">Stores</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="appschema.html" title="next chapter">Uploading an app-schema mapping file</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Uploading a new image mosaic</a></li>
+<li><a class="reference internal" href="#updating-an-image-mosaic-contents">Updating an image mosaic contents</a></li>
+<li><a class="reference internal" href="#listing-image-mosaic-details">Listing image mosaic details</a></li>
+<li><a class="reference internal" href="#removing-image-mosaic-granules">Removing image mosaic granules</a></li>
+<li><a class="reference internal" href="#uploading-an-empty-mosaic">Uploading an empty mosaic</a></li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="stores.html" title="previous chapter">Stores</a></li>
+            <li>Next: <a href="appschema.html" title="next chapter">Uploading an app-schema mapping file</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/rest/imagemosaic.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Geometry transformations in SLD &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Rendering Transformations" href="rendering-transform.html" />
+    <link rel="prev" title="SLD Extensions in GeoServer" href="index.html" /> 
+  </head><body class="styling/sld/extensions/geometry-transformations">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Extensions in GeoServer</a> &raquo;</li>
+    <li>Geometry transformations in SLD</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="rendering-transform.html" title="Rendering Transformations" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="SLD Extensions in GeoServer" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="geometry-transformations-in-sld">
+<span id="geometry-transformations"></span><h1>Geometry transformations in SLD<a class="headerlink" href="#geometry-transformations-in-sld" title="Permalink to this headline">¶</a></h1>
+<p>SLD symbolizers may contain an optional <code class="docutils literal notranslate"><span class="pre">&lt;Geometry&gt;</span></code> element, which allows specifying which geometry attribute is to be rendered.
+In the common case of a featuretype with a single geometry attribute this element is usually omitted,
+but it is useful when a featuretype has multiple geometry-valued attributes.</p>
+<p>SLD 1.0 requires the <code class="docutils literal notranslate"><span class="pre">&lt;Geometry&gt;</span></code> content to be a <code class="docutils literal notranslate"><span class="pre">&lt;ogc:PropertyName&gt;</span></code>.
+GeoServer extends this to allow a general SLD expression to be used.
+The expression can contain  filter functions that manipulate geometries by transforming them into something different.
+This facility is called SLD <em>geometry transformations</em>.</p>
+<p>GeoServer provides a number of filter functions that can transform geometry.
+A full list is available in the <a class="reference internal" href="../../../filter/function_reference.html#filter-function-reference"><span class="std std-ref">Filter Function Reference</span></a>.
+They can be used to do things such as extracting line vertices or endpoints,
+offsetting polygons, or buffering geometries.</p>
+<p>Geometry transformations are computed in the geometry’s original coordinate reference system, before any reprojection and rescaling to the output map is performed.
+For this reason, transformation parameters must be expressed in the units of the geometry CRS.
+This must be taken into account when using geometry transformations at different screen scales,
+since the parameters will not change with scale.</p>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Let’s look at some examples.</p>
+<div class="section" id="extracting-vertices">
+<h3>Extracting vertices<a class="headerlink" href="#extracting-vertices" title="Permalink to this headline">¶</a></h3>
+<p>Here is an example that allows one to extract all the vertices of a geometry, and make them visible in a map, using the <code class="docutils literal notranslate"><span class="pre">vertices</span></code> function:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Geometry&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;vertices&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 4 </span>          <span class="nt">&lt;ogc:PropertyName&gt;</span>the_geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno"> 5 </span>       <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno"> 6 </span>     <span class="nt">&lt;/Geometry&gt;</span>
+<span class="lineno"> 7 </span>     <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno"> 8 </span>       <span class="nt">&lt;Mark&gt;</span>
+<span class="lineno"> 9 </span>         <span class="nt">&lt;WellKnownName&gt;</span>square<span class="nt">&lt;/WellKnownName&gt;</span>
+<span class="lineno">10 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">11 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FF0000<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">12 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">13 </span>       <span class="nt">&lt;/Mark&gt;</span>
+<span class="lineno">14 </span>       <span class="nt">&lt;Size&gt;</span>6<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">15 </span>     <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">16 </span>  <span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p><a class="reference download internal" download="" href="../../../_downloads/178c263051e354f9b23416fb2f6fd764/vertices.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Vertices&quot;</span> <span class="pre">SLD</span></code></a></p>
+<p>Applied to the sample <cite>tasmania_roads</cite> layer this will result in:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../../_images/vertices.png" src="../../../_images/vertices.png" />
+<p class="caption"><span class="caption-text"><em>Extracting and showing the vertices out of a geometry</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="start-and-end-point">
+<h3>Start and end point<a class="headerlink" href="#start-and-end-point" title="Permalink to this headline">¶</a></h3>
+<p>The <cite>startPoint</cite> and <cite>endPoint</cite> functions can be used to extract the start and end point of a line.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno"> 2 </span>  <span class="nt">&lt;Geometry&gt;</span>
+<span class="lineno"> 3 </span>    <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;startPoint&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 4 </span>      <span class="nt">&lt;ogc:PropertyName&gt;</span>the_geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno"> 5 </span>    <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno"> 6 </span>  <span class="nt">&lt;/Geometry&gt;</span>
+<span class="lineno"> 7 </span>  <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno"> 8 </span>    <span class="nt">&lt;Mark&gt;</span>
+<span class="lineno"> 9 </span>      <span class="nt">&lt;WellKnownName&gt;</span>square<span class="nt">&lt;/WellKnownName&gt;</span>
+<span class="lineno">10 </span>      <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno">11 </span>        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>0x00FF00<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">12 </span>        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>1.5<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">13 </span>      <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">14 </span>    <span class="nt">&lt;/Mark&gt;</span>
+<span class="lineno">15 </span>    <span class="nt">&lt;Size&gt;</span>8<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">16 </span>  <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">17 </span> <span class="nt">&lt;/PointSymbolizer&gt;</span>
+<span class="lineno">18 </span> <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno">19 </span>   <span class="nt">&lt;Geometry&gt;</span>
+<span class="lineno">20 </span>     <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;endPoint&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">21 </span>       <span class="nt">&lt;ogc:PropertyName&gt;</span>the_geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">22 </span>     <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">23 </span>   <span class="nt">&lt;/Geometry&gt;</span>
+<span class="lineno">24 </span>   <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno">25 </span>     <span class="nt">&lt;Mark&gt;</span>
+<span class="lineno">26 </span>       <span class="nt">&lt;WellKnownName&gt;</span>circle<span class="nt">&lt;/WellKnownName&gt;</span>
+<span class="lineno">27 </span>       <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">28 </span>          <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>0xFF0000<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">29 </span>       <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">30 </span>     <span class="nt">&lt;/Mark&gt;</span>
+<span class="lineno">31 </span>     <span class="nt">&lt;Size&gt;</span>4<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">32 </span>   <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">33 </span> <span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p><a class="reference download internal" download="" href="../../../_downloads/6b2b1a6ce19698d4322c8f157c7c33de/startend.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;StartEnd&quot;</span> <span class="pre">SLD</span></code></a></p>
+<p>Applied to the sample <cite>tasmania_roads</cite> layer this will result in:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../../_images/startend.png" src="../../../_images/startend.png" />
+<p class="caption"><span class="caption-text"><em>Extracting start and end point of a line</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="drop-shadow">
+<h3>Drop shadow<a class="headerlink" href="#drop-shadow" title="Permalink to this headline">¶</a></h3>
+<p>The <cite>offset</cite> function can be used to create drop shadow effects below polygons.
+Notice that the offset values reflect the fact that the data used in the example is in a geographic coordinate system.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>  <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 2 </span>    <span class="nt">&lt;Geometry&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;offset&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 4 </span>          <span class="nt">&lt;ogc:PropertyName&gt;</span>the_geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno"> 5 </span>          <span class="nt">&lt;ogc:Literal&gt;</span>0.00004<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno"> 6 </span>          <span class="nt">&lt;ogc:Literal&gt;</span>-0.00004<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno"> 7 </span>       <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno"> 8 </span>    <span class="nt">&lt;/Geometry&gt;</span>
+<span class="lineno"> 9 </span>    <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">10 </span>      <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#555555<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">11 </span>    <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">12 </span>  <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p><a class="reference download internal" download="" href="../../../_downloads/62a878b77fcd1fba0be228d049cdba90/shadow.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Shadow&quot;</span> <span class="pre">SLD</span></code></a></p>
+<p>Applied to the sample <cite>tasmania_roads</cite> layer this will result in:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../../_images/shadow.png" src="../../../_images/shadow.png" />
+<p class="caption"><span class="caption-text"><em>Dropping building shadows</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="performance-tips">
+<h2>Performance tips<a class="headerlink" href="#performance-tips" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer’s filter functions contain a number of set-related or constructive geometric functions,
+such as <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, <code class="docutils literal notranslate"><span class="pre">intersection</span></code>, <code class="docutils literal notranslate"><span class="pre">difference</span></code> and others.
+These can be used as geometry transformations, but they be can quite heavy in terms of CPU consumption so it is advisable to use them with care.
+One strategy is to activate them only at higher zoom levels, so that fewer features are processed.</p>
+<p>Buffering can often be visually approximated by using very large strokes together with round line joins and line caps.
+This avoids incurring the performance cost of a true geometric buffer transformation.</p>
+</div>
+<div class="section" id="adding-new-transformations">
+<h2>Adding new transformations<a class="headerlink" href="#adding-new-transformations" title="Permalink to this headline">¶</a></h2>
+<p>Additional filter functions can be developed in Java and then deployed in a JAR file as a GeoServer plugin.
+A guide is not available at this time, but see the GeoTools <code class="docutils literal notranslate"><span class="pre">main</span></code> module for examples.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">SLD Extensions in GeoServer</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="rendering-transform.html" title="next chapter">Rendering Transformations</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Geometry transformations in SLD</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#extracting-vertices">Extracting vertices</a></li>
+<li><a class="reference internal" href="#start-and-end-point">Start and end point</a></li>
+<li><a class="reference internal" href="#drop-shadow">Drop shadow</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performance-tips">Performance tips</a></li>
+<li><a class="reference internal" href="#adding-new-transformations">Adding new transformations</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">SLD Extensions in GeoServer</a></li>
+            <li>Next: <a href="rendering-transform.html" title="next chapter">Rendering Transformations</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/extensions/geometry-transformations.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

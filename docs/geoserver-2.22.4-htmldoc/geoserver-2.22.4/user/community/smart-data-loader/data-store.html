@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Data Loader &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SpatialJSON WFS Output Format Extension" href="../spatialjson/index.html" />
+    <link rel="prev" title="Installing the Smart Data Loader extension" href="install.html" /> 
+  </head><body class="community/smart-data-loader/data-store">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Smart Data Loader Extension</a> &raquo;</li>
+    <li>Smart Data Loader</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../spatialjson/index.html" title="SpatialJSON WFS Output Format Extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="install.html" title="Installing the Smart Data Loader extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="smart-data-loader">
+<span id="smart-data-loader-data-store"></span><h1>Smart Data Loader<a class="headerlink" href="#smart-data-loader" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="data-store">
+<h2>Data Store<a class="headerlink" href="#data-store" title="Permalink to this headline">¶</a></h2>
+<p>In addition to the parameters common to each <code class="docutils literal notranslate"><span class="pre">DataStore</span></code> configuration such as <code class="docutils literal notranslate"><span class="pre">workspace</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code>, the page shows the following connection parameters in the dedicated section:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">store</span> <span class="pre">name</span></code>: the name of the PostGIS <code class="docutils literal notranslate"><span class="pre">DataStore</span></code> already created under the same workspace. It will be used to access the database and build xsd and mappings file based on the database metadata.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Root</span> <span class="pre">entity</span></code>: the name of the DB table to be used as the root FeatureType to build the xsd and the mapping file.</p></li>
+</ul>
+<p>Once selected the root entity a diagram of the entities available will appear. Uncheck the attributes that should not be included in the XSD and the mapping file.</p>
+</div>
+<div class="section" id="meteo-stations-example">
+<h2>Meteo Stations example<a class="headerlink" href="#meteo-stations-example" title="Permalink to this headline">¶</a></h2>
+<p>This section provides an example of configuring the <code class="docutils literal notranslate"><span class="pre">DataStore</span></code> with weather station information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This example is intended to be illustrative of a general approach, and does not reflect a formally defined schema or information model. Also, more complicated scenarios may require significantly more work.</p>
+</div>
+<p>A diagram of the entities involved is shown below:</p>
+<div class="figure align-default" id="id1">
+<img alt="../../_images/stations-diagram.png" src="../../_images/stations-diagram.png" />
+<p class="caption"><span class="caption-text">Entities diagram</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>As shown, the dataset consists of:</p>
+<ul class="simple">
+<li><p>A One to Many relationship between the <code class="docutils literal notranslate"><span class="pre">meteo_stations</span></code> and <code class="docutils literal notranslate"><span class="pre">meteo_observations</span></code> tables.</p></li>
+<li><p>A Many to Many relationship between the <code class="docutils literal notranslate"><span class="pre">meteo_stations</span></code> and <code class="docutils literal notranslate"><span class="pre">meteo_maintainers</span></code> tables, mapped by the relation table <code class="docutils literal notranslate"><span class="pre">meteo_stations_maintainers</span></code>.</p></li>
+<li><p>A Many to One relationship between the <code class="docutils literal notranslate"><span class="pre">meteo_observations</span></code> and the <code class="docutils literal notranslate"><span class="pre">meteo_parameters</span></code> tables.</p></li>
+</ul>
+<p>Assuming a PostGIS datastore named meteos-simple under the st workspace, by opening the Smart Data Loader page we will have to select the desired workspace and the postgis datastore belonging to the selected workspace, in this case the meteos-postgis one:</p>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/store-page.png" src="../../_images/store-page.png" />
+<p class="caption"><span class="caption-text">Smart Data Loader configuration page</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>After having selected the root entity as meteo-stations, a schema, which will be used to generate the XSD and mappings file, will appear. Each attribute/entity can be unchecked to avoid it being included in the generated mappings.</p>
+<p>..figure:: images/store-relations.png</p>
+<blockquote>
+<div><p>Smart Data Loader configuration page - entities’ tree</p>
+</div></blockquote>
+<p>After pressing the save button, the files will be generated automatically in the store data-dir directory under <code class="docutils literal notranslate"><span class="pre">app-schema-mappings</span></code> directory.</p>
+<p>The generated mappings file for this example are explained below.</p>
+<p>GML schema definition:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;xs:schema xmlns:gml=&quot;http://www.opengis.net/gml/3.2&quot; xmlns:st=&quot;http://www.stations.org/1.0&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; attributeFormDefault=&quot;unqualified&quot; elementFormDefault=&quot;qualified&quot; targetNamespace=&quot;http://www.stations.org/1.0&quot; version=&quot;1.0&quot;&gt;
+ &lt;xs:import namespace=&quot;http://www.opengis.net/gml/3.2&quot; schemaLocation=&quot;http://schemas.opengis.net/gml/3.2.1/gml.xsd&quot;/&gt;
+ &lt;xs:complexType name=&quot;MeteoStationsType&quot;&gt;
+   &lt;xs:complexContent&gt;
+     &lt;xs:extension base=&quot;gml:AbstractFeatureType&quot;&gt;
+       &lt;xs:sequence&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;id&quot; type=&quot;xs:int&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;code&quot; type=&quot;xs:string&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;common_name&quot; type=&quot;xs:string&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;position&quot; type=&quot;gml:GeometryPropertyType&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;meteoObservations&quot; type=&quot;st:MeteoObservationsPropertyType&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;meteoStationsMaintainers&quot; type=&quot;st:MeteoStationsMaintainersPropertyType&quot;/&gt;
+       &lt;/xs:sequence&gt;
+     &lt;/xs:extension&gt;
+   &lt;/xs:complexContent&gt;
+ &lt;/xs:complexType&gt;
+ &lt;xs:element name=&quot;MeteoStationsFeature&quot; substitutionGroup=&quot;gml:AbstractFeature&quot; type=&quot;st:MeteoStationsType&quot;/&gt;
+ &lt;xs:complexType name=&quot;MeteoObservationsType&quot;&gt;
+   &lt;xs:complexContent&gt;
+     &lt;xs:extension base=&quot;gml:AbstractFeatureType&quot;&gt;
+       &lt;xs:sequence&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;id&quot; type=&quot;xs:int&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;time&quot; type=&quot;xs:dateTime&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;value&quot; type=&quot;xs:double&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;meteoParameters&quot; type=&quot;st:MeteoParametersPropertyType&quot;/&gt;
+       &lt;/xs:sequence&gt;
+     &lt;/xs:extension&gt;
+   &lt;/xs:complexContent&gt;
+ &lt;/xs:complexType&gt;
+ &lt;xs:element name=&quot;MeteoObservationsFeature&quot; substitutionGroup=&quot;gml:AbstractFeature&quot; type=&quot;st:MeteoObservationsType&quot;/&gt;
+ &lt;xs:complexType name=&quot;MeteoObservationsPropertyType&quot;&gt;
+   &lt;xs:sequence minOccurs=&quot;0&quot;&gt;
+     &lt;xs:element ref=&quot;st:MeteoObservationsFeature&quot;/&gt;
+   &lt;/xs:sequence&gt;
+   &lt;xs:attributeGroup ref=&quot;gml:AssociationAttributeGroup&quot;/&gt;
+ &lt;/xs:complexType&gt;
+ &lt;xs:complexType name=&quot;MeteoParametersType&quot;&gt;
+   &lt;xs:complexContent&gt;
+     &lt;xs:extension base=&quot;gml:AbstractFeatureType&quot;&gt;
+       &lt;xs:sequence&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;id&quot; type=&quot;xs:int&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;param_name&quot; type=&quot;xs:string&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;param_unit&quot; type=&quot;xs:string&quot;/&gt;
+       &lt;/xs:sequence&gt;
+     &lt;/xs:extension&gt;
+   &lt;/xs:complexContent&gt;
+ &lt;/xs:complexType&gt;
+ &lt;xs:element name=&quot;MeteoParametersFeature&quot; substitutionGroup=&quot;gml:AbstractFeature&quot; type=&quot;st:MeteoParametersType&quot;/&gt;
+ &lt;xs:complexType name=&quot;MeteoParametersPropertyType&quot;&gt;
+   &lt;xs:sequence minOccurs=&quot;0&quot;&gt;
+     &lt;xs:element ref=&quot;st:MeteoParametersFeature&quot;/&gt;
+   &lt;/xs:sequence&gt;
+   &lt;xs:attributeGroup ref=&quot;gml:AssociationAttributeGroup&quot;/&gt;
+ &lt;/xs:complexType&gt;
+ &lt;xs:complexType name=&quot;MeteoStationsMaintainersType&quot;&gt;
+   &lt;xs:complexContent&gt;
+     &lt;xs:extension base=&quot;gml:AbstractFeatureType&quot;&gt;
+       &lt;xs:sequence&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;id&quot; type=&quot;xs:int&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;meteoMaintainers&quot; type=&quot;st:MeteoMaintainersPropertyType&quot;/&gt;
+       &lt;/xs:sequence&gt;
+     &lt;/xs:extension&gt;
+   &lt;/xs:complexContent&gt;
+ &lt;/xs:complexType&gt;
+ &lt;xs:element name=&quot;MeteoStationsMaintainersFeature&quot; substitutionGroup=&quot;gml:AbstractFeature&quot; type=&quot;st:MeteoStationsMaintainersType&quot;/&gt;
+ &lt;xs:complexType name=&quot;MeteoStationsMaintainersPropertyType&quot;&gt;
+   &lt;xs:sequence minOccurs=&quot;0&quot;&gt;
+     &lt;xs:element ref=&quot;st:MeteoStationsMaintainersFeature&quot;/&gt;
+   &lt;/xs:sequence&gt;
+   &lt;xs:attributeGroup ref=&quot;gml:AssociationAttributeGroup&quot;/&gt;
+ &lt;/xs:complexType&gt;
+ &lt;xs:complexType name=&quot;MeteoMaintainersType&quot;&gt;
+   &lt;xs:complexContent&gt;
+     &lt;xs:extension base=&quot;gml:AbstractFeatureType&quot;&gt;
+       &lt;xs:sequence&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;id&quot; type=&quot;xs:int&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;name&quot; type=&quot;xs:string&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;surname&quot; type=&quot;xs:string&quot;/&gt;
+         &lt;xs:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;company&quot; type=&quot;xs:string&quot;/&gt;
+       &lt;/xs:sequence&gt;
+     &lt;/xs:extension&gt;
+   &lt;/xs:complexContent&gt;
+ &lt;/xs:complexType&gt;
+ &lt;xs:element name=&quot;MeteoMaintainersFeature&quot; substitutionGroup=&quot;gml:AbstractFeature&quot; type=&quot;st:MeteoMaintainersType&quot;/&gt;
+ &lt;xs:complexType name=&quot;MeteoMaintainersPropertyType&quot;&gt;
+   &lt;xs:sequence minOccurs=&quot;0&quot;&gt;
+     &lt;xs:element ref=&quot;st:MeteoMaintainersFeature&quot;/&gt;
+   &lt;/xs:sequence&gt;
+   &lt;xs:attributeGroup ref=&quot;gml:AssociationAttributeGroup&quot;/&gt;
+ &lt;/xs:complexType&gt;
+&lt;/xs:schema&gt;
+</pre></div>
+</div>
+<p>App-Schema mappings file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;ns3:AppSchemaDataAccess xmlns:ns2=&quot;http://www.opengis.net/ogc&quot; xmlns:ns3=&quot;http://www.geotools.org/app-schema&quot;&gt;
+ &lt;namespaces&gt;
+   &lt;Namespace&gt;
+     &lt;prefix&gt;gml&lt;/prefix&gt;
+     &lt;uri&gt;http://www.opengis.net/gml/3.2&lt;/uri&gt;
+   &lt;/Namespace&gt;
+   &lt;Namespace&gt;
+     &lt;prefix&gt;st&lt;/prefix&gt;
+     &lt;uri&gt;http://www.stations.org/1.0&lt;/uri&gt;
+   &lt;/Namespace&gt;
+ &lt;/namespaces&gt;
+ &lt;includedTypes/&gt;
+ &lt;targetTypes&gt;
+   &lt;FeatureType&gt;
+     &lt;schemaUri&gt;./meteo_stations-gml.xsd&lt;/schemaUri&gt;
+   &lt;/FeatureType&gt;
+ &lt;/targetTypes&gt;
+ &lt;typeMappings&gt;
+   &lt;FeatureTypeMapping&gt;
+     &lt;sourceDataStore&gt;smartappschematest&lt;/sourceDataStore&gt;
+     &lt;sourceType&gt;meteo_stations&lt;/sourceType&gt;
+     &lt;targetElement&gt;st:MeteoStationsFeature&lt;/targetElement&gt;
+     &lt;attributeMappings&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:MeteoStationsFeature&lt;/targetAttribute&gt;
+         &lt;idExpression&gt;
+           &lt;OCQL&gt;strConcat(&#39;MeteoStationsFeature.&#39;,id)&lt;/OCQL&gt;
+         &lt;/idExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:id&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:code&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;code&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:common_name&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;common_name&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:position&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;position&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;meteoObservations&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;linkField&gt;FEATURE_LINK[1]&lt;/linkField&gt;
+           &lt;linkElement&gt;st:MeteoObservationsFeature&lt;/linkElement&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;meteoStationsMaintainers&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;linkField&gt;FEATURE_LINK[1]&lt;/linkField&gt;
+           &lt;linkElement&gt;st:MeteoStationsMaintainersFeature&lt;/linkElement&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+     &lt;/attributeMappings&gt;
+   &lt;/FeatureTypeMapping&gt;
+   &lt;FeatureTypeMapping&gt;
+     &lt;sourceDataStore&gt;smartappschematest&lt;/sourceDataStore&gt;
+     &lt;sourceType&gt;meteo_observations&lt;/sourceType&gt;
+     &lt;targetElement&gt;st:MeteoObservationsFeature&lt;/targetElement&gt;
+     &lt;attributeMappings&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;FEATURE_LINK[1]&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;station_id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:MeteoObservationsFeature&lt;/targetAttribute&gt;
+         &lt;idExpression&gt;
+           &lt;OCQL&gt;strConcat(&#39;MeteoObservationsFeature.&#39;,id)&lt;/OCQL&gt;
+         &lt;/idExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:id&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:time&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;time&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:value&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;value&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;meteoParameters&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;linkField&gt;FEATURE_LINK[1]&lt;/linkField&gt;
+           &lt;linkElement&gt;st:MeteoParametersFeature&lt;/linkElement&gt;
+           &lt;OCQL&gt;parameter_id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+     &lt;/attributeMappings&gt;
+   &lt;/FeatureTypeMapping&gt;
+   &lt;FeatureTypeMapping&gt;
+     &lt;sourceDataStore&gt;smartappschematest&lt;/sourceDataStore&gt;
+     &lt;sourceType&gt;meteo_parameters&lt;/sourceType&gt;
+     &lt;targetElement&gt;st:MeteoParametersFeature&lt;/targetElement&gt;
+     &lt;attributeMappings&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;FEATURE_LINK[1]&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:MeteoParametersFeature&lt;/targetAttribute&gt;
+         &lt;idExpression&gt;
+           &lt;OCQL&gt;strConcat(&#39;MeteoParametersFeature.&#39;,id)&lt;/OCQL&gt;
+         &lt;/idExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:id&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:param_name&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;param_name&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:param_unit&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;param_unit&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+     &lt;/attributeMappings&gt;
+   &lt;/FeatureTypeMapping&gt;
+   &lt;FeatureTypeMapping&gt;
+     &lt;sourceDataStore&gt;smartappschematest&lt;/sourceDataStore&gt;
+     &lt;sourceType&gt;meteo_stations_maintainers&lt;/sourceType&gt;
+     &lt;targetElement&gt;st:MeteoStationsMaintainersFeature&lt;/targetElement&gt;
+     &lt;attributeMappings&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;FEATURE_LINK[1]&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;station_id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:MeteoStationsMaintainersFeature&lt;/targetAttribute&gt;
+         &lt;idExpression&gt;
+           &lt;OCQL&gt;strConcat(&#39;MeteoStationsMaintainersFeature.&#39;,id)&lt;/OCQL&gt;
+         &lt;/idExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:id&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;meteoMaintainers&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;linkField&gt;FEATURE_LINK[1]&lt;/linkField&gt;
+           &lt;linkElement&gt;st:MeteoMaintainersFeature&lt;/linkElement&gt;
+           &lt;OCQL&gt;maintainer_id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+     &lt;/attributeMappings&gt;
+   &lt;/FeatureTypeMapping&gt;
+   &lt;FeatureTypeMapping&gt;
+     &lt;sourceDataStore&gt;smartappschematest&lt;/sourceDataStore&gt;
+     &lt;sourceType&gt;meteo_maintainers&lt;/sourceType&gt;
+     &lt;targetElement&gt;st:MeteoMaintainersFeature&lt;/targetElement&gt;
+     &lt;attributeMappings&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;FEATURE_LINK[1]&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:MeteoMaintainersFeature&lt;/targetAttribute&gt;
+         &lt;idExpression&gt;
+           &lt;OCQL&gt;strConcat(&#39;MeteoMaintainersFeature.&#39;,id)&lt;/OCQL&gt;
+         &lt;/idExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:id&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;id&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:name&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;name&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:surname&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;surname&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+       &lt;AttributeMapping&gt;
+         &lt;targetAttribute&gt;st:company&lt;/targetAttribute&gt;
+         &lt;sourceExpression&gt;
+           &lt;OCQL&gt;company&lt;/OCQL&gt;
+         &lt;/sourceExpression&gt;
+       &lt;/AttributeMapping&gt;
+     &lt;/attributeMappings&gt;
+   &lt;/FeatureTypeMapping&gt;
+ &lt;/typeMappings&gt;
+ &lt;sourceDataStores&gt;
+   &lt;DataStore&gt;
+     &lt;id&gt;smartappschematest&lt;/id&gt;
+     &lt;parameters&gt;
+       &lt;Parameter&gt;
+         &lt;name&gt;schema&lt;/name&gt;
+         &lt;value&gt;smartappschematest&lt;/value&gt;
+       &lt;/Parameter&gt;
+       &lt;Parameter&gt;
+         &lt;name&gt;database&lt;/name&gt;
+         &lt;value&gt;mock?sslmode=DISABLE&amp;amp;binaryTransferEnable=bytea&lt;/value&gt;
+       &lt;/Parameter&gt;
+       &lt;Parameter&gt;
+         &lt;name&gt;port&lt;/name&gt;
+         &lt;value&gt;5432&lt;/value&gt;
+       &lt;/Parameter&gt;
+       &lt;Parameter&gt;
+         &lt;name&gt;passwd&lt;/name&gt;
+         &lt;value&gt;postgres&lt;/value&gt;
+       &lt;/Parameter&gt;
+       &lt;Parameter&gt;
+         &lt;name&gt;Expose primary keys&lt;/name&gt;
+         &lt;value&gt;true&lt;/value&gt;
+       &lt;/Parameter&gt;
+       &lt;Parameter&gt;
+         &lt;name&gt;dbtype&lt;/name&gt;
+         &lt;value&gt;postgis&lt;/value&gt;
+       &lt;/Parameter&gt;
+       &lt;Parameter&gt;
+         &lt;name&gt;host&lt;/name&gt;
+         &lt;value&gt;localhost&lt;/value&gt;
+       &lt;/Parameter&gt;
+       &lt;Parameter&gt;
+         &lt;name&gt;user&lt;/name&gt;
+         &lt;value&gt;postgres&lt;/value&gt;
+       &lt;/Parameter&gt;
+     &lt;/parameters&gt;
+   &lt;/DataStore&gt;
+ &lt;/sourceDataStores&gt;
+&lt;/ns3:AppSchemaDataAccess&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="customize-smart-data-loader-generated-mappings-and-xsd-definition">
+<h2>Customize smart-data-loader generated mappings and xsd definition<a class="headerlink" href="#customize-smart-data-loader-generated-mappings-and-xsd-definition" title="Permalink to this headline">¶</a></h2>
+<p>The Smart Data Loader does not allow direct modification of the mappings and XSD type definition. However it can be used as a starting point to generate configuration files that can be customized as required.
+This is the suggested workflow for such a use case:</p>
+<ul class="simple">
+<li><p>Create a new smart-data-loader store, select the desired PostGIS store, and then the root entity and save it.</p></li>
+<li><p>Go to the geoserver datadir and identify the Smart Data Loader store folder under the workspace that was selected while configuring it. An <code class="docutils literal notranslate"><span class="pre">app-schema-mappings</span></code> directory should be in that store folder.</p></li>
+<li><p>Copy and paste the files contained in that directory to another directory and modify them as needed.</p></li>
+<li><p>Delete the Smart Data Loader store, and create a new App-Schema store with a uri parameter pointing to the folder containing the modified files.</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install.html" title="previous chapter">Installing the Smart Data Loader extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../spatialjson/index.html" title="next chapter">SpatialJSON WFS Output Format Extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Smart Data Loader</a><ul>
+<li><a class="reference internal" href="#data-store">Data Store</a></li>
+<li><a class="reference internal" href="#meteo-stations-example">Meteo Stations example</a></li>
+<li><a class="reference internal" href="#customize-smart-data-loader-generated-mappings-and-xsd-definition">Customize smart-data-loader generated mappings and xsd definition</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install.html" title="previous chapter">Installing the Smart Data Loader extension</a></li>
+            <li>Next: <a href="../spatialjson/index.html" title="next chapter">SpatialJSON WFS Output Format Extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/smart-data-loader/data-store.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

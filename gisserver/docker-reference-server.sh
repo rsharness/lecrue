@@ -1,0 +1,1 @@
+docker run -p 81:8080 --name geoserver-reference  docker.osgeo.org/geoserver:2.24.x

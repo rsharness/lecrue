@@ -1,0 +1,432 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lines &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Polygons" href="polygons.html" />
+    <link rel="prev" title="Points" href="points.html" /> 
+  </head><body class="styling/mbstyle/cookbook/lines">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">MBStyle Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">MBStyle Cookbook</a> &raquo;</li>
+    <li>Lines</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="polygons.html" title="Polygons" accesskey="N">Next</a></li>
+  <li>
+    <a href="points.html" title="Points" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="lines">
+<span id="mbstyle-cookbook-lines"></span><h1>Lines<a class="headerlink" href="#lines" title="Permalink to this headline">¶</a></h1>
+<p>While lines can also seem to be simple shapes, having length but no width, there are many options and tricks for making
+lines display nicely.</p>
+<div class="section" id="example-lines-layer">
+<span id="mbstyle-cookbook-lines-attributes"></span><h2>Example lines layer<a class="headerlink" href="#example-lines-layer" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference download internal" download="" href="../../../_downloads/336338bc1f8ec4e2d2e80407197bad3e/mbstyle_cookbook_line.zip"><code class="xref download docutils literal notranslate"><span class="pre">lines</span> <span class="pre">layer</span></code></a> used in the examples below contains road information for a
+fictional country. For reference, the attribute table for the points in this layer is included below.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">fid</span></code> (Feature ID)</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">name</span></code> (Road name)</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">type</span></code> (Road class)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>line.1</p></td>
+<td><p>Latway</p></td>
+<td><p>highway</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.2</p></td>
+<td><p>Crescent Avenue</p></td>
+<td><p>secondary</p></td>
+</tr>
+<tr class="row-even"><td><p>line.3</p></td>
+<td><p>Forest Avenue</p></td>
+<td><p>secondary</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.4</p></td>
+<td><p>Longway</p></td>
+<td><p>highway</p></td>
+</tr>
+<tr class="row-even"><td><p>line.5</p></td>
+<td><p>Saxer Avenue</p></td>
+<td><p>secondary</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.6</p></td>
+<td><p>Ridge Avenue</p></td>
+<td><p>secondary</p></td>
+</tr>
+<tr class="row-even"><td><p>line.7</p></td>
+<td><p>Holly Lane</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.8</p></td>
+<td><p>Mulberry Street</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.9</p></td>
+<td><p>Nathan Lane</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.10</p></td>
+<td><p>Central Street</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.11</p></td>
+<td><p>Lois Lane</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.12</p></td>
+<td><p>Rocky Road</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.13</p></td>
+<td><p>Fleet Street</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.14</p></td>
+<td><p>Diane Court</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.15</p></td>
+<td><p>Cedar Trail</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.16</p></td>
+<td><p>Victory Road</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.17</p></td>
+<td><p>Highland Road</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.18</p></td>
+<td><p>Easy Street</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.19</p></td>
+<td><p>Hill Street</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.20</p></td>
+<td><p>Country Road</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.21</p></td>
+<td><p>Main Street</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.22</p></td>
+<td><p>Jani Lane</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.23</p></td>
+<td><p>Shinbone Alley</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-odd"><td><p>line.24</p></td>
+<td><p>State Street</p></td>
+<td><p>local-road</p></td>
+</tr>
+<tr class="row-even"><td><p>line.25</p></td>
+<td><p>River Road</p></td>
+<td><p>local-road</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference download internal" download="" href="../../../_downloads/336338bc1f8ec4e2d2e80407197bad3e/mbstyle_cookbook_line.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">lines</span> <span class="pre">shapefile</span></code></a></p>
+</div>
+<div class="section" id="simple-line">
+<span id="mbstyle-cookbook-lines-simpleline"></span><h2>Simple line<a class="headerlink" href="#simple-line" title="Permalink to this headline">¶</a></h2>
+<p>This example specifies lines be colored black with a thickness of 3 pixels.</p>
+<div class="figure align-default" id="id7">
+<img alt="../../../_images/line_simpleline.png" src="../../../_images/line_simpleline.png" />
+<p class="caption"><span class="caption-text">Simple line</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="code">
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/84e891b3e311c87ccbcb39cc237057c7/mbstyle_line_simpleline.json"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Simple</span> <span class="pre">line&quot;</span> <span class="pre">MBStyle</span></code></a></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="p">{</span>
+<span class="lineno"> 2 </span>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="lineno"> 3 </span>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-line&quot;</span><span class="p">,</span>
+<span class="lineno"> 4 </span>  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="lineno"> 5 </span>    <span class="p">{</span>
+<span class="lineno"> 6 </span>      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-line&quot;</span><span class="p">,</span>
+<span class="lineno"> 7 </span>      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;line&quot;</span><span class="p">,</span>
+<span class="lineno"> 8 </span>      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno"> 9 </span>        <span class="nt">&quot;line-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>
+<span class="lineno">10 </span>        <span class="nt">&quot;line-width&quot;</span><span class="p">:</span> <span class="mi">3</span>
+<span class="lineno">11 </span>      <span class="p">}</span>
+<span class="lineno">12 </span>    <span class="p">}</span>
+<span class="lineno">13 </span>  <span class="p">]</span>
+<span class="lineno">14 </span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="details">
+<h3>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h3>
+<p>There is one layer style for this MBStyle, which is the simplest possible situation. Styling
+lines is accomplished using the line layer. <strong>Line 9</strong> specifies the color of the line to be
+black (<code class="docutils literal notranslate"><span class="pre">&quot;#000000&quot;</span></code>), while <strong>line 10</strong> specifies the width of the lines to be 3 pixels.</p>
+</div>
+</div>
+<div class="section" id="line-with-border">
+<h2>Line with border<a class="headerlink" href="#line-with-border" title="Permalink to this headline">¶</a></h2>
+<p>This example shows how to draw lines with borders (sometimes called “cased lines”).
+In this case the lines are drawn with a 3 pixel blue center and a 1 pixel wide gray border.</p>
+<div class="figure align-default" id="id8">
+<img alt="../../../_images/line_linewithborder.png" src="../../../_images/line_linewithborder.png" />
+<p class="caption"><span class="caption-text">Line with border</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id1">
+<h3>Code<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/cb55d09dbc0702dc3f24a0cbd825595f/mbstyle_line_borderedline.json"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Line</span> <span class="pre">with</span> <span class="pre">border&quot;</span> <span class="pre">MBStyle</span></code></a></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="p">{</span>
+<span class="lineno"> 2 </span>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="lineno"> 3 </span>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-borderedline&quot;</span><span class="p">,</span>
+<span class="lineno"> 4 </span>  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="lineno"> 5 </span>    <span class="p">{</span>
+<span class="lineno"> 6 </span>      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-borderedline&quot;</span><span class="p">,</span>
+<span class="lineno"> 7 </span>      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;line&quot;</span><span class="p">,</span>
+<span class="lineno"> 8 </span>      <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno"> 9 </span>        <span class="nt">&quot;line-cap&quot;</span><span class="p">:</span> <span class="s2">&quot;round&quot;</span>
+<span class="lineno">10 </span>      <span class="p">},</span>
+<span class="lineno">11 </span>      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno">12 </span>        <span class="nt">&quot;line-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#333333&quot;</span><span class="p">,</span>
+<span class="lineno">13 </span>        <span class="nt">&quot;line-width&quot;</span><span class="p">:</span> <span class="mi">5</span>
+<span class="lineno">14 </span>      <span class="p">}</span>
+<span class="lineno">15 </span>    <span class="p">},</span>
+<span class="lineno">16 </span>    <span class="p">{</span>
+<span class="lineno">17 </span>      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-line&quot;</span><span class="p">,</span>
+<span class="lineno">18 </span>      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;line&quot;</span><span class="p">,</span>
+<span class="lineno">19 </span>      <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno">20 </span>        <span class="nt">&quot;line-cap&quot;</span><span class="p">:</span> <span class="s2">&quot;round&quot;</span>
+<span class="lineno">21 </span>      <span class="p">},</span>
+<span class="lineno">22 </span>      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno">23 </span>        <span class="nt">&quot;line-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#6699FF&quot;</span><span class="p">,</span>
+<span class="lineno">24 </span>        <span class="nt">&quot;line-width&quot;</span><span class="p">:</span> <span class="mi">3</span>
+<span class="lineno">25 </span>      <span class="p">}</span>
+<span class="lineno">26 </span>    <span class="p">}</span>
+<span class="lineno">27 </span>  <span class="p">]</span>
+<span class="lineno">28 </span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Details<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>In this example we are drawing the lines twice to achieve the appearance of a line with a border.
+Since every line is drawn twice, the order of the rendering is <em>very</em> important.
+GeoServer renders <code class="docutils literal notranslate"><span class="pre">layers</span></code> in the order that they are presented in the MBStyle.
+In this style, the gray border lines are drawn first via the first layer style, followed by the blue center lines in a second layer style. This ensures that the blue lines are not obscured by the gray lines, and also ensures proper rendering at intersections, so that the blue lines “connect”.</p>
+<p>In this example, <strong>lines 5-15</strong> comprise the first layer style, which is the outer line (or “stroke”).
+<strong>Line 12</strong> specifies the color of the line to be dark gray (<code class="docutils literal notranslate"><span class="pre">&quot;#333333&quot;</span></code>), <strong>line 13</strong> specifies the width of this line to be 5 pixels, and in the <code class="docutils literal notranslate"><span class="pre">layout</span></code> <strong>line 9</strong> a <code class="docutils literal notranslate"><span class="pre">line-cap</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">round</span></code>
+renders the ends of the line as rounded instead of flat.
+(When working with bordered lines using a round line cap ensures that the border connects properly at the ends of the lines.)</p>
+<p><strong>Lines 16-26</strong> comprise the second <code class="docutils literal notranslate"><span class="pre">layer</span></code>, which is the inner line (or “fill”). <strong>Line 23</strong>
+specifies the color of the line to be a medium blue (<code class="docutils literal notranslate"><span class="pre">&quot;#6699FF&quot;</span></code>), <strong>line 24</strong> specifies the width of this line to be 3 pixels, and in the <code class="docutils literal notranslate"><span class="pre">layout</span></code> <strong>line 20</strong> again renders the edges of the line to be rounded instead of flat.</p>
+<p>The result is a 3 pixel blue line with a 1 pixel gray border, since the 5 pixel gray line will display 1 pixel on each side of the 3 pixel blue line.</p>
+</div>
+</div>
+<div class="section" id="dashed-line">
+<h2>Dashed line<a class="headerlink" href="#dashed-line" title="Permalink to this headline">¶</a></h2>
+<p>This example alters the <a class="reference internal" href="#mbstyle-cookbook-lines-simpleline"><span class="std std-ref">Simple line</span></a> to create a dashed line consisting of 5 pixels of drawn
+line alternating with 2 pixels of blank space.</p>
+<div class="figure align-default" id="id9">
+<img alt="../../../_images/line_dashedline.png" src="../../../_images/line_dashedline.png" />
+<p class="caption"><span class="caption-text">Dashed line</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id3">
+<h3>Code<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/f69161c0fb39542469d1d9fd1e437c58/mbstyle_line_dashedline.json"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Dashed</span> <span class="pre">line&quot;</span> <span class="pre">MBStyle</span></code></a></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="p">{</span>
+<span class="lineno"> 2 </span>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="lineno"> 3 </span>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-dashedline&quot;</span><span class="p">,</span>
+<span class="lineno"> 4 </span>  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="lineno"> 5 </span>    <span class="p">{</span>
+<span class="lineno"> 6 </span>      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-dashedline&quot;</span><span class="p">,</span>
+<span class="lineno"> 7 </span>      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;line&quot;</span><span class="p">,</span>
+<span class="lineno"> 8 </span>      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno"> 9 </span>        <span class="nt">&quot;line-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000FF&quot;</span><span class="p">,</span>
+<span class="lineno">10 </span>        <span class="nt">&quot;line-width&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+<span class="lineno">11 </span>        <span class="nt">&quot;line-dasharray&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="lineno">12 </span>      <span class="p">}</span>
+<span class="lineno">13 </span>    <span class="p">}</span>
+<span class="lineno">14 </span>  <span class="p">]</span>
+<span class="lineno">15 </span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>Details<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>In this example, <strong>line 9</strong> sets the color of the lines to be blue (<code class="docutils literal notranslate"><span class="pre">&quot;#0000FF&quot;</span></code>) and <strong>line 10</strong> sets the width of the lines to be 3 pixels. <strong>Line 11</strong> determines the composition of the line dashes. The value of <code class="docutils literal notranslate"><span class="pre">[5,</span> <span class="pre">2]</span></code> creates a repeating pattern of 5 pixels of drawn line, followed by 2 pixels of omitted line.</p>
+</div>
+</div>
+<div class="section" id="offset-line">
+<h2>Offset line<a class="headerlink" href="#offset-line" title="Permalink to this headline">¶</a></h2>
+<p>This example alters the <a class="reference internal" href="#mbstyle-cookbook-lines-simpleline"><span class="std std-ref">Simple line</span></a> to add a perpendicular offset line on the left side of the line, at five pixels distance.</p>
+<div class="figure align-default" id="id10">
+<img alt="../../../_images/line_offset.png" src="../../../_images/line_offset.png" />
+<p class="caption"><span class="caption-text">Dashed line</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id5">
+<h3>Code<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/b45f7e10975bb45f8084be90dbb07bb8/mbstyle_line_offsetline.json"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Offset</span> <span class="pre">line&quot;</span> <span class="pre">MBStlye</span></code></a></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="p">{</span>
+<span class="lineno"> 2 </span>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="lineno"> 3 </span>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-offsetline&quot;</span><span class="p">,</span>
+<span class="lineno"> 4 </span>  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="lineno"> 5 </span>    <span class="p">{</span>
+<span class="lineno"> 6 </span>      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-line&quot;</span><span class="p">,</span>
+<span class="lineno"> 7 </span>      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;line&quot;</span><span class="p">,</span>
+<span class="lineno"> 8 </span>      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno"> 9 </span>        <span class="nt">&quot;line-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>
+<span class="lineno">10 </span>        <span class="nt">&quot;line-width&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="lineno">11 </span>      <span class="p">}</span>
+<span class="lineno">12 </span>    <span class="p">},</span>
+<span class="lineno">13 </span>    <span class="p">{</span>
+<span class="lineno">14 </span>      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-offsetline&quot;</span><span class="p">,</span>
+<span class="lineno">15 </span>      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;line&quot;</span><span class="p">,</span>
+<span class="lineno">16 </span>      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="lineno">17 </span>        <span class="nt">&quot;line-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF0000&quot;</span><span class="p">,</span>
+<span class="lineno">18 </span>        <span class="nt">&quot;line-width&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="lineno">19 </span>        <span class="nt">&quot;line-dasharray&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="lineno">20 </span>        <span class="nt">&quot;line-offset&quot;</span><span class="p">:</span> <span class="mi">5</span>
+<span class="lineno">21 </span>      <span class="p">}</span>
+<span class="lineno">22 </span>    <span class="p">}</span>
+<span class="lineno">23 </span>  <span class="p">]</span>
+<span class="lineno">24 </span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>Details<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>In this example, <strong>lines 5-11</strong> draw a simple black line like in the Simple line example. <strong>Lines 13-21</strong> draw a red dashed line like in the above Dashed line example. <strong>Line 20</strong> modifies the dashed line with a 5 pixel offset from the line geometry.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="points.html" title="previous chapter">Points</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="polygons.html" title="next chapter">Polygons</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Lines</a><ul>
+<li><a class="reference internal" href="#example-lines-layer">Example lines layer</a></li>
+<li><a class="reference internal" href="#simple-line">Simple line</a><ul>
+<li><a class="reference internal" href="#code">Code</a></li>
+<li><a class="reference internal" href="#details">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#line-with-border">Line with border</a><ul>
+<li><a class="reference internal" href="#id1">Code</a></li>
+<li><a class="reference internal" href="#id2">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dashed-line">Dashed line</a><ul>
+<li><a class="reference internal" href="#id3">Code</a></li>
+<li><a class="reference internal" href="#id4">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#offset-line">Offset line</a><ul>
+<li><a class="reference internal" href="#id5">Code</a></li>
+<li><a class="reference internal" href="#id6">Details</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="points.html" title="previous chapter">Points</a></li>
+            <li>Next: <a href="polygons.html" title="next chapter">Polygons</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/mbstyle/cookbook/lines.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

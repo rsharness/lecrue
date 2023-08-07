@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Functions &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Define and reuse YAML Variables" href="variables.html" />
+    <link rel="prev" title="Filters" href="filters.html" /> 
+  </head><body class="styling/ysld/reference/functions">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">YSLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">YSLD reference</a> &raquo;</li>
+    <li>Functions</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="variables.html" title="Define and reuse YAML Variables" accesskey="N">Next</a></li>
+  <li>
+    <a href="filters.html" title="Filters" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="functions">
+<span id="ysld-reference-functions"></span><h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
+<p>Functions are additional operations that can be employed when calculating values for YSLD parameters. In most cases, a value for a parameter can be the output (result) of a function.</p>
+<p>Functions can be used in most places in a style document.</p>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>Functions aren’t a parameter to itself, but instead are used as a part of the values of a parameter, or indeed in any expression. So the syntax is very general, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;parameter&gt;: ${&lt;function&gt;}
+</pre></div>
+</div>
+<p>Functions are evaluated at rendering time, so the output is passed as the parameter value and then rendered accordingly.</p>
+</div>
+<div class="section" id="list-of-functions">
+<h2>List of functions<a class="headerlink" href="#list-of-functions" title="Permalink to this headline">¶</a></h2>
+<p>A reference list of functions can be found in the <a class="reference external" href="../../../geoserver/filter/function_reference.html">GeoServer User Manual</a> and is also available in raw form in the <a class="reference external" href="https://docs.geotools.org/latest/userguide/library/main/function_list.html">GeoTools User Manual Function List</a>.</p>
+<p>The functions can be broken up loosely into categories such as geometric, math, and string functions.</p>
+<div class="section" id="theming-functions">
+<span id="ysld-reference-functions-theming"></span><h3>Theming functions<a class="headerlink" href="#theming-functions" title="Permalink to this headline">¶</a></h3>
+<p>There are three important functions that are often easier to use for theming than using rules, and can vastly simplify your style documents: <strong>Recode</strong>, <strong>Categorize</strong>, and <strong>Interpolate</strong>.</p>
+<p><strong>Recode</strong>: Attribute values are directly mapped to styling properties:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">recode</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="n">value1</span><span class="p">,</span><span class="n">result1</span><span class="p">,</span><span class="n">value2</span><span class="p">,</span><span class="n">result2</span><span class="p">,</span><span class="n">value3</span><span class="p">,</span><span class="n">result3</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is equivalent to creating multiple rules with similar filters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>rules:
+- ...
+  filter: ${attribute = value1}
+  - ...
+    &lt;property&gt;: result1
+- ...
+  filter: ${attribute = value2}
+  - ...
+    &lt;property&gt;: result2
+- ...
+  filter: ${attribute = value3}
+  - ...
+    &lt;property&gt;: result3
+</pre></div>
+</div>
+<p><strong>Categorize</strong>: Categories are defined using minimum and maximum ranges, and attribute values are sorted into the appropriate category:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">categorize</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="n">category0</span><span class="p">,</span><span class="n">value1</span><span class="p">,</span><span class="n">category1</span><span class="p">,</span><span class="n">value2</span><span class="p">,</span><span class="n">category2</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="n">belongsTo</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This would create a situation where the <code class="docutils literal notranslate"><span class="pre">attribute</span></code> value, if less than <code class="docutils literal notranslate"><span class="pre">value1</span></code> will be given the result of <code class="docutils literal notranslate"><span class="pre">category0</span></code>; if between <code class="docutils literal notranslate"><span class="pre">value1</span></code> and <code class="docutils literal notranslate"><span class="pre">value2</span></code>, will be given the result of <code class="docutils literal notranslate"><span class="pre">category1</span></code>;  if between <code class="docutils literal notranslate"><span class="pre">value2</span></code> and <code class="docutils literal notranslate"><span class="pre">value3</span></code>, will be given the result of <code class="docutils literal notranslate"><span class="pre">category2</span></code>, etc. Values must be in ascending order.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">belongsTo</span></code> argument is optional, and can be either <code class="docutils literal notranslate"><span class="pre">succeeding</span></code> or <code class="docutils literal notranslate"><span class="pre">preceding</span></code>. It defines which interval to use when the lookup value equals the <code class="docutils literal notranslate"><span class="pre">attribute</span></code> value. If the <code class="docutils literal notranslate"><span class="pre">attribute</span></code> value is equal to <code class="docutils literal notranslate"><span class="pre">value1</span></code> and <code class="docutils literal notranslate"><span class="pre">suceeding</span></code> is used, then the result will be <code class="docutils literal notranslate"><span class="pre">category1</span></code>. If <code class="docutils literal notranslate"><span class="pre">preceding</span></code> is used then the result will be <code class="docutils literal notranslate"><span class="pre">category0</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">succeeding</span></code>.</p>
+<p>This is equivalent to creating the following multiple rules:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>rules:
+- ...
+  filter: ${attribute &lt; value1}
+  - ...
+    &lt;property&gt;: category0
+- ...
+  filter: ${attribute &gt;= value1 AND attribute &lt; value2}
+  - ...
+    &lt;property&gt;: category1
+- ...
+  filter: ${attribute &gt;= value2}
+  - ...
+    &lt;property&gt;: category2
+</pre></div>
+</div>
+<p><strong>Interpolate</strong>: Used to smoothly theme quantitative data by calculating a styling property based on an attribute value. This is similar to Categorize, except that the values are continuous and not discrete:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">interpolate</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="n">value1</span><span class="p">,</span><span class="n">entry1</span><span class="p">,</span><span class="n">value2</span><span class="p">,</span><span class="n">entry2</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="n">mode</span><span class="p">,</span><span class="n">method</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This would create a situation where the <code class="docutils literal notranslate"><span class="pre">attribute</span></code> value, if equal to <code class="docutils literal notranslate"><span class="pre">value1</span></code> will be given the result of <code class="docutils literal notranslate"><span class="pre">entry1</span></code>; if halfway between <code class="docutils literal notranslate"><span class="pre">value1</span></code> and <code class="docutils literal notranslate"><span class="pre">value2</span></code> will be given a result of halfway in between <code class="docutils literal notranslate"><span class="pre">entry1</span></code> and <code class="docutils literal notranslate"><span class="pre">entry2</span></code>; if three-quarters between <code class="docutils literal notranslate"><span class="pre">value1</span></code> and <code class="docutils literal notranslate"><span class="pre">value2</span></code> will be given a result of three-quarters in between <code class="docutils literal notranslate"><span class="pre">entry1</span></code> and <code class="docutils literal notranslate"><span class="pre">entry2</span></code>, etc.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument is optional, and can be either <code class="docutils literal notranslate"><span class="pre">linear</span></code>, <code class="docutils literal notranslate"><span class="pre">cosine</span></code>, or <code class="docutils literal notranslate"><span class="pre">cubic</span></code>. It defines the interpolation algorithm to use, and defaults to <code class="docutils literal notranslate"><span class="pre">linear</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">method</span></code> argument is optional, and can be either <code class="docutils literal notranslate"><span class="pre">numeric</span></code> or <code class="docutils literal notranslate"><span class="pre">color</span></code>. It determines whether <code class="docutils literal notranslate"><span class="pre">entry1</span></code>, <code class="docutils literal notranslate"><span class="pre">entry2</span></code>, … are numbers or colors, and defaults to <code class="docutils literal notranslate"><span class="pre">numeric</span></code>.</p>
+<p>There is no equivalent to this function in vector styling. The closest to this in raster styling is the color ramp.</p>
+<p>The three theming functions can be neatly summarized by this table:</p>
+<table class="non-responsive docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Function</p></th>
+<th class="head"><p>Type of input</p></th>
+<th class="head"><p>Type of output</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>Recode</p></th>
+<td><p>Discrete</p></td>
+<td><p>Discrete</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Categorize</p></th>
+<td><p>Continuous</p></td>
+<td><p>Discrete</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Interpolate</p></th>
+<td><p>Continuous</p></td>
+<td><p>Continuous</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="display-rotated-arrows-at-line-endpoints">
+<h3>Display rotated arrows at line endpoints<a class="headerlink" href="#display-rotated-arrows-at-line-endpoints" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">startPoint(geom)</span></code> and <code class="docutils literal notranslate"><span class="pre">endPoint(geom)</span></code> functions take a geometry as an argument and returns the start and end points of the geometry respectively. The <code class="docutils literal notranslate"><span class="pre">startAngle(geom)</span></code> and <code class="docutils literal notranslate"><span class="pre">endAngle(geom)</span></code> functions take a geometry as an argument and return the angle of the line terminating at the start and end points of the geometry respectively.  These functions can be used to display an arrow at the end of a line geometry, and rotate it to match the direction of the line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>feature-styles:
+- rules:
+  - symbolizers:
+      - line:
+          stroke-width: 1
+      - point:
+          geometry: ${endPoint(geom)}
+          rotation: ${endAngle(geom)}
+          size: 24
+          symbols:
+          - mark:
+              shape: &#39;shape://carrow&#39;
+              fill-color: &#39;#000000&#39;
+</pre></div>
+</div>
+<div class="figure align-default" id="id1">
+<img alt="../../../_images/functions_arrows.png" src="../../../_images/functions_arrows.png" />
+<p class="caption"><span class="caption-text">Endpoint arrows</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="drop-shadow">
+<h3>Drop shadow<a class="headerlink" href="#drop-shadow" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">offset(geom,</span> <span class="pre">x,</span> <span class="pre">y)</span></code> function takes a geometry and two values, and displaces the geometry by those values in the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> directions. This can be used to create a drop-shadow effect:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>feature-styles:
+- name: shadow
+  rules:
+  - symbolizers:
+    - polygon:
+        stroke-width: 0.0
+        fill-color: &#39;#000000&#39;
+        fill-opacity: 0.75
+        geometry: ${offset(geom, 0.0001, -0.0001)}
+- name: fill
+  rules:
+  - symbolizers:
+    - polygon:
+      stroke-width: 0.0
+      fill-color: &#39;#00FFFF&#39;
+</pre></div>
+</div>
+<div class="figure align-default" id="id2">
+<img alt="../../../_images/functions_dropshadow.png" src="../../../_images/functions_dropshadow.png" />
+<p class="caption"><span class="caption-text">Drop shadow</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="different-colored-outline">
+<h3>Different-colored outline<a class="headerlink" href="#different-colored-outline" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">buffer(geom,</span> <span class="pre">buffer)</span></code> function takes a geometry and a value as arguments, and returns a polygon geometry with a boundary equal to the original geometry plus the value. This can be used to generate an extended outline filled with a different color, for example to style a shoreline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>feature-styles:
+- name: shoreline
+  rules:
+  - polygon:
+      fill-color: &#39;#00BBFF&#39;
+      geometry: ${buffer(geom, 0.00025)}
+- name: land
+  rules:
+  - polygon:
+      fill-color: &#39;#00DD00&#39;
+</pre></div>
+</div>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/functions_buffer.png" src="../../../_images/functions_buffer.png" />
+<p class="caption"><span class="caption-text">Buffered outline</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#geometric-functions">convexHull(geom)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#geometric-functions">octagonalEnvelope(geom)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#geometric-functions">mincircle(geom)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#geometric-functions">minrectangle(geom)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#geometric-functions">minimumdiameter(geom)</a></p></li>
+</ul>
+</div>
+<div class="section" id="display-vertices-of-a-line">
+<h3>Display vertices of a line<a class="headerlink" href="#display-vertices-of-a-line" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">vertices(geom)</span></code> function takes a geometry and returns a collection of points representing the vertices of the geometry. This can be used to convert a polygon or line geometry into a point geometry:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">point</span><span class="p">:</span>
+  <span class="n">geometry</span><span class="p">:</span> <span class="n">vertices</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id4">
+<img alt="../../../_images/functions_vertices.png" src="../../../_images/functions_vertices.png" />
+<p class="caption"><span class="caption-text">Endpoint arrows</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#geometric-functions">boundary(geom)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#geometric-functions">centroid(geom)</a></p></li>
+</ul>
+</div>
+<div class="section" id="angle-between-two-points">
+<h3>Angle between two points<a class="headerlink" href="#angle-between-two-points" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">atan2(x,</span> <span class="pre">y)</span></code> function calculates the arctangent of (y/x) and so is able to determine the angle (in radians) between two points. This function uses the signs of the x and y values to determine the computed angle, so it is preferable over <code class="docutils literal notranslate"><span class="pre">atan()</span></code>. The <code class="docutils literal notranslate"><span class="pre">getX(point_geom)</span></code> and <code class="docutils literal notranslate"><span class="pre">getY(point_geom)</span></code> extracts the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> ordinates from a geometry respectively, while <code class="docutils literal notranslate"><span class="pre">toDegrees(value)</span></code> converts from radians to degrees:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>point:
+  symbols:
+  - mark:
+      shape: triangle
+  rotation: ${toDegrees(atan2(
+    getX(startPoint(the_geom))-getX(endPoint(the_geom)),
+    getY(startPoint(the_geom))-getY(endPoint(the_geom))))}
+</pre></div>
+</div>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">sin(value)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">cos(value)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">tan(value)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">asin(value)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">acos(value)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">atan(value)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">toRadians(value)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">pi()</a></p></li>
+</ul>
+</div>
+<div class="section" id="scale-objects-based-on-a-large-range-of-values">
+<h3>Scale objects based on a large range of values<a class="headerlink" href="#scale-objects-based-on-a-large-range-of-values" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">log(value)</span></code> function returns the natural logarithm of the provided value. Use <code class="docutils literal notranslate"><span class="pre">log(value)/log(base)</span></code> to specify a different base.</p>
+<p>For example, specifying <code class="docutils literal notranslate"><span class="pre">log(population)/log(2)</span></code> will make the output increase by 1 when the value of population doubles. This allows one to display relative sizes on a consistent scale while still being able to represent very small and very large populations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>point:
+  symbols:
+  - mark:
+      shape: circle
+  size: ${log(population)/log(2)}
+</pre></div>
+</div>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">exp(val)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">pow(base,exponent)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#math-functions">sqrt(val)</a></p></li>
+</ul>
+</div>
+<div class="section" id="combine-several-strings-into-one">
+<h3>Combine several strings into one<a class="headerlink" href="#combine-several-strings-into-one" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Concatenate(string1,</span> <span class="pre">string2,</span> <span class="pre">...)</span></code> function takes any number of strings and combines them to form a single string. This can be used to display more than one attribute within a single label:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>text:
+  label: ${Concatenate(name, &#39;, &#39;, population)}
+</pre></div>
+</div>
+</div>
+<div class="section" id="capitalize-words">
+<h3>Capitalize words<a class="headerlink" href="#capitalize-words" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">strCapitalize(string)</span></code> function takes a single string and capitalizes the first letter of each word in the string. This could be used to capitalize labels created from lower case text:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>text:
+  label: ${strCapitalize(name)}
+</pre></div>
+</div>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#string-functions">strToLowerCase(string)</a></p></li>
+<li><p><a class="reference external" href="../../../geoserver/filter/function_reference.html#string-functions">strToUpperCase(string)</a></p></li>
+</ul>
+</div>
+<div class="section" id="color-based-on-discrete-values">
+<h3>Color based on discrete values<a class="headerlink" href="#color-based-on-discrete-values" title="Permalink to this headline">¶</a></h3>
+<p>In certain cases, theming functions can be used in place of filters to produce similar output much more simply. For example, the Recode function can take an attribute and output a different value based on an attribute value. So instead of various filters, the entire constructions can be done in a single line. For example, this could be used to color different types of buildings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - polygon:
+        fill-color:
+          ${recode(zone,
+          &#39;I-L&#39;, &#39;#FF7700&#39;,
+          &#39;I-H&#39;, &#39;#BB6600&#39;,
+          &#39;C-H&#39;, &#39;#0077BB&#39;,
+          &#39;C-R&#39;, &#39;#00BBDD&#39;,
+          &#39;C-C&#39;, &#39;#00DDFF&#39;,
+          &#39;&#39;, &#39;#777777&#39;)}
+</pre></div>
+</div>
+<p>In the above example, the attribute is <code class="docutils literal notranslate"><span class="pre">zone</span></code> , and then each subsequent pair consists of an attribute value followed by a color.</p>
+<div class="figure align-default" id="id5">
+<img alt="../../../_images/functions_recode.png" src="../../../_images/functions_recode.png" />
+<p class="caption"><span class="caption-text">Recode Function</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="color-based-on-categories">
+<h3>Color based on categories<a class="headerlink" href="#color-based-on-categories" title="Permalink to this headline">¶</a></h3>
+<p>The Categorize function returns a different value depending on which range (category) an attribute value matches. This can also make a style much more simple by reducing the number of filters. This example uses <code class="docutils literal notranslate"><span class="pre">categorize</span></code> to color based on certain values of the <code class="docutils literal notranslate"><span class="pre">YEARBLT</span></code> attribute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+     - polygon:
+        stroke-color: &#39;#000000&#39;
+        stroke-width: 0.5
+        fill-color:
+          ${categorize(YEARBLT, &#39;#DD4400&#39;,
+          1950,&#39;#AA4400&#39;,
+          1960,&#39;#886600&#39;,
+          1970,&#39;#668800&#39;,
+          1980,&#39;#44BB00&#39;,
+          1990,&#39;#22DD00&#39;,
+          2000,&#39;#00FF00&#39;)}
+</pre></div>
+</div>
+<div class="figure align-default" id="id6">
+<img alt="../../../_images/filters_categories.png" src="../../../_images/filters_categories.png" />
+<p class="caption"><span class="caption-text">Categorize Function</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="choropleth-map">
+<h3>Choropleth map<a class="headerlink" href="#choropleth-map" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">interpolate</span></code> function can be used to create a continuous set of values by interpolating between attribute values. This can be used to create a choropleth map which shows different colors for regions based on some continuous attribute such as area or population:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>feature-styles:
+- name: name
+  rules:
+  - title: fill-graphic
+    symbolizers:
+    - polygon:
+        stroke-width: 1
+        fill-color: ${interpolate(PERSONS, 0.0, &#39;#00FF00&#39;, 1e7,&#39;#FF0000&#39;, &#39;color&#39;)}
+</pre></div>
+</div>
+<div class="figure align-default" id="id7">
+<img alt="../../../_images/functions_choropleth.png" src="../../../_images/functions_choropleth.png" />
+<p class="caption"><span class="caption-text">Choropleth Map</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="filters.html" title="previous chapter">Filters</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="variables.html" title="next chapter">Define and reuse YAML Variables</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Functions</a><ul>
+<li><a class="reference internal" href="#syntax">Syntax</a></li>
+<li><a class="reference internal" href="#list-of-functions">List of functions</a><ul>
+<li><a class="reference internal" href="#theming-functions">Theming functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#display-rotated-arrows-at-line-endpoints">Display rotated arrows at line endpoints</a></li>
+<li><a class="reference internal" href="#drop-shadow">Drop shadow</a></li>
+<li><a class="reference internal" href="#different-colored-outline">Different-colored outline</a></li>
+<li><a class="reference internal" href="#display-vertices-of-a-line">Display vertices of a line</a></li>
+<li><a class="reference internal" href="#angle-between-two-points">Angle between two points</a></li>
+<li><a class="reference internal" href="#scale-objects-based-on-a-large-range-of-values">Scale objects based on a large range of values</a></li>
+<li><a class="reference internal" href="#combine-several-strings-into-one">Combine several strings into one</a></li>
+<li><a class="reference internal" href="#capitalize-words">Capitalize words</a></li>
+<li><a class="reference internal" href="#color-based-on-discrete-values">Color based on discrete values</a></li>
+<li><a class="reference internal" href="#color-based-on-categories">Color based on categories</a></li>
+<li><a class="reference internal" href="#choropleth-map">Choropleth map</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="filters.html" title="previous chapter">Filters</a></li>
+            <li>Next: <a href="variables.html" title="next chapter">Define and reuse YAML Variables</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/ysld/reference/functions.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

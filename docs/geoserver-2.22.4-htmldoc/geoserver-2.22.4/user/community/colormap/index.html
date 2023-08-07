@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic colormap generation &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="CoverageJSON output format" href="../cov-json/index.html" />
+    <link rel="prev" title="COG ImageMosaic from local storage to S3" href="../cog/update.html" /> 
+  </head><body class="community/colormap/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>Dynamic colormap generation</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../cov-json/index.html" title="CoverageJSON output format" accesskey="N">Next</a></li>
+  <li>
+    <a href="../cog/update.html" title="COG ImageMosaic from local storage to S3" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="dynamic-colormap-generation">
+<span id="community-colormap"></span><h1>Dynamic colormap generation<a class="headerlink" href="#dynamic-colormap-generation" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">ras:DynamicColorMap</span></code> is a <strong>Raster-to-Raster</strong> rendering transformation
+which applies a dynamic color map to a Raster on top of its statistics and a set of colors.</p>
+<div class="section" id="installing-the-dynamic-colormap-community-extension">
+<h2>Installing the dynamic colormap community extension<a class="headerlink" href="#installing-the-dynamic-colormap-community-extension" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Download the extension from the <a class="reference external" href="https://build.geoserver.org/geoserver/main/community-latest/">nightly GeoServer community module builds</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure to match the version of the extension to the version of the GeoServer instance!</p>
+</div>
+</li>
+<li><p>Extract the contents of the archive into the <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory of the GeoServer installation.</p></li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The following SLD invokes a Dynamic Color Map rendering transformation on a Coverage using colorMaps created on top of QuantumGIS SVG files.
+Dynamic Color Map Rendering Transformation takes data as first parameter (the coverage) and ColorRamp as second parameter which is a colorMap.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="lineno"> 2 </span><span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+<span class="lineno"> 3 </span>    <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;</span>
+<span class="lineno"> 4 </span>    <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span>
+<span class="lineno"> 5 </span>    <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+<span class="lineno"> 6 </span>    <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+<span class="lineno"> 7 </span>    <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 8 </span>  <span class="nt">&lt;NamedLayer&gt;</span>
+<span class="lineno"> 9 </span>    <span class="nt">&lt;Name&gt;</span>DynamicColorMap<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">10 </span>    <span class="nt">&lt;UserStyle&gt;</span>
+<span class="lineno">11 </span>      <span class="nt">&lt;Title&gt;</span>DynamicColorMap<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno">12 </span>      <span class="nt">&lt;Abstract&gt;</span>A DynamicColorMap<span class="nt">&lt;/Abstract&gt;</span>
+<span class="lineno">13 </span>      <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno">14 </span>        <span class="nt">&lt;Transformation&gt;</span>
+<span class="lineno">15 </span>          <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;ras:DynamicColorMap&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">16 </span>            <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">17 </span>              <span class="nt">&lt;ogc:Literal&gt;</span>data<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">18 </span>            <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">19 </span>            <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">20 </span>              <span class="nt">&lt;ogc:Literal&gt;</span>colorRamp<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">21 </span>              <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;colormap&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">22 </span>                <span class="nt">&lt;ogc:Literal&gt;</span>gmt\GMT_panoply<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">23 </span>                <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;gridCoverageStats&quot;</span><span class="nt">&gt;&lt;ogc:Literal&gt;</span>minimum<span class="nt">&lt;/ogc:Literal&gt;&lt;/ogc:Function&gt;</span>
+<span class="lineno">24 </span>                <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;gridCoverageStats&quot;</span><span class="nt">&gt;&lt;ogc:Literal&gt;</span>maximum<span class="nt">&lt;/ogc:Literal&gt;&lt;/ogc:Function&gt;</span>
+<span class="lineno">25 </span>              <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">26 </span>            <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">27 </span>          <span class="nt">&lt;/ogc:Function&gt;</span>
+<span class="lineno">28 </span>        <span class="nt">&lt;/Transformation&gt;</span>
+<span class="lineno">29 </span>        <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">30 </span>         <span class="nt">&lt;Name&gt;</span>rule1<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">31 </span>         <span class="nt">&lt;RasterSymbolizer&gt;</span>
+<span class="lineno">32 </span>           <span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
+<span class="lineno">33 </span>         <span class="nt">&lt;/RasterSymbolizer&gt;</span>
+<span class="lineno">34 </span>        <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">35 </span>      <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+<span class="lineno">36 </span>    <span class="nt">&lt;/UserStyle&gt;</span>
+<span class="lineno">37 </span>  <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="lineno">38 </span> <span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+<p>Key aspects of the SLD are:</p>
+<ul>
+<li><p><strong>Lines 14-15</strong> define the rendering transformation, using the process <code class="docutils literal notranslate"><span class="pre">ras:DynamicColorMap</span></code>.</p></li>
+<li><p><strong>Lines 16-18</strong> supply the input data parameter, named <code class="docutils literal notranslate"><span class="pre">data</span></code> in this process.</p></li>
+<li><p><strong>Lines 19-21</strong> supply a value for the process’s <code class="docutils literal notranslate"><span class="pre">colorRamp</span></code> parameter which specifies a colorMap.</p></li>
+<li><p><strong>Lines 22-23</strong> supply the value for the <code class="docutils literal notranslate"><span class="pre">colorMap</span></code> parameter. In this case it’s a reference to a SVG containing a LinearGradient definition.</p>
+<p>A sample of QuantumGIS SVG LinearGradient subelement is:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;linearGradient</span> <span class="na">id=</span><span class="s">&quot;GMT_panoply&quot;</span> <span class="na">gradientUnits=</span><span class="s">&quot;objectBoundingBox&quot;</span> <span class="na">spreadMethod=</span><span class="s">&quot;pad&quot;</span> <span class="na">x1=</span><span class="s">&quot;0%&quot;</span> <span class="na">x2=</span><span class="s">&quot;100%&quot;</span> <span class="na">y1=</span><span class="s">&quot;0%&quot;</span> <span class="na">y2=</span><span class="s">&quot;0%&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;0.00%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(4,14,216)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;6.25%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(4,14,216)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;6.25%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(32,80,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;12.50%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(32,80,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;12.50%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(65,150,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;18.75%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(65,150,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;18.75%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(109,193,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;25.00%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(109,193,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;25.00%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(134,217,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;31.25%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(134,217,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;31.25%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(156,238,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;37.50%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(156,238,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;37.50%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(175,245,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;43.75%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(175,245,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;43.75%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(206,255,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;50.00%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(206,255,255)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;50.00%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,254,71)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;56.25%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,254,71)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;56.25%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,235,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;62.50%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,235,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;62.50%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,196,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;68.75%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,196,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;68.75%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,144,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;75.00%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,144,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;75.00%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,72,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;81.25%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,72,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;81.25%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,0,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;87.50%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(255,0,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;87.50%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(213,0,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;93.75%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(213,0,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;93.75%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(158,0,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;stop</span> <span class="na">offset=</span><span class="s">&quot;100.00%&quot;</span> <span class="na">stop-color=</span><span class="s">&quot;rgb(158,0,0)&quot;</span> <span class="na">stop-opacity=</span><span class="s">&quot;1.0000&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/linearGradient&gt;</span>
+</pre></div>
+</div>
+<p>Which should be rendered like this:</p>
+<div class="figure align-center">
+<img alt="../../_images/intervals.png" src="../../_images/intervals.png" />
+</div>
+</li>
+<li><p><strong>Lines 24</strong> supplies the <code class="docutils literal notranslate"><span class="pre">minimum</span></code> parameter which is determined through a FilterFunction which takes the minimum value from the GridCoverage statistics,</p></li>
+<li><p><strong>Lines 25</strong> supplies the <code class="docutils literal notranslate"><span class="pre">maximum</span></code> parameter which is determined through a FilterFunction which takes the maximum value from the GridCoverage statistics,</p>
+<p>The resulting image may look like this (you may note the STEPs across colors due to color intervals):</p>
+<div class="figure align-center">
+<img alt="../../_images/panoply.png" src="../../_images/panoply.png" />
+</div>
+<p>Using an GMT_drywet SVG, the resulting image may look like this, which uses a smoother color ramp:</p>
+<div class="figure align-center">
+<img alt="../../_images/ramp.png" src="../../_images/ramp.png" />
+</div>
+</li>
+</ul>
+<p>Alternatively, a ColorMap may be specified this way:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>..........
+           <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;ras:DynamicColorMap&quot;</span><span class="nt">&gt;</span>
+             <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>data<span class="nt">&lt;/ogc:Literal&gt;</span>
+             <span class="nt">&lt;/ogc:Function&gt;</span>
+             <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>colorRamp<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;colormap&quot;</span><span class="nt">&gt;</span>
+                 <span class="nt">&lt;ogc:Literal&gt;</span>#0000FF;#00FF00;#FF0000<span class="nt">&lt;/ogc:Literal&gt;</span>
+                 <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;gridCoverageStats&quot;</span><span class="nt">&gt;&lt;ogc:Literal&gt;</span>minimum<span class="nt">&lt;/ogc:Literal&gt;&lt;/ogc:Function&gt;</span>
+                 <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;gridCoverageStats&quot;</span><span class="nt">&gt;&lt;ogc:Literal&gt;</span>maximum<span class="nt">&lt;/ogc:Literal&gt;&lt;/ogc:Function&gt;</span>
+               <span class="nt">&lt;/ogc:Function&gt;</span>
+             <span class="nt">&lt;/ogc:Function&gt;</span>
+           <span class="nt">&lt;/ogc:Function&gt;</span>
+...........
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>..........
+           <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;ras:DynamicColorMap&quot;</span><span class="nt">&gt;</span>
+             <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>data<span class="nt">&lt;/ogc:Literal&gt;</span>
+             <span class="nt">&lt;/ogc:Function&gt;</span>
+             <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;parameter&quot;</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>colorRamp<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;colormap&quot;</span><span class="nt">&gt;</span>
+                 <span class="nt">&lt;ogc:Literal&gt;</span>rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)<span class="nt">&lt;/ogc:Literal&gt;</span>
+                 <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;gridCoverageStats&quot;</span><span class="nt">&gt;&lt;ogc:Literal&gt;</span>minimum<span class="nt">&lt;/ogc:Literal&gt;&lt;/ogc:Function&gt;</span>
+                 <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;gridCoverageStats&quot;</span><span class="nt">&gt;&lt;ogc:Literal&gt;</span>maximum<span class="nt">&lt;/ogc:Literal&gt;&lt;/ogc:Function&gt;</span>
+               <span class="nt">&lt;/ogc:Function&gt;</span>
+             <span class="nt">&lt;/ogc:Function&gt;</span>
+           <span class="nt">&lt;/ogc:Function&gt;</span>
+...........
+</pre></div>
+</div>
+<p>In these cases a RAMP will be used with the indicated colors.</p>
+<blockquote>
+<div><p>The resulting image may look like this:</p>
+<div class="figure align-center">
+<img alt="../../_images/bgr.png" src="../../_images/bgr.png" />
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="dynamiccolormap-requirements">
+<h2>DynamicColorMap Requirements<a class="headerlink" href="#dynamiccolormap-requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>A preliminar <em>gdalinfo -stats</em> command needs to be run against the coverages in order to create the PAM Auxiliary file containing statistics and metadata.</p></li>
+<li><p>In order to setup colorMap from QuantumGIS, you should have copied the QuantumGIS SVG resources folder from <strong>apps/qgis/resources/cpt-city-XXXXX</strong> within the <strong>GEOSERVER_DATA_DIR</strong> as a <strong>styles/ramps</strong> subfolder.</p></li>
+<li><p>The underlying reader should support statistics retrieval by adding a PAMDataset object as a property of the returned coverage. For this reason the user should take care of setting the <strong>CheckAuxiliaryMetadata</strong> flag to <em>true</em> inside the <em>indexer.properties</em> or update the <em>.properties</em> file generated by GeoServer with that flag in case of already configured stores (You also need to reload the configuration in that case).</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../cog/update.html" title="previous chapter">COG ImageMosaic from local storage to S3</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../cov-json/index.html" title="next chapter">CoverageJSON output format</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Dynamic colormap generation</a><ul>
+<li><a class="reference internal" href="#installing-the-dynamic-colormap-community-extension">Installing the dynamic colormap community extension</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#dynamiccolormap-requirements">DynamicColorMap Requirements</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../cog/update.html" title="previous chapter">COG ImageMosaic from local storage to S3</a></li>
+            <li>Next: <a href="../cov-json/index.html" title="next chapter">CoverageJSON output format</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/colormap/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication with LDAP &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Authentication with LDAP against ActiveDirectory" href="../activedirectory/index.html" />
+    <link rel="prev" title="Tutorials" href="../index.html" /> 
+  </head><body class="security/tutorials/ldap/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Security</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Authentication with LDAP</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../activedirectory/index.html" title="Authentication with LDAP against ActiveDirectory" accesskey="N">Next</a></li>
+  <li>
+    <a href="../index.html" title="Tutorials" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="authentication-with-ldap">
+<span id="security-tutorials-ldap"></span><h1>Authentication with LDAP<a class="headerlink" href="#authentication-with-ldap" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial introduces GeoServer LDAP support and walks through the process of
+setting up authentication against an LDAP server. It is recommended that the
+<a class="reference internal" href="../../auth/providers.html#security-auth-provider-ldap"><span class="std std-ref">LDAP authentication</span></a> section be read before proceeding.</p>
+<div class="section" id="ldap-server-setup">
+<h2>LDAP server setup<a class="headerlink" href="#ldap-server-setup" title="Permalink to this headline">¶</a></h2>
+<p>A mock LDAP server will be used for this tutorial. Download and run the
+<a class="reference external" href="http://geoserver-docs.s3-website.eu-south-1.amazonaws.com/acme-ldap-1.0.jar">acme-ldap</a> jar:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="n">acme</span><span class="o">-</span><span class="n">ldap</span><span class="o">.</span><span class="n">jar</span>
+</pre></div>
+</div>
+<p>The output of which should look like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Directory</span> <span class="n">contents</span><span class="p">:</span>
+  <span class="n">ou</span><span class="o">=</span><span class="n">people</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+    <span class="n">uid</span><span class="o">=</span><span class="n">bob</span><span class="p">,</span><span class="n">ou</span><span class="o">=</span><span class="n">people</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+    <span class="n">uid</span><span class="o">=</span><span class="n">alice</span><span class="p">,</span><span class="n">ou</span><span class="o">=</span><span class="n">people</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+    <span class="n">uid</span><span class="o">=</span><span class="n">bill</span><span class="p">,</span><span class="n">ou</span><span class="o">=</span><span class="n">people</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+  <span class="n">ou</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+  <span class="n">cn</span><span class="o">=</span><span class="n">users</span><span class="p">,</span><span class="n">ou</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+    <span class="n">member</span><span class="p">:</span> <span class="n">uid</span><span class="o">=</span><span class="n">bob</span><span class="p">,</span><span class="n">ou</span><span class="o">=</span><span class="n">people</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+    <span class="n">member</span><span class="p">:</span> <span class="n">uid</span><span class="o">=</span><span class="n">alice</span><span class="p">,</span><span class="n">ou</span><span class="o">=</span><span class="n">people</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+  <span class="n">cn</span><span class="o">=</span><span class="n">admins</span><span class="p">,</span><span class="n">ou</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+    <span class="n">member</span><span class="p">:</span> <span class="n">uid</span><span class="o">=</span><span class="n">bill</span><span class="p">,</span><span class="n">ou</span><span class="o">=</span><span class="n">people</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">acme</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">org</span>
+
+  <span class="n">Server</span> <span class="n">running</span> <span class="n">on</span> <span class="n">port</span> <span class="mi">10389</span>
+</pre></div>
+</div>
+<p>The following diagram illustrates the hierarchy of the LDAP datatabse:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/acme_ldap.png" src="../../../_images/acme_ldap.png" />
+</div>
+</div></blockquote>
+<p>The LDAP tree consists of:</p>
+<ul class="simple">
+<li><p>The root domain component, <code class="docutils literal notranslate"><span class="pre">dc=acme,dc=org</span></code></p></li>
+<li><p>Two organizational units (groups) named <code class="docutils literal notranslate"><span class="pre">user</span></code> and <code class="docutils literal notranslate"><span class="pre">admin</span></code></p></li>
+<li><p>Two users named <code class="docutils literal notranslate"><span class="pre">bob</span></code> and <code class="docutils literal notranslate"><span class="pre">alice</span></code> who are members of the <code class="docutils literal notranslate"><span class="pre">user</span></code> group</p></li>
+<li><p>One user named <code class="docutils literal notranslate"><span class="pre">bill</span></code> who is a member of the <code class="docutils literal notranslate"><span class="pre">admin</span></code> group</p></li>
+</ul>
+</div>
+<div class="section" id="configure-the-ldap-authentication-provider">
+<h2>Configure the LDAP authentication provider<a class="headerlink" href="#configure-the-ldap-authentication-provider" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Start GeoServer and login to the web admin interface as the <code class="docutils literal notranslate"><span class="pre">admin</span></code> user.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Authentication</span></code> link located under the <code class="docutils literal notranslate"><span class="pre">Security</span></code> section of
+the navigation sidebar.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/ldap11.jpg" src="../../../_images/ldap11.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Scroll down to the <code class="docutils literal notranslate"><span class="pre">Authentication</span> <span class="pre">Providers</span></code> panel and click the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">new</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/ldap21.jpg" src="../../../_images/ldap21.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">LDAP</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/ldap31.jpg" src="../../../_images/ldap31.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Fill in the fields of the settings form as follows:</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Name</span></code> to “acme-ldap”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Server</span> <span class="pre">URL</span></code>  to “<a class="reference external" href="ldap://localhost:10389/dc=acme,dc=org">ldap://localhost:10389/dc=acme,dc=org</a>”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">lookup</span> <span class="pre">pattern</span></code> to “uid={0},ou=people”</p></li>
+</ul>
+</li>
+<li><p>Test the LDAP connection by entering the username “bob” and password “secret”
+in the connection test form located on the right and click the
+<code class="docutils literal notranslate"><span class="pre">Test</span> <span class="pre">Connection</span></code> button.</p>
+<div class="figure align-center">
+<img alt="../../../_images/ldap4.jpg" src="../../../_images/ldap4.jpg" />
+</div>
+<p>A successful connection should be reported at the top of the page.</p>
+</li>
+<li><p>Save.</p></li>
+<li><p>Back on the authentication page scroll down to the <code class="docutils literal notranslate"><span class="pre">Provider</span> <span class="pre">Chain</span></code> panel
+and move the <code class="docutils literal notranslate"><span class="pre">acme-ldap</span></code> provider from <code class="docutils literal notranslate"><span class="pre">Available</span></code> to <code class="docutils literal notranslate"><span class="pre">Selected</span></code>.</p>
+<div class="figure align-center">
+<img alt="../../../_images/ldap5.jpg" src="../../../_images/ldap5.jpg" />
+</div>
+</li>
+<li><p>Save.</p></li>
+</ol>
+</div>
+<div class="section" id="test-a-ldap-login">
+<h2>Test a LDAP login<a class="headerlink" href="#test-a-ldap-login" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Navigate to the GeoServer home page and log out of the admin account.</p></li>
+<li><p>Login as the user “bob” with the password “secret”.</p>
+<div class="figure align-center">
+<img alt="../../../_images/ldap6.jpg" src="../../../_images/ldap6.jpg" />
+</div>
+</li>
+</ol>
+<p>Logging in as bob doesn’t yield any administrative functionality because the bobaccount has not been mapped to the administrator role. In the next section
+GeoServer will be configured to map groups from the LDAP database to roles.</p>
+</div>
+<div class="section" id="map-ldap-groups-to-geoserver-roles">
+<h2>Map LDAP groups to GeoServer roles<a class="headerlink" href="#map-ldap-groups-to-geoserver-roles" title="Permalink to this headline">¶</a></h2>
+<p>When using LDAP for authentication GeoServer maps LDAP groups to GeoServer roles
+by prefixing the group name with <code class="docutils literal notranslate"><span class="pre">ROLE_</span></code> and converting the result to
+uppercase. For example bob and alice are members of the <code class="docutils literal notranslate"><span class="pre">user</span></code> group so after
+authentication they would be assigned a role named <code class="docutils literal notranslate"><span class="pre">ROLE_USER</span></code>. Similarly
+bill is a member of the <code class="docutils literal notranslate"><span class="pre">admin</span></code> group so he would be assigned a role named
+<code class="docutils literal notranslate"><span class="pre">ROLE_ADMIN</span></code>.</p>
+<ol class="arabic">
+<li><p>Log out of the web admin and log back in as the admin user.</p></li>
+<li><p>Navigate to the <code class="docutils literal notranslate"><span class="pre">Authentication</span></code> page.</p></li>
+<li><p>Scroll to the <code class="docutils literal notranslate"><span class="pre">Authentication</span> <span class="pre">Providers</span></code> panel and click the <code class="docutils literal notranslate"><span class="pre">acme-ldap</span></code>
+link.</p>
+<div class="figure align-center">
+<img alt="../../../_images/ldap7.jpg" src="../../../_images/ldap7.jpg" />
+</div>
+</li>
+<li><p>On the settings page fill in the following form fields:</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">search</span> <span class="pre">base</span></code> to “ou=groups”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">search</span> <span class="pre">filter</span></code> to “member={0}”</p></li>
+</ul>
+<p>The first field specifies the node of the LDAP directory tree at which groups
+are located. In this case the organizational unit named <code class="docutils literal notranslate"><span class="pre">groups</span></code>. The
+second field specifies the LDAP query filter to use in order to locate those
+groups that a specific user is a member of. The <code class="docutils literal notranslate"><span class="pre">{0}</span></code> is a placeholder
+which is replaced with the <code class="docutils literal notranslate"><span class="pre">uid</span></code> of the user.</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">as</span> <span class="pre">ADMIN</span></code> to “ADMIN”</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">as</span> <span class="pre">GROUP_ADMIN</span></code> to “ADMIN”</p></li>
+</ul>
+<p>If you want support for hierarchical LDAP groups:</p>
+<ul class="simple">
+<li><p>Check <span class="guilabel">Enable Hierarchical groups search</span> box.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Max</span> <span class="pre">depth</span> <span class="pre">for</span> <span class="pre">hierarchical</span> <span class="pre">groups</span> <span class="pre">search</span></code> to 10 (-1 for infinite depth, or the depth number you want to support).</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Nested</span> <span class="pre">group</span> <span class="pre">search</span> <span class="pre">filter</span></code> to “member={0}”</p></li>
+</ul>
+<div class="figure align-center">
+<img alt="../../../_images/ldap141.jpg" src="../../../_images/ldap141.jpg" />
+</div>
+<p>These settings let users in the LDAP admin group to be recognized as GeoServer administrators.</p>
+</li>
+<li><p>Save.</p></li>
+</ol>
+<p>At this point the LDAP provider will populate an authenticated user with roles
+based on the groups the user is a member of.</p>
+<p>At this point members of the <code class="docutils literal notranslate"><span class="pre">admin</span></code> LDAP group should be given full
+administrative privileges once authenticated. Log out of the admin account and
+log in as “bill” with the password “hello”. Once logged in full administrative
+functionality should be available.</p>
+</div>
+<div class="section" id="configure-the-ldap-role-service">
+<h2>Configure the LDAP role service<a class="headerlink" href="#configure-the-ldap-role-service" title="Permalink to this headline">¶</a></h2>
+<p>An additional step permits to configure a role service to get GeoServer roles
+from the LDAP repository and allow access rights to be assigned to those roles.</p>
+<ol class="arabic">
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Users,Group,Roles</span></code> link located under the <code class="docutils literal notranslate"><span class="pre">Security</span></code> section
+of the navigation sidebar.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">new</span> <span class="pre">link</span></code> under the  <code class="docutils literal notranslate"><span class="pre">Role</span> <span class="pre">Services</span></code> section.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">LDAP</span></code> option under the  <code class="docutils literal notranslate"><span class="pre">New</span> <span class="pre">Role</span> <span class="pre">Service</span></code> section.</p>
+<div class="figure align-center">
+<img alt="../../../_images/ldap15.png" src="../../../_images/ldap15.png" />
+</div>
+</li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">ldaprs</span></code> in the  <code class="docutils literal notranslate"><span class="pre">Name</span></code> text field.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">ldap://localhost:10389/dc=acme,dc=org</span></code> in the  <code class="docutils literal notranslate"><span class="pre">Server</span> <span class="pre">URL</span></code> text field.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">ou=groups</span></code> in the  <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">search</span> <span class="pre">base</span></code> text field.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">member=uid={0},ou=people,dc=acme,dc=org</span></code> in the  <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">user</span> <span class="pre">membership</span> <span class="pre">search</span> <span class="pre">filter</span></code> text field.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">cn=*</span></code> in the  <code class="docutils literal notranslate"><span class="pre">All</span> <span class="pre">groups</span> <span class="pre">search</span> <span class="pre">filter</span></code> text field.</p></li>
+</ol>
+<p>Then we need to a choose a user to authenticate on the server (many LDAP server don’t allow anonymous data lookup).</p>
+<ol class="arabic simple">
+<li><p>Check the <code class="docutils literal notranslate"><span class="pre">Authenticate</span> <span class="pre">to</span> <span class="pre">extract</span> <span class="pre">roles</span></code> checkbox.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">uid=bill,ou=people,dc=acme,dc=org</span></code> in the  <code class="docutils literal notranslate"><span class="pre">Username</span></code> text field.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">hello</span></code> in the  <code class="docutils literal notranslate"><span class="pre">Password</span></code> text field.</p></li>
+</ol>
+<p>If we want Hierarchical groups working we need:</p>
+<ol class="arabic simple">
+<li><p>Check the <code class="docutils literal notranslate"><span class="pre">Enable</span> <span class="pre">Hierarchical</span> <span class="pre">groups</span> <span class="pre">search</span></code> checkbox.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">10</span></code> in the  <code class="docutils literal notranslate"><span class="pre">Max</span> <span class="pre">depth</span> <span class="pre">for</span> <span class="pre">hierarchical</span> <span class="pre">groups</span> <span class="pre">search</span></code> text field.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">member={1}</span></code> in the  <code class="docutils literal notranslate"><span class="pre">Nested</span> <span class="pre">group</span> <span class="pre">search</span> <span class="pre">filter</span></code> text field.</p></li>
+<li><p>Save.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">ldaprs</span></code> role service item under the  <code class="docutils literal notranslate"><span class="pre">Role</span> <span class="pre">Services</span></code> section.</p></li>
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">ROLE_ADMIN</span></code> from the <code class="docutils literal notranslate"><span class="pre">Administrator</span> <span class="pre">role</span></code> combo-box.</p></li>
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">ROLE_ADMIN</span></code> from the <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">administrator</span> <span class="pre">role</span></code> combo-box.</p></li>
+<li><p>Save again.</p></li>
+</ol>
+<p>You should now be able to see and assign the new <code class="docutils literal notranslate"><span class="pre">ROLE_ADMIN</span></code> and <code class="docutils literal notranslate"><span class="pre">ROLE_USER</span></code> roles wherever an <code class="docutils literal notranslate"><span class="pre">Available</span> <span class="pre">Roles</span></code> list is shown (for example in the <code class="docutils literal notranslate"><span class="pre">Data</span></code> and <code class="docutils literal notranslate"><span class="pre">Services</span></code> rules sections.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../index.html" title="previous chapter">Tutorials</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../activedirectory/index.html" title="next chapter">Authentication with LDAP against ActiveDirectory</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Authentication with LDAP</a><ul>
+<li><a class="reference internal" href="#ldap-server-setup">LDAP server setup</a></li>
+<li><a class="reference internal" href="#configure-the-ldap-authentication-provider">Configure the LDAP authentication provider</a></li>
+<li><a class="reference internal" href="#test-a-ldap-login">Test a LDAP login</a></li>
+<li><a class="reference internal" href="#map-ldap-groups-to-geoserver-roles">Map LDAP groups to GeoServer roles</a></li>
+<li><a class="reference internal" href="#configure-the-ldap-role-service">Configure the LDAP role service</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../index.html" title="previous chapter">Tutorials</a></li>
+            <li>Next: <a href="../activedirectory/index.html" title="next chapter">Authentication with LDAP against ActiveDirectory</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/tutorials/ldap/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

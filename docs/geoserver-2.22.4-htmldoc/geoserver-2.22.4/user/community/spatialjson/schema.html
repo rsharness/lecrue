@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Opt. 1: Removing Redundant Schema Information &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Opt. 2: Removing Redundant Attribute Values" href="attributes.html" />
+    <link rel="prev" title="Development Status" href="development.html" /> 
+  </head><body class="community/spatialjson/schema">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SpatialJSON WFS Output Format Extension</a> &raquo;</li>
+    <li>Opt. 1: Removing Redundant Schema Information</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="attributes.html" title="Opt. 2: Removing Redundant Attribute Values" accesskey="N">Next</a></li>
+  <li>
+    <a href="development.html" title="Development Status" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <blockquote>
+<div></div></blockquote>
+<div class="section" id="opt-1-removing-redundant-schema-information">
+<span id="spatialjson-schema"></span><h1>Opt. 1: Removing Redundant Schema Information<a class="headerlink" href="#opt-1-removing-redundant-schema-information" title="Permalink to this headline">¶</a></h1>
+<p>In traditional GeoJSON, every feature in a (simple feature) feature collection has its own schema
+information. That is, every feature contains all its (not necessarily short) attribute names. Except
+the geometry name, these names are used as the keys in the <code class="docutils literal notranslate"><span class="pre">&quot;properties&quot;</span></code> map:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;areas.1&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">590529</span><span class="p">,</span> <span class="mi">4914625</span><span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;geometry_name&quot;</span><span class="p">:</span> <span class="s2">&quot;the_geom&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;area_no&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="nt">&quot;area_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Mainland&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;area_description&quot;</span><span class="p">:</span> <span class="s2">&quot;grassland&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;area_cost_center&quot;</span><span class="p">:</span> <span class="s2">&quot;0815&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;areas.2&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">590215</span><span class="p">,</span> <span class="mi">4913987</span><span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;geometry_name&quot;</span><span class="p">:</span> <span class="s2">&quot;the_geom&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;area_no&quot;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
+        <span class="nt">&quot;area_name&quot;</span><span class="p">:</span> <span class="s2">&quot;South region&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;area_description&quot;</span> <span class="p">:</span> <span class="s2">&quot;meadow, pasture&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;area_cost_center&quot;</span><span class="p">:</span> <span class="s2">&quot;0812&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;totalFeatures&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;numberMatched&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;numberReturned&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;timeStamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2022-10-17T08:12:45.248Z&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;crs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ogc:def:crs:EPSG::26713&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Since all features have the same schema information, SpatialJSON does not write attribute names for
+every feature. Instead, a single <code class="docutils literal notranslate"><span class="pre">&quot;schemaInformation&quot;</span></code> property is added to the end of the
+top-level <code class="docutils literal notranslate"><span class="pre">&quot;FeatureCollection&quot;</span></code> object:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;areas.1&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">590529</span><span class="p">,</span> <span class="mi">4914625</span><span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="s2">&quot;Mainland&quot;</span><span class="p">,</span> <span class="s2">&quot;grassland&quot;</span><span class="p">,</span> <span class="s2">&quot;0815&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;areas.2&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">590215</span><span class="p">,</span> <span class="mi">4913987</span><span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="s2">&quot;South region&quot;</span><span class="p">,</span> <span class="s2">&quot;meadow, pasture&quot;</span><span class="p">,</span> <span class="s2">&quot;0812&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;totalFeatures&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;numberMatched&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;numberReturned&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;timeStamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2022-10-17T08:14:36.521Z&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;crs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ogc:def:crs:EPSG::26713&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;schemaInformation&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;propertyNames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;area_no&quot;</span><span class="p">,</span> <span class="s2">&quot;area_name&quot;</span><span class="p">,</span> <span class="s2">&quot;area_description&quot;</span><span class="p">,</span> <span class="s2">&quot;area_cost_center&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;geometryName&quot;</span><span class="p">:</span> <span class="s2">&quot;the_geom&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>With SpatialJSON, each feature’s <code class="docutils literal notranslate"><span class="pre">&quot;properties&quot;</span></code> map becomes an <em>ordered list</em> (array) whose index
+corresponds to the <code class="docutils literal notranslate"><span class="pre">&quot;propertyNames&quot;</span></code> array that holds the attribute names in the new
+<code class="docutils literal notranslate"><span class="pre">&quot;schemaInformation&quot;</span></code> object. Additionally, the repeated property <code class="docutils literal notranslate"><span class="pre">&quot;geometry_name&quot;</span></code> is replaced
+by a single property named <code class="docutils literal notranslate"><span class="pre">&quot;geometryName&quot;</span></code> in the new schema information object.</p>
+<div class="section" id="evaluation">
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
+<p>In the above example, without whitespaces and line breaks, savings in space are only about 5%. With
+much more features savings could reach almost 27% (the ratio of the sizes of a GeoJSON and a
+SpatialJSON feature object), that is, the size of the SpatialJSON response is only 73% of the size
+of a traditional GeoJSON response. More savings are possible with more attributes per feature.
+Savings basically depend on the ratio between schema information size and data size. In tests
+requesting several thousands of simple features with 200+ columns/attributes savings up to 70% have
+been achieved.</p>
+<p>These savings drop to between ~50% and ~3% when a compressing content encoding method (like gzip,
+deflate or brotli) is used on the wire. However, it’s not all about transfer size. The smaller the
+uncompressed JSON response, the lesser characters the client has to parse. Smaller uncompressed
+responses are also much more memory-friendly on both the server and the client side.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="development.html" title="previous chapter">Development Status</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="attributes.html" title="next chapter">Opt. 2: Removing Redundant Attribute Values</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Opt. 1: Removing Redundant Schema Information</a><ul>
+<li><a class="reference internal" href="#evaluation">Evaluation</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="development.html" title="previous chapter">Development Status</a></li>
+            <li>Next: <a href="attributes.html" title="next chapter">Opt. 2: Removing Redundant Attribute Values</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/spatialjson/schema.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

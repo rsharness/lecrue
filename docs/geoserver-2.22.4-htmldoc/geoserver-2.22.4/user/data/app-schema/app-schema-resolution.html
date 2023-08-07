@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Application Schema Resolution &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Supported GML Versions" href="supported-gml-versions.html" />
+    <link rel="prev" title="Mapping File" href="mapping-file.html" /> 
+  </head><body class="data/app-schema/app-schema-resolution">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Application Schema Resolution</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="supported-gml-versions.html" title="Supported GML Versions" accesskey="N">Next</a></li>
+  <li>
+    <a href="mapping-file.html" title="Mapping File" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="application-schema-resolution">
+<span id="app-schema-app-schema-resolution"></span><h1>Application Schema Resolution<a class="headerlink" href="#application-schema-resolution" title="Permalink to this headline">¶</a></h1>
+<p>To be able to encode XML responses conforming to a GML application schema, the app-schema plugin must be able to locate the application schema files (XSDs) that define the schema. This page describes the schema resolution process.</p>
+<div class="section" id="schema-downloading-is-now-automatic-for-most-users">
+<h2>Schema downloading is now automatic for most users<a class="headerlink" href="#schema-downloading-is-now-automatic-for-most-users" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer will automatically download and cache (see <a class="reference internal" href="#cache">Cache</a> below) all the schemas it needs the first time it starts if:</p>
+<ol class="arabic simple">
+<li><p>All the application schemas you use are accessed via http/https URLs, and</p></li>
+<li><p>Your GeoServer instance is deployed on a network that permits it to download them.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is the recommended way of using GeoServer app-schema for most users.</p>
+</div>
+<p>If cached downloading is used, no manual handling of schemas will be required. The rest of this page is for those with more complicated arrangements, or who wish to clear the cache.</p>
+</div>
+<div class="section" id="resolution-order">
+<h2>Resolution order<a class="headerlink" href="#resolution-order" title="Permalink to this headline">¶</a></h2>
+<p>The order of sources used to resolve application schemas is:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#oasis-catalog">OASIS Catalog</a></p></li>
+<li><p><a class="reference internal" href="#classpath">Classpath</a></p></li>
+<li><p><a class="reference internal" href="#cache">Cache</a></p></li>
+</ol>
+<p>Every attempt to load a schema works down this list, so imports can be resolved from sources other than that used for the originating document. For example, an application schema in the cache that references a schema found in the catalog will use the version in the catalog, rather than caching it. This allows users to supply unpublished or modified schemas sourced from, for example, the catalog, at the cost of interoperability (how do WFS clients get them?).</p>
+</div>
+<div class="section" id="oasis-catalog">
+<h2>OASIS Catalog<a class="headerlink" href="#oasis-catalog" title="Permalink to this headline">¶</a></h2>
+<p>An <a class="reference external" href="http://www.oasis-open.org/committees/entity/spec-2001-08-06.html">OASIS XML Catalog</a> is a standard configuration file format that instructs an XML processing system how to process entity references. The GeoServer app-schema resolver uses catalog URI semantics to locate application schemas, so <code class="docutils literal notranslate"><span class="pre">uri</span></code> or <code class="docutils literal notranslate"><span class="pre">rewriteURI</span></code> entries should be present in your catalog. The optional mapping file  <code class="docutils literal notranslate"><span class="pre">catalog</span></code> element provides the location of the OASIS XML Catalog configuration file, given as a path relative to the mapping file, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">catalog</span><span class="o">&gt;../../../</span><span class="n">schemas</span><span class="o">/</span><span class="n">catalog</span><span class="o">.</span><span class="n">xml</span><span class="o">&lt;/</span><span class="n">catalog</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Earlier versions of the app-schema plugin required all schemas to be present in the catalog. This is no longer the case. Because the catalog is searched first, existing catalog-based deployments will continue to work as before.</p>
+<p>To migrate an existing GeoServer app-schema deployment that uses an OASIS Catalog to instead use cached downloads (see <a class="reference internal" href="#cache">Cache</a> below), remove all <code class="docutils literal notranslate"><span class="pre">catalog</span></code> elements from your mapping files and restart GeoServer.</p>
+</div>
+<div class="section" id="classpath">
+<h2>Classpath<a class="headerlink" href="#classpath" title="Permalink to this headline">¶</a></h2>
+<p>Java applications such as GeoServer can load resources from the Java classpath. GeoServer app-schema uses a simple mapping from an http or https URL to a classpath resource location. For example, an application schema published at <code class="docutils literal notranslate"><span class="pre">http://schemas.example.org/exampleml/exml.xsd</span></code> would be found on the classpath if it was stored either:</p>
+<ul class="simple">
+<li><p>at <code class="docutils literal notranslate"><span class="pre">/org/example/schemas/exampleml/exml.xsd</span></code> in a JAR file on the classpath (for example, a JAR file in <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code>) or,</p></li>
+<li><p>on the local filesystem at <code class="docutils literal notranslate"><span class="pre">WEB-INF/classes/org/example/schemas/exampleml/exml.xsd</span></code> .</p></li>
+</ul>
+<p>The ability to load schemas from the classpath is intended to support testing, but may be useful to users whose communities supply JAR files containing their application schemas.</p>
+</div>
+<div class="section" id="cache">
+<span id="app-schema-cache"></span><h2>Cache<a class="headerlink" href="#cache" title="Permalink to this headline">¶</a></h2>
+<p>If an application schema cannot be found in the catalog or on the classpath, it is downloaded from the network and stored in a subdirectory <code class="docutils literal notranslate"><span class="pre">app-schema-cache</span></code> of the GeoServer data directory.</p>
+<ul class="simple">
+<li><p>Once schemas are downloaded into the cache, they persist indefinitely, including over GeoServer restarts.</p></li>
+<li><p>No attempt will be made to retrieve new versions of cached schemas.</p></li>
+<li><p>To clear the cache, remove the  subdirectory <code class="docutils literal notranslate"><span class="pre">app-schema-cache</span></code> of the GeoServer data directory and restart GeoServer.</p></li>
+</ul>
+<p>GeoServer app-schema uses a simple mapping from an http or https URL to local filesystem path. For example, an application schema published at <code class="docutils literal notranslate"><span class="pre">http://schemas.example.org/exampleml/exml.xsd</span></code> would be downloaded and stored as <code class="docutils literal notranslate"><span class="pre">app-schema-cache/org/example/schemas/exampleml/exml.xsd</span></code> . Note that:</p>
+<ul class="simple">
+<li><p>Only <code class="docutils literal notranslate"><span class="pre">http</span></code> and <code class="docutils literal notranslate"><span class="pre">https</span></code> URLs are supported.</p></li>
+<li><p>Port numbers, queries, and fragments are ignored.</p></li>
+</ul>
+<p>If your GeoServer instance is deployed on a network whose firewall rules prevent outgoing TCP connections on port 80 (http) or 443 (https), schema downloading will not work. (For security reasons, some service networks [“demilitarised zones”] prohibit such outgoing connections.) If schema downloading is not permitted on your network, there are three solutions:</p>
+<ol class="arabic simple">
+<li><p>Either: Install and configure GeoServer on another network that can make outgoing TCP connections, start GeoServer to trigger schema download, and then manually copy the <code class="docutils literal notranslate"><span class="pre">app-schema-cache</span></code> directory to the production server. This is the easiest option because GeoServer automatically downloads all the schemas it needs, including dependencies.</p></li>
+<li><p>Or: Deploy JAR files containing all required schema files on the classpath (see <a class="reference internal" href="#classpath">Classpath</a> above).</p></li>
+<li><p>Or: Use a catalog (see <a class="reference internal" href="#oasis-catalog">OASIS Catalog</a> above).</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>System property “schema.cache.dir” with a cache directory location is required for using a mapping file from a remote URL with ‘<a class="reference external" href="http://">http://</a>’ or ‘<a class="reference external" href="https://">https://</a>’ protocol.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="mapping-file.html" title="previous chapter">Mapping File</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="supported-gml-versions.html" title="next chapter">Supported GML Versions</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Application Schema Resolution</a><ul>
+<li><a class="reference internal" href="#schema-downloading-is-now-automatic-for-most-users">Schema downloading is now automatic for most users</a></li>
+<li><a class="reference internal" href="#resolution-order">Resolution order</a></li>
+<li><a class="reference internal" href="#oasis-catalog">OASIS Catalog</a></li>
+<li><a class="reference internal" href="#classpath">Classpath</a></li>
+<li><a class="reference internal" href="#cache">Cache</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="mapping-file.html" title="previous chapter">Mapping File</a></li>
+            <li>Next: <a href="supported-gml-versions.html" title="next chapter">Supported GML Versions</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/app-schema-resolution.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

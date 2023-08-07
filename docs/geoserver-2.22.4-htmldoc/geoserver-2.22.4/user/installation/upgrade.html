@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upgrading existing versions &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Getting started" href="../gettingstarted/index.html" />
+    <link rel="prev" title="Docker Container" href="docker.html" /> 
+  </head><body class="installation/upgrade">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Installation</a> &raquo;</li>
+    <li>Upgrading existing versions</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../gettingstarted/index.html" title="Getting started" accesskey="N">Next</a></li>
+  <li>
+    <a href="docker.html" title="Docker Container" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="upgrading-existing-versions">
+<span id="installation-upgrade"></span><h1>Upgrading existing versions<a class="headerlink" href="#upgrading-existing-versions" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See <a class="reference internal" href="../datadirectory/migrating.html#datadir-migrating"><span class="std std-ref">Migrating a data directory between versions</span></a> for more details.</p>
+</div>
+<p>The general GeoServer upgrade process is as follows:</p>
+<ol class="arabic">
+<li><p>Back up the current data directory. This can involve simply copying the directory to an additional place.</p></li>
+<li><p>Make sure that the current data directory is external to the application (not located inside the application file structure).</p>
+<p>Check the GeoServer Server status page to double check the data directory location.</p>
+</li>
+<li><p>Make a note of any extensions you have installed.</p>
+<ul class="simple">
+<li><p>The GeoServer <span class="menuselection">About ‣ Server Status</span> page provides a <span class="guilabel">Modules</span> tab listing the modules installed.</p></li>
+<li><p>Some extensions include more than one module, as an example the WPS extension is listed as <code class="file docutils literal notranslate"><span class="pre">gs-wps-core</span></code> and <code class="file docutils literal notranslate"><span class="pre">gs-web-wps</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Uninstall the old version and install the new version.</p>
+<ul class="simple">
+<li><p>Download <a class="reference external" href="http://geoserver.org/release/maintenance">maintenance</a> release to update existing installation</p></li>
+<li><p>Download <a class="reference external" href="http://geoserver.org/release/stable">stable</a> release when ready to upgrade</p></li>
+</ul>
+</li>
+<li><p>Be sure to download and install each extension used by your prior installation.</p></li>
+<li><p>Make sure that the new installation continues to point to the same data directory used by the previous version.</p></li>
+</ol>
+<div class="section" id="notes-on-upgrading-specific-versions">
+<h2>Notes on upgrading specific versions<a class="headerlink" href="#notes-on-upgrading-specific-versions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="remote-requests-control-geoserver-2-22-and-newer">
+<h3>Remote requests control (GeoServer 2.22 and newer)<a class="headerlink" href="#remote-requests-control-geoserver-2-22-and-newer" title="Permalink to this headline">¶</a></h3>
+<p>As of GeoServer 2.22, remote requests control has been added, but disabled by default, in GeoServer. You should consider enabling it and providing safe urls that will be allowed.</p>
+<p>When enabled, this feature allows administrators to control which remote requests are allowed to be made to GeoServer. When you first enable it, no authorizations are included, thus GeoServer will deny remote requests originating from user interaction. In particular, the following use cases are affected:</p>
+<ul class="simple">
+<li><p>WMS operations with remotely fetch styles (<code class="docutils literal notranslate"><span class="pre">sld</span></code> parameter) and style referencing remote icons (in general, icons outside of the data directory).
+As a reminder, when a remote icon is not found, GeoServer will fall back to a default icon, a gray square with a black border.</p></li>
+<li><p>WMS “feature portrayal” with dynamic remote WFS references provided in the request (<code class="docutils literal notranslate"><span class="pre">REMOTE_OWS_TYPE</span></code> and <code class="docutils literal notranslate"><span class="pre">REMOTE_OWS_URL</span></code> parameters).</p></li>
+<li><p>WPS remote inputs via either GET or POST request (e.g., remote GeoJSON file source).</p></li>
+</ul>
+<p>The list of locations that are safe to contact can be configured using the <a class="reference internal" href="../security/urlchecks.html#security-urlchecks"><span class="std std-ref">URL Checks</span></a> page.</p>
+</div>
+<div class="section" id="log4j-upgrade-geoserver-2-21-and-newer">
+<h3>Log4J Upgrade (GeoServer 2.21 and newer)<a class="headerlink" href="#log4j-upgrade-geoserver-2-21-and-newer" title="Permalink to this headline">¶</a></h3>
+<p>As of GeoServer 2.21, the logging system used by GeoServer has been upgraded from Log4J 1.2 to Log4J 2.</p>
+<ul>
+<li><p>GeoServer now uses <code class="file docutils literal notranslate"><span class="pre">xml</span></code> files for the built-in logging profiles (previously <code class="file docutils literal notranslate"><span class="pre">properties</span></code> files were used).</p></li>
+<li><p>The built-in logging profiles are upgraded with <code class="file docutils literal notranslate"><span class="pre">xml</span></code> files:</p>
+<div class="line-block">
+<div class="line"><code class="file docutils literal notranslate"><span class="pre">DEFAULT_LOGGING.xml</span></code></div>
+<div class="line"><code class="file docutils literal notranslate"><span class="pre">DEFAULT_LOGGING.properties.bak</span></code></div>
+</div>
+</li>
+<li><p>A backup of the prior <code class="file docutils literal notranslate"><span class="pre">properties</span></code> files are created during the upgrade process. If you had previously made any customizations to a built-in profiles these backup files may be used as a reference when customizing the xml file.</p></li>
+<li><p>Log4J 2 does have the ability to read Log4j 1.2 properties files although not all features are supported.</p>
+<p>Any custom <code class="file docutils literal notranslate"><span class="pre">properties</span></code> files you created will continue to be available for use.</p>
+</li>
+<li><p>If necessary you can recover a customization you performed to a built-in logging profile by restoring to a different filename. To recover a customization from <code class="file docutils literal notranslate"><span class="pre">PRODUCTION_LOGGING.properties.bak</span></code> rename the file to  <code class="file docutils literal notranslate"><span class="pre">PRODUCTION_LOGGING.properties.bak</span></code> to <code class="file docutils literal notranslate"><span class="pre">CUSTOM_LOGGING.properties</span></code>.</p></li>
+<li><p>If you never plan to customize the built-in logging profiles the <code class="docutils literal notranslate"><span class="pre">UPDATE_BUILT_IN_LOGGING_PROFILES=true</span></code> system property will always ensure you have our latest recommendation.</p></li>
+</ul>
+</div>
+<div class="section" id="jts-type-bindings-geoserver-2-14-and-newer">
+<h3>JTS Type Bindings (GeoServer 2.14 and newer)<a class="headerlink" href="#jts-type-bindings-geoserver-2-14-and-newer" title="Permalink to this headline">¶</a></h3>
+<p>As of GeoServer 2.14, the output produced by <a class="reference internal" href="../rest/index.html#rest"><span class="std std-ref">REST</span></a> featuretype and structured coverage requests using a different package name (<code class="docutils literal notranslate"><span class="pre">org.locationtech</span></code> instead of <code class="docutils literal notranslate"><span class="pre">com.vividsolutions</span></code>) for geometry type bindings, due to the upgrade to JTS (Java Topology Suite) 1.16.0. For example:</p>
+<p>Before:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="o">&lt;</span><span class="n">attribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">geom</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">minOccurs</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">minOccurs</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">maxOccurs</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">maxOccurs</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">nillable</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">nillable</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">binding</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">vividsolutions</span><span class="o">.</span><span class="n">jts</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">Point</span><span class="o">&lt;/</span><span class="n">binding</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">attribute</span><span class="o">&gt;</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>After:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="o">&lt;</span><span class="n">attribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">geom</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">minOccurs</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">minOccurs</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">maxOccurs</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">maxOccurs</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">nillable</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">nillable</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">binding</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="n">locationtech</span><span class="o">.</span><span class="n">jts</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">Point</span><span class="o">&lt;/</span><span class="n">binding</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">attribute</span><span class="o">&gt;</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Any REST clients which rely on this binding information should be updated to support the new names.</p>
+</div>
+<div class="section" id="geojson-encoding-geoserver-2-6-and-newer">
+<h3>GeoJSON encoding (GeoServer 2.6 and newer)<a class="headerlink" href="#geojson-encoding-geoserver-2-6-and-newer" title="Permalink to this headline">¶</a></h3>
+<p>As of GeoServer 2.6, the GeoJSON produced by the WFS service no longer uses a non-standard encoding for the CRS. To re-enable this behavior for compatibility purposes, set <code class="docutils literal notranslate"><span class="pre">GEOSERVER_GEOJSON_LEGACY_CRS=true</span></code> as a system property, context parameter, or environment variable.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="docker.html" title="previous chapter">Docker Container</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../gettingstarted/index.html" title="next chapter">Getting started</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Upgrading existing versions</a><ul>
+<li><a class="reference internal" href="#notes-on-upgrading-specific-versions">Notes on upgrading specific versions</a><ul>
+<li><a class="reference internal" href="#remote-requests-control-geoserver-2-22-and-newer">Remote requests control (GeoServer 2.22 and newer)</a></li>
+<li><a class="reference internal" href="#log4j-upgrade-geoserver-2-21-and-newer">Log4J Upgrade (GeoServer 2.21 and newer)</a></li>
+<li><a class="reference internal" href="#jts-type-bindings-geoserver-2-14-and-newer">JTS Type Bindings (GeoServer 2.14 and newer)</a></li>
+<li><a class="reference internal" href="#geojson-encoding-geoserver-2-6-and-newer">GeoJSON encoding (GeoServer 2.6 and newer)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="docker.html" title="previous chapter">Docker Container</a></li>
+            <li>Next: <a href="../gettingstarted/index.html" title="next chapter">Getting started</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/installation/upgrade.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

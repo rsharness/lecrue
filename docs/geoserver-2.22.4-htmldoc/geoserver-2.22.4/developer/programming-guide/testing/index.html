@@ -1,0 +1,739 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testing &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Security" href="../security/index.html" />
+    <link rel="prev" title="Implementing a Rendering Transformation" href="../wps-services/implement-rendertrans.html" /> 
+  </head><body class="programming-guide/testing/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+    <li>Testing</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../security/index.html" title="Security" accesskey="N">Next</a></li>
+  <li>
+    <a href="../wps-services/implement-rendertrans.html" title="Implementing a Rendering Transformation" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="testing">
+<span id="id1"></span><h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+<p>This section provides an overview of how testing in GeoServer works and a brief guide for
+developers to help with the process of writing tests.</p>
+<div class="section" id="libraries">
+<h2>Libraries<a class="headerlink" href="#libraries" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer utilizes a number of commonly used testing libraries.</p>
+<div class="section" id="junit">
+<h3>JUnit<a class="headerlink" href="#junit" title="Permalink to this headline">¶</a></h3>
+<p>The well known <a class="reference external" href="http://junit.org">JUnit</a> framework is the primary test library used in
+GeoServer. The current version used is Junit 4.x. While it is possible to continue to write
+JUnit 3.x style tests with JUnit 4, new tests should be written in the JUnit4 style
+with annotations.</p>
+<p>Current version: 4.11</p>
+</div>
+<div class="section" id="xmlunit">
+<h3>XMLUnit<a class="headerlink" href="#xmlunit" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="http://xmlunit.sourceforge.net">XMLUnit</a> library provides a convenient way to make
+test assertions about the structure of XML documents. Since many components and services in
+GeoServer output XML, XMLUnit is a very useful library.</p>
+<p>Current version: 1.3</p>
+</div>
+<div class="section" id="mockrunner">
+<h3>MockRunner<a class="headerlink" href="#mockrunner" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="http://mockrunner.sourceforge.net">MockRunner</a> framework provides a set of classes that
+implement the various interfaces of the J2EE and Java Servlet apis. It is typically used to
+create <code class="docutils literal notranslate"><span class="pre">HttpServletRequest</span></code> , <code class="docutils literal notranslate"><span class="pre">HttpServletResponse</span></code>, etc… objects for testing servlet
+based components.</p>
+<p>Current version: 0.3.6</p>
+</div>
+<div class="section" id="easymock">
+<h3>EasyMock<a class="headerlink" href="#easymock" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="http://www.easymock.org">EasyMock</a> library is a
+<a class="reference external" href="http://en.wikipedia.org/wiki/Mock_object">mocking framework</a> that is used to simulate
+various objects without actually creating a real version of them. This is an extremely useful
+tool when developing unit tests for a component A, that requires component B when component
+B may not be so easy to create from scratch.</p>
+<p>Current version: 2.5.2</p>
+</div>
+</div>
+<div class="section" id="testing-categories-and-terminology">
+<h2>Testing Categories and Terminology<a class="headerlink" href="#testing-categories-and-terminology" title="Permalink to this headline">¶</a></h2>
+<p>Software testing falls into many different categories and the GeoServer code base is no
+exception. In the GeoServer code base one may find different types of tests.</p>
+<div class="section" id="unit">
+<h3>Unit<a class="headerlink" href="#unit" title="Permalink to this headline">¶</a></h3>
+<p>Tests that exercise a particular method/class/component in complete isolation. In GeoServer
+these are tests that typically don’t extend from any base class and look like what one would
+typically expect a unit test to look like.</p>
+</div>
+<div class="section" id="integration-mock">
+<h3>Integration/Mock<a class="headerlink" href="#integration-mock" title="Permalink to this headline">¶</a></h3>
+<p>Tests that exercise a component by that must integrate with another component to operate.
+In GeoServer these are tests that somehow mock up the dependencies for the component under
+test either by creating it directly or via a mocking library.</p>
+</div>
+<div class="section" id="system">
+<h3>System<a class="headerlink" href="#system" title="Permalink to this headline">¶</a></h3>
+<p>Tests that exercise a component or set of components by testing it in a fully running system.
+In GeoServer these are tests that create a fully functional GeoServer system, including
+a data directory/configuration and a spring context.</p>
+<p>Helper classes are provided to help inject your classes into the system configuration including <code class="docutils literal notranslate"><span class="pre">GeoServerExtensionsHelper</span></code>.</p>
+</div>
+</div>
+<div class="section" id="writing-system-tests">
+<h2>Writing System Tests<a class="headerlink" href="#writing-system-tests" title="Permalink to this headline">¶</a></h2>
+<p>System tests are the most common type of test case in GeoServer, primarily because they are
+the easiest tests to write. However they come with a cost of performance. The GeoServer system
+test framework provides a fully functional GeoServer system. Creating this system is an
+expensive operation so a full system test should be used only as a last resort.
+Developers are encouraged to consider a straight unit or mock tests before resorting to a
+full system test.</p>
+<p>In GeoServer system tests extend from the <code class="docutils literal notranslate"><span class="pre">org.geoserver.test.GeoServerSystemTestSupport</span></code> class.
+The general lifecycle of a system test goes through the following states:</p>
+<ol class="arabic simple">
+<li><p>System initialization</p></li>
+<li><p>System creation</p></li>
+<li><p>Test execution</p></li>
+<li><p>System destruction</p></li>
+</ol>
+<p>Phases 1 and 2 are referred to as the setup phase. It is during this phase that two main
+operations are performed. The first is the creation of the GeoServer data directory on
+disk. The second is the creation of the spring application context.</p>
+<div class="section" id="single-vs-repeated-setup">
+<h3>Single vs Repeated Setup<a class="headerlink" href="#single-vs-repeated-setup" title="Permalink to this headline">¶</a></h3>
+<p>By default, for performance reasons, the setup phase is executed only once for a system
+test. This can however be configured by annotating the test class with a special annotation
+named <code class="docutils literal notranslate"><span class="pre">TestSetup</span></code>. For example, to specify that the setup should be executed many times,
+for each test method of the class:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@TestSetup</span><span class="p">(</span><span class="n">run</span><span class="o">=</span><span class="n">TestSetupFrequency</span><span class="p">.</span><span class="na">REPEAT</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyTestCase</span> <span class="kd">extends</span> <span class="n">GeoServerSystemTestSupport</span> <span class="p">{</span>
+   <span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This however should be used only as a last resort since as mentioned before a repeated
+setup makes the test execute very slowly. An alternative to a repeated setup is to have the
+test case revert any changes that it makes during its execution, so that every test method
+can execute in a consistent state. The <code class="docutils literal notranslate"><span class="pre">GeoServerSystemTestSupport</span></code> contains a number of
+convenience methods for doing this. Consider the following test:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyTestCase</span> <span class="kd">extends</span> <span class="n">GeoServerSystemTestSupport</span> <span class="p">{</span>
+
+   <span class="nd">@Before</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">revertChanges</span><span class="p">()</span> <span class="p">{</span>
+       <span class="c1">//roll back any changes made</span>
+       <span class="n">revertLayer</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="nd">@Test</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testThatChangesLayerFoo</span><span class="p">()</span> <span class="p">{</span>
+      <span class="c1">//change layer foo in some way</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The test makes some changes to a particular layer but uses a before hook to revert any
+such changes. In general this is the recommended pattern for system tests that must are not
+read-only and must modify configuration or data to execute.</p>
+</div>
+<div class="section" id="method-level-setup">
+<h3>Method Level SetUp<a class="headerlink" href="#method-level-setup" title="Permalink to this headline">¶</a></h3>
+<p>A third method of controlling test setup frequency is available at the test case level.
+Annotating a test method with the <code class="docutils literal notranslate"><span class="pre">RunTestSetup</span></code> annotation will cause the test setup to be
+run before the test method is executed. For example:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyTestCase</span> <span class="kd">extends</span> <span class="n">GeoServerSystemTestSupport</span> <span class="p">{</span>
+
+   <span class="nd">@Before</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">revertChanges</span><span class="p">()</span> <span class="p">{</span>
+       <span class="c1">//roll back any changes made</span>
+       <span class="n">revertLayer</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="nd">@Test</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test1</span><span class="p">()</span> <span class="p">{</span>
+   <span class="p">}</span>
+
+   <span class="nd">@Test</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test2</span><span class="p">()</span> <span class="p">{</span>
+   <span class="p">}</span>
+
+   <span class="nd">@Test</span>
+   <span class="nd">@RunTestSetup</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test3</span><span class="p">()</span> <span class="p">{</span>
+
+   <span class="p">}</span>
+
+   <span class="nd">@Test</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test4</span><span class="p">()</span> <span class="p">{</span>
+   <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In the above method the test setup will be run twice. Once before the entire test class is
+run, and again before the test3 method is executed.</p>
+</div>
+<div class="section" id="setup-teardown-hooks">
+<h3>Setup/Teardown Hooks<a class="headerlink" href="#setup-teardown-hooks" title="Permalink to this headline">¶</a></h3>
+<p>There are a number of ways to hook into test lifecycle to provide setup and tear down
+functionality.</p>
+<div class="section" id="junit-before-after-beforeclass-afterclass">
+<h4>JUnit &#64;Before, &#64;After, &#64;BeforeClass, &#64;AfterClass<a class="headerlink" href="#junit-before-after-beforeclass-afterclass" title="Permalink to this headline">¶</a></h4>
+<p>As with any JUnit test various annotations are available to perform tasks at various points
+of the test life cycle. However with a GeoServer system test one must be wary of the task having
+a dependency on the system state. For this reason the <code class="docutils literal notranslate"><span class="pre">GeoServerSystemTestSupport</span></code> class
+provides its own callbacks.</p>
+</div>
+<div class="section" id="setuptestdata">
+<h4>setUpTestData<a class="headerlink" href="#setuptestdata" title="Permalink to this headline">¶</a></h4>
+<p>This callback method is invoked before the system has been created. It is meant to provide the
+test with a way to configure what configuration gets created in the GeoServer data directory
+for the test. By default the test setup will create a standard set of vector layers. This
+method is where that should be changed, for instance to indicate that the test requires that
+raster layers be created as well. For example:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MySystemTest</span> <span class="kd">extends</span> <span class="n">GeoServerSystemTestBase</span> <span class="p">{</span>
+
+   <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">setUpTestData</span><span class="p">(</span><span class="n">SystemTestData</span> <span class="n">testData</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// do the default by calling super</span>
+      <span class="kd">super</span><span class="p">.</span><span class="na">setUpTestData</span><span class="p">(</span><span class="n">testData</span><span class="p">);</span>
+
+      <span class="c1">// add raster layers</span>
+      <span class="n">testData</span><span class="p">.</span><span class="na">setUpDefaultRasterLayers</span><span class="p">();</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Depending on whether the test uses a single or repeated setup this method will be called once
+or many times.</p>
+</div>
+<div class="section" id="onsetup">
+<h4>onSetUp<a class="headerlink" href="#onsetup" title="Permalink to this headline">¶</a></h4>
+<p>This callback method is invoked after the system has been created. It is meant for standard
+post system initialization tasks. Like for instance changing some service configuration,
+adding new layers, etc…</p>
+<p>Depending on whether the test uses a single or repeated setup this method will be called once
+or many times. For this reason this method can not be used to simply initialize fields of the
+test class. For instance, consider the following:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MySystemTest</span> <span class="kd">extends</span> <span class="n">GeoServerSystemTestBase</span> <span class="p">{</span>
+
+    <span class="n">Catalog</span> <span class="n">catalog</span><span class="p">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onTestSetup</span><span class="p">(</span><span class="n">SystemTestData</span> <span class="n">testData</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+       <span class="c1">// add a layer named foo to the catalog</span>
+       <span class="n">Catalog</span> <span class="n">catalog</span> <span class="o">=</span> <span class="n">getCatalog</span><span class="p">();</span>
+       <span class="n">catalog</span><span class="p">.</span><span class="na">addLayer</span><span class="p">(</span><span class="k">new</span> <span class="n">Layer</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">));</span>
+
+       <span class="c1">// initialize the catalog field</span>
+       <span class="k">this</span><span class="p">.</span><span class="na">catalog</span> <span class="o">=</span> <span class="n">catalog</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test1</span><span class="p">()</span> <span class="p">{</span>
+       <span class="n">catalog</span><span class="p">.</span><span class="na">getLayerByName</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test2</span><span class="p">()</span> <span class="p">{</span>
+       <span class="n">catalog</span><span class="p">.</span><span class="na">getLayerByName</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Since this is a one time setup, the onSetUp method is only executed once, before the test1
+method. When the test2 method is executed it is actually a new instance of the test class,
+but the onTestSetup is not re-executed. The proper way to this initialization would be:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MySystemTest</span> <span class="kd">extends</span> <span class="n">GeoServerSystemTestBase</span> <span class="p">{</span>
+
+    <span class="n">Catalog</span> <span class="n">catalog</span><span class="p">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onTestSetup</span><span class="p">(</span><span class="n">SystemTestData</span> <span class="n">testData</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+       <span class="c1">// add a layer named foo to the catalog</span>
+       <span class="n">Catalog</span> <span class="n">catalog</span> <span class="o">=</span> <span class="n">getCatalog</span><span class="p">();</span>
+       <span class="n">catalog</span><span class="p">.</span><span class="na">addLayer</span><span class="p">(</span><span class="k">new</span> <span class="n">Layer</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">));</span>
+
+       <span class="c1">// initialize the catalog field</span>
+       <span class="k">this</span><span class="p">.</span><span class="na">catalog</span> <span class="o">=</span> <span class="n">catalog</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Before</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initCatalog</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="na">catalog</span> <span class="o">=</span> <span class="n">getCatalog</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="system-test-data">
+<h3>System Test Data<a class="headerlink" href="#system-test-data" title="Permalink to this headline">¶</a></h3>
+<p>The GeoServer system test will create a data directory with a standard set of
+vector layers. The contents of this data directory are as follows:</p>
+<div class="section" id="workspaces">
+<h4>Workspaces<a class="headerlink" href="#workspaces" title="Permalink to this headline">¶</a></h4>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 50%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Workspace</p></th>
+<th class="head"><p>URI</p></th>
+<th class="head"><p>Layer Count</p></th>
+<th class="head"><p>Default?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cdf</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/cite/data">http://www.opengis.net/cite/data</a></p></td>
+<td><p>8</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>cgf</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/cite/geometry">http://www.opengis.net/cite/geometry</a></p></td>
+<td><p>6</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>cite</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/cite">http://www.opengis.net/cite</a></p></td>
+<td><p>12</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>gs</p></td>
+<td><p><a class="reference external" href="http://geoserver.org">http://geoserver.org</a></p></td>
+<td><p>0</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>sf</p></td>
+<td><p><a class="reference external" href="http://cite.opengeospatial.org/gmlsf">http://cite.opengeospatial.org/gmlsf</a></p></td>
+<td><p>3</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="stores-and-layers">
+<h4>Stores and Layers<a class="headerlink" href="#stores-and-layers" title="Permalink to this headline">¶</a></h4>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Workspace</p></th>
+<th class="head"><p>Store</p></th>
+<th class="head"><p>Layer Name</p></th>
+<th class="head"><p>Default Style</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cdf</p></td>
+<td><p>cdf</p></td>
+<td><p>Deletes</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-odd"><td><p>cdf</p></td>
+<td><p>cdf</p></td>
+<td><p>Fifteen</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>cdf</p></td>
+<td><p>cdf</p></td>
+<td><p>Inserts</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-odd"><td><p>cdf</p></td>
+<td><p>cdf</p></td>
+<td><p>Locks</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>cdf</p></td>
+<td><p>cdf</p></td>
+<td><p>Nulls</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-odd"><td><p>cdf</p></td>
+<td><p>cdf</p></td>
+<td><p>Other</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>cdf</p></td>
+<td><p>cdf</p></td>
+<td><p>Seven</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-odd"><td><p>cdf</p></td>
+<td><p>cdf</p></td>
+<td><p>Updates</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>cgf</p></td>
+<td><p>cgf</p></td>
+<td><p>Lines</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-odd"><td><p>cgf</p></td>
+<td><p>cgf</p></td>
+<td><p>MLines</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>cgf</p></td>
+<td><p>cgf</p></td>
+<td><p>MPoints</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-odd"><td><p>cgf</p></td>
+<td><p>cgf</p></td>
+<td><p>MPolygons</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>cgf</p></td>
+<td><p>cgf</p></td>
+<td><p>Points</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-odd"><td><p>cgf</p></td>
+<td><p>cgf</p></td>
+<td><p>Polygons</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>BasicPolygons</p></td>
+<td><p>BasicPolygons</p></td>
+</tr>
+<tr class="row-odd"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>Bridges</p></td>
+<td><p>Bridges</p></td>
+</tr>
+<tr class="row-even"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>Buildings</p></td>
+<td><p>Buildings</p></td>
+</tr>
+<tr class="row-odd"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>DividedRoutes</p></td>
+<td><p>DividedRoutes</p></td>
+</tr>
+<tr class="row-even"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>Forests</p></td>
+<td><p>Forests</p></td>
+</tr>
+<tr class="row-odd"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>Geometryless</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>Lakes</p></td>
+<td><p>Lakes</p></td>
+</tr>
+<tr class="row-odd"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>MapNeatline</p></td>
+<td><p>MapNeatLine</p></td>
+</tr>
+<tr class="row-even"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>NamedPlaces</p></td>
+<td><p>NamedPlaces</p></td>
+</tr>
+<tr class="row-odd"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>Ponds</p></td>
+<td><p>Ponds</p></td>
+</tr>
+<tr class="row-even"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>RoadSegments</p></td>
+<td><p>RoadSegments</p></td>
+</tr>
+<tr class="row-odd"><td><p>cite</p></td>
+<td><p>cite</p></td>
+<td><p>Streams</p></td>
+<td><p>Streams</p></td>
+</tr>
+<tr class="row-even"><td><p>sf</p></td>
+<td><p>sf</p></td>
+<td><p>AgregateGeoFeature</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-odd"><td><p>sf</p></td>
+<td><p>sf</p></td>
+<td><p>GenericEntity</p></td>
+<td><p>Default</p></td>
+</tr>
+<tr class="row-even"><td><p>sf</p></td>
+<td><p>sf</p></td>
+<td><p>PrimitiveGeoFeature</p></td>
+<td><p>Default</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">gs</span></code> workspace contains no layers. It is typically used as the
+workspace for layers that are added by test cases.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="writing-mock-tests">
+<h2>Writing Mock Tests<a class="headerlink" href="#writing-mock-tests" title="Permalink to this headline">¶</a></h2>
+<p>Mock tests, also referred to as integration tests, are a good way to test a component that
+has dependencies on other components. It is often not simple to create the dependent component
+with the correct configuration.</p>
+<p>A mock test is just a regular unit test that uses functions from the EasyMock library to
+create mock objects. There is however a base class named <code class="docutils literal notranslate"><span class="pre">GeoServerMockTestSupport</span></code> that
+is designed to provide a pre-created set of mock objects. These pre-created mock objects are
+designed to mimic the objects as they would be found in an actual running system. For example:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyMockTest</span> <span class="kd">extends</span> <span class="n">GeoServerMockTestSupport</span> <span class="p">{</span>
+
+   <span class="nd">@Test</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testFoo</span><span class="p">()</span> <span class="p">{</span>
+      <span class="c1">//get the mock catalog</span>
+      <span class="n">Catalog</span> <span class="n">catalog</span> <span class="o">=</span> <span class="n">getCatalog</span><span class="p">();</span>
+
+      <span class="c1">//create the object we actually want to test</span>
+      <span class="n">Foo</span> <span class="n">foo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Foo</span><span class="p">(</span><span class="n">catalog</span><span class="p">);</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Like system tests, mock tests do a one-time setup with the same setUpTestData and onSetUp callbacks.</p>
+<p>The benefit of mock tests over system tests is the setup cost. Mock tests essentially have no
+setup cost which means they can execute very quickly, which helps to keep overall build times down.</p>
+<div class="section" id="easymock-class-extension">
+<h3>EasyMock Class Extension<a class="headerlink" href="#easymock-class-extension" title="Permalink to this headline">¶</a></h3>
+<p>By default EasyMock can only mock up interfaces. To mock up classes requires the EasyMock classextension jar and also the cglib library. These can be declared in a maven pom like so:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.easymock<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>easymockclassextension<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>cglib<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>cglib-nodep<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+<p>The change is mostly transparent, however rather than importing <code class="docutils literal notranslate"><span class="pre">org.easymock.EasyMock</span></code> one
+must import <code class="docutils literal notranslate"><span class="pre">org.easymock.classextension.EasyMock</span></code>.</p>
+</div>
+</div>
+<div class="section" id="maven-dependencies">
+<h2>Maven Dependencies<a class="headerlink" href="#maven-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>All of the GeoServer base test classes live in the gs-main module. However since they live in
+the test packages a special dependency must be set up in the pom of the module depending
+on main. This looks like:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>gs-main<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>${project.version}<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;classifier&gt;</span>tests<span class="nt">&lt;/classifier&gt;</span>
+  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+<p>Furthermore, in maven test scope dependencies are not transitive in the same way that
+regular dependencies are. Therefore some additional dependencies must also be declared:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dependency&gt;</span>
+ <span class="nt">&lt;groupId&gt;</span>com.mockrunner<span class="nt">&lt;/groupId&gt;</span>
+ <span class="nt">&lt;artifactId&gt;</span>mockrunner<span class="nt">&lt;/artifactId&gt;</span>
+ <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+ <span class="nt">&lt;groupId&gt;</span>xmlunit<span class="nt">&lt;/groupId&gt;</span>
+ <span class="nt">&lt;artifactId&gt;</span>xmlunit<span class="nt">&lt;/artifactId&gt;</span>
+ <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+ <span class="nt">&lt;groupId&gt;</span>org.easymock<span class="nt">&lt;/groupId&gt;</span>
+ <span class="nt">&lt;artifactId&gt;</span>easymock<span class="nt">&lt;/artifactId&gt;</span>
+ <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="online-tests">
+<h2>Online Tests<a class="headerlink" href="#online-tests" title="Permalink to this headline">¶</a></h2>
+<p>Often a test requires some external resource such as a database or a server to operate. Such
+tests should never assume that resource will be available and should skip test execution,
+rather than fail, when the test is not available.</p>
+<p>JUnit4 provides a handy way to do this with the <code class="docutils literal notranslate"><span class="pre">org.junit.Asssume</span></code> class. Methods of the
+class are called from a <code class="docutils literal notranslate"><span class="pre">&#64;Before</span></code> hook or from a test method. For example consider the
+common case of connecting to a database:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyTest</span> <span class="p">{</span>
+
+    <span class="n">Connection</span> <span class="nf">connect</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">//create a connection to the database</span>
+        <span class="k">try</span> <span class="p">{</span>
+           <span class="n">Conection</span> <span class="n">cx</span> <span class="o">=</span> <span class="p">...</span>
+           <span class="k">return</span> <span class="n">cx</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">catch</span><span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+           <span class="n">LOGGER</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="n">Level</span><span class="p">.</span><span class="na">WARNING</span><span class="p">,</span> <span class="s">&quot;Connection failed&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">);</span>
+           <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Before</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testConnection</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Connection</span> <span class="n">cx</span> <span class="o">=</span> <span class="n">connect</span><span class="p">();</span>
+        <span class="n">org</span><span class="p">.</span><span class="na">junit</span><span class="p">.</span><span class="na">Assume</span><span class="p">.</span><span class="na">assumeNotNull</span><span class="p">(</span><span class="n">cx</span><span class="p">);</span>
+        <span class="n">cx</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test1</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// test something</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In the above example the <code class="docutils literal notranslate"><span class="pre">assumeNotNull</span></code> method will throw back an exception telling JUnit
+to skip execution of the test.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../wps-services/implement-rendertrans.html" title="previous chapter">Implementing a Rendering Transformation</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../security/index.html" title="next chapter">Security</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Testing</a><ul>
+<li><a class="reference internal" href="#libraries">Libraries</a><ul>
+<li><a class="reference internal" href="#junit">JUnit</a></li>
+<li><a class="reference internal" href="#xmlunit">XMLUnit</a></li>
+<li><a class="reference internal" href="#mockrunner">MockRunner</a></li>
+<li><a class="reference internal" href="#easymock">EasyMock</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-categories-and-terminology">Testing Categories and Terminology</a><ul>
+<li><a class="reference internal" href="#unit">Unit</a></li>
+<li><a class="reference internal" href="#integration-mock">Integration/Mock</a></li>
+<li><a class="reference internal" href="#system">System</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#writing-system-tests">Writing System Tests</a><ul>
+<li><a class="reference internal" href="#single-vs-repeated-setup">Single vs Repeated Setup</a></li>
+<li><a class="reference internal" href="#method-level-setup">Method Level SetUp</a></li>
+<li><a class="reference internal" href="#setup-teardown-hooks">Setup/Teardown Hooks</a><ul>
+<li><a class="reference internal" href="#junit-before-after-beforeclass-afterclass">JUnit &#64;Before, &#64;After, &#64;BeforeClass, &#64;AfterClass</a></li>
+<li><a class="reference internal" href="#setuptestdata">setUpTestData</a></li>
+<li><a class="reference internal" href="#onsetup">onSetUp</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#system-test-data">System Test Data</a><ul>
+<li><a class="reference internal" href="#workspaces">Workspaces</a></li>
+<li><a class="reference internal" href="#stores-and-layers">Stores and Layers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#writing-mock-tests">Writing Mock Tests</a><ul>
+<li><a class="reference internal" href="#easymock-class-extension">EasyMock Class Extension</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#maven-dependencies">Maven Dependencies</a></li>
+<li><a class="reference internal" href="#online-tests">Online Tests</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../wps-services/implement-rendertrans.html" title="previous chapter">Implementing a Rendering Transformation</a></li>
+            <li>Next: <a href="../security/index.html" title="next chapter">Security</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/testing/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

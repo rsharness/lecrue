@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Mapping File" href="mapping-file.html" />
+    <link rel="prev" title="WFS Service Settings" href="wfs-service-settings.html" /> 
+  </head><body class="data/app-schema/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="mapping-file.html" title="Mapping File" accesskey="N">Next</a></li>
+  <li>
+    <a href="wfs-service-settings.html" title="WFS Service Settings" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="configuration">
+<span id="app-schema-configuration"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>Configuration of an app-schema complex feature type requires manual construction of a GeoServer data directory that contains an XML mapping file and a <code class="docutils literal notranslate"><span class="pre">datastore.xml</span></code> that points at this mapping file. The data directory also requires all the other ancillary configuration files used by GeoServer for simple features. GeoServer can serve simple and complex features at the same time.</p>
+<div class="section" id="workspace-layout">
+<h2>Workspace layout<a class="headerlink" href="#workspace-layout" title="Permalink to this headline">¶</a></h2>
+<p>The GeoServer data directory contains a folder called <code class="docutils literal notranslate"><span class="pre">workspaces</span></code> with the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">workspaces</span>
+    <span class="o">-</span> <span class="n">gsml</span>
+        <span class="o">-</span> <span class="n">SomeDataStore</span>
+            <span class="o">-</span> <span class="n">SomeFeatureType</span>
+                <span class="o">-</span> <span class="n">featuretype</span><span class="o">.</span><span class="n">xml</span>
+            <span class="o">-</span> <span class="n">datastore</span><span class="o">.</span><span class="n">xml</span>
+            <span class="o">-</span> <span class="n">SomeFeatureType</span><span class="o">-</span><span class="n">mapping</span><span class="o">-</span><span class="n">file</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The folder inside <code class="docutils literal notranslate"><span class="pre">workspaces</span></code> must have a name (the workspace name) that is the same as the namespace prefix (<code class="docutils literal notranslate"><span class="pre">gsml</span></code> in this example).</p>
+</div>
+</div>
+<div class="section" id="datastore">
+<h2>Datastore<a class="headerlink" href="#datastore" title="Permalink to this headline">¶</a></h2>
+<p>Each data store folder contains a file <code class="docutils literal notranslate"><span class="pre">datastore.xml</span></code> that contains the configuration parameters of the data store. To create an app-schema feature type, the data store must be configured to load the app-schema service module and process the mapping file. These options are contained in the <code class="docutils literal notranslate"><span class="pre">connectionParameters</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">namespace</span></code> defines the XML namespace of the complex feature type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">url</span></code> is a <code class="docutils literal notranslate"><span class="pre">file:</span></code> URL that gives the location of the app-schema mapping file relative to the root of the GeoServer data directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dbtype</span></code> must be <code class="docutils literal notranslate"><span class="pre">app-schema</span></code> to trigger the creation of an app-schema feature type.</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="wfs-service-settings.html" title="previous chapter">WFS Service Settings</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="mapping-file.html" title="next chapter">Mapping File</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#workspace-layout">Workspace layout</a></li>
+<li><a class="reference internal" href="#datastore">Datastore</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="wfs-service-settings.html" title="previous chapter">WFS Service Settings</a></li>
+            <li>Next: <a href="mapping-file.html" title="next chapter">Mapping File</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

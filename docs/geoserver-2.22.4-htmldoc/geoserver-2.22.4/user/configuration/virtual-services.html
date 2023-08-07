@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual Services &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Internationalization (i18n)" href="internationalization/index.html" />
+    <link rel="prev" title="Manually editing the EPSG database" href="crshandling/manualepsg.html" /> 
+  </head><body class="configuration/virtual-services">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Server configuration</a> &raquo;</li>
+    <li>Virtual Services</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="internationalization/index.html" title="Internationalization (i18n)" accesskey="N">Next</a></li>
+  <li>
+    <a href="crshandling/manualepsg.html" title="Manually editing the EPSG database" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="virtual-services">
+<span id="id1"></span><h1>Virtual Services<a class="headerlink" href="#virtual-services" title="Permalink to this headline">¶</a></h1>
+<p>The different types of services in GeoServer include WFS, WMS, and WCS, commonly referred to as “Open Web Services (OWS)” services. These services are global in that each service publishes every layer configured on the server. WFS publishes all vector layer (feature types), WCS publishes all raster layers (coverages), and WMS publishes everything.</p>
+<p>A <em>virtual service</em> is a view of the global service that consists only of a subset of the layers. Virtual services are based on GeoServer workspaces. For each workspace that exists a virtual service exists along with it. The virtual service publishes only those layers that fall under the corresponding workspace.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Virtual services only apply to the core OWS services, and not OWS services
+accessed through GeoWebCache. It also does not apply to other subsystems such
+as REST.</p>
+</div>
+<p>When a client accesses a virtual service that client only has access to those layers published by that virtual service. Access to layers in the global service via the virtual service will result in an exception. This makes virtual services ideal for compartmentalizing access to layers. A service provider may wish to create multiple services for different clients handing one service url to one client, and a different service url to another client. Virtual services allow the service provider to achieve this with a single GeoServer instance.</p>
+<div class="section" id="filtering-by-workspace">
+<h2>Filtering by workspace<a class="headerlink" href="#filtering-by-workspace" title="Permalink to this headline">¶</a></h2>
+<p>Consider the following snippets of the WFS capabilities document from the GeoServer release configuration that list all the feature types:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wfs?request=GetCapabilities
+
+&lt;wfs:WFS_Capabilities&gt;
+
+  &lt;FeatureType xmlns:tiger=&quot;http://www.census.gov&quot;&gt;
+   &lt;Name&gt;tiger:poly_landmarks&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:tiger=&quot;http://www.census.gov&quot;&gt;
+   &lt;Name&gt;tiger:poi&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:tiger=&quot;http://www.census.gov&quot;&gt;
+   &lt;Name&gt;tiger:tiger_roads&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:sf=&quot;http://www.openplans.org/spearfish&quot;&gt;
+   &lt;Name&gt;sf:archsites&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:sf=&quot;http://www.openplans.org/spearfish&quot;&gt;
+   &lt;Name&gt;sf:bugsites&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:sf=&quot;http://www.openplans.org/spearfish&quot;&gt;
+   &lt;Name&gt;sf:restricted&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:sf=&quot;http://www.openplans.org/spearfish&quot;&gt;
+   &lt;Name&gt;sf:roads&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:sf=&quot;http://www.openplans.org/spearfish&quot;&gt;
+   &lt;Name&gt;sf:streams&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:topp=&quot;http://www.openplans.org/topp&quot;&gt;
+   &lt;Name&gt;topp:tasmania_cities&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:topp=&quot;http://www.openplans.org/topp&quot;&gt;
+   &lt;Name&gt;topp:tasmania_roads&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:topp=&quot;http://www.openplans.org/topp&quot;&gt;
+   &lt;Name&gt;topp:tasmania_state_boundaries&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:topp=&quot;http://www.openplans.org/topp&quot;&gt;
+   &lt;Name&gt;topp:tasmania_water_bodies&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:topp=&quot;http://www.openplans.org/topp&quot;&gt;
+   &lt;Name&gt;topp:states&lt;/Name&gt;
+--
+  &lt;FeatureType xmlns:tiger=&quot;http://www.census.gov&quot;&gt;
+   &lt;Name&gt;tiger:giant_polygon&lt;/Name&gt;
+
+&lt;/wfs:WFS_Capabilities&gt;
+</pre></div>
+</div>
+<p>The above document lists every feature type configured on the server. Now consider the following capabilities request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/topp/wfs?request=GetCapabilities
+</pre></div>
+</div>
+<p>The part of interest in the above request is the “topp” prefix to the wfs service. The above url results in the following feature types in the capabilities document:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">wfs</span><span class="p">:</span><span class="n">WFS_Capabilities</span><span class="o">&gt;</span>
+
+   <span class="o">&lt;</span><span class="n">FeatureType</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">topp</span><span class="o">=</span><span class="s2">&quot;http://www.openplans.org/topp&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">Name</span><span class="o">&gt;</span><span class="n">topp</span><span class="p">:</span><span class="n">tasmania_cities</span><span class="o">&lt;/</span><span class="n">Name</span><span class="o">&gt;</span>
+ <span class="o">--</span>
+   <span class="o">&lt;</span><span class="n">FeatureType</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">topp</span><span class="o">=</span><span class="s2">&quot;http://www.openplans.org/topp&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">Name</span><span class="o">&gt;</span><span class="n">topp</span><span class="p">:</span><span class="n">tasmania_roads</span><span class="o">&lt;/</span><span class="n">Name</span><span class="o">&gt;</span>
+ <span class="o">--</span>
+   <span class="o">&lt;</span><span class="n">FeatureType</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">topp</span><span class="o">=</span><span class="s2">&quot;http://www.openplans.org/topp&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">Name</span><span class="o">&gt;</span><span class="n">topp</span><span class="p">:</span><span class="n">tasmania_state_boundaries</span><span class="o">&lt;/</span><span class="n">Name</span><span class="o">&gt;</span>
+ <span class="o">--</span>
+   <span class="o">&lt;</span><span class="n">FeatureType</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">topp</span><span class="o">=</span><span class="s2">&quot;http://www.openplans.org/topp&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">Name</span><span class="o">&gt;</span><span class="n">topp</span><span class="p">:</span><span class="n">tasmania_water_bodies</span><span class="o">&lt;/</span><span class="n">Name</span><span class="o">&gt;</span>
+ <span class="o">--</span>
+   <span class="o">&lt;</span><span class="n">FeatureType</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">topp</span><span class="o">=</span><span class="s2">&quot;http://www.openplans.org/topp&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">Name</span><span class="o">&gt;</span><span class="n">topp</span><span class="p">:</span><span class="n">states</span><span class="o">&lt;/</span><span class="n">Name</span><span class="o">&gt;</span>
+
+ <span class="o">&lt;/</span><span class="n">wfs</span><span class="p">:</span><span class="n">WFS_Capabilities</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The above feature types correspond to those configured on the server as part of the “topp” workspace.</p>
+<p>The consequence of a virtual service is not only limited to the capabilities document of the service. When a client accesses a virtual service it is restricted to only those layers for all operations. For instance, consider the following WFS feature request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/topp/wfs?request=GetFeature&amp;typename=tiger:roads
+</pre></div>
+</div>
+<p>The above request results in an exception. Since the request feature type “tiger:roads” is not in the “topp” workspace the client will receive an error stating that the requested feature type does not exist.</p>
+</div>
+<div class="section" id="filtering-by-layer">
+<h2>Filtering by layer<a class="headerlink" href="#filtering-by-layer" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to further filter a global service by specifying the name of layer as part of the virtual service. For instance consider the following capabilities document:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/topp/states/wfs?request=GetCapabilities
+</pre></div>
+</div>
+<p>The part of interest is the “states” prefix to the wfs service. The above url results in the following capabilities document that contains a single feature type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">wfs</span><span class="p">:</span><span class="n">WFS_Capabilities</span><span class="o">&gt;</span>
+
+  <span class="o">&lt;</span><span class="n">FeatureType</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">topp</span><span class="o">=</span><span class="s2">&quot;http://www.openplans.org/topp&quot;</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">Name</span><span class="o">&gt;</span><span class="n">topp</span><span class="p">:</span><span class="n">states</span><span class="o">&lt;/</span><span class="n">Name</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">wfs</span><span class="p">:</span><span class="n">WFS_Capabilities</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="turning-off-global-services">
+<span id="global-services-off"></span><h2>Turning off global services<a class="headerlink" href="#turning-off-global-services" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to completely restrict access to the global OWS services by setting a configuration flag. When global access is disabled OWS services may only occur through a virtual service. Any client that tries to access a service globally will receive an exception.</p>
+<p>To disable global services, log into the GeoServer web administration interface and navigate to “Global Settings”. Uncheck the “Enable Global Services” check box.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../_images/global-services.jpg" src="../_images/global-services.jpg" />
+</div>
+</div></blockquote>
+<div class="section" id="isolated-workspaces">
+<span id="workspace-isolated"></span><h3>Isolated Workspaces<a class="headerlink" href="#isolated-workspaces" title="Permalink to this headline">¶</a></h3>
+<p>Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Note that these restrictions do not apply to the REST API.</p>
+<p>A workspace can be made isolated by checking the <span class="guilabel">Isolated Workspace</span> checkbox when creating or editing a workspace.</p>
+<div class="figure align-default" id="id2">
+<img alt="../_images/isolated_workspace.png" src="../_images/isolated_workspace.png" />
+<p class="caption"><span class="caption-text">Making a workspace isolated</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>An isolated workspace will be able to reuse a namespace already used by another workspace, but its resources (layers, styles, etc …) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.</p>
+<p>It is only possible to create two or more workspaces with the same namespace in GeoServer if only one of them is non isolated, i.e. isolated workspaces have no restrictions in namespaces usage but two non isolated workspaces can’t use the same namespace.</p>
+<p>The following situation will be valid:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Prefix: st1 Namespace: <a class="reference external" href="http://www.stations.org/1.0">http://www.stations.org/1.0</a> Isolated: false</p></li>
+<li><p>Prefix: st2 Namespace: <a class="reference external" href="http://www.stations.org/1.0">http://www.stations.org/1.0</a> Isolated: true</p></li>
+<li><p>Prefix: st3 Namespace: <a class="reference external" href="http://www.stations.org/1.0">http://www.stations.org/1.0</a> Isolated: true</p></li>
+</ul>
+</div></blockquote>
+<p>But not the following one:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Prefix: st1 Namespace: <a class="reference external" href="http://www.stations.org/1.0">http://www.stations.org/1.0</a> Isolated: false</p></li>
+<li><p><strong>Prefix: st2 Namespace: http://www.stations.org/1.0 Isolated: false</strong></p></li>
+<li><p>Prefix: st3 Namespace: <a class="reference external" href="http://www.stations.org/1.0">http://www.stations.org/1.0</a> Isolated: true</p></li>
+</ul>
+</div></blockquote>
+<p>At most only one non isolated workspace can use a certain namespace.</p>
+<p>Consider the following image which shows to workspaces (st1 and st2) that use the same namespace (<a class="reference external" href="http://www.stations.org/1.0">http://www.stations.org/1.0</a>) and several layers contained by them:</p>
+<div class="figure align-default" id="id3">
+<img alt="../_images/workspaces_example.png" src="../_images/workspaces_example.png" />
+<p class="caption"><span class="caption-text">Two workspaces using the same namespace, one of them is isolated.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>In the example above st2 is the isolated workspace. Consider the following WFS GetFeature requests:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=layer2">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=layer2</a></p></li>
+<li><p><a class="reference external" href="http://localhost:8080/geoserver/st2/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=layer2">http://localhost:8080/geoserver/st2/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=layer2</a></p></li>
+<li><p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=st1:layer2">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=st1:layer2</a></p></li>
+<li><p><a class="reference external" href="http://localhost:8080/geoserver/st2/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=st2:layer2">http://localhost:8080/geoserver/st2/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=st2:layer2</a></p></li>
+<li><p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=st2:layer2">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=st2:layer2</a></p></li>
+<li><p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=layer5">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=layer5</a></p></li>
+</ol>
+</div></blockquote>
+<p>The first request is targeting WFS global service and requesting layer2, this request will use layer2 contained by workspace st1. The second request is targeting st2 workspace WFS virtual service, layer2 belonging to workspace st2 will be used. Request three and four will use layer2 belonging to workspace, respectively, st1 and st2. The last two requests will fail saying that the feature type was not found, isolated workspaces content is not visible globally.</p>
+<p><strong>The rule of thumb is that resources (layers, styles, etc …) belonging to an isolated workspace can only be retrieved when using that workspaces virtual services and will only show up in those virtual services capabilities documents.</strong></p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="crshandling/manualepsg.html" title="previous chapter">Manually editing the EPSG database</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="internationalization/index.html" title="next chapter">Internationalization (i18n)</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Virtual Services</a><ul>
+<li><a class="reference internal" href="#filtering-by-workspace">Filtering by workspace</a></li>
+<li><a class="reference internal" href="#filtering-by-layer">Filtering by layer</a></li>
+<li><a class="reference internal" href="#turning-off-global-services">Turning off global services</a><ul>
+<li><a class="reference internal" href="#isolated-workspaces">Isolated Workspaces</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="crshandling/manualepsg.html" title="previous chapter">Manually editing the EPSG database</a></li>
+            <li>Next: <a href="internationalization/index.html" title="next chapter">Internationalization (i18n)</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/configuration/virtual-services.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

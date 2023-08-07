@@ -1,0 +1,1007 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>5.3. Polygons &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="5.4. Points" href="point.html" />
+    <link rel="prev" title="5.2. Lines" href="linestring.html" /> 
+  </head><body class="styling/workshop/mbstyle/polygon">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling Workshop</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U"><span class="section-number">5. </span>MBStyle Styling Workbook</a> &raquo;</li>
+    <li>5.3. Polygons</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="point.html" title="<span class="section-number">5.4. </span>Points" accesskey="N">Next</a></li>
+  <li>
+    <a href="linestring.html" title="<span class="section-number">5.2. </span>Lines" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="polygons">
+<span id="styling-workshop-mbstyle-polygon"></span><h1><span class="section-number">5.3. </span>Polygons<a class="headerlink" href="#polygons" title="Permalink to this headline">¶</a></h1>
+<p>Next we look at how MBStyle styling can be used to represent polygons.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../../_images/PolygonSymbology.svg" src="../../../_images/PolygonSymbology.svg" /><p class="caption"><span class="caption-text">Polygon Geometry</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Review of polygon symbology:</p>
+<ul>
+<li><p>Polygons offer a direct representation of physical extent or the output of analysis.</p></li>
+<li><p>The visual appearance of polygons reflects the current scale.</p></li>
+<li><p>Polygons are recorded as a LinearRing describing the polygon boundary. Further LinearRings can be used to describe any holes in the polygon if present.</p>
+<p>The Simple Feature for SQL Geometry model (used by GeoJSON) represents these areas as Polygons, the ISO 19107 geometry model (used by GML3) represents these areas as Surfaces.</p>
+</li>
+<li><p>SLD uses a <strong>PolygonSymbolizer</strong> to describe how the shape of a polygon is drawn. The primary characteristic documented is the <strong>Fill</strong> used to shade the polygon interior. The use of a <strong>Stroke</strong> to describe the polygon boundary is optional.</p></li>
+<li><p>Labeling of a polygon is anchored to the centroid of the polygon. GeoServer provides a vendor-option to allow labels to line wrap to remain within the polygon boundaries.</p></li>
+</ul>
+<p>For our Polygon exercises we will try and limit our MBStyle documents to a single rule, in order to showcase the properties used for rendering.</p>
+<p>Reference:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../mbstyle/reference/index.html#mbstyle-reference"><span class="std std-ref">MBStyle Reference</span></a></p></li>
+<li><p><a class="reference external" href="https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-fill">MapBox Style Spec Fill Layer</a></p></li>
+<li><p><a class="reference internal" href="../../sld/reference/polygonsymbolizer.html#sld-reference-polygonsymbolizer"><span class="std std-ref">Polygons</span></a> (User Manual | SLD Reference )</p></li>
+</ul>
+<p>This exercise makes use of the <code class="docutils literal notranslate"><span class="pre">ne:states_provinces_shp</span></code> layer.</p>
+<ol class="arabic">
+<li><p>Navigate to <span class="menuselection">Styles</span>.</p></li>
+<li><p>Create a new style <kbd class="kbd docutils literal notranslate">polygon_example</kbd>.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><th class="stub"><p>Name:</p></th>
+<td><p><kbd class="kbd docutils literal notranslate">polygon_example</kbd></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Workspace:</p></th>
+<td><p><kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">No</kbd> <kbd class="kbd docutils literal notranslate">workspace</kbd></kbd></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Format:</p></th>
+<td><p><kbd class="kbd docutils literal notranslate">MBStyle</kbd></p></td>
+</tr>
+</tbody>
+</table>
+<img alt="../../../_images/polygon_02_create.png" src="../../../_images/polygon_02_create.png" />
+</li>
+<li><p>Enter the following style and click :menuselection:<code class="docutils literal notranslate"><span class="pre">Apply</span></code> to save:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgrey&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Click on the tab <span class="guilabel">Layer Preview</span> to preview.</p>
+<img alt="../../../_images/polygon_04_preview.png" src="../../../_images/polygon_04_preview.png" />
+</li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">ne:states_provinces_shp</span></code> as the preview layer.</p>
+<img alt="../../../_images/polygon_01_preview.png" src="../../../_images/polygon_01_preview.png" />
+</li>
+</ol>
+<div class="section" id="fill-and-outline">
+<h2><span class="section-number">5.3.1. </span>Fill and Outline<a class="headerlink" href="#fill-and-outline" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>fill</strong> layer controls the display of polygon data.</p>
+<img alt="../../../_images/PolygonFill.svg" src="../../../_images/PolygonFill.svg" /><p>The <strong>fill-color</strong> property is used to provide the color used to draw the interior of a polygon.</p>
+<ol class="arabic">
+<li><p>Replace the contents of <code class="docutils literal notranslate"><span class="pre">polygon_example</span></code> with the following <strong>fill</strong> example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <span class="guilabel">Map</span> tab can be used preview the change:</p>
+<img alt="../../../_images/polygon_fill_1.png" src="../../../_images/polygon_fill_1.png" />
+</li>
+<li><p>To draw the boundary of the polygon the <strong>fill-outline</strong> property is used:</p>
+<p>The <strong>fill-outline</strong> property is used to provide the color of the polygon boundary. For more advanced boundary styling, use a separate line layer.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span>
+</span>      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Technically the boundary of a polygon is a specific case of a LineString where the first and last vertex are the same, forming a closed LinearRing.</p>
+</div>
+</li>
+<li><p>The effect of adding <strong>fill-outline</strong> is shown in the map preview:</p>
+<img alt="../../../_images/polygon_fill_2.png" src="../../../_images/polygon_fill_2.png" />
+</li>
+<li><p>An interesting technique when styling polygons in conjunction with background information is to control the fill opacity.</p>
+<p>The <strong>fill-opacity</strong> property is used to adjust transparency (provided as range from 0.0 to 1.0). Use of <strong>fill-opacity</strong> to render polygons works well in conjunction with a raster base map. This approach allows details of the base map to shown through. <strong>fill-opacity</strong> affects both the fill and the fill outline.</p>
+<p>The <strong>stroke-opacity</strong> property is used in a similar fashion, as a range from 0.0 to 1.0.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="hll">        <span class="nt">&quot;fill-opacity&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+</span>        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgrey&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>As shown in the map preview:</p>
+<img alt="../../../_images/polygon_fill_3.png" src="../../../_images/polygon_fill_3.png" />
+</li>
+<li><p>This effect can be better appreciated using a layer group.</p>
+<img alt="../../../_images/polygon_fill_4.png" src="../../../_images/polygon_fill_4.png" />
+<p>Where the transparent polygons is used lighten the landscape provided by the base map.</p>
+<img alt="../../../_images/polygon_fill_5.png" src="../../../_images/polygon_fill_5.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="pattern">
+<h2><span class="section-number">5.3.2. </span>Pattern<a class="headerlink" href="#pattern" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>fill-pattern</strong> property can be used to provide a pattern.</p>
+<img alt="../../../_images/PolygonPattern.svg" src="../../../_images/PolygonPattern.svg" /><p>The fill pattern is defined by repeating an image defined in a sprite-sheet.</p>
+<ol class="arabic">
+<li><p>Update <cite>polygon_example</cite> with the following sprite as a repeating fill pattern:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+<span class="hll">  <span class="nt">&quot;sprite&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/styles/sprites&quot;</span>
+</span>  <span class="s2">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="hll">        <span class="nt">&quot;fill-pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;grey_square16&quot;</span>
+</span>      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The map preview (and legend) will show the result:</p>
+<img alt="../../../_images/polygon_pattern_0.png" src="../../../_images/polygon_pattern_0.png" />
+</li>
+<li><p>You can view the names of all the icons in the sprite-sheet by looking at its json definition, at <a class="reference external" href="http://localhost:8080/geoserver/styles/sprites.json">http://localhost:8080/geoserver/styles/sprites.json</a>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;white_square16&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;grey_square8&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">18</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;grey_square16&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;grey_square22&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">18</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;green_square16&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;grey_x&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">41</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;grey_diag8&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">27</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;grey_diag16&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">18</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;grey_circle&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">36</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">36</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;airport&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">52</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">18</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;port&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">52</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;star&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mi">69</span><span class="p">,</span>
+        <span class="nt">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Update the example to use <strong>grey_diag16</strong> for a pattern of left hatching.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;sprite&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/styles/sprites&quot;</span>
+  <span class="s2">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;grey_diag16&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>This approach is well suited to printed output or low color devices.</p>
+<img alt="../../../_images/polygon_pattern_4.png" src="../../../_images/polygon_pattern_4.png" />
+</li>
+<li><p>Multiple fills can be applied by using a separate layer for each fill.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;sprite&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/geoserver/styles/sprites&quot;</span>
+  <span class="s2">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_background&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#DDDDFF&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_pattern&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;grey_diag8&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The resulting image has a solid fill, with a pattern drawn overtop.</p>
+<img alt="../../../_images/polygon_pattern_6.png" src="../../../_images/polygon_pattern_6.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="label">
+<h2><span class="section-number">5.3.3. </span>Label<a class="headerlink" href="#label" title="Permalink to this headline">¶</a></h2>
+<p>Labeling polygons follows the same approach used for LineStrings.</p>
+<img alt="../../../_images/PolygonLabel.svg" src="../../../_images/PolygonLabel.svg" /><ol class="arabic">
+<li><p>By default labels are drawn starting at the centroid of each polygon.</p>
+<img alt="../../../_images/LabelSymbology.svg" src="../../../_images/LabelSymbology.svg" /></li>
+<li><p>Try out <strong>text-field</strong> and <strong>text-color</strong> by replacing our <code class="docutils literal notranslate"><span class="pre">polygon_example</span></code> with the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#7EB5D3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_label&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-field&quot;</span><span class="p">:</span> <span class="s2">&quot;{name}&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Each label is drawn from the lower-left corner as shown in the <code class="docutils literal notranslate"><span class="pre">Map</span></code> preview.</p>
+<img alt="../../../_images/polygon_label_0.png" src="../../../_images/polygon_label_0.png" />
+</li>
+<li><p>We can adjust how the label is drawn at the polygon centroid.</p>
+<img alt="../../../_images/LabelAnchorPoint.svg" src="../../../_images/LabelAnchorPoint.svg" /><p>The property <strong>text-anchor</strong> provides two numbers expressing how a label is aligned with respect to the centroid. Adjusting the <strong>text-anchor</strong> is the recommended approach to positioning your labels.</p>
+</li>
+<li><p>Using the <strong>text-anchor</strong> property we can center our labels with respect to geometry centroid.</p>
+<p>To align the center of our label we select “center” below:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#7EB5D3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_label&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-field&quot;</span><span class="p">:</span> <span class="s2">&quot;{name}&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="nt">&quot;text-anchor&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span>
+</span>      <span class="p">},</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The labeling position remains at the polygon centroid. We adjust alignment by controlling which part of the label we are “snapping” into position.</p>
+<img alt="../../../_images/polygon_label_1.png" src="../../../_images/polygon_label_1.png" />
+</li>
+<li><p>The property <strong>text-translate</strong> can be used to provide an initial displacement using and x and y offset.</p>
+<img alt="../../../_images/LabelDisplacement.svg" src="../../../_images/LabelDisplacement.svg" /></li>
+<li><p>This offset is used to adjust the label position relative to the geometry centroid resulting in the starting label position.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#7EB5D3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_label&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-field&quot;</span><span class="p">:</span> <span class="s2">&quot;{name}&quot;</span><span class="p">,</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="nt">&quot;text-translate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">-7</span><span class="p">]</span>
+</span>      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Confirm this result in the map preview.</p>
+<img alt="../../../_images/polygon_label_2.png" src="../../../_images/polygon_label_2.png" />
+</li>
+<li><p>These two settings can be used together.</p>
+<img alt="../../../_images/LabelBoth.svg" src="../../../_images/LabelBoth.svg" /><p>The rendering engine starts by determining the label position generated from the geometry centroid and the <strong>text-translate</strong> displacement. The bounding box of the label is used with the <strong>text-anchor</strong> setting align the label to this location.</p>
+<p><strong>Step 1</strong>: starting label position = centroid + displacement</p>
+<p><strong>Step 2</strong>: snap the label anchor to the starting label position</p>
+</li>
+<li><p>To move our labels down (allowing readers to focus on each shape) we can use displacement combined with followed by horizontal alignment.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#7EB5D3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_label&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-field&quot;</span><span class="p">:</span> <span class="s2">&quot;{name}&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="nt">&quot;text-anchor&quot;</span><span class="p">:</span> <span class="s2">&quot;left&quot;</span>
+</span>      <span class="p">},</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="nt">&quot;text-translate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">-7</span><span class="p">]</span>
+</span>      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>As shown in the map preview.</p>
+<img alt="../../../_images/polygon_label_3.png" src="../../../_images/polygon_label_3.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="legibility">
+<h2><span class="section-number">5.3.4. </span>Legibility<a class="headerlink" href="#legibility" title="Permalink to this headline">¶</a></h2>
+<p>When working with labels a map can become busy very quickly, and difficult to read.</p>
+<ol class="arabic">
+<li><p>MBStyle extensive properties for controlling the labelling process.</p>
+<p>One common property for controlling labeling is <strong>text-max-width</strong>, which allows any labels extending past the provided width will be wrapped into multiple lines.</p>
+</li>
+<li><p>Using this we can make a small improvement in our example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#7EB5D3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_label&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-field&quot;</span><span class="p">:</span> <span class="s2">&quot;{name}&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;text-anchor&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span>
+<span class="hll">        <span class="s2">&quot;text-max-width&quot;</span><span class="p">:</span> <span class="mi">14</span>
+</span>      <span class="p">},</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>As shown in the following preview.</p>
+<img alt="../../../_images/polygon_label_4.png" src="../../../_images/polygon_label_4.png" />
+</li>
+<li><p>Even with this improved spacing between labels, it is difficult to read the result against the complicated line work.</p>
+<p>Use of a halo to outline labels allows the text to stand out from an otherwise busy background. In this case we will make use of the fill color, to provide some space around our labels. We will also change the font to Arial.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#7EB5D3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_label&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;layout&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-field&quot;</span><span class="p">:</span> <span class="s2">&quot;{name}&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;text-anchor&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span>
+        <span class="s2">&quot;text-max-width&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+<span class="hll">        <span class="nt">&quot;text-font&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Arial&quot;</span><span class="p">]</span>
+</span>      <span class="p">},</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;text-color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="nt">&quot;text-halo-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#7EB5D3&quot;</span><span class="p">,</span>
+</span><span class="hll">        <span class="nt">&quot;text-halo-width&quot;</span><span class="p">:</span> <span class="mi">2</span>
+</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<img alt="../../../_images/polygon_label_5.png" src="../../../_images/polygon_label_5.png" />
+</li>
+</ol>
+</div>
+<div class="section" id="theme">
+<h2><span class="section-number">5.3.5. </span>Theme<a class="headerlink" href="#theme" title="Permalink to this headline">¶</a></h2>
+<p>A thematic map (rather than focusing on representing the shape of the world) uses elements of style to illustrate differences in the data under study.  This section is a little more advanced and we will take the time to look at the generated SLD file.</p>
+<ol class="arabic">
+<li><p>We can use a site like <a class="reference external" href="http://www.colorbrewer2.com">ColorBrewer</a> to explore the use of color theming for polygon symbology. In this approach the fill color of the polygon is determined by the value of the attribute under study.</p>
+<img alt="../../../_images/polygon_06_brewer.png" src="../../../_images/polygon_06_brewer.png" />
+<p>This presentation of a dataset is known as “theming” by an attribute.</p>
+</li>
+<li><p>For our <code class="docutils literal notranslate"><span class="pre">ne:states_provinces_shp</span></code> dataset, a <strong>mapcolor9</strong> attribute has been provided for this purpose. Theming by <strong>mapcolor9</strong> results in a map where neighbouring countries are visually distinct.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td colspan="3"><p>Qualitative 9-class Set3</p></td>
+</tr>
+<tr class="row-even"><td><p>#8dd3c7</p></td>
+<td><p>#fb8072</p></td>
+<td><p>#b3de69</p></td>
+</tr>
+<tr class="row-odd"><td><p>#ffffb3</p></td>
+<td><p>#80b1d3</p></td>
+<td><p>#fccde5</p></td>
+</tr>
+<tr class="row-even"><td><p>#bebada</p></td>
+<td><p>#fdb462</p></td>
+<td><p>#d9d9d9</p></td>
+</tr>
+</tbody>
+</table>
+<p>If you are unfamiliar with theming you may wish to visit <a class="reference external" href="http://colorbrewer2.org">http://colorbrewer2.org</a> to learn more. The <strong>i</strong> icons provide an adequate background on theming approaches for qualitative, sequential and diverging datasets.</p>
+</li>
+<li><p>The first approach we will take is to directly select content based on <strong>colormap</strong>, providing a color based on the <strong>9-class Set3</strong> palette above:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_1&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#8DD3C7&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_2&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#FFFFB3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_3&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#BEBADA&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_4&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#FB8072&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_5&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#80B1D3&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_6&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#FDB462&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_7&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#B3DE69&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_8&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#FCCDE5&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_9&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;filter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="s2">&quot;#D9D9D9&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <span class="guilabel">Map</span> tab can be used to preview this result.</p>
+<img alt="../../../_images/polygon_09_selector_theme.png" src="../../../_images/polygon_09_selector_theme.png" />
+</li>
+<li><p>Property functions can be used to make theming substantially easier, by directly mapping property values to style values using an array of stops. MBStyle supports three types of function interpolation, which is used to define the behavior between these stops:</p>
+<ul class="simple">
+<li><p><strong>categorical</strong>: Used the theme qualitative data. Attribute values are directly mapped to styling property such as <strong>fill</strong> or <strong>stroke-width</strong>. Equivalent to the SLD <strong>Recode</strong> function.</p></li>
+<li><p><strong>interval</strong>: Used the theme quantitative data. Categories are defined using min and max ranges, and values are sorted into the appropriate category. Equivalent to the SLD <strong>Categorize</strong> function.</p></li>
+<li><p><strong>exponential</strong>: Used to smoothly theme quantitative data by calculating a styling property based on an attribute value. Supports a <strong>base</strong> attribute for controlling the steepness of interpolation. When <strong>base</strong> is 1, this is equivalent to the SLD <strong>Interpolate</strong> function.</p></li>
+</ul>
+<p>Theming is an activity, producing a visual result allow map readers to learn more about how an attribute is distributed spatially. We are free to produce this visual in the most efficient way possible.</p>
+</li>
+<li><p>Swap out <strong>mapcolor9</strong> theme to use the <strong>categorical</strong> function:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;property&quot;</span><span class="p">:</span> <span class="s2">&quot;mapcolor9&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;categorical&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;stops&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;#8dd3c7&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;#ffffb3&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;#bebada&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;#fb8072&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;#80b1d3&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;#fdb462&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;#b3de69&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;#fccde5&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;#d9d9d9&quot;</span><span class="p">]</span>
+          <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;fill-outline-color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <span class="guilabel">Map</span> tab provides the same preview.</p>
+<img alt="../../../_images/polygon_10_recode_theme.png" src="../../../_images/polygon_10_recode_theme.png" />
+</li>
+<li><p>The <span class="guilabel">Generated SLD</span> tab shows where things get interesting. Our generated style now consists of a single <strong>Rule</strong>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;sld:Rule&gt;</span>
+   <span class="nt">&lt;sld:PolygonSymbolizer&gt;</span>
+      <span class="nt">&lt;sld:Fill&gt;</span>
+         <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;Recode&quot;</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;ogc:PropertyName&gt;</span>mapcolor9<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>1<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#8dd3c7<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>2<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#ffffb3<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>3<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#bebada<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>4<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#fb8072<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>5<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#80b1d3<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>6<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#fdb462<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>7<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#b3de69<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>8<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#fccde5<span class="nt">&lt;/ogc:Literal&gt;</span>
+               <span class="nt">&lt;ogc:Literal&gt;</span>9<span class="nt">&lt;/ogc:Literal&gt;</span>
+                  <span class="nt">&lt;ogc:Literal&gt;</span>#d9d9d9<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;/ogc:Function&gt;</span>
+         <span class="nt">&lt;/sld:CssParameter&gt;</span>
+      <span class="nt">&lt;/sld:Fill&gt;</span>
+   <span class="nt">&lt;/sld:PolygonSymbolizer&gt;</span>
+   <span class="nt">&lt;sld:LineSymbolizer&gt;</span>
+      <span class="nt">&lt;sld:Stroke&gt;</span>
+         <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#808080<span class="nt">&lt;/sld:CssParameter&gt;</span>
+         <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>0.5<span class="nt">&lt;/sld:CssParameter&gt;</span>
+      <span class="nt">&lt;/sld:Stroke&gt;</span>
+   <span class="nt">&lt;/sld:LineSymbolizer&gt;</span>
+<span class="nt">&lt;/sld:Rule&gt;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="bonus">
+<h2><span class="section-number">5.3.6. </span>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
+<p>The following optional explore and challenge activities offer a chance to review and apply the ideas introduced here. The challenge activities enquire a bit of creativity and research to complete.</p>
+<p>In a classroom setting you are encouraged to team up into groups, with each group taking on a different challenge.</p>
+<div class="section" id="explore-interval">
+<span id="mbstyle-polygon-q2"></span><h3><span class="section-number">5.3.6.1. </span>Explore Interval<a class="headerlink" href="#explore-interval" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>The <strong>interval</strong> function can be used to generate property values based on quantitative information. Here is an example using interval to color states according to size.</p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span> <span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon_example&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;polygon&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;source-layer&quot;</span><span class="p">:</span> <span class="s2">&quot;ne:states_provinces_shp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fill&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;paint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fill-color&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;property&quot;</span><span class="p">:</span> <span class="s2">&quot;Shape_Area&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;interval&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;stops&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;#08519c&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;#3182bd&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;#6baed6&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;#9ecae1&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="s2">&quot;#c6dbef&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">80</span><span class="p">,</span> <span class="s2">&quot;#eff3ff&quot;</span><span class="p">]</span>
+          <span class="p">]</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<img alt="../../../_images/polygon_area.png" src="../../../_images/polygon_area.png" />
+</li>
+<li><p>An exciting use of the GeoServer <strong>shape</strong> symbols is the theming by changing the <strong>size</strong> used for pattern density.</p></li>
+<li><p><strong>Explore:</strong> Use the <strong>interval</strong> function to theme by <strong>datarank</strong>.</p>
+<img alt="../../../_images/polygon_categorize.png" src="../../../_images/polygon_categorize.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#mbstyle-polygon-a2"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-halo">
+<span id="mbstyle-polygon-q4"></span><h3><span class="section-number">5.3.6.2. </span>Challenge Halo<a class="headerlink" href="#challenge-halo" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.</p>
+<p>A common design choice for emphasis is to outline the text in a contrasting color.</p>
+</li>
+<li><p><strong>Challenge:</strong> Produce a map that uses a white halo around black text.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#mbstyle-polygon-a4"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-theming-using-multiple-attributes">
+<span id="mbstyle-polygon-q5"></span><h3><span class="section-number">5.3.6.3. </span>Challenge Theming using Multiple Attributes<a class="headerlink" href="#challenge-theming-using-multiple-attributes" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform “integration by eyeball” (detecting correlations between attribute values information).</p></li>
+<li><p><strong>Challenge:</strong> Combine the <strong>mapcolor9</strong> and <strong>datarank</strong> examples to reproduce the following map.</p>
+<img alt="../../../_images/polygon_multitheme.png" src="../../../_images/polygon_multitheme.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#mbstyle-polygon-a5"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-use-of-z-index">
+<span id="mbstyle-polygon-q6"></span><h3><span class="section-number">5.3.6.4. </span>Challenge Use of Z-Index<a class="headerlink" href="#challenge-use-of-z-index" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>Earlier we looked at using multiple <strong>layers</strong> to simulate line string casing. The line work was drawn twice, once with thick line, and then a second time with a thinner line. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.</p></li>
+<li><p><strong>Challenge:</strong> Use what you know of rendering order to reproduce the following map:</p>
+<img alt="../../../_images/polygon_zorder.png" src="../../../_images/polygon_zorder.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Answer <a class="reference internal" href="done.html#mbstyle-polygon-a6"><span class="std std-ref">provided</span></a> at the end of the workbook.</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="linestring.html" title="previous chapter"><span class="section-number">5.2. </span>Lines</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="point.html" title="next chapter"><span class="section-number">5.4. </span>Points</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">5.3. Polygons</a><ul>
+<li><a class="reference internal" href="#fill-and-outline">5.3.1. Fill and Outline</a></li>
+<li><a class="reference internal" href="#pattern">5.3.2. Pattern</a></li>
+<li><a class="reference internal" href="#label">5.3.3. Label</a></li>
+<li><a class="reference internal" href="#legibility">5.3.4. Legibility</a></li>
+<li><a class="reference internal" href="#theme">5.3.5. Theme</a></li>
+<li><a class="reference internal" href="#bonus">5.3.6. Bonus</a><ul>
+<li><a class="reference internal" href="#explore-interval">5.3.6.1. Explore Interval</a></li>
+<li><a class="reference internal" href="#challenge-halo">5.3.6.2. Challenge Halo</a></li>
+<li><a class="reference internal" href="#challenge-theming-using-multiple-attributes">5.3.6.3. Challenge Theming using Multiple Attributes</a></li>
+<li><a class="reference internal" href="#challenge-use-of-z-index">5.3.6.4. Challenge Use of Z-Index</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="linestring.html" title="previous chapter"><span class="section-number">5.2. </span>Lines</a></li>
+            <li>Next: <a href="point.html" title="next chapter"><span class="section-number">5.4. </span>Points</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/workshop/mbstyle/polygon.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GHRSST NetCDF output &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Notification community module Plugin Documentation" href="../notification/index.html" />
+    <link rel="prev" title="ncWMS WMS extensions support" href="../ncwms/index.html" /> 
+  </head><body class="community/netcdf-ghrsst/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>GHRSST NetCDF output</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../notification/index.html" title="Notification community module Plugin Documentation" accesskey="N">Next</a></li>
+  <li>
+    <a href="../ncwms/index.html" title="ncWMS WMS extensions support" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="ghrsst-netcdf-output">
+<span id="community-netcdf-ghrsst"></span><h1>GHRSST NetCDF output<a class="headerlink" href="#ghrsst-netcdf-output" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://www.ghrsst.org/">GHRSST</a> is Group for High Resolution Sea Surface Temperature.
+Among its various activities it issued a <a class="reference external" href="ftp://podaac.jpl.nasa.gov/OceanTemperature/ghrsst/docs/GDS20r5.pdf">specification on how sea surface temperature data should be organized
+in NetCDF files</a>.</p>
+<p>The NetCDF GHRSST module allows to generate complaint GHRSST files as WCS outputs, given a compliant GHRSST input.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>As a community module, the package needs to be downloaded from the <a class="reference external" href="https://build.geoserver.org/geoserver/">nightly builds</a>,
+picking the community folder of the corresponding GeoServer series (e.g. if working on the GeoServer main development branch nightly
+builds, pick the zip file form <code class="docutils literal notranslate"><span class="pre">main/community-latest</span></code>).</p>
+<p>To install the module, unpack the zip file contents into GeoServer own <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory and
+restart GeoServer.</p>
+<p>For the module to work, the <a class="reference internal" href="../../extensions/netcdf/netcdf.html#netcdf"><span class="std std-ref">NetCDF</span></a> and <a class="reference internal" href="../../extensions/netcdf-out/index.html#netcdf-out"><span class="std std-ref">NetCDF Output Format</span></a> extensions must also be installed.</p>
+</div>
+<div class="section" id="input-preparation">
+<h2>Input preparation<a class="headerlink" href="#input-preparation" title="Permalink to this headline">¶</a></h2>
+<p>A GHRSST file contains multiple variables that are related with each other, and should be explored
+together in order to better understand the data. Thus, it is assumed that the source GHRSST file is published
+as a single coverage view holding all the variables as bands, retaining their native name (this is important for
+the plugin to work):</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/coverageView.png" src="../../_images/coverageView.png" />
+<p class="caption"><span class="caption-text"><em>Setting up a coverage view with all variables as bands</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>A GHRSST output must also have a time, so the time dimension of this layer should be enabled (the output generation will fail
+with an error otherwise).</p>
+<p>At the time of writing a coverage view requires the source bands to be of uniform data type, and the data sources might
+not be. In case setting up the view is not possible with the data available, a NCML file can be used to reprocess
+the source NetCDF into one that has bands with uniform data type. A downloadable example has been provided to facilitate
+setting up the view.</p>
+<p><a class="reference download internal" download="" href="../../_downloads/71f7849f9fa7d2e4ebe130a3937a54ad/ghrsst.ncml"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">reference</span> <span class="pre">NCML</span> <span class="pre">transformation</span></code></a></p>
+<p>The GHRSST may also have to be setup in a image mosaic in order to provide a deep temporal layer that users can select
+data from. The image mosaic setup can be complex, so a downloadable example has been provided for it as well (will require
+some changes, at a minimum, fix the paths at the bottom of indexer.xml, and the database connection parameters in the
+two datastore properties files).</p>
+<p><a class="reference download internal" download="" href="../../_downloads/4eba81c635eddd8c3942cef1e0c4e923/ghrsst_mosaic.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">sample</span> <span class="pre">mosaic</span> <span class="pre">configuration</span> <span class="pre">files</span></code></a></p>
+</div>
+<div class="section" id="configuring-ghrsst-output">
+<h2>Configuring GHRSST output<a class="headerlink" href="#configuring-ghrsst-output" title="Permalink to this headline">¶</a></h2>
+<p>The normal WCS NetCDF output will pick the first band of a coverage and generate a single variable NetCDF output.
+When the GHRSST plugin is installed, a new UI element will show up that enables GHRSST output:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/ghrsstConfiguration.png" src="../../_images/ghrsstConfiguration.png" />
+<p class="caption"><span class="caption-text"><em>Enabling GHRSST output mode</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>Notes about the configuration UI:</p>
+<ul class="simple">
+<li><p>Various normal configurations such as variable name, unit of measure, and data packing will be ignored (each
+variable in GHRSST has its own assigned data type and packing, as from specification)</p></li>
+<li><p>For the output to be compliant, enable copy of both global and per variable attributes</p></li>
+<li><p>The RDAC, Processing Level, SST Type and Product String have to be filled in order to generate a valid GHRSST
+file name in output. The user interface provides auto-complete with names picked from the specification, but others
+can be inputed as well.</p></li>
+</ul>
+<p>For the output to generate correctly the coverage band names have to follow exactly the expected specification variable
+names (which comes naturally if the input is valid GHRSST), variable will be re-packed in output according to
+specification, so even if the inputs are all floats, the output will follow the expected data types.</p>
+<p>Any extra coverage band not present in the specification will be copied from input to output un-modified.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../ncwms/index.html" title="previous chapter">ncWMS WMS extensions support</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../notification/index.html" title="next chapter">Notification community module Plugin Documentation</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GHRSST NetCDF output</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#input-preparation">Input preparation</a></li>
+<li><a class="reference internal" href="#configuring-ghrsst-output">Configuring GHRSST output</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../ncwms/index.html" title="previous chapter">ncWMS WMS extensions support</a></li>
+            <li>Next: <a href="../notification/index.html" title="next chapter">Notification community module Plugin Documentation</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/netcdf-ghrsst/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

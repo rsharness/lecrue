@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GWC SQLite Plugin &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SAP HANA" href="../hana/index.html" />
+    <link rel="prev" title="GWC MBTiles layer plugin" href="../gwc-mbtiles/index.html" /> 
+  </head><body class="community/gwc-sqlite/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>GWC SQLite Plugin</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../hana/index.html" title="SAP HANA" accesskey="N">Next</a></li>
+  <li>
+    <a href="../gwc-mbtiles/index.html" title="GWC MBTiles layer plugin" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="gwc-sqlite-plugin">
+<span id="community-gwc-sqlite"></span><h1>GWC SQLite Plugin<a class="headerlink" href="#gwc-sqlite-plugin" title="Permalink to this headline">¶</a></h1>
+<p>This plugin provides integration with GWC SQLite based blob stores. At the moment only one blob store of this type is available, the MBTiles blob store.</p>
+<div class="section" id="mbtiles-blob-store">
+<h2>MBTiles Blob Store<a class="headerlink" href="#mbtiles-blob-store" title="Permalink to this headline">¶</a></h2>
+<p>This blob store allow us to store tiles using the <a class="reference external" href="https://github.com/mapbox/mbtiles-spec/blob/master/1.1/spec.md">MBTiles</a> specification (version 1.1) which defines a schema for storing tiles in an <a class="reference external" href="https://www.sqlite.org/">SQLite</a> database with some restrictions regarding tiles formats and projections.</p>
+<p>MBTiles specification only supports JPEG and PNG formats and projection EPSG:3857 is assumed. The implemented blob store will read and write MBTiles files compliant with the specification but will also be able to write and read MBTiles files that use others formats and projections.</p>
+<p>Using the MBTiles blob store will bring several benefits at the cost of some performance loss. The MBTiles storage uses a significantly smaller number of files, which results in easier data handling (e.g., backups, moving tiles between environments). In some cases the stored data will be more compact reducing the size of the data on disk.</p>
+<p>When compared to the file blob store this store has two limitations:</p>
+<ul class="simple">
+<li><p>This store does not integrate with disk quota, this is a consequence of using database files.</p></li>
+<li><p><strong>This store cannot be shared among several GeoWebCache instances.</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If disk quota is activated the stored stats will not make much sense and will not reflect the actual disk usage, the size of the database files cannot be really controlled.</p>
+</div>
+<p>Database files cannot be managed as simple files. When connections to a database are open the associated file should not be deleted, moved or switched or the database file may become corrupted. Databases files can also become fragmented after deleting an huge amount of data or after frequent inserts, updates or delete operations.</p>
+<div class="section" id="file-path-templates">
+<h3>File Path Templates<a class="headerlink" href="#file-path-templates" title="Permalink to this headline">¶</a></h3>
+<p>An MBTiles file will correspond to an SQLite database file. In order to limit the amount of contention on each single database file users will be allowed to decide the granularity of the databases files. When GeoWebCache needs to map a tile to a database file it will only look at the databases files paths, it will not take in account the MBTiles metadata (this is why this store is able to handle others formats and projections).</p>
+<p>To configure the databases files granularity the user needs to provide a file path template. The default file path template for the MBTiles blob store is this one:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{layer}/{grid}{format}{params}/{z}-{x}-{y}.sqlite
+</pre></div>
+</div>
+<p>This file template will stores all the tiles belonging to a certain layer in a single folder that will contain sub folders for each given format, projection and set of parameters and will group tiles with the same zoom level, column range and row range in a SQLite file. The column and row range values are passed by configuration, by default those values are equal to 250. The provided files paths templates will always be considered relative to the root directory provided as a configuration option.</p>
+<p>Follows an example of what the blob store root directory structure may look like when using the default path template:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>.
+|-- nurc_Pk50095
+|   `-- EPSG_4326image_pngnull
+|       |-- 11_2000_1500.sqlite
+|       `-- 12_4250_3000.sqlite
+`-- topp_states
+    |-- EPSG_900913image_jpeg7510004a12f49fdd49a2ba366e9c4594be7e4358
+    |   |-- 6_250_500.sqlite
+    |   `-- 7_0_0.sqlite
+    `-- EPSG_900913image_jpegnull
+        |-- 3_500_0.sqlite
+        |-- 4_0_250.sqlite
+        `-- 8_750_500.sqlite
+</pre></div>
+</div>
+<p>If no parameters were provided <em>null</em> string will be used. Is the responsibility of the user to define a file path template that will avoid collisions.</p>
+<p>The terms that can be used in the file path template are:</p>
+<ul class="simple">
+<li><p><strong>grid</strong>: the grid set id</p></li>
+<li><p><strong>layer</strong>: the name of the layer</p></li>
+<li><p><strong>format</strong>: the image format of the tiles</p></li>
+<li><p><strong>params</strong>: parameters unique hash</p></li>
+<li><p><strong>x</strong>: column range, computed based on the column range count configuration property</p></li>
+<li><p><strong>y</strong>: row range, computed based on the row range count configuration property</p></li>
+<li><p><strong>z</strong>: the zoom level</p></li>
+</ul>
+<p>It is also possible to use parameters values, like <em>style</em> for example. If the parameter is not present <em>null</em> will be used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Characters <code class="docutils literal notranslate"><span class="pre">\</span></code> and <code class="docutils literal notranslate"><span class="pre">/</span></code> can be used as path separator, they will be translated to the operating system specific one (<code class="docutils literal notranslate"><span class="pre">\</span></code> for Linux and <code class="docutils literal notranslate"><span class="pre">/</span></code> for Windows). Any special char like <code class="docutils literal notranslate"><span class="pre">\</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">:</span></code> or empty space used in a term value will be substituted with an underscore.</p>
+</div>
+</div>
+<div class="section" id="mbtiles-metadata">
+<h3>MBTiles Metadata<a class="headerlink" href="#mbtiles-metadata" title="Permalink to this headline">¶</a></h3>
+<p>A valid MBTiles file will need some metadata, the image format and layer name will be automatically added when an MBTiles file is created. The user can provide the remaining metadata using a properties file whose name must follow this pattern:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;layerName&gt;.metadata
+</pre></div>
+</div>
+<p>As an example, to add metadata <code class="docutils literal notranslate"><span class="pre">description</span></code> and <code class="docutils literal notranslate"><span class="pre">attribution</span></code> entries to layer <code class="docutils literal notranslate"><span class="pre">tiger_roads</span></code> a file named <code class="docutils literal notranslate"><span class="pre">tiger_roads.properties</span></code> with the following content should be present in the metadata directory:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>description=ny_roads
+attribution=geoserver
+</pre></div>
+</div>
+<p>The directory that contains this metadata files is defined by a configuration property.</p>
+</div>
+<div class="section" id="expiration-rules">
+<h3>Expiration Rules<a class="headerlink" href="#expiration-rules" title="Permalink to this headline">¶</a></h3>
+<p>The MBTiles specification don’t give information about when a tile was created. To allow expire rules, an auxiliary table is used to store tile creation time. In the presence of an MBTiles file generated by a third party tool it is assumed that the creation time of a tile was the first time it was accessed. This feature can be activated or deactivated by configuration. Note that this will not break the MBTiles specification compliance.</p>
+</div>
+<div class="section" id="eager-truncate">
+<h3>Eager Truncate<a class="headerlink" href="#eager-truncate" title="Permalink to this headline">¶</a></h3>
+<p>When performing a truncate of the cache the store will try to remove the whole database file avoiding to create fragmented space. This is not suitable for all the situations and is highly dependent on the database files granularity. The configuration property <code class="docutils literal notranslate"><span class="pre">eagerDelete</span></code> allows the user to disable or deactivate this feature which is disabled by default.</p>
+<p>When a truncate request by tile range is received all the databases files that contains tiles that belong to the tile range are identified. If eager delete is set to true those databases files are deleted otherwise a single delete query for each file is performed.</p>
+</div>
+<div class="section" id="configuration-example">
+<h3>Configuration Example<a class="headerlink" href="#configuration-example" title="Permalink to this headline">¶</a></h3>
+<p>Follows as an example the default configuration of the MBTiles store:</p>
+<div class="figure align-default">
+<img alt="../../_images/mbtilesBlobStore.png" src="../../_images/mbtilesBlobStore.png" />
+</div>
+<p>The <em>rootDirectory</em> property defines the location where all the files produced by this store will be created. The <em>templatePath</em> property is used to control the granularity of the database files (see section above). Properties <em>rowRangeCount</em> and <em>columnRangeCount</em> will be used by the path template to compute tile ranges.</p>
+<p>The <em>poolSize</em> property allows to control the max number of open database files, when defining this property the user should take in account the number open files allowed by the operating system. The <em>poolReaperIntervalMs</em> property controls how often the pool size will be checked to see if some database files connections need to be closed.</p>
+<p>Property <em>eagerDelete</em> controls how the truncate operation is performed (see section above). The property <em>useCreateTime</em> can be used to activate or deactivate the insertion of the tile creation time (see section above). Property <em>executorConcurrency</em> controls the parallelism used to perform certain operations, like the truncate operation for example. Property <em>mbtilesMetadataDirectory</em> defines the directory where the store will look for user provided MBTiles metadata.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since the connection pool eviction happens at a certain interval, it means that the number of files open concurrently can go above the threshold limit for a certain amount of time.</p>
+</div>
+</div>
+<div class="section" id="replace-operation">
+<h3>Replace Operation<a class="headerlink" href="#replace-operation" title="Permalink to this headline">¶</a></h3>
+<p>As said before, if the cache is running SQLite files cannot be simply switched, first all connections need to be closed. The replace operation was created for this propose. The replace operation will first copy the new file side by side the old one, then block the requests to the old file, close the connections tot he old file, delete the old one, rename the new file to current one, reopen the new db file and start serving requests again. Should be almost instant.</p>
+<p>A REST entry point for this operation is available, it will be possible to submit a ZIP file or a single file along with the request. The replace operation can also use an already present file or directory. When using a directory the directory structure will be used to find the destination of each file, all the paths will be assumed to be relative to the store root directory. This means that is possible to replace a store content with another store content (a seeded one for example) by zipping the second store root directory and send it as a replacement.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using a local directory or submitting a zip file all the file present in the directory will be considered.</p>
+</div>
+<p>There is four ways to invoke this operation. Follows an example of all those variants invocations using CURL.</p>
+<p>Replace a single file uploading the replacement file:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -H &#39;Content-Type: multipart/form-data&#39;
+  -F &quot;file=@tiles_0_0.sqlite&quot;
+  -F &quot;destination=EPSG_4326/sf_restricted/image_png/null/10/tiles_0_0.sqlite&quot;
+  -F &quot;layer=sf:restricted&quot;
+  -XPOST &#39;http://localhost:8080/geoserver/gwc/rest/sqlite/replace&#39;
+</pre></div>
+</div>
+<p>Replace a single file using a file already present on the system:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -H &#39;Content-Type: multipart/form-data&#39;
+  -F &quot;source=/tmp/tiles_0_0.sqlite&quot;
+  -F &quot;destination=EPSG_4326/sf_restricted/image_png/null/10/tiles_0_0.sqlite&quot;
+  -F &quot;layer=sf:restricted&quot;
+  -XPOST &#39;http://localhost:8080/geoserver/gwc/rest/sqlite/replace&#39;
+</pre></div>
+</div>
+<p>Replace multiple files uploading a ZIP file:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -H &#39;Content-Type: multipart/form-data&#39;
+  -F &quot;file=@tiles.zip&quot;
+  -F &quot;layer=sf:restricted&quot;
+  -XPOST &#39;http://localhost:8080/geoserver/gwc/rest/sqlite/replace&#39;
+</pre></div>
+</div>
+<p>Replace multiple files using a directory already present on the system:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -H &#39;Content-Type: multipart/form-data&#39;
+  -F &quot;source=/tmp/tiles&quot;
+  -F &quot;layer=sf:restricted&quot;
+  -XPOST &#39;http://localhost:8080/geoserver/gwc/rest/sqlite/replace&#39;
+</pre></div>
+</div>
+<p>The <em>layer</em> parameter identifies the layer whose associated blob store content should be replaced. The <em>file</em> parameter is used to upload a single file or a ZIP file. The <em>source</em> parameter is used to reference an already present file or directory. The <em>destination</em> parameter is used to define the file that should be replaced with the provided file.</p>
+<p>This are the only valid combinations of this parameters other combinations will ignore some of the provided parameters or will throw an exception.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../gwc-mbtiles/index.html" title="previous chapter">GWC MBTiles layer plugin</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../hana/index.html" title="next chapter">SAP HANA</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GWC SQLite Plugin</a><ul>
+<li><a class="reference internal" href="#mbtiles-blob-store">MBTiles Blob Store</a><ul>
+<li><a class="reference internal" href="#file-path-templates">File Path Templates</a></li>
+<li><a class="reference internal" href="#mbtiles-metadata">MBTiles Metadata</a></li>
+<li><a class="reference internal" href="#expiration-rules">Expiration Rules</a></li>
+<li><a class="reference internal" href="#eager-truncate">Eager Truncate</a></li>
+<li><a class="reference internal" href="#configuration-example">Configuration Example</a></li>
+<li><a class="reference internal" href="#replace-operation">Replace Operation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../gwc-mbtiles/index.html" title="previous chapter">GWC MBTiles layer plugin</a></li>
+            <li>Next: <a href="../hana/index.html" title="next chapter">SAP HANA</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/gwc-sqlite/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

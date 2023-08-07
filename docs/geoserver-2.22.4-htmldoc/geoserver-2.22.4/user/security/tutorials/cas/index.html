@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication with CAS &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="GeoWebCache" href="../../../geowebcache/index.html" />
+    <link rel="prev" title="Configuring Apache HTTPD Session Integration" href="../credentialsfromheaders/index.html" /> 
+  </head><body class="security/tutorials/cas/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Security</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Authentication with CAS</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../../../geowebcache/index.html" title="GeoWebCache" accesskey="N">Next</a></li>
+  <li>
+    <a href="../credentialsfromheaders/index.html" title="Configuring Apache HTTPD Session Integration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="authentication-with-cas">
+<span id="security-tutorials-cas"></span><h1>Authentication with CAS<a class="headerlink" href="#authentication-with-cas" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial introduces GeoServer CAS support and walks through the process of
+setting up authentication against a CAS server. It is recommended that the
+<a class="reference internal" href="../../auth/chain.html#security-auth-chain"><span class="std std-ref">Authentication chain</span></a> section be read before proceeding. Reference information on cas setup
+is also available <a class="reference internal" href="../../../extensions/cas/index.html#cas"><span class="std std-ref">CAS integration</span></a>.</p>
+<div class="section" id="cas-server-certificates">
+<h2>CAS server certificates<a class="headerlink" href="#cas-server-certificates" title="Permalink to this headline">¶</a></h2>
+<p>A running <a class="reference external" href="https://apereo.github.io/cas/5.3.x/index.html">CAS server</a> is needed.</p>
+<p>The first step is to import the server certificates into the GeoServer JVM.</p>
+<p>If you need to export the <cite>CRT</cite> from the CAS server, you must execute the following
+command on the server JVM:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">keytool</span> <span class="o">-</span><span class="n">export</span> <span class="o">-</span><span class="n">alias</span> <span class="o">&lt;</span><span class="n">server_name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">keystore</span> <span class="o">&lt;</span><span class="n">cas_jvm_keystore_path</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">file</span> <span class="n">server</span><span class="o">.</span><span class="n">crt</span>
+</pre></div>
+</div>
+<p>Once you have the <cite>server.crt</cite> file, the procedure to import the certificate into
+the JVM is the following one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">keytool</span> <span class="o">-</span><span class="kn">import</span> <span class="o">-</span><span class="n">trustcacerts</span> <span class="o">-</span><span class="n">alias</span> <span class="o">&lt;</span><span class="n">server_name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">file</span> <span class="n">server</span><span class="o">.</span><span class="n">crt</span> <span class="o">-</span><span class="n">keystore</span> <span class="o">&lt;</span><span class="n">path_to_JRE_cacerts</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Enter the keystore password and confirm the certificate to be trustable.</p>
+</div>
+<div class="section" id="configure-the-cas-authentication-provider">
+<h2>Configure the CAS authentication provider<a class="headerlink" href="#configure-the-cas-authentication-provider" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Start GeoServer and login to the web admin interface as the <code class="docutils literal notranslate"><span class="pre">admin</span></code> user.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Authentication</span></code> link located under the <code class="docutils literal notranslate"><span class="pre">Security</span></code> section of
+the navigation sidebar.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/cas1.jpg" src="../../../_images/cas1.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Scroll down to the <code class="docutils literal notranslate"><span class="pre">Authentication</span> <span class="pre">Filters</span></code> panel and click the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">new</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/cas2.jpg" src="../../../_images/cas2.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">CAS</span></code> link.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/cas3.jpg" src="../../../_images/cas3.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Fill in the fields of the settings form as follows:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../../_images/cas4.jpg" src="../../../_images/cas4.jpg" />
+</div>
+</div></blockquote>
+</li>
+<li><p>Update the filter chains by adding the new CAS filter.</p>
+<div class="figure align-center">
+<img alt="../../../_images/cas5.jpg" src="../../../_images/cas5.jpg" />
+</div>
+</li>
+<li><p>Select the CAS Filter for each filter chain you want to protect with CAS.</p>
+<div class="figure align-center">
+<img alt="../../../_images/cas6.jpg" src="../../../_images/cas6.jpg" />
+</div>
+<p>Be sure to select and order correctly the CAS Filter.</p>
+</li>
+<li><p>Save.</p></li>
+</ol>
+</div>
+<div class="section" id="test-a-cas-login">
+<h2>Test a CAS login<a class="headerlink" href="#test-a-cas-login" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Navigate to the GeoServer home page and log out of the admin account.</p></li>
+<li><p>Try to login again, you should be able now to see the external CAS login form.</p>
+<div class="figure align-center">
+<img alt="../../../_images/cas7.jpg" src="../../../_images/cas7.jpg" />
+</div>
+</li>
+</ol>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../credentialsfromheaders/index.html" title="previous chapter">Configuring Apache HTTPD Session Integration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../../../geowebcache/index.html" title="next chapter">GeoWebCache</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Authentication with CAS</a><ul>
+<li><a class="reference internal" href="#cas-server-certificates">CAS server certificates</a></li>
+<li><a class="reference internal" href="#configure-the-cas-authentication-provider">Configure the CAS authentication provider</a></li>
+<li><a class="reference internal" href="#test-a-cas-login">Test a CAS login</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../credentialsfromheaders/index.html" title="previous chapter">Configuring Apache HTTPD Session Integration</a></li>
+            <li>Next: <a href="../../../geowebcache/index.html" title="next chapter">GeoWebCache</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/tutorials/cas/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

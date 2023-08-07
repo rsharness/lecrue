@@ -1,0 +1,506 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Security &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="App-Schema Online Tests" href="../app-schema/index.html" />
+    <link rel="prev" title="Testing" href="../testing/index.html" /> 
+  </head><body class="programming-guide/security/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+    <li>Security</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../app-schema/index.html" title="App-Schema Online Tests" accesskey="N">Next</a></li>
+  <li>
+    <a href="../testing/index.html" title="Testing" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="security">
+<span id="id1"></span><h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
+<p>This section provides an overview of the GeoServer security subsystem API.</p>
+<div class="section" id="security-manager">
+<span id="id2"></span><h2>Security Manager<a class="headerlink" href="#security-manager" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">GeoServerSecurityManager</span></code> class is the main facade for the security
+subsystem. It plays a similar role to that of the <code class="docutils literal notranslate"><span class="pre">GeoServer</span></code> and <code class="docutils literal notranslate"><span class="pre">Catalog</span></code>
+interfaces for the configuration and catalog subsystems respectively. Some of
+the duties of this class include:</p>
+<ul class="simple">
+<li><p>Access to security services such as user group and role services,
+authentication providers, etc…</p></li>
+<li><p>Manage the lifecycle of security services</p></li>
+<li><p>CRUD operations for security service configurations</p></li>
+<li><p>Access to various singleton classes such as <code class="docutils literal notranslate"><span class="pre">ResourceAccessManager</span></code>,
+<code class="docutils literal notranslate"><span class="pre">KeyStoreProvider</span></code>, <code class="docutils literal notranslate"><span class="pre">AuthenticationCache</span></code>,
+<code class="docutils literal notranslate"><span class="pre">GeoServerSecurityFilterChain</span></code>, etc..</p></li>
+<li><p>Implement the spring security AuthenticationProviderManager interface
+providing the list of active <a class="reference internal" href="#auth-provider"><span class="std std-ref">Authentication Provider</span></a> instances.</p></li>
+</ul>
+</div>
+<div class="section" id="security-services">
+<h2>Security Services<a class="headerlink" href="#security-services" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GeoServerSecurityService</span></code> is the base interface for all security services, including:</p>
+<ul class="simple">
+<li><p>User/group services</p></li>
+<li><p>Role services</p></li>
+<li><p>Authentication filters</p></li>
+<li><p>Authentication providers</p></li>
+<li><p>Keystore password providers</p></li>
+</ul>
+<p>The interface provides some common methods for all security services,
+including:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">void</span> <span class="n">initializeFromConfig</span><span class="p">(</span><span class="n">SecurityNamedServiceConfig</span> <span class="n">config</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Every type of security service corresponds to a configuration object for that
+service. The configuration object is a simple java bean that contains the
+service configuration. These objects are persisted via xstream in the GeoServer
+data directory. See <a class="reference internal" href="#service-config"><span class="std std-ref">Security Plugin Provider</span></a> for more details.</p>
+<p>Security services are created via methods provided by the security manager. For
+instance to create a new xml user group service:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GeoServerSecurityManager</span> <span class="n">mgr</span> <span class="o">=</span> <span class="o">...</span><span class="p">;</span>
+<span class="n">XMLSecurityServiceConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="n">new</span> <span class="n">XMLSecurityServiceConfig</span><span class="p">();</span>
+<span class="n">config</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span>
+<span class="n">config</span><span class="o">.</span><span class="n">setFilename</span><span class="p">(</span><span class="s2">&quot;users.xml&quot;</span><span class="p">);</span>
+<span class="n">mgr</span><span class="o">.</span><span class="n">saveUserGroupService</span><span class="p">(</span><span class="n">config</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>An instance of a security service is obtained by looking it up by the name
+matching its configuration object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GeoServerUserGroupService</span> <span class="n">ugService</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">loadUserGroupService</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The config object for the service can be looked up in a similar way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SecurityUserGroupServiceConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">loadUserGroupServiceConfig</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>And modified accordingly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">config</span><span class="o">.</span><span class="n">setPasswordEncoderName</span><span class="p">(</span><span class="s2">&quot;digest&quot;</span><span class="p">);</span>
+<span class="n">mgr</span><span class="o">.</span><span class="n">saveUserGroupServiceConfig</span><span class="p">(</span><span class="n">config</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="section" id="usergroup-service-store">
+<span id="usergroup-service"></span><h3>UserGroup Service/Store<a class="headerlink" href="#usergroup-service-store" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GeoServerUserGroupService</span></code> and <code class="docutils literal notranslate"><span class="pre">GeoServerUserGroupStore</span></code> interfaces provides a database
+for users and groups. A GeoServerUserGroupService may be read only in that it acts solely
+as a source without the ability to create new or edit existing users and groups.</p>
+<p>The interfaces provide access to users and groups:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GeoServerUserGroupService</span> <span class="n">ugService</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">loadUserGroupService</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">);</span>
+
+<span class="n">ugService</span><span class="o">.</span><span class="n">getUsers</span><span class="p">();</span>
+<span class="n">GeoServerUser</span> <span class="n">user</span> <span class="o">=</span> <span class="n">ugService</span><span class="o">.</span><span class="n">getUserByUsername</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">);</span>
+
+<span class="n">ugService</span><span class="o">.</span><span class="n">getGroups</span><span class="p">();</span>
+<span class="n">GeoServerUserGroup</span> <span class="n">group</span> <span class="o">=</span> <span class="n">ugService</span><span class="o">.</span><span class="n">getGroupByGroupname</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The service interface advertises whether it is read only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">ugService</span><span class="o">.</span><span class="n">canCreateStore</span><span class="p">())</span> <span class="p">{</span>
+  <span class="n">GeoServerUserGroupStore</span> <span class="n">store</span> <span class="o">=</span> <span class="n">ugService</span><span class="o">.</span><span class="n">createStore</span><span class="p">();</span>
+  <span class="n">store</span><span class="o">.</span><span class="n">addUser</span><span class="p">(</span><span class="n">new</span> <span class="n">GeoServerUser</span><span class="p">(</span><span class="s2">&quot;bob&quot;</span><span class="p">));</span>
+  <span class="n">store</span><span class="o">.</span><span class="n">store</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">GeoServerUserGroupService</span></code> implements the spring security <code class="docutils literal notranslate"><span class="pre">UserDetailsService</span></code>
+interface in order to integrate with existing facilities such as remember me
+services which require a user details service for loading user information at
+runtime.</p>
+</div>
+<div class="section" id="role-service-store">
+<span id="role-service"></span><h3>Role Service/Store<a class="headerlink" href="#role-service-store" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GeoServerRoleService</span></code> and <code class="docutils literal notranslate"><span class="pre">GeoServerRoleStore</span></code> provide a database for roles and role
+associations for users and groups. Like user group services a <code class="docutils literal notranslate"><span class="pre">GeoServerRoleService</span></code>
+may be read only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GeoServerRoleService</span> <span class="n">roleService</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">loadRoleService</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">);</span>
+<span class="n">roleService</span><span class="o">.</span><span class="n">getRoles</span><span class="p">();</span>
+<span class="n">roleService</span><span class="o">.</span><span class="n">getRolesForUser</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">);</span>
+<span class="n">roleService</span><span class="o">.</span><span class="n">getRolesForGroup</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">roleService</span><span class="o">.</span><span class="n">canCreateStore</span><span class="p">())</span> <span class="p">{</span>
+  <span class="n">GeoServerRoleStore</span> <span class="n">store</span> <span class="o">=</span> <span class="n">roleService</span><span class="o">.</span><span class="n">createStore</span><span class="p">();</span>
+  <span class="n">GeoServerRole</span> <span class="n">role</span> <span class="o">=</span> <span class="n">new</span> <span class="n">GeoServerRole</span><span class="p">(</span><span class="s2">&quot;ROLE_FOO&quot;</span><span class="p">);</span>
+
+  <span class="n">store</span><span class="o">.</span><span class="n">addRole</span><span class="p">(</span><span class="n">role</span><span class="p">);</span>
+  <span class="n">store</span><span class="o">.</span><span class="n">associateRoleToGroup</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">);</span>
+  <span class="n">store</span><span class="o">.</span><span class="n">store</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="authentication-provider">
+<span id="auth-provider"></span><h3>Authentication Provider<a class="headerlink" href="#authentication-provider" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GeoServerAuthenticationProvider</span></code> is an extension of the spring security <code class="docutils literal notranslate"><span class="pre">AuthenticationProvider</span></code>
+interface and is responsible for performing authentication of user credentials.</p>
+<p>The class extends the <code class="docutils literal notranslate"><span class="pre">AuthenticationProvider</span></code> contract and provides methods
+for authentication that provide access to the current request to make it
+easier for providers that require request information to perform authentication:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@Override</span>
+<span class="n">public</span> <span class="n">final</span> <span class="n">Authentication</span> <span class="n">authenticate</span><span class="p">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="p">)</span>
+    <span class="n">throws</span> <span class="n">AuthenticationException</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">authenticate</span><span class="p">(</span><span class="n">authentication</span><span class="p">,</span> <span class="n">request</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="o">/**</span>
+ <span class="o">*</span> <span class="n">Same</span> <span class="n">function</span> <span class="k">as</span> <span class="p">{</span><span class="nd">@link</span> <span class="c1">#authenticate(Authentication)} but is provided with</span>
+ <span class="o">*</span> <span class="n">the</span> <span class="n">current</span> <span class="n">request</span> <span class="nb">object</span><span class="o">.</span>
+ <span class="o">*/</span>
+<span class="n">public</span> <span class="n">abstract</span> <span class="n">Authentication</span> <span class="n">authenticate</span><span class="p">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="p">,</span>
+    <span class="n">HttpServletRequest</span> <span class="n">request</span><span class="p">)</span> <span class="n">throws</span> <span class="n">AuthenticationException</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The list of active authentication providers is maintained by the GeoServerSecurityManager
+which extends the spring security <code class="docutils literal notranslate"><span class="pre">AuthenticationProviderManager</span></code> interface.</p>
+</div>
+<div class="section" id="authentication-filter">
+<span id="auth-filter"></span><h3>Authentication Filter<a class="headerlink" href="#authentication-filter" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GeoServerSecurityFilter</span></code> is the base class for servlet filters that play a part
+in the authentication process. Such filters can play two roles.
+The first is to gather authentication credentials to passed off to a provider for
+actual authentication. An example would be a filter for doing HTTP basic auth.</p>
+<p>The second role is to perform “pre-authentication” in which involves doing
+authentication by recognizing authentication that has already taken place “outside”
+of GeoServer. An example would be when using a security proxy such as Siteminder or
+a “J2ee” authentication which involves delegating to the servlet container for
+doing authentication.</p>
+<p>Security filters are maintained in the <a class="reference internal" href="#auth-filter-chain"><span class="std std-ref">filter chain</span></a> which maintains
+the mapping of the filters to be applied to a specific type of request. For example
+the filters applied to a web UI request are different than those applied to an OGC
+or REST request.</p>
+<div class="figure align-center">
+<img alt="../../_images/filter_chain.png" src="../../_images/filter_chain.png" />
+</div>
+</div>
+<div class="section" id="password-policy">
+<h3>Password Policy<a class="headerlink" href="#password-policy" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">PasswordPolicy</span></code> is the interface for validating user passwords, applying constraints such
+as password length, character mix, etc…</p>
+</div>
+<div class="section" id="rootpasswordprovider">
+<h3>RootPasswordProvider<a class="headerlink" href="#rootpasswordprovider" title="Permalink to this headline">¶</a></h3>
+<p>Security service that provides a method for obtaining the GeoServer keystore password.
+The keystore password serves two purposes.</p>
+<ol class="arabic simple">
+<li><p>Is the password for the GeoServer “root” account</p></li>
+<li><p>Protects the GeoServer keystore that is used to store encryption keys</p></li>
+</ol>
+</div>
+</div>
+<div class="section" id="security-plugin-provider">
+<span id="service-config"></span><h2>Security Plugin Provider<a class="headerlink" href="#security-plugin-provider" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">GeoServerSecurityProvider</span></code> is the actual extension point that allows for the
+plugging in of instances of the services discussed above. The single interface covers
+all the security services.</p>
+<p>For each type of security service the provider has two methods to implement. For example
+with a user group service:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>public Class&lt;? extends GeoServerUserGroupService&gt; getUserGroupServiceClass() {
+    return null;
+}
+
+public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
+    throws IOException {
+    return null;
+}
+</pre></div>
+</div>
+<p>The first method reports on the specific class of user group service it implements.
+This is how a specific security provider is chosen from a specific configuration object.
+<code class="docutils literal notranslate"><span class="pre">SecurityNamedServiceConfig.getClassName()</span></code> is used to locate the provider.</p>
+<p>The second method creates an instance of the security service from a specified
+configuration object. Providers are registered via spring, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">bean</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;ldapSecurityProvider&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;org.geoserver.security.ldap.LDAPSecurityProvider&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">constructor</span><span class="o">-</span><span class="n">arg</span> <span class="n">ref</span><span class="o">=</span><span class="s2">&quot;geoServerSecurityManager&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">bean</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="security-configuration">
+<h2>Security Configuration<a class="headerlink" href="#security-configuration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="service-configuration">
+<h3>Service Configuration<a class="headerlink" href="#service-configuration" title="Permalink to this headline">¶</a></h3>
+<p>As mentioned above each type of security service corresponds to a configuration class.
+The <code class="docutils literal notranslate"><span class="pre">SecurityNamedServiceConfig</span></code> is the base class for all such configuration classes
+and maintains three properties that all classes inherit. The first is name for the
+configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span>
+ <span class="o">*</span> <span class="n">The</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">service</span><span class="o">.</span>
+ <span class="o">*/</span>
+<span class="n">String</span> <span class="n">getName</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>This name is used to reference both the configuration directly, or to the corresponding
+service implementation. For example consider a user group service named “foo”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GeoServerUserGroupService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">loadUserGroupService</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span>
+<span class="n">SecurityUserGroupServiceConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">loadUserGroupServiceConfig</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The second property is the fully qualified class name of the service implementation
+that the config object corresponds to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span>
+ <span class="o">*</span> <span class="n">Name</span> <span class="n">of</span> <span class="k">class</span> <span class="nc">for</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">service</span><span class="o">.</span>
+ <span class="o">*/</span>
+<span class="n">String</span> <span class="n">getClassName</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>For instance consider creating an XML user group service:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">XMLUserGroupServiceConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="n">new</span> <span class="n">XMLUserGroupServiceConfig</span><span class="p">();</span>
+<span class="n">config</span><span class="o">.</span><span class="n">setClassName</span><span class="p">(</span><span class="n">XMLUserGroupService</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">getName</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>The third property is an internal identifier, similar to how catalog and configuration
+objects have an id:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span>
+ <span class="o">*</span> <span class="n">Internal</span> <span class="nb">id</span> <span class="n">of</span> <span class="n">the</span> <span class="n">config</span> <span class="nb">object</span><span class="o">.</span>
+ <span class="o">*</span> <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+ <span class="o">*</span> <span class="n">This</span> <span class="n">method</span> <span class="n">should</span> <span class="n">be</span> <span class="n">used</span> <span class="n">by</span> <span class="n">client</span> <span class="n">code</span><span class="o">.</span>
+ <span class="o">*</span> <span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+ <span class="o">*/</span>
+<span class="n">String</span> <span class="n">getId</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The main purpose of this id is to detect if the security service
+config has been persisted or not.</p>
+<p>Service configuration objects are persisted in the geoserver data directory under
+the <code class="docutils literal notranslate"><span class="pre">security</span></code> directory. Under <code class="docutils literal notranslate"><span class="pre">security</span></code> are sub directories for each service
+type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">security</span><span class="o">/</span>
+  <span class="n">auth</span><span class="o">/</span>
+  <span class="nb">filter</span><span class="o">/</span>
+  <span class="n">masterpw</span><span class="o">/</span>
+  <span class="n">pwpolicy</span><span class="o">/</span>
+  <span class="n">role</span><span class="o">/</span>
+  <span class="n">usergroup</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>Under each directory are additional subdirectories for each named service of that type.
+For example, out of the box GeoServer security is configured with the following:</p>
+<ul class="simple">
+<li><p>Single user/group service named “default”</p></li>
+<li><p>Single role service named “default”</p></li>
+<li><p>Single authentication provider named “default”</p></li>
+</ul>
+<p>This would correspond to the following directory structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">security</span><span class="o">/</span>
+  <span class="n">auth</span><span class="o">/</span>
+    <span class="n">default</span><span class="o">/</span>
+  <span class="n">role</span><span class="o">/</span>
+    <span class="n">default</span><span class="o">/</span>
+  <span class="n">usergroup</span><span class="o">/</span>
+    <span class="n">default</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>Let’s say an additional authentication provider named “ldap” was added. The tree would look
+like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">security</span><span class="o">/</span>
+  <span class="n">auth</span><span class="o">/</span>
+    <span class="n">default</span><span class="o">/</span>
+    <span class="n">ldap</span><span class="o">/</span>
+  <span class="o">.</span>
+  <span class="o">.</span>
+  <span class="o">.</span>
+</pre></div>
+</div>
+<p>Inside each named configuration directory is a file named <code class="docutils literal notranslate"><span class="pre">config.xml</span></code> that contains the
+direct xstream serialization of the configuration object. For example the default user
+group service configuration is persisted in the file <code class="docutils literal notranslate"><span class="pre">security/usergroup/default/config.xml</span></code>
+and looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">userGroupService</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="mi">7</span><span class="n">aacccc3</span><span class="p">:</span><span class="mi">13660</span><span class="n">a38ccb</span><span class="p">:</span><span class="o">-</span><span class="mi">7</span><span class="n">ffd</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">default</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">className</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="n">geoserver</span><span class="o">.</span><span class="n">security</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span><span class="n">XMLUserGroupService</span><span class="o">&lt;/</span><span class="n">className</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">fileName</span><span class="o">&gt;</span><span class="n">users</span><span class="o">.</span><span class="n">xml</span><span class="o">&lt;/</span><span class="n">fileName</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">checkInterval</span><span class="o">&gt;</span><span class="mi">10000</span><span class="o">&lt;/</span><span class="n">checkInterval</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">validating</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">validating</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">passwordEncoderName</span><span class="o">&gt;</span><span class="n">pbePasswordEncoder</span><span class="o">&lt;/</span><span class="n">passwordEncoderName</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">passwordPolicyName</span><span class="o">&gt;</span><span class="n">default</span><span class="o">&lt;/</span><span class="n">passwordPolicyName</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">userGroupService</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="global-configuration">
+<h3>Global Configuration<a class="headerlink" href="#global-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Aside from configuration objects for the various security services is the <code class="docutils literal notranslate"><span class="pre">SecurityManagerConfig</span></code>
+class which provides the same function but for global security settings. It contains a number of
+configuration properties such as the active role service, the list of authentication providers
+and filters making up the active <a class="reference internal" href="#auth-filter-chain"><span class="std std-ref">Authentication Chain</span></a>, and configuration for remember me
+services.</p>
+<p>Interacting with the global configuration is much like interacting with a security service
+configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SecurityManagerConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">getSecurityConfig</span><span class="p">();</span>
+<span class="n">config</span><span class="o">.</span><span class="n">setEncryptingUrlParams</span><span class="p">(</span><span class="n">false</span><span class="p">);</span>
+<span class="n">config</span><span class="o">.</span><span class="n">getAuthProviderNames</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;ldap&quot;</span><span class="p">);</span>
+<span class="n">config</span><span class="o">.</span><span class="n">saveSecurityConfig</span><span class="p">(</span><span class="n">config</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="authentication-chain">
+<span id="auth-filter-chain"></span><h2>Authentication Chain<a class="headerlink" href="#authentication-chain" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">GeoServerSecurityFilterChain</span></code> class is a data structure that maintains mappings
+from request type to a list of named <a class="reference internal" href="#auth-filter"><span class="std std-ref">security filters</span></a>. This class is
+persisted with the rest of the global security configuration as available as a property
+of the <code class="docutils literal notranslate"><span class="pre">SecurityManagerConfig</span></code> class:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GeoServerSecurityFilterChain</span> <span class="n">filterChain</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">getSecurityConfig</span><span class="p">()</span><span class="o">.</span><span class="n">getFilterChain</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The filterChain is essentially a map whose keys are strings corresponding to ant request
+patterns. The values are lists of <a class="reference internal" href="#auth-filter"><span class="std std-ref">Authentication Filter</span></a> names.</p>
+<p><code class="docutils literal notranslate"><span class="pre">GeoServerSecurityFilterChainProxy</span></code> is an extension of the spring security <code class="docutils literal notranslate"><span class="pre">FilterChainProxy</span></code>
+and is responsible for creating the actual filter chain from the
+<code class="docutils literal notranslate"><span class="pre">GeoServerSecurityFilterChain</span></code> configuration object.</p>
+</div>
+<div class="section" id="pluggable-login-endpoints">
+<h2>Pluggable Login Endpoints<a class="headerlink" href="#pluggable-login-endpoints" title="Permalink to this headline">¶</a></h2>
+<p>To enable a new Login button just add lines similar to the following configuration into the <code class="docutils literal notranslate"><span class="pre">applicationContext.xml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;!-- login button --&gt;
+&lt;bean id=&quot;geoserverFormLoginButton&quot; class=&quot;org.geoserver.web.LoginFormInfo&quot;&gt;
+        &lt;property name=&quot;id&quot; value=&quot;geoserverFormLoginButton&quot; /&gt;
+        &lt;property name=&quot;titleKey&quot; value=&quot;login&quot; /&gt;
+        &lt;property name=&quot;descriptionKey&quot; value=&quot;GeoServerBasePage.description&quot; /&gt;
+        &lt;property name=&quot;componentClass&quot; value=&quot;org.geoserver.web.GeoServerBasePage&quot; /&gt;
+        &lt;property name=&quot;name&quot; value=&quot;form&quot; /&gt;
+        &lt;property name=&quot;icon&quot; value=&quot;img/icons/silk/door-in.png&quot; /&gt;
+        &lt;property name=&quot;include&quot; value=&quot;include_login_form.html&quot; /&gt;
+        &lt;property name=&quot;loginPath&quot; value=&quot;j_spring_security_check&quot; /&gt;
+&lt;/bean&gt;
+</pre></div>
+</div>
+<p>The same can be done for any other Security Filter which needs a specific button for a Login Endpoint.</p>
+<p>The properties of <code class="docutils literal notranslate"><span class="pre">LoginFormInfo</span></code> are:</p>
+<ol class="arabic simple">
+<li><p><strong>id</strong>; a unique ID to be provided to the extension.</p></li>
+<li><p><strong>titleKey</strong>; key of the <code class="docutils literal notranslate"><span class="pre">GeoServerApplication.properties</span></code> message with internationalization. If <strong>null</strong> or not present, the Login button won’t have any text.</p></li>
+<li><p><strong>descriptionKey</strong>; optional image alt message. This value represents the key of the <code class="docutils literal notranslate"><span class="pre">GeoServerApplication.properties</span></code> message with internationalization.</p></li>
+<li><p><strong>componentClass</strong>; base class which will provide base package path for resources. Wicket will look for resources relative to the <em>componentClass</em> package.</p></li>
+<li><p><strong>name</strong>; used for ordering. The Login buttons will be displayed in alphabetical order accordingly to this value. The name <strong>must</strong> also contain a keyword present on the associated Security Filter name defined by User.</p></li>
+<li><p><strong>icon</strong>; optional resource path to the button icon. If not specified GeoServer will use the default “door-in” one. The path <strong>must</strong> be relative to the <em>componentClass</em> package.</p></li>
+<li><p><strong>include</strong>; optional static HTML file resource to be rendered into the Login form. The path <strong>must</strong> be relative to the <em>componentClass</em> package.</p></li>
+<li><p><strong>loginPath</strong>; Login custom endpoint used by the associated Security Filter.</p></li>
+</ol>
+<p>Example of <strong>include</strong> HTML can be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">label</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;noshow&quot;</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="o">&gt;&lt;</span><span class="n">wicket</span><span class="p">:</span><span class="n">message</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="o">&gt;</span><span class="n">Username</span><span class="o">&lt;/</span><span class="n">wicket</span><span class="p">:</span><span class="n">message</span><span class="o">&gt;&lt;/</span><span class="n">label</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nb">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;username&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;username&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;username&quot;</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;username&quot;</span> <span class="n">wicket</span><span class="p">:</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;title:username,placeholder:username&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">label</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;noshow&quot;</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="o">&gt;&lt;</span><span class="n">wicket</span><span class="p">:</span><span class="n">message</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="o">&gt;</span><span class="n">Password</span><span class="o">&lt;/</span><span class="n">wicket</span><span class="p">:</span><span class="n">message</span><span class="o">&gt;&lt;/</span><span class="n">label</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nb">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="n">wicket</span><span class="p">:</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;title:password,placeholder:passwordGeoServer&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">label</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;shown&quot;</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;_spring_security_remember_me&quot;</span><span class="o">&gt;&lt;</span><span class="n">wicket</span><span class="p">:</span><span class="n">message</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;rememberMe&quot;</span><span class="o">&gt;</span><span class="n">Remember</span> <span class="n">me</span><span class="o">&lt;/</span><span class="n">wicket</span><span class="p">:</span><span class="n">message</span><span class="o">&gt;&lt;/</span><span class="n">label</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nb">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;_spring_security_remember_me&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;checkbox&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;_spring_security_remember_me&quot;</span> <span class="o">/&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../testing/index.html" title="previous chapter">Testing</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../app-schema/index.html" title="next chapter">App-Schema Online Tests</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Security</a><ul>
+<li><a class="reference internal" href="#security-manager">Security Manager</a></li>
+<li><a class="reference internal" href="#security-services">Security Services</a><ul>
+<li><a class="reference internal" href="#usergroup-service-store">UserGroup Service/Store</a></li>
+<li><a class="reference internal" href="#role-service-store">Role Service/Store</a></li>
+<li><a class="reference internal" href="#authentication-provider">Authentication Provider</a></li>
+<li><a class="reference internal" href="#authentication-filter">Authentication Filter</a></li>
+<li><a class="reference internal" href="#password-policy">Password Policy</a></li>
+<li><a class="reference internal" href="#rootpasswordprovider">RootPasswordProvider</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security-plugin-provider">Security Plugin Provider</a></li>
+<li><a class="reference internal" href="#security-configuration">Security Configuration</a><ul>
+<li><a class="reference internal" href="#service-configuration">Service Configuration</a></li>
+<li><a class="reference internal" href="#global-configuration">Global Configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authentication-chain">Authentication Chain</a></li>
+<li><a class="reference internal" href="#pluggable-login-endpoints">Pluggable Login Endpoints</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../testing/index.html" title="previous chapter">Testing</a></li>
+            <li>Next: <a href="../app-schema/index.html" title="next chapter">App-Schema Online Tests</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/security/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

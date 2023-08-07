@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Troubleshooting &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Make cluster nodes identifiable from the GUI" href="identify.html" />
+    <link rel="prev" title="Other Considerations" href="misc.html" /> 
+  </head><body class="production/troubleshooting">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Running in a production environment</a> &raquo;</li>
+    <li>Troubleshooting</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="identify.html" title="Make cluster nodes identifiable from the GUI" accesskey="N">Next</a></li>
+  <li>
+    <a href="misc.html" title="Other Considerations" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="troubleshooting">
+<span id="id1"></span><h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="checking-wfs-requests">
+<h2>Checking WFS requests<a class="headerlink" href="#checking-wfs-requests" title="Permalink to this headline">¶</a></h2>
+<p>It often happens that users report issues with hand made WFS requests not working as expected. In the majority of the cases the request is malformed, but GeoServer does not complain and just ignores the malformed part (this behaviour is the default to make older WFS clients work fine with GeoServer).</p>
+<p>If you want GeoServer to validate most WFS XML request you can post it to the following URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://host:port/geoserver/ows?strict=true
+</pre></div>
+</div>
+<p>Any deviation from the required structure will be noted in an error message. The only request type that is not validated in any case is the INSERT one (this is a GeoServer own limitation).</p>
+</div>
+<div class="section" id="leveraging-geoserver-own-log">
+<h2>Leveraging GeoServer own log<a class="headerlink" href="#leveraging-geoserver-own-log" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer can generate a quite extensive log of its operations in the <code class="docutils literal notranslate"><span class="pre">$GEOSERVER_DATA_DIR/logs/geoserver.log</span></code> file.
+Looking into such file is one of the first things to do when troubleshooting a problem, in particular it’s interesting to see the log contents in correspondence of a misbehaving request.
+The amount of information logged can vary based on the logging profile chosen in the <em>Server Settings</em> configuration page.</p>
+</div>
+<div class="section" id="logging-service-requests">
+<span id="troubleshooting-requests"></span><h2>Logging service requests<a class="headerlink" href="#logging-service-requests" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer provides a request logging capability that is inactive by default. When enabled in the <a class="reference internal" href="../configuration/globalsettings.html#config-globalsettings-log-request"><span class="std std-ref">global settings</span></a> GeoServer can log both the requested URL and POST requests contents.</p>
+<div class="figure align-default" id="id2">
+<img alt="../_images/request_logging_settings.png" src="../_images/request_logging_settings.png" />
+<p class="caption"><span class="caption-text">Global Settings</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>To track a history of the incoming requests:</p>
+<ol class="arabic">
+<li><p>Enable request logging by navigating to <span class="menuselection">Settings &gt; Global</span> page, scroll down to <strong>Logging Settings</strong>, and  <a class="reference internal" href="../configuration/globalsettings.html#config-globalsettings-log-request"><span class="std std-ref">Enable Request Logging</span></a>.</p></li>
+<li><p>Enable this feature using <span class="guilabel">Enable Request Logging</span>.</p></li>
+<li><p>Optionally select <span class="guilabel">Log Request Bodies</span> to troubleshoot POST or PUT requests (for example WFS Transaction).  The Number of characters to log setting will put an upper limit on the amount of data that is logged in order to avoid logging related performance issues.</p></li>
+<li><p>Optionally select <span class="guilabel">Log Request Headers</span> to troubleshoot Request Headers (for example when checking security credentials).</p></li>
+<li><p>Click <span class="guilabel">Apply</span> to apply these settings.</p></li>
+<li><p>This will log request information, resulting in something like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">08</span> <span class="n">gen</span> <span class="mi">11</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="mi">13</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">geoserver</span><span class="o">.</span><span class="n">filters</span><span class="p">]</span> <span class="o">-</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span> <span class="s2">&quot;GET /geoserver/wms?HEIGHT=330&amp;WIDTH=660&amp;LAYERS=nurc%3AArc_Sample&amp;STYLES=&amp;SRS=EPSG%3A4326&amp;FORMAT=image</span><span class="si">%2F</span><span class="s2">jpeg&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;EXCEPTIONS=application</span><span class="si">%2F</span><span class="s2">vnd.ogc.se_inimage&amp;BBOX=-93.515625,-40.078125,138.515625,75.9375&quot;</span> <span class="s2">&quot;Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15&quot;</span> <span class="s2">&quot;http://localhost:8080/geoserver/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=nurc:Arc_Sample&amp;styles=&amp;bbox=-180.0,-90.0,180.0,90.0&amp;width=660&amp;height=330&amp;srs=EPSG:4326&amp;format=application/openlayers&quot;</span>
+<span class="mi">08</span> <span class="n">gen</span> <span class="mi">11</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="mi">13</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">geoserver</span><span class="o">.</span><span class="n">filters</span><span class="p">]</span> <span class="o">-</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span> <span class="s2">&quot;GET /geoserver/wms?HEIGHT=330&amp;WIDTH=660&amp;LAYERS=nurc%3AArc_Sample&amp;STYLES=&amp;SRS=EPSG%3A4326&amp;FORMAT=image</span><span class="si">%2F</span><span class="s2">jpeg&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;EXCEPTIONS=application</span><span class="si">%2F</span><span class="s2">vnd.ogc.se_inimage&amp;BBOX=-93.515625,-40.078125,138.515625,75.9375&quot;</span> <span class="n">took</span> <span class="mi">467</span><span class="n">ms</span>
+<span class="mi">08</span> <span class="n">gen</span> <span class="mi">11</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="mi">14</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">geoserver</span><span class="o">.</span><span class="n">filters</span><span class="p">]</span> <span class="o">-</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span> <span class="s2">&quot;GET /geoserver/wms?REQUEST=GetFeatureInfo&amp;EXCEPTIONS=application</span><span class="si">%2F</span><span class="s2">vnd.ogc.se_xml&amp;BBOX=-93.515625%2C-40.078125%2C138.515625%2C75.9375&amp;X=481&amp;Y=222&amp;INFO_FORMAT=text</span><span class="si">%2F</span><span class="s2">html&amp;QUERY_LAYERS=nurc%3AArc_Sample&amp;FEATURE_COUNT=50&amp;Layers=nurc%3AArc_Sample&amp;Styles=&amp;Srs=EPSG%3A4326&amp;WIDTH=660&amp;HEIGHT=330&amp;format=image</span><span class="si">%2F</span><span class="s2">jpeg&quot;</span> <span class="s2">&quot;Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15&quot;</span> <span class="s2">&quot;http://localhost:8080/geoserver/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=nurc:Arc_Sample&amp;styles=&amp;bbox=-180.0,-90.0,180.0,90.0&amp;width=660&amp;height=330&amp;srs=EPSG:4326&amp;format=application/openlayers&quot;</span>
+<span class="mi">08</span> <span class="n">gen</span> <span class="mi">11</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="mi">14</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">geoserver</span><span class="o">.</span><span class="n">filters</span><span class="p">]</span> <span class="o">-</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span> <span class="s2">&quot;GET /geoserver/wms?REQUEST=GetFeatureInfo&amp;EXCEPTIONS=application</span><span class="si">%2F</span><span class="s2">vnd.ogc.se_xml&amp;BBOX=-93.515625%2C-40.078125%2C138.515625%2C75.9375&amp;X=481&amp;Y=222&amp;INFO_FORMAT=text</span><span class="si">%2F</span><span class="s2">html&amp;QUERY_LAYERS=nurc%3AArc_Sample&amp;FEATURE_COUNT=50&amp;Layers=nurc%3AArc_Sample&amp;Styles=&amp;Srs=EPSG%3A4326&amp;WIDTH=660&amp;HEIGHT=330&amp;format=image</span><span class="si">%2F</span><span class="s2">jpeg&quot;</span> <span class="n">took</span> <span class="mi">314</span><span class="n">ms</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="server-status-jvm-console">
+<h2>Server Status JVM Console<a class="headerlink" href="#server-status-jvm-console" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer provides a built-in <a class="reference internal" href="../configuration/status.html#config-serverstatus-jvm"><span class="std std-ref">JVM Console</span></a> used to obtain:</p>
+<ul class="simple">
+<li><p>Thread Dump information</p></li>
+<li><p>Heap Dump information</p></li>
+</ul>
+<p>This page can be used to check current status and download the results for careful review.</p>
+<div class="figure align-default" id="id3">
+<img alt="../_images/thread_dump.png" src="../_images/thread_dump.png" />
+<p class="caption"><span class="caption-text">JVM Console</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="using-jdk-tools-to-get-stack-and-memory-dumps">
+<h2>Using JDK tools to get stack and memory dumps<a class="headerlink" href="#using-jdk-tools-to-get-stack-and-memory-dumps" title="Permalink to this headline">¶</a></h2>
+<p>The JDK contains three useful command line tools that can be used to gather information about GeoServer instances that are leaking memory or not performing as requested: <code class="docutils literal notranslate"><span class="pre">jps</span></code>, <code class="docutils literal notranslate"><span class="pre">jstack</span></code> and <code class="docutils literal notranslate"><span class="pre">jmap</span></code>.</p>
+<p>All tools work against a live Java Virtual Machine, the one running GeoServer in particular. In order for them to work properly you’ll have to run them with a user that has enough privileges to connect to the JVM process, in particular super user or the same user that’s running the JVM usually have the required right.</p>
+<div class="section" id="jps">
+<h3>jps<a class="headerlink" href="#jps" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://java.sun.com/javase/6/docs/technotes/tools/share/jps.html">jps</a> is a tool listing all the Java processing running. It can be used to retrieve the <code class="docutils literal notranslate"><span class="pre">pid</span></code> (process id) of the virtual machine that is running GeoServer. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">jps</span> <span class="o">-</span><span class="n">mlv</span>
+
+<span class="mi">16235</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">catalina</span><span class="o">.</span><span class="n">startup</span><span class="o">.</span><span class="n">Bootstrap</span> <span class="n">start</span> <span class="o">-</span><span class="n">Djava</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">manager</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">juli</span><span class="o">.</span><span class="n">ClassLoaderLogManager</span> <span class="o">-</span><span class="n">Djava</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">file</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">aaime</span><span class="o">/</span><span class="n">devel</span><span class="o">/</span><span class="n">webcontainers</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">tomcat</span><span class="o">-</span><span class="mf">6.0</span><span class="o">.</span><span class="mi">18</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">logging</span><span class="o">.</span><span class="n">properties</span> <span class="o">-</span><span class="n">Djava</span><span class="o">.</span><span class="n">endorsed</span><span class="o">.</span><span class="n">dirs</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">aaime</span><span class="o">/</span><span class="n">devel</span><span class="o">/</span><span class="n">webcontainers</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">tomcat</span><span class="o">-</span><span class="mf">6.0</span><span class="o">.</span><span class="mi">18</span><span class="o">/</span><span class="n">endorsed</span> <span class="o">-</span><span class="n">Dcatalina</span><span class="o">.</span><span class="n">base</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">aaime</span><span class="o">/</span><span class="n">devel</span><span class="o">/</span><span class="n">webcontainers</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">tomcat</span><span class="o">-</span><span class="mf">6.0</span><span class="o">.</span><span class="mi">18</span> <span class="o">-</span><span class="n">Dcatalina</span><span class="o">.</span><span class="n">home</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">aaime</span><span class="o">/</span><span class="n">devel</span><span class="o">/</span><span class="n">webcontainers</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">tomcat</span><span class="o">-</span><span class="mf">6.0</span><span class="o">.</span><span class="mi">18</span> <span class="o">-</span><span class="n">Djava</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">tmpdir</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">aaime</span><span class="o">/</span><span class="n">devel</span><span class="o">/</span><span class="n">webcontainers</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">tomcat</span><span class="o">-</span><span class="mf">6.0</span><span class="o">.</span><span class="mi">18</span><span class="o">/</span><span class="n">temp</span>
+<span class="mi">11521</span>  <span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">MinHeapFreeRatio</span><span class="o">=</span><span class="mi">10</span> <span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">MaxHeapFreeRatio</span><span class="o">=</span><span class="mi">20</span> <span class="o">-</span><span class="n">Djava</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">path</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jni</span> <span class="o">-</span><span class="n">Dosgi</span><span class="o">.</span><span class="n">requiredJavaVersion</span><span class="o">=</span><span class="mf">1.5</span> <span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">MaxPermSize</span><span class="o">=</span><span class="mi">256</span><span class="n">m</span> <span class="o">-</span><span class="n">Xms64m</span> <span class="o">-</span><span class="n">Xmx1024m</span> <span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">CMSClassUnloadingEnabled</span> <span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">CMSPermGenSweepingEnabled</span> <span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="o">+</span><span class="n">UseParNewGC</span>
+<span class="mi">16287</span> <span class="n">sun</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">jps</span><span class="o">.</span><span class="n">Jps</span> <span class="o">-</span><span class="n">mlv</span> <span class="o">-</span><span class="n">Dapplication</span><span class="o">.</span><span class="n">home</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span> <span class="o">-</span><span class="n">Xms8m</span>
+</pre></div>
+</div>
+<p>The output shows the <code class="docutils literal notranslate"><span class="pre">pid</span></code>, the main class name if available, and the parameters passed to the JVM at startup. In this example <code class="docutils literal notranslate"><span class="pre">16235</span></code> is Tomcat hosting GeoServer, <code class="docutils literal notranslate"><span class="pre">11521</span></code> is an Eclipse instance, and <code class="docutils literal notranslate"><span class="pre">16287</span></code> is <code class="docutils literal notranslate"><span class="pre">jps</span></code> itself. In the common case you’ll have only few JVM and the one running GeoServer can be identified by the parameters passed to it.</p>
+</div>
+<div class="section" id="jstack">
+<h3>jstack<a class="headerlink" href="#jstack" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://java.sun.com/javase/6/docs/technotes/tools/share/jstack.html">jstack</a> is a tool extracting a the current stack trace for each thread running in the virtual machine. It can be used to identify scalability issues and to gather what the program is actually doing.</p>
+<p>It usually requires detailed understanding of the inner workings of GeoServer to properly interpret the jstack output.</p>
+<p>An example of usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">jstack</span> <span class="o">-</span><span class="n">F</span> <span class="o">-</span><span class="n">l</span> <span class="mi">16235</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">tomcat</span><span class="o">-</span><span class="n">stack</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">Attaching</span> <span class="n">to</span> <span class="n">process</span> <span class="n">ID</span> <span class="mi">16235</span><span class="p">,</span> <span class="n">please</span> <span class="n">wait</span><span class="o">...</span>
+<span class="n">Debugger</span> <span class="n">attached</span> <span class="n">successfully</span><span class="o">.</span>
+<span class="n">Server</span> <span class="n">compiler</span> <span class="n">detected</span><span class="o">.</span>
+<span class="n">JVM</span> <span class="n">version</span> <span class="ow">is</span> <span class="mf">14.2</span><span class="o">-</span><span class="n">b01</span>
+</pre></div>
+</div>
+<p>And the file contents might look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Deadlock Detection:
+
+No deadlocks found.
+
+Thread 16269: (state = BLOCKED)
+ - java.lang.Object.wait(long) @bci=0 (Interpreted frame)
+ - org.apache.tomcat.util.threads.ThreadPool$MonitorRunnable.run() @bci=10, line=565 (Interpreted frame)
+ - java.lang.Thread.run() @bci=11, line=619 (Interpreted frame)
+
+Locked ownable synchronizers:
+    - None
+
+Thread 16268: (state = IN_NATIVE)
+ - java.net.PlainSocketImpl.socketAccept(java.net.SocketImpl) @bci=0 (Interpreted frame)
+ - java.net.PlainSocketImpl.accept(java.net.SocketImpl) @bci=7, line=390 (Interpreted frame)
+ - java.net.ServerSocket.implAccept(java.net.Socket) @bci=60, line=453 (Interpreted frame)
+ - java.net.ServerSocket.accept() @bci=48, line=421 (Interpreted frame)
+ - org.apache.jk.common.ChannelSocket.accept(org.apache.jk.core.MsgContext) @bci=46, line=306 (Interpreted frame)
+ - org.apache.jk.common.ChannelSocket.acceptConnections() @bci=72, line=660 (Interpreted frame)
+ - org.apache.jk.common.ChannelSocket$SocketAcceptor.runIt(java.lang.Object[]) @bci=4, line=870 (Interpreted frame)
+ - org.apache.tomcat.util.threads.ThreadPool$ControlRunnable.run() @bci=167, line=690 (Interpreted frame)
+ - java.lang.Thread.run() @bci=11, line=619 (Interpreted frame)
+
+Locked ownable synchronizers:
+    - None
+
+Thread 16267: (state = BLOCKED)
+ - java.lang.Object.wait(long) @bci=0 (Interpreted frame)
+ - java.lang.Object.wait() @bci=2, line=485 (Interpreted frame)
+ - org.apache.tomcat.util.threads.ThreadPool$ControlRunnable.run() @bci=26, line=662 (Interpreted frame)
+ - java.lang.Thread.run() @bci=11, line=619 (Interpreted frame)
+
+Locked ownable synchronizers:
+    - None
+
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="jmap">
+<h3>jmap<a class="headerlink" href="#jmap" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://java.sun.com/javase/6/docs/technotes/tools/share/jmap.html">jmap</a> is a tool to gather information about the a Java virtual machine.
+It can be used in a few interesting ways.</p>
+<p>By running it without arguments (other than the process id of the JVM) it will print out a <strong>dump of the native libraries used by the JVM</strong>. This can come in handy when one wants to double check GeoServer is actually using a certain version of a native library (e.g., GDAL):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">jmap</span> <span class="mi">17251</span>
+
+<span class="n">Attaching</span> <span class="n">to</span> <span class="n">process</span> <span class="n">ID</span> <span class="mi">17251</span><span class="p">,</span> <span class="n">please</span> <span class="n">wait</span><span class="o">...</span>
+<span class="n">Debugger</span> <span class="n">attached</span> <span class="n">successfully</span><span class="o">.</span>
+<span class="n">Server</span> <span class="n">compiler</span> <span class="n">detected</span><span class="o">.</span>
+<span class="n">JVM</span> <span class="n">version</span> <span class="ow">is</span> <span class="mf">14.2</span><span class="o">-</span><span class="n">b01</span>
+<span class="mh">0x08048000</span>  <span class="mi">46</span><span class="n">K</span>   <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">java</span>
+<span class="mh">0x7f87f000</span>  <span class="mi">6406</span><span class="n">K</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libNCSEcw</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">0</span>
+<span class="mh">0x7f9b2000</span>  <span class="mi">928</span><span class="n">K</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libstdc</span><span class="o">++.</span><span class="n">so</span><span class="o">.</span><span class="mf">6.0</span><span class="o">.</span><span class="mi">10</span>
+<span class="mh">0x7faa1000</span>  <span class="mi">7275</span><span class="n">K</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libgdal</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">1</span>
+<span class="mh">0x800e9000</span>  <span class="mi">1208</span><span class="n">K</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libclib_jiio</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0x80320000</span>  <span class="mi">712</span><span class="n">K</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libNCSUtil</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">0</span>
+<span class="mh">0x80343000</span>  <span class="mi">500</span><span class="n">K</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libNCSCnet</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">0</span>
+<span class="mh">0x8035a000</span>  <span class="mi">53</span><span class="n">K</span>   <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libgcc_s</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">1</span>
+<span class="mh">0x8036c000</span>  <span class="mi">36</span><span class="n">K</span>   <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libnio</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0x803e2000</span>  <span class="mi">608</span><span class="n">K</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libawt</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0x80801000</span>  <span class="mi">101</span><span class="n">K</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libgdaljni</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0x80830000</span>  <span class="mi">26</span><span class="n">K</span>   <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">headless</span><span class="o">/</span><span class="n">libmawt</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0x81229000</span>  <span class="mi">93</span><span class="n">K</span>   <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libnet</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7179000</span>  <span class="mi">74</span><span class="n">K</span>   <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libzip</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb718a000</span>  <span class="mi">41</span><span class="n">K</span>   <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">libnss_files</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7196000</span>  <span class="mi">37</span><span class="n">K</span>   <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">libnss_nis</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb71b3000</span>  <span class="mi">85</span><span class="n">K</span>   <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">libnsl</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb71ce000</span>  <span class="mi">29</span><span class="n">K</span>   <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">libnss_compat</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb71d7000</span>  <span class="mi">37</span><span class="n">K</span>   <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">native_threads</span><span class="o">/</span><span class="n">libhpi</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb71de000</span>  <span class="mi">184</span><span class="n">K</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libjava</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7203000</span>  <span class="mi">29</span><span class="n">K</span>   <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">librt</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb725d000</span>  <span class="mi">145</span><span class="n">K</span>  <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">libm</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7283000</span>  <span class="mi">8965</span><span class="n">K</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">server</span><span class="o">/</span><span class="n">libjvm</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7dc1000</span>  <span class="mi">1408</span><span class="n">K</span> <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">libc</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7f24000</span>  <span class="mi">9</span><span class="n">K</span>    <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">libdl</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7f28000</span>  <span class="mi">37</span><span class="n">K</span>   <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">jli</span><span class="o">/</span><span class="n">libjli</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7f32000</span>  <span class="mi">113</span><span class="n">K</span>  <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tls</span><span class="o">/</span><span class="n">i686</span><span class="o">/</span><span class="n">cmov</span><span class="o">/</span><span class="n">libpthread</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7f51000</span>  <span class="mi">55</span><span class="n">K</span>   <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">0.16</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libverify</span><span class="o">.</span><span class="n">so</span>
+<span class="mh">0xb7f60000</span>  <span class="mi">114</span><span class="n">K</span>  <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">ld</span><span class="o">-</span><span class="mf">2.9</span><span class="o">.</span><span class="n">so</span>
+</pre></div>
+</div>
+<p>It’s also possible to get a <strong>quick summary of the JVM heap status</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">jmap</span> <span class="o">-</span><span class="n">heap</span> <span class="mi">17251</span>
+
+<span class="n">Attaching</span> <span class="n">to</span> <span class="n">process</span> <span class="n">ID</span> <span class="mi">17251</span><span class="p">,</span> <span class="n">please</span> <span class="n">wait</span><span class="o">...</span>
+<span class="n">Debugger</span> <span class="n">attached</span> <span class="n">successfully</span><span class="o">.</span>
+<span class="n">Server</span> <span class="n">compiler</span> <span class="n">detected</span><span class="o">.</span>
+<span class="n">JVM</span> <span class="n">version</span> <span class="ow">is</span> <span class="mf">14.2</span><span class="o">-</span><span class="n">b01</span>
+
+<span class="n">using</span> <span class="n">thread</span><span class="o">-</span><span class="n">local</span> <span class="nb">object</span> <span class="n">allocation</span><span class="o">.</span>
+<span class="n">Parallel</span> <span class="n">GC</span> <span class="k">with</span> <span class="mi">2</span> <span class="n">thread</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">Heap</span> <span class="n">Configuration</span><span class="p">:</span>
+   <span class="n">MinHeapFreeRatio</span> <span class="o">=</span> <span class="mi">40</span>
+   <span class="n">MaxHeapFreeRatio</span> <span class="o">=</span> <span class="mi">70</span>
+   <span class="n">MaxHeapSize</span>      <span class="o">=</span> <span class="mi">778043392</span> <span class="p">(</span><span class="mf">742.0</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">NewSize</span>          <span class="o">=</span> <span class="mi">1048576</span> <span class="p">(</span><span class="mf">1.0</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">MaxNewSize</span>       <span class="o">=</span> <span class="mi">4294901760</span> <span class="p">(</span><span class="mf">4095.9375</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">OldSize</span>          <span class="o">=</span> <span class="mi">4194304</span> <span class="p">(</span><span class="mf">4.0</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">NewRatio</span>         <span class="o">=</span> <span class="mi">8</span>
+   <span class="n">SurvivorRatio</span>    <span class="o">=</span> <span class="mi">8</span>
+   <span class="n">PermSize</span>         <span class="o">=</span> <span class="mi">16777216</span> <span class="p">(</span><span class="mf">16.0</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">MaxPermSize</span>      <span class="o">=</span> <span class="mi">67108864</span> <span class="p">(</span><span class="mf">64.0</span><span class="n">MB</span><span class="p">)</span>
+
+<span class="n">Heap</span> <span class="n">Usage</span><span class="p">:</span>
+<span class="n">PS</span> <span class="n">Young</span> <span class="n">Generation</span>
+<span class="n">Eden</span> <span class="n">Space</span><span class="p">:</span>
+   <span class="n">capacity</span> <span class="o">=</span> <span class="mi">42401792</span> <span class="p">(</span><span class="mf">40.4375</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">used</span>     <span class="o">=</span> <span class="mi">14401328</span> <span class="p">(</span><span class="mf">13.734176635742188</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">free</span>     <span class="o">=</span> <span class="mi">28000464</span> <span class="p">(</span><span class="mf">26.703323364257812</span><span class="n">MB</span><span class="p">)</span>
+   <span class="mf">33.96396076845054</span><span class="o">%</span> <span class="n">used</span>
+<span class="n">From</span> <span class="n">Space</span><span class="p">:</span>
+   <span class="n">capacity</span> <span class="o">=</span> <span class="mi">4718592</span> <span class="p">(</span><span class="mf">4.5</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">used</span>     <span class="o">=</span> <span class="mi">2340640</span> <span class="p">(</span><span class="mf">2.232208251953125</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">free</span>     <span class="o">=</span> <span class="mi">2377952</span> <span class="p">(</span><span class="mf">2.267791748046875</span><span class="n">MB</span><span class="p">)</span>
+   <span class="mf">49.60462782118056</span><span class="o">%</span> <span class="n">used</span>
+<span class="n">To</span> <span class="n">Space</span><span class="p">:</span>
+   <span class="n">capacity</span> <span class="o">=</span> <span class="mi">4587520</span> <span class="p">(</span><span class="mf">4.375</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">used</span>     <span class="o">=</span> <span class="mi">0</span> <span class="p">(</span><span class="mf">0.0</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">free</span>     <span class="o">=</span> <span class="mi">4587520</span> <span class="p">(</span><span class="mf">4.375</span><span class="n">MB</span><span class="p">)</span>
+   <span class="mf">0.0</span><span class="o">%</span> <span class="n">used</span>
+<span class="n">PS</span> <span class="n">Old</span> <span class="n">Generation</span>
+   <span class="n">capacity</span> <span class="o">=</span> <span class="mi">43188224</span> <span class="p">(</span><span class="mf">41.1875</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">used</span>     <span class="o">=</span> <span class="mi">27294848</span> <span class="p">(</span><span class="mf">26.0303955078125</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">free</span>     <span class="o">=</span> <span class="mi">15893376</span> <span class="p">(</span><span class="mf">15.1571044921875</span><span class="n">MB</span><span class="p">)</span>
+   <span class="mf">63.19974630121396</span><span class="o">%</span> <span class="n">used</span>
+<span class="n">PS</span> <span class="n">Perm</span> <span class="n">Generation</span>
+   <span class="n">capacity</span> <span class="o">=</span> <span class="mi">38404096</span> <span class="p">(</span><span class="mf">36.625</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">used</span>     <span class="o">=</span> <span class="mi">38378640</span> <span class="p">(</span><span class="mf">36.60072326660156</span><span class="n">MB</span><span class="p">)</span>
+   <span class="n">free</span>     <span class="o">=</span> <span class="mi">25456</span> <span class="p">(</span><span class="mf">0.0242767333984375</span><span class="n">MB</span><span class="p">)</span>
+   <span class="mf">99.93371540369027</span><span class="o">%</span> <span class="n">used</span>
+</pre></div>
+</div>
+<p>In the result it can be seen that the JVM is allowed to use up to 742MB of memory, and that at the moment the JVM is using 130MB (rough sum of the capacities of each heap section). In case of a persistent memory leak the JVM will end up using whatever is allowed to and each section of the heap will be almost 100% used.</p>
+<p>To see <strong>how the memory is actually being used in a succinct way</strong> the following command can be used (on Windows, replace <code class="docutils literal notranslate"><span class="pre">head</span> <span class="pre">-25</span></code> with <code class="docutils literal notranslate"><span class="pre">more</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; jmap -histo:live 17251 | head -25
+
+ num     #instances         #bytes  class name
+----------------------------------------------
+   1:         81668       10083280  &lt;constMethodKlass&gt;
+   2:         81668        6539632  &lt;methodKlass&gt;
+   3:         79795        5904728  [C
+   4:        123511        5272448  &lt;symbolKlass&gt;
+   5:          7974        4538688  &lt;constantPoolKlass&gt;
+   6:         98726        3949040  org.hsqldb.DiskNode
+   7:          7974        3612808  &lt;instanceKlassKlass&gt;
+   8:          9676        2517160  [B
+   9:          6235        2465488  &lt;constantPoolCacheKlass&gt;
+  10:         10054        2303368  [I
+  11:         83121        1994904  java.lang.String
+  12:         27794        1754360  [Ljava.lang.Object;
+  13:          9227         868000  [Ljava.util.HashMap$Entry;
+  14:          8492         815232  java.lang.Class
+  15:         10645         710208  [S
+  16:         14420         576800  org.hsqldb.CachedRow
+  17:          1927         574480  &lt;methodDataKlass&gt;
+  18:          8937         571968  org.apache.xerces.dom.ElementNSImpl
+  19:         12898         561776  [[I
+  20:         23122         554928  java.util.HashMap$Entry
+  21:         16910         541120  org.apache.xerces.dom.TextImpl
+  22:          9898         395920  org.apache.xerces.dom.AttrNSImpl
+</pre></div>
+</div>
+<p>By the dump we can see most of the memory is used by the GeoServer code itself (first 5 items) followed by the HSQL cache holding a few rows of the EPSG database. In case of a memory leak a few object types will hold the vast majority of the live heap.
+Mind, to look for a leak the dump should be gathered with the server almost idle. If, for example, the server is under a load of GetMap requests the main memory usage will be the byte[] holding the images while they are rendered, but that is not a leak, it’s legitimate and temporary usage.</p>
+<p>In case of memory leaks a developer will probably ask for a <strong>full heap dump</strong> to analyze with a high end profiling tool. Such dump can be generated with the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">jmap</span> <span class="o">-</span><span class="n">dump</span><span class="p">:</span><span class="n">live</span><span class="p">,</span><span class="n">file</span><span class="o">=/</span><span class="n">tmp</span><span class="o">/</span><span class="n">dump</span><span class="o">.</span><span class="n">hprof</span> <span class="mi">17251</span>
+<span class="n">Dumping</span> <span class="n">heap</span> <span class="n">to</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">dump</span><span class="o">.</span><span class="n">hprof</span> <span class="o">...</span>
+<span class="n">Heap</span> <span class="n">dump</span> <span class="n">file</span> <span class="n">created</span>
+</pre></div>
+</div>
+<p>The dump files are generally as big as the memory used so it’s advisable to compress the resulting file before sending it to a developer.</p>
+</div>
+</div>
+<div class="section" id="xstream">
+<h2>XStream<a class="headerlink" href="#xstream" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer and GeoWebCache use XStream to read and write XML for configuration and for their REST APIs.  In order to do this securely, it needs a list of Java classes that are safe to convert between objects and XML.  If a class not on that list is given to XStream, it will generate the error <code class="docutils literal notranslate"><span class="pre">com.thoughtworks.xstream.security.ForbiddenClassException</span></code>.  The specific class that was a problem should also be included.  This may be a result of the lists of allowed classes missing a class, which should be reported as a bug, or it may be caused by an extension/plugin not adding its classes to the list (finally, it could be someone trying to perform a “Remote Execution” attack, which is what the allow-list is designed to prevent).</p>
+<p>This can be worked around by setting the system properties <code class="docutils literal notranslate"><span class="pre">GEOSERVER_XSTREAM_WHITELIST</span></code> for GeoServer or <code class="docutils literal notranslate"><span class="pre">GEOWEBCACHE_XSTREAM_WHITELIST</span></code> for GeoWebCache to a semicolon separated list of qualified class names.  The class names may include wildcards <code class="docutils literal notranslate"><span class="pre">?</span></code> for a single character, <code class="docutils literal notranslate"><span class="pre">*</span></code> for any number of characters not including the separator <code class="docutils literal notranslate"><span class="pre">.</span></code>, and <code class="docutils literal notranslate"><span class="pre">**</span></code> for any number of characters including separators.  For instance, <code class="docutils literal notranslate"><span class="pre">org.example.blah.SomeClass;</span> <span class="pre">com.demonstration.*;</span> <span class="pre">ca.test.**</span></code> will allow, the specific class <code class="docutils literal notranslate"><span class="pre">org.example.blah.SomeClass</span></code>, any class immediately within the package <code class="docutils literal notranslate"><span class="pre">com.demonstration</span></code>, and any class within the package <code class="docutils literal notranslate"><span class="pre">ca.test</span></code> or any of its descendant packages.</p>
+<p><code class="docutils literal notranslate"><span class="pre">GEOSERVER_XSTREAM_WHITELIST</span></code> and <code class="docutils literal notranslate"><span class="pre">GEOWEBCACHE_XSTREAM_WHITELIST</span></code> should only be used as a workaround until GeoServer, GWC, or the extension causing the problem has been updated, so please report to the users list the missing classes as soon as possible.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="misc.html" title="previous chapter">Other Considerations</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="identify.html" title="next chapter">Make cluster nodes identifiable from the GUI</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#checking-wfs-requests">Checking WFS requests</a></li>
+<li><a class="reference internal" href="#leveraging-geoserver-own-log">Leveraging GeoServer own log</a></li>
+<li><a class="reference internal" href="#logging-service-requests">Logging service requests</a></li>
+<li><a class="reference internal" href="#server-status-jvm-console">Server Status JVM Console</a></li>
+<li><a class="reference internal" href="#using-jdk-tools-to-get-stack-and-memory-dumps">Using JDK tools to get stack and memory dumps</a><ul>
+<li><a class="reference internal" href="#jps">jps</a></li>
+<li><a class="reference internal" href="#jstack">jstack</a></li>
+<li><a class="reference internal" href="#jmap">jmap</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#xstream">XStream</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="misc.html" title="previous chapter">Other Considerations</a></li>
+            <li>Next: <a href="identify.html" title="next chapter">Make cluster nodes identifiable from the GUI</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/production/troubleshooting.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

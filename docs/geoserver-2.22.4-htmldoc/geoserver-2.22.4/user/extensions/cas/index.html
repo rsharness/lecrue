@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CAS integration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Parameters Extractor" href="../params-extractor/index.html" />
+    <link rel="prev" title="Migrating old GeoFence configuration to GeoServer 2.12 and following" href="../geofence-server/migration.html" /> 
+  </head><body class="extensions/cas/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+    <li>CAS integration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../params-extractor/index.html" title="Parameters Extractor" accesskey="N">Next</a></li>
+  <li>
+    <a href="../geofence-server/migration.html" title="Migrating old GeoFence configuration to GeoServer 2.12 and following" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="cas-integration">
+<span id="cas"></span><h1>CAS integration<a class="headerlink" href="#cas-integration" title="Permalink to this headline">¶</a></h1>
+<p>The CAS module allows to integrate GeoServer with the <a class="reference external" href="https://www.apereo.org/projects/cas">Central Authentication Service (CAS)</a>
+Single Sign On (SSO), in particular, using standard tickets and proxy tickets.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To install the CAS module:</p>
+<ol class="arabic">
+<li><p>Visit the <a class="reference external" href="http://geoserver.org/download">website download</a> page, locate your release, and download: <a class="reference external" href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.22.4/extensions/geoserver-2.22.4-cas-plugin.zip">geoserver-2.22.4-cas-plugin.zip</a></p>
+<p>The download link will be in the <span class="guilabel">Extensions</span> section under <span class="guilabel">Security</span>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Ensure to match plugin (example 2.22.4 above) version to the version of the GeoServer instance.</p>
+</div>
+</li>
+</ol>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Extract the files in this archive to the <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory of your GeoServer installation.</p></li>
+<li><p>Restart GeoServer</p></li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>The CAS integration is a authentication filter module, hence in order to use it one has to:</p>
+<ul class="simple">
+<li><p>Go to the authentication page, add the CAS filter and configure it</p></li>
+<li><p>Add it to the authentication chains, taking care of removing the other authentication methods
+(or the CAS authentication won’t trigger and redirect users to the CAS login page)</p></li>
+</ul>
+<p>This page serves as a reference for configuration options, but a step by step tutorial is also
+available, see <a class="reference internal" href="../../security/tutorials/cas/index.html#security-tutorials-cas"><span class="std std-ref">Authentication with CAS</span></a>.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/configuration1.png" src="../../_images/configuration1.png" />
+</div>
+</div></blockquote>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Name</p></td>
+<td><p>Name of the filter</p></td>
+</tr>
+<tr class="row-odd"><td><p>CAS server URL including context root</p></td>
+<td><p>The CAS server location (GeoServer will redirect to it, for example, in order to login, adding the necessary extra path elements)</p></td>
+</tr>
+<tr class="row-even"><td><p>No single sign on</p></td>
+<td><p>If checkecd, will send the “renew=true” options to the CAS server, forcing the user to login on the server at each request (unless session creation is allowed)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Participate in single sign out</p></td>
+<td><p>Whether GeoServer should receive and handle callbacks for Single Sign Out.</p></td>
+</tr>
+<tr class="row-even"><td><p>URL in CAS loutput page</p></td>
+<td><p>CAS logout page location</p></td>
+</tr>
+<tr class="row-odd"><td><p>Proxy callback URL</p></td>
+<td><p>The URL CAS will call back to after proxy ticket authentication</p></td>
+</tr>
+<tr class="row-even"><td><p>Role source</p></td>
+<td><p>A choice of role sources for the user authenticated via CAS</p></td>
+</tr>
+</tbody>
+</table>
+<p>Specifically for the <strong>role source</strong>, the following options are available:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Source</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>User group service</p></td>
+<td><p>Locate the user in a the specified user group service, extract the roles from it.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Role service</p></td>
+<td><p>Locate user roles from the specified role service</p></td>
+</tr>
+<tr class="row-even"><td><p>Header attribute</p></td>
+<td><p>Look up the roles in the specified HTTP header of the CAS response</p></td>
+</tr>
+<tr class="row-odd"><td><p>Custom CAS attribute</p></td>
+<td><p>Extract the roles from a CAS custom attribute in the <code class="docutils literal notranslate"><span class="pre">&lt;cas:serviceResponse&gt;</span></code> received from the server.
+The attributes must be configured, on the CAS side, via an attribute repository, and then released for publication in service configuration.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example-cas-configuration">
+<h2>Example CAS configuration<a class="headerlink" href="#example-cas-configuration" title="Permalink to this headline">¶</a></h2>
+<p>In order to use the CAS custom attributes the server must be configured to extract the attributes
+from a given attribute repository, and then allow their release in the GeoServer service configuration.</p>
+<p>For example, the following <code class="docutils literal notranslate"><span class="pre">cas.properties</span></code> file sets up a JDBC user source, as well as JDBC
+attribute repository (this configuration file might useful for testing purposes, but not setup for production):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cas.server.name=https://localhost:8443
+cas.server.prefix=${cas.server.name}/cas
+server.ssl.key-store=file:/etc/cas/config/thekeystore
+server.ssl.key-store-password=changeit
+logging.config=file:/etc/cas/config/log4j2.xml
+# cas.authn.accept.users=
+
+cas.authn.jdbc.query[0].driver-class=org.postgresql.Driver
+cas.authn.jdbc.query[0].url=jdbc:postgresql://localhost:5432/cas_users
+cas.authn.jdbc.query[0].dialect=org.hibernate.dialect.PostgreSQL95Dialect
+cas.authn.jdbc.query[0].driver-class=org.postgresql.Driver
+cas.authn.jdbc.query[0].user=theDbUser
+cas.authn.jdbc.query[0].password=theDbPassword
+cas.authn.jdbc.query[0].sql=SELECT * FROM users WHERE email = ?
+cas.authn.jdbc.query[0].password-encoder.type=BCRYPT
+cas.authn.jdbc.query[0].field-password=password
+cas.authn.jdbc.query[0].field-expired=expired
+cas.authn.jdbc.query[0].field-disabled=disabled
+
+
+cas.authn.attributeRepository.jdbc[0].driver-class=org.postgresql.Driver
+cas.authn.attributeRepository.jdbc[0].url=jdbc:postgresql://localhost:5432/cas_users
+cas.authn.attributeRepository.jdbc[0].dialect=org.hibernate.dialect.PostgreSQL95Dialect
+cas.authn.attributeRepository.jdbc[0].driver-class=org.postgresql.Driver
+cas.authn.attributeRepository.jdbc[0].user=theDbUser
+cas.authn.attributeRepository.jdbc[0].password=theDbPassword
+cas.authn.attributeRepository.jdbc[0].attributes.role=role
+cas.authn.attributeRepository.jdbc[0].singleRow=false
+cas.authn.attributeRepository.jdbc[0].columnMappings.attribute=value
+cas.authn.attributeRepository.jdbc[0].sql=SELECT * FROM roles WHERE {0}
+cas.authn.attributeRepository.jdbc[0].username=email
+
+cas.service-registry.json.location=classpath:/services
+</pre></div>
+</div>
+<p>The database has the following two tables for users and roles:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">public</span><span class="p">.</span><span class="n">users</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">disabled</span> <span class="nb">boolean</span><span class="p">,</span>
+    <span class="n">email</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span>
+    <span class="n">first_name</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span>
+    <span class="n">last_name</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span>
+    <span class="n">expired</span> <span class="nb">boolean</span><span class="p">,</span>
+    <span class="n">password</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">public</span><span class="p">.</span><span class="n">roles</span> <span class="p">(</span>
+    <span class="n">email</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">,</span>
+    <span class="n">attribute</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">,</span>
+    <span class="n">value</span> <span class="nb">character</span> <span class="nb">varying</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>A sample service configuration for GeoServer might look as follows (again, setup for testing
+and development only):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;@class&quot;</span> <span class="p">:</span> <span class="s2">&quot;org.apereo.cas.services.RegexRegisteredService&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;serviceId&quot;</span> <span class="p">:</span> <span class="s2">&quot;^http(s)?://localhost:[\\d]+/geoserver/.*&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;GeoServer&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="mi">1002</span><span class="p">,</span>
+  <span class="nt">&quot;logoutType&quot;</span> <span class="p">:</span> <span class="s2">&quot;BACK_CHANNEL&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;logoutUrl&quot;</span> <span class="p">:</span> <span class="s2">&quot;https://localhost:8442/geoserver&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;redirectUrl&quot;</span> <span class="p">:</span> <span class="s2">&quot;https://localhost:8442/geoserver&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;proxyPolicy&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;@class&quot;</span> <span class="p">:</span> <span class="s2">&quot;org.apereo.cas.services.RegexMatchingRegisteredServiceProxyPolicy&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;pattern&quot;</span> <span class="p">:</span> <span class="s2">&quot;^http(s)?://localhost:[\\d]+/geoserver/.*&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;attributeReleasePolicy&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;@class&quot;</span> <span class="p">:</span> <span class="s2">&quot;org.apereo.cas.services.ReturnAllAttributeReleasePolicy&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuring-the-web-chain">
+<h2>Configuring the web chain<a class="headerlink" href="#configuring-the-web-chain" title="Permalink to this headline">¶</a></h2>
+<p>The CAS authentication can be included in the web filter chain, with different behavior depending
+on which filters are included. The following discusses three possible examples.</p>
+<p>As first case, let’s consider having only the CAS authentication in the “web” filter chain:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/webCasOnly.png" src="../../_images/webCasOnly.png" />
+</div>
+</div></blockquote>
+<p>Since anonymous access is not allowed, any attempt to access the GeoServer web console will cause
+a redirect to the CAS server, for login. Once logged in, the user interface shows a button to initiate
+a CAS logout (the logout is shared among all examples, won’t be repeated in the following text).</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/webCasLogout.png" src="../../_images/webCasLogout.png" />
+</div>
+</div></blockquote>
+<p>A second option is to allow anonymous access in the web chain, allowing users to access the layer
+preview and other demo functionality without logging in:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/webCasAnonymous.png" src="../../_images/webCasAnonymous.png" />
+</div>
+</div></blockquote>
+<p>In this case the web console does not immediately redirect to the CAS server, but
+provides a CAS login button instead:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/webCasLogin.png" src="../../_images/webCasLogin.png" />
+</div>
+</div></blockquote>
+<p>As a final example, let’s consider having both CAS and form login in the web chain:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/webCasFormAnonymous.png" src="../../_images/webCasFormAnonymous.png" />
+</div>
+</div></blockquote>
+<p>This allows both a CAS login, and a form based login using GeoServer local username/password.
+It could be useful to allow GeoServer administration while the CAS server is offline for any reason.
+In this case both the form login and the CAS login button appear at the same time:</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/webCasFormLogin.png" src="../../_images/webCasFormLogin.png" />
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../geofence-server/migration.html" title="previous chapter">Migrating old GeoFence configuration to GeoServer 2.12 and following</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../params-extractor/index.html" title="next chapter">Parameters Extractor</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">CAS integration</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#example-cas-configuration">Example CAS configuration</a></li>
+<li><a class="reference internal" href="#configuring-the-web-chain">Configuring the web chain</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../geofence-server/migration.html" title="previous chapter">Migrating old GeoFence configuration to GeoServer 2.12 and following</a></li>
+            <li>Next: <a href="../params-extractor/index.html" title="next chapter">Parameters Extractor</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/cas/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

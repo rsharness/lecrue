@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upgrading from previous version &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="PGRaster" href="../pgraster/pgraster.html" />
+    <link rel="prev" title="OpenSearch/STAC JSON templates" href="templates.html" /> 
+  </head><body class="community/opensearch-eo/upgrading">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">OpenSearch for EO</a> &raquo;</li>
+    <li>Upgrading from previous version</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../pgraster/pgraster.html" title="PGRaster" accesskey="N">Next</a></li>
+  <li>
+    <a href="templates.html" title="OpenSearch/STAC JSON templates" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="upgrading-from-previous-version">
+<span id="upgrading"></span><h1>Upgrading from previous version<a class="headerlink" href="#upgrading-from-previous-version" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="removal-of-htmldescription">
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">htmlDescription</span></code><a class="headerlink" href="#removal-of-htmldescription" title="Permalink to this headline">¶</a></h2>
+<p>Starting with version 2.20 the OpenSearch module dropped the HTML template columns in the
+database, and switched to freemarker templates instead. This relieves the database from a
+significant burden, especially on the products table.</p>
+<p>The default templates are automatically used, and the old <code class="docutils literal notranslate"><span class="pre">htmlDescription</span></code> columns ignored
+(they should therefore be removed).</p>
+<p>In order for the default <a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.json">collection.ftl</a>
+to work, two new fields, <code class="docutils literal notranslate"><span class="pre">title</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code>, should be added to the database
+structure, if not already present.</p>
+<p>As a result of these changes, the REST resources previously used to manage the description templates
+have been removed, and residual HTML description templates included in product or collection
+zips will be ignored.</p>
+<p>The replacement Freemarker templates are <a class="reference internal" href="configuration.html#oseo-html-templates"><span class="std std-ref">located in the data directory</span></a>
+and can be thus managed via the <a class="reference external" href="http://docs.geoserver.org/latest/en/api/#1.0.0/resource.yaml">/resource</a> REST API.</p>
+</div>
+<div class="section" id="removal-of-collection-metadata-and-product-metadata">
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">collection_metadata</span></code> and <code class="docutils literal notranslate"><span class="pre">product_metadata</span></code><a class="headerlink" href="#removal-of-collection-metadata-and-product-metadata" title="Permalink to this headline">¶</a></h2>
+<p>Starting with version 2.20 the OpenSearch module dropped the metadata storage tables from the
+database, and switched to freemarker templates instead. This relieves the database from a
+significant burden, especially on the products metadata table.</p>
+<p>The default templates are automatically used, and the old metadata tables are ignored
+(they should therefore be removed).</p>
+<p>As a result of these changes, the REST resources previously used to manage the metadata
+have been removed, and residual metadata xml files included in product or collection
+zips will be ignored.</p>
+<p>The replacement Freemarker templates are <a class="reference internal" href="configuration.html#oseo-metadata-templates"><span class="std std-ref">located in the data directory</span></a>
+and can be thus managed via the <a class="reference external" href="http://docs.geoserver.org/latest/en/api/#1.0.0/resource.yaml">/resource</a> REST API.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="templates.html" title="previous chapter">OpenSearch/STAC JSON templates</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../pgraster/pgraster.html" title="next chapter">PGRaster</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Upgrading from previous version</a><ul>
+<li><a class="reference internal" href="#removal-of-htmldescription">Removal of <code class="docutils literal notranslate"><span class="pre">htmlDescription</span></code></a></li>
+<li><a class="reference internal" href="#removal-of-collection-metadata-and-product-metadata">Removal of <code class="docutils literal notranslate"><span class="pre">collection_metadata</span></code> and <code class="docutils literal notranslate"><span class="pre">product_metadata</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="templates.html" title="previous chapter">OpenSearch/STAC JSON templates</a></li>
+            <li>Next: <a href="../pgraster/pgraster.html" title="next chapter">PGRaster</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/opensearch-eo/upgrading.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

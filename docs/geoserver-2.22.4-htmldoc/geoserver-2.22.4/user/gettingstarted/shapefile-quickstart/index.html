@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Publishing a shapefile &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Publishing a PostGIS table" href="../postgis-quickstart/index.html" />
+    <link rel="prev" title="Publishing a style" href="../style-quickstart/index.html" /> 
+  </head><body class="gettingstarted/shapefile-quickstart/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Getting started</a> &raquo;</li>
+    <li>Publishing a shapefile</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../postgis-quickstart/index.html" title="Publishing a PostGIS table" accesskey="N">Next</a></li>
+  <li>
+    <a href="../style-quickstart/index.html" title="Publishing a style" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="publishing-a-shapefile">
+<span id="shapefile-quickstart"></span><h1>Publishing a shapefile<a class="headerlink" href="#publishing-a-shapefile" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial walks through the steps of publishing a Shapefile with GeoServer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This tutorial assumes that GeoServer is running at <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/geoserver</span></code>.</p>
+</div>
+<div class="section" id="data-preparation">
+<h2>Data preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h2>
+<p>First let’s gather that the data that we’ll be publishing.</p>
+<ol class="arabic">
+<li><p>Download the file <a class="reference download internal" download="" href="../../_downloads/30e405b790e068c43354367cb08e71bc/nyc_roads.zip"><code class="xref download docutils literal notranslate"><span class="pre">nyc_roads.zip</span></code></a>. This archive contains a shapefile of roads from New York City that will be used during in this tutorial.</p></li>
+<li><p>Unzip the <code class="file docutils literal notranslate"><span class="pre">nyc_roads.zip</span></code> into a new directory named <code class="file docutils literal notranslate"><span class="pre">nyc_roads</span></code>. The archive contains the following four files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nyc_roads</span><span class="o">.</span><span class="n">shp</span>
+<span class="n">nyc_roads</span><span class="o">.</span><span class="n">shx</span>
+<span class="n">nyc_roads</span><span class="o">.</span><span class="n">dbf</span>
+<span class="n">nyc_roads</span><span class="o">.</span><span class="n">prj</span>
+</pre></div>
+</div>
+</li>
+<li><p>Move the <code class="docutils literal notranslate"><span class="pre">nyc_roads</span></code> directory into <code class="docutils literal notranslate"><span class="pre">&lt;GEOSERVER_DATA_DIR&gt;/data</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;GEOSERVER_DATA_DIR&gt;</span></code> is the root of the <a class="reference internal" href="../../datadirectory/index.html#datadir"><span class="std std-ref">GeoServer data directory</span></a>. If no changes have been made to the GeoServer file structure, the path is <code class="docutils literal notranslate"><span class="pre">geoserver/data_dir/data/nyc_roads</span></code>.</p></li>
+</ol>
+</div>
+<div class="section" id="creating-a-new-workspace">
+<h2>Creating a new workspace<a class="headerlink" href="#creating-a-new-workspace" title="Permalink to this headline">¶</a></h2>
+<p>The next step is to create a workspace for the shapefile. A workspace is a container used to group similar layers together.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This step is optional if you’d like to use an existing workspace. Usually, a workspace is created for each project, which can include stores and layers that are related to each other.</p>
+</div>
+<ol class="arabic">
+<li><p>In a web browser, navigate to <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/geoserver</span></code>.</p></li>
+<li><p>Log into GeoServer as described in the <a class="reference internal" href="../web-admin-quickstart/index.html#logging-in"><span class="std std-ref">Logging In</span></a> section.</p></li>
+<li><p>Navigate to <span class="menuselection">Data ‣ Workspaces</span>.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../_images/data_workspaces.png" src="../../_images/data_workspaces.png" />
+<p class="caption"><span class="caption-text">Workspaces page</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click the <span class="guilabel">Add new workspace</span> button.</p></li>
+<li><p>You will be prompted to enter a workspace <span class="guilabel">Name</span> and <span class="guilabel">Namespace URI</span>.</p>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/new_workspace.png" src="../../_images/new_workspace.png" />
+<p class="caption"><span class="caption-text">Configure a new workspace</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Enter the <span class="guilabel">Name</span> as <code class="docutils literal notranslate"><span class="pre">nyc</span></code> and the <span class="guilabel">Namespace URI</span> as <code class="docutils literal notranslate"><span class="pre">http://geoserver.org/nyc</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A workspace name is an identifier describing your project. It must not exceed ten characters or contain spaces. A Namespace URI (Uniform Resource Identifier) can usually be a URL associated with your project with an added trailing identifier indicating the workspace. The Namespace URI filed does not need to resolve to an actual valid web address.</p>
+</div>
+<div class="figure align-default" id="id3">
+<img alt="../../_images/workspace_nycroads.png" src="../../_images/workspace_nycroads.png" />
+<p class="caption"><span class="caption-text">nyc workspace</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click the <span class="guilabel">Submit</span> button. The <code class="docutils literal notranslate"><span class="pre">nyc</span></code> workspace will be added to the <span class="guilabel">Workspaces</span> list.</p></li>
+</ol>
+</div>
+<div class="section" id="create-a-store">
+<h2>Create a store<a class="headerlink" href="#create-a-store" title="Permalink to this headline">¶</a></h2>
+<p>Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the shapefile.</p>
+<ol class="arabic">
+<li><p>Navigate to <span class="menuselection">Data‣Stores</span>.</p></li>
+<li><p>You should see a list of stores, including the type of store and the workspace that the store belongs to.</p></li>
+<li><p>In order to add the shapefile, you need to create a new store. Click the <span class="guilabel">Add new Store</span> button. You will be redirected to a list of the data sources supported by GeoServer. Note that the data sources are extensible, so your list may look slightly different.</p>
+<div class="figure align-default" id="id4">
+<img alt="../../_images/stores_nycroads.png" src="../../_images/stores_nycroads.png" />
+<p class="caption"><span class="caption-text">Stores</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click <span class="guilabel">Shapefile</span>. The <span class="guilabel">New Vector Data Source</span> page will display.</p></li>
+<li><p>Begin by configuring the <span class="guilabel">Basic Store Info</span>.</p>
+<ul class="simple">
+<li><p>Select the workspace <code class="docutils literal notranslate"><span class="pre">nyc</span></code> from the drop down menu.</p></li>
+<li><p>Enter the <span class="guilabel">Data Source Name</span> as <code class="docutils literal notranslate"><span class="pre">NYC</span> <span class="pre">Roads</span></code></p></li>
+<li><p>Enter a brief <span class="guilabel">Description</span> (such as “Roads in New York City”).</p></li>
+</ul>
+</li>
+<li><p>Under <span class="guilabel">Connection Parameters</span>, browse to the location <span class="guilabel">URL</span> of the shapefile, typically <code class="file docutils literal notranslate"><span class="pre">nyc_roads/nyc_roads.shp</span></code>.</p>
+<div class="figure align-default" id="id5">
+<img alt="../../_images/new_shapefile.png" src="../../_images/new_shapefile.png" />
+<p class="caption"><span class="caption-text">Basic Store Info and Connection Parameters</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click <span class="guilabel">Save</span>. You will be redirected to the <span class="guilabel">New Layer</span> page in order to configure the <code class="docutils literal notranslate"><span class="pre">nyc_roads</span></code> layer.</p></li>
+</ol>
+</div>
+<div class="section" id="creating-a-layer">
+<h2>Creating a layer<a class="headerlink" href="#creating-a-layer" title="Permalink to this headline">¶</a></h2>
+<p>Now that the store is loaded, we can publish the layer.</p>
+<ol class="arabic">
+<li><p>On the <span class="guilabel">New Layer</span> page, click <span class="guilabel">Publish</span> beside the <code class="docutils literal notranslate"><span class="pre">nyc_roads</span></code> layer name.</p>
+<div class="figure align-default" id="id6">
+<img alt="../../_images/new_layer.png" src="../../_images/new_layer.png" />
+<p class="caption"><span class="caption-text">New layer</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>The <span class="guilabel">Edit Layer</span> page defines the data and publishing parameters for a layer. Enter a short <span class="guilabel">Title</span> and an <span class="guilabel">Abstract</span> for the <code class="docutils literal notranslate"><span class="pre">nyc_roads</span></code> layer.</p>
+<div class="figure align-default" id="id7">
+<img alt="../../_images/new_data.png" src="../../_images/new_data.png" />
+<p class="caption"><span class="caption-text">Basic Resource Information</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Generate the layer’s bounding boxes by clicking the <span class="guilabel">Compute from data</span> and then <span class="guilabel">Compute from native bounds</span> links.</p>
+<div class="figure align-default" id="id8">
+<img alt="../../_images/boundingbox1.png" src="../../_images/boundingbox1.png" />
+<p class="caption"><span class="caption-text">Generating bounding boxes</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click the <span class="guilabel">Publishing</span> tab at the top of the page.</p></li>
+<li><p>We can set the layer’s style here. Under <span class="guilabel">WMS Settings</span>, ensure that the <span class="guilabel">Default Style</span> is set to <span class="guilabel">line</span>.</p>
+<div class="figure align-default" id="id9">
+<img alt="../../_images/style1.png" src="../../_images/style1.png" />
+<p class="caption"><span class="caption-text">Select Default Style</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Finalize the layer configuration by scrolling to the bottom of the page and clicking <span class="guilabel">Save</span>.</p></li>
+</ol>
+</div>
+<div class="section" id="previewing-the-layer">
+<h2>Previewing the layer<a class="headerlink" href="#previewing-the-layer" title="Permalink to this headline">¶</a></h2>
+<p>In order to verify that the <code class="docutils literal notranslate"><span class="pre">nyc_roads</span></code> layer is published correctly, we can preview the layer.</p>
+<ol class="arabic">
+<li><p>Navigate to the <span class="guilabel">Layer Preview</span> screen and find the <code class="docutils literal notranslate"><span class="pre">nyc:nyc_roads</span></code> layer.</p>
+<div class="figure align-default" id="id10">
+<img alt="../../_images/layer_preview.png" src="../../_images/layer_preview.png" />
+<p class="caption"><span class="caption-text">Layer Preview</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click the <span class="guilabel">OpenLayers</span> link in the <span class="guilabel">Common Formats</span> column.</p></li>
+<li><p>An OpenLayers map will load in a new tab and display the shapefile data with the default line style. You can use this preview map to zoom and pan around the dataset, as well as display the attributes of features.</p>
+<div class="figure align-default" id="id11">
+<img alt="../../_images/openlayers4.png" src="../../_images/openlayers4.png" />
+<p class="caption"><span class="caption-text">Preview map of nyc_roads</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../style-quickstart/index.html" title="previous chapter">Publishing a style</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../postgis-quickstart/index.html" title="next chapter">Publishing a PostGIS table</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Publishing a shapefile</a><ul>
+<li><a class="reference internal" href="#data-preparation">Data preparation</a></li>
+<li><a class="reference internal" href="#creating-a-new-workspace">Creating a new workspace</a></li>
+<li><a class="reference internal" href="#create-a-store">Create a store</a></li>
+<li><a class="reference internal" href="#creating-a-layer">Creating a layer</a></li>
+<li><a class="reference internal" href="#previewing-the-layer">Previewing the layer</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../style-quickstart/index.html" title="previous chapter">Publishing a style</a></li>
+            <li>Next: <a href="../postgis-quickstart/index.html" title="next chapter">Publishing a PostGIS table</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/gettingstarted/shapefile-quickstart/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

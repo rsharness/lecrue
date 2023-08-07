@@ -1,0 +1,831 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polygons &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Rasters" href="rasters.html" />
+    <link rel="prev" title="Lines" href="lines.html" /> 
+  </head><body class="styling/sld/cookbook/polygons">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Cookbook</a> &raquo;</li>
+    <li>Polygons</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="rasters.html" title="Rasters" accesskey="N">Next</a></li>
+  <li>
+    <a href="lines.html" title="Lines" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="polygons">
+<span id="sld-cookbook-polygons"></span><h1>Polygons<a class="headerlink" href="#polygons" title="Permalink to this headline">¶</a></h1>
+<p>Polygons are two dimensional shapes that contain both an outer edge (or “stroke”) and an inside (or “fill”).  A polygon can be thought of as an irregularly-shaped point and is styled in similar ways to points.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The code examples shown on this page are <strong>not the full SLD code</strong>, as they omit the SLD header and footer information for the sake of brevity.  Please use the links to download the full SLD for each example.</p>
+</div>
+<div class="section" id="example-polygons-layer">
+<span id="sld-cookbook-polygons-attributes"></span><h2>Example polygons layer<a class="headerlink" href="#example-polygons-layer" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference download internal" download="" href="../../../_downloads/f5b6884c6c4d017ce2fb9f9f10fe5fdb/sld_cookbook_polygon.zip"><code class="xref download docutils literal notranslate"><span class="pre">polygons</span> <span class="pre">layer</span></code></a> used below contains county information for a fictional country. For reference, the attribute table for the polygons is included below.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>fid</strong> (Feature ID)</p></td>
+<td><p><strong>name</strong> (County name)</p></td>
+<td><p><strong>pop</strong> (Population)</p></td>
+</tr>
+<tr class="row-even"><td><p>polygon.1</p></td>
+<td><p>Irony County</p></td>
+<td><p>412234</p></td>
+</tr>
+<tr class="row-odd"><td><p>polygon.2</p></td>
+<td><p>Tracker County</p></td>
+<td><p>235421</p></td>
+</tr>
+<tr class="row-even"><td><p>polygon.3</p></td>
+<td><p>Dracula County</p></td>
+<td><p>135022</p></td>
+</tr>
+<tr class="row-odd"><td><p>polygon.4</p></td>
+<td><p>Poly County</p></td>
+<td><p>1567879</p></td>
+</tr>
+<tr class="row-even"><td><p>polygon.5</p></td>
+<td><p>Bearing County</p></td>
+<td><p>201989</p></td>
+</tr>
+<tr class="row-odd"><td><p>polygon.6</p></td>
+<td><p>Monte Cristo County</p></td>
+<td><p>152734</p></td>
+</tr>
+<tr class="row-even"><td><p>polygon.7</p></td>
+<td><p>Massive County</p></td>
+<td><p>67123</p></td>
+</tr>
+<tr class="row-odd"><td><p>polygon.8</p></td>
+<td><p>Rhombus County</p></td>
+<td><p>198029</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference download internal" download="" href="../../../_downloads/f5b6884c6c4d017ce2fb9f9f10fe5fdb/sld_cookbook_polygon.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">polygons</span> <span class="pre">shapefile</span></code></a></p>
+</div>
+<div class="section" id="simple-polygon">
+<span id="sld-cookbook-polygons-simplepolygon"></span><h2>Simple polygon<a class="headerlink" href="#simple-polygon" title="Permalink to this headline">¶</a></h2>
+<p>This example shows a polygon filled in blue.</p>
+<div class="figure align-center" id="id21">
+<img alt="../../../_images/polygon_simplepolygon.png" src="../../../_images/polygon_simplepolygon.png" />
+<p class="caption"><span class="caption-text"><em>Simple polygon</em></span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="code">
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/16b470bac627181ca3c3bccc25721053/polygon_simplepolygon.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Simple</span> <span class="pre">polygon&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno">2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno">4 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">5 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#000080<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">6 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">7 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">8 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">9 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="details">
+<h3>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h3>
+<p>There is one <code class="docutils literal notranslate"><span class="pre">&lt;Rule&gt;</span></code> in one <code class="docutils literal notranslate"><span class="pre">&lt;FeatureTypeStyle&gt;</span></code> for this style, which is the simplest possible situation.  (All subsequent examples will share this characteristic unless otherwise specified.)  Styling polygons is accomplished via the <code class="docutils literal notranslate"><span class="pre">&lt;PolygonSymbolizer&gt;</span></code> (<strong>lines 3-7</strong>). <strong>Line 5</strong> specifies dark blue (<code class="docutils literal notranslate"><span class="pre">#000080</span></code>) as the polygon’s fill color.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The light-colored borders around the polygons in the figure are artifacts of the renderer caused by the polygons being adjacent. There is no border in this style.</p>
+</div>
+</div>
+</div>
+<div class="section" id="simple-polygon-with-stroke">
+<span id="sld-cookbook-polygons-simplepolygonwithstroke"></span><h2>Simple polygon with stroke<a class="headerlink" href="#simple-polygon-with-stroke" title="Permalink to this headline">¶</a></h2>
+<p>This example adds a 2 pixel white stroke to the <a class="reference internal" href="#sld-cookbook-polygons-simplepolygon"><span class="std std-ref">Simple polygon</span></a> example.</p>
+<div class="figure align-center" id="id22">
+<img alt="../../../_images/polygon_simplepolygonwithstroke.png" src="../../../_images/polygon_simplepolygonwithstroke.png" />
+<p class="caption"><span class="caption-text"><em>Simple polygon with stroke</em></span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id1">
+<h3>Code<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/83883df7a56c6e1a1829e0610131a3c5/polygon_simplepolygonwithstroke.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Simple</span> <span class="pre">polygon</span> <span class="pre">with</span> <span class="pre">stroke&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 5 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#000080<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 6 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno"> 7 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno"> 8 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#FFFFFF<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 9 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">10 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">11 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">12 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">13 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Details<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>This example is similar to the <a class="reference internal" href="#sld-cookbook-polygons-simplepolygon"><span class="std std-ref">Simple polygon</span></a> example above, with the addition of the <code class="docutils literal notranslate"><span class="pre">&lt;Stroke&gt;</span></code> tag (<strong>lines 7-10</strong>).  <strong>Line 8</strong> sets the color of stroke to white (<code class="docutils literal notranslate"><span class="pre">#FFFFFF</span></code>) and <strong>line 9</strong> sets the width of the stroke to 2 pixels.</p>
+</div>
+</div>
+<div class="section" id="transparent-polygon">
+<h2>Transparent polygon<a class="headerlink" href="#transparent-polygon" title="Permalink to this headline">¶</a></h2>
+<p>This example builds on the <a class="reference internal" href="#sld-cookbook-polygons-simplepolygonwithstroke"><span class="std std-ref">Simple polygon with stroke</span></a> example and makes the fill partially transparent by setting the opacity to 50%.</p>
+<div class="figure align-center" id="id23">
+<img alt="../../../_images/polygon_transparentpolygon.png" src="../../../_images/polygon_transparentpolygon.png" />
+<p class="caption"><span class="caption-text"><em>Transparent polygon</em></span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id3">
+<h3>Code<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/0f3ffbc142853c7dd4f154517a7eb24c/polygon_transparentpolygon.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Transparent</span> <span class="pre">polygon&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 5 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#000080<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 6 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill-opacity&quot;</span><span class="nt">&gt;</span>0.5<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 7 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno"> 8 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno"> 9 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#FFFFFF<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">10 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">11 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">12 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">13 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">14 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>Details<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>This example is similar to the <a class="reference internal" href="#sld-cookbook-polygons-simplepolygonwithstroke"><span class="std std-ref">Simple polygon with stroke</span></a> example, save for defining the fill’s opacity in <strong>line 6</strong>. The value of 0.5 results in partially transparent fill that is 50% opaque.  An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill.  In this example, since the background is white, the dark blue looks lighter.  Were the points imposed on a dark background, the resulting color would be darker.</p>
+</div>
+</div>
+<div class="section" id="offset-inner-lines">
+<span id="sld-cookbook-polygons-offset"></span><h2>Offset inner lines<a class="headerlink" href="#offset-inner-lines" title="Permalink to this headline">¶</a></h2>
+<p>Shows how to draw inner buffer lines inside a polygon.</p>
+<div class="figure align-center" id="id24">
+<img alt="../../../_images/polygon_offset.png" src="../../../_images/polygon_offset.png" />
+<p class="caption"><span class="caption-text"><em>Offset buffer</em></span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id5">
+<h3>Code<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/5e0e6122cb8302088c4326c2e38199b9/polygon_offset.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Inner</span> <span class="pre">offset</span> <span class="pre">lines&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno"> 5 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 6 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 7 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno"> 8 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno"> 9 </span>       <span class="nt">&lt;LineSymbolizer&gt;</span>
+<span class="lineno">10 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno">11 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#AAAAAA<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">12 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>3<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">13 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">14 </span>         <span class="nt">&lt;PerpendicularOffset&gt;</span>-2<span class="nt">&lt;/PerpendicularOffset&gt;</span>
+<span class="lineno">15 </span>       <span class="nt">&lt;/LineSymbolizer&gt;</span>
+<span class="lineno">16 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">17 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>Details<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>This example is similar to the <a class="reference internal" href="#sld-cookbook-polygons-simplepolygonwithstroke"><span class="std std-ref">Simple polygon with stroke</span></a> example, save
+for defining adding a <code class="docutils literal notranslate"><span class="pre">&lt;LineSymbolizer&gt;&gt;</span></code> at <strong>line 9</strong>, where a light gray (<strong>line 11</strong>)
+3 pixels wide (<strong>line 12</strong>) line is drawn as a inner buffer inside the polygon.
+<strong>Line 14</strong> controls the buffering distance, setting a inner buffer of 2 pixels.</p>
+</div>
+</div>
+<div class="section" id="graphic-fill">
+<span id="sld-cookbook-polygons-graphicfill"></span><h2>Graphic fill<a class="headerlink" href="#graphic-fill" title="Permalink to this headline">¶</a></h2>
+<p>This example fills the polygons with a tiled graphic.</p>
+<div class="figure align-center" id="id25">
+<img alt="../../../_images/polygon_graphicfill.png" src="../../../_images/polygon_graphicfill.png" />
+<p class="caption"><span class="caption-text"><em>Graphic fill</em></span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id7">
+<h3>Code<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/0a9b8dffbcf320bdbd2a7ea85b9a82c1/polygon_graphicfill.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Graphic</span> <span class="pre">fill&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 5 </span>           <span class="nt">&lt;GraphicFill&gt;</span>
+<span class="lineno"> 6 </span>             <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno"> 7 </span>               <span class="nt">&lt;ExternalGraphic&gt;</span>
+<span class="lineno"> 8 </span>                 <span class="nt">&lt;OnlineResource</span>
+<span class="lineno"> 9 </span>                   <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+<span class="lineno">10 </span>                   <span class="na">xlink:href=</span><span class="s">&quot;colorblocks.png&quot;</span> <span class="nt">/&gt;</span>
+<span class="lineno">11 </span>                 <span class="nt">&lt;Format&gt;</span>image/png<span class="nt">&lt;/Format&gt;</span>
+<span class="lineno">12 </span>               <span class="nt">&lt;/ExternalGraphic&gt;</span>
+<span class="lineno">13 </span>             <span class="nt">&lt;Size&gt;</span>93<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">14 </span>             <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">15 </span>           <span class="nt">&lt;/GraphicFill&gt;</span>
+<span class="lineno">16 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">17 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">18 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">19 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>Details<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>This style fills the polygon with a tiled graphic. This is known as an <code class="docutils literal notranslate"><span class="pre">&lt;ExternalGraphic&gt;</span></code> in SLD, to distinguish it from commonly-used shapes such as squares and circles that are “internal” to the renderer. <strong>Lines 7-12</strong> specify details for the graphic, with <strong>line 10</strong> setting the path and file name of the graphic and <strong>line 11</strong> indicating the file format (MIME type) of the graphic (<code class="docutils literal notranslate"><span class="pre">image/png</span></code>).  Although a full URL could be specified if desired, no path information is necessary in <strong>line 11</strong> because this graphic is contained in the same directory as the SLD. <strong>Line 13</strong> determines the height of the displayed graphic in pixels; if the value differs from the height of the graphic then it will be scaled accordingly while preserving the aspect ratio.</p>
+<div class="figure align-center" id="id26">
+<img alt="../../../_images/colorblocks.png" src="../../../_images/colorblocks.png" />
+<p class="caption"><span class="caption-text"><em>Graphic used for fill</em></span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="hatching-fill">
+<h2>Hatching fill<a class="headerlink" href="#hatching-fill" title="Permalink to this headline">¶</a></h2>
+<p>This example fills the polygons with a hatching pattern.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This example leverages an SLD extension in GeoServer.  Hatching is not part of the standard SLD 1.0 specification.</p>
+</div>
+<div class="figure align-center" id="id27">
+<img alt="../../../_images/polygon_hatchingfill.png" src="../../../_images/polygon_hatchingfill.png" />
+<p class="caption"><span class="caption-text"><em>Hatching fill</em></span><a class="headerlink" href="#id27" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id9">
+<h3>Code<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/211795b30edad0f9d71e61bb84ec0a7a/polygon_hatchingfill.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Hatching</span> <span class="pre">fill&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 5 </span>           <span class="nt">&lt;GraphicFill&gt;</span>
+<span class="lineno"> 6 </span>             <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno"> 7 </span>               <span class="nt">&lt;Mark&gt;</span>
+<span class="lineno"> 8 </span>                 <span class="nt">&lt;WellKnownName&gt;</span>shape://times<span class="nt">&lt;/WellKnownName&gt;</span>
+<span class="lineno"> 9 </span>                 <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno">10 </span>                   <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#990099<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">11 </span>                   <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">12 </span>                 <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">13 </span>               <span class="nt">&lt;/Mark&gt;</span>
+<span class="lineno">14 </span>               <span class="nt">&lt;Size&gt;</span>16<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">15 </span>             <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">16 </span>           <span class="nt">&lt;/GraphicFill&gt;</span>
+<span class="lineno">17 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">18 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">19 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">20 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h3>Details<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>In this example, there is a <code class="docutils literal notranslate"><span class="pre">&lt;GraphicFill&gt;</span></code> tag as in the <a class="reference internal" href="#sld-cookbook-polygons-graphicfill"><span class="std std-ref">Graphic fill</span></a> example, but a <code class="docutils literal notranslate"><span class="pre">&lt;Mark&gt;</span></code> (<strong>lines 7-13</strong>) is used instead of an <code class="docutils literal notranslate"><span class="pre">&lt;ExternalGraphic&gt;</span></code>. <strong>Line 8</strong> specifies a “times” symbol (an “x”) be tiled throughout the polygon. <strong>Line 10</strong> sets the color to purple (<code class="docutils literal notranslate"><span class="pre">#990099</span></code>), <strong>line 11</strong> sets the width of the hatches to 1 pixel, and <strong>line 14</strong> sets the size of the tile to 16 pixels. Because hatch tiles are always square, the <code class="docutils literal notranslate"><span class="pre">&lt;Size&gt;</span></code> sets both the width and the height.</p>
+</div>
+</div>
+<div class="section" id="polygon-with-default-label">
+<span id="sld-cookbook-polygons-polygonwithdefaultlabel"></span><h2>Polygon with default label<a class="headerlink" href="#polygon-with-default-label" title="Permalink to this headline">¶</a></h2>
+<p>This example shows a text label on the polygon.  In the absence of any other customization, this is how a label will be displayed.</p>
+<div class="figure align-center" id="id28">
+<img alt="../../../_images/polygon_polygonwithdefaultlabel.png" src="../../../_images/polygon_polygonwithdefaultlabel.png" />
+<p class="caption"><span class="caption-text"><em>Polygon with default label</em></span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id11">
+<h3>Code<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/a9eb83cf01841476fa1c21903fea7b54/polygon_polygonwithdefaultlabel.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Polygon</span> <span class="pre">with</span> <span class="pre">default</span> <span class="pre">label&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 5 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#40FF40<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 6 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno"> 7 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno"> 8 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#FFFFFF<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 9 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">10 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">11 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">12 </span>       <span class="nt">&lt;TextSymbolizer&gt;</span>
+<span class="lineno">13 </span>         <span class="nt">&lt;Label&gt;</span>
+<span class="lineno">14 </span>           <span class="nt">&lt;ogc:PropertyName&gt;</span>name<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">15 </span>         <span class="nt">&lt;/Label&gt;</span>
+<span class="lineno">16 </span>       <span class="nt">&lt;/TextSymbolizer&gt;</span>
+<span class="lineno">17 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">18 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h3>Details<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p>In this example there is a <code class="docutils literal notranslate"><span class="pre">&lt;PolygonSymbolizer&gt;</span></code> and a <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code>.  <strong>Lines 3-11</strong> comprise the <code class="docutils literal notranslate"><span class="pre">&lt;PolygonSymbolizer&gt;</span></code>.  The fill of the polygon is set on <strong>line 5</strong> to a light green (<code class="docutils literal notranslate"><span class="pre">#40FF40</span></code>) while the stroke of the polygon is set on <strong>lines 8-9</strong> to white (<code class="docutils literal notranslate"><span class="pre">#FFFFFF</span></code>) with a thickness of 2 pixels. The label is set in the <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code> on <strong>lines 12-16</strong>, with <strong>line 14</strong> determining what text to display, in this case the value of the “name” attribute.  (Refer to the attribute table in the <a class="reference internal" href="#sld-cookbook-polygons-attributes"><span class="std std-ref">Example polygons layer</span></a> section if necessary.)  All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.</p>
+</div>
+</div>
+<div class="section" id="label-halo">
+<h2>Label halo<a class="headerlink" href="#label-halo" title="Permalink to this headline">¶</a></h2>
+<p>This example alters the look of the <a class="reference internal" href="#sld-cookbook-polygons-polygonwithdefaultlabel"><span class="std std-ref">Polygon with default label</span></a> by adding a white halo to the label.</p>
+<div class="figure align-center" id="id29">
+<img alt="../../../_images/polygon_labelhalo.png" src="../../../_images/polygon_labelhalo.png" />
+<p class="caption"><span class="caption-text"><em>Label halo</em></span><a class="headerlink" href="#id29" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id13">
+<h3>Code<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/466748a93c54cf612e45d06207e6ea25/polygon_labelhalo.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Label</span> <span class="pre">halo&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 5 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#40FF40<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 6 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno"> 7 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno"> 8 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#FFFFFF<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 9 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">10 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">11 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">12 </span>       <span class="nt">&lt;TextSymbolizer&gt;</span>
+<span class="lineno">13 </span>         <span class="nt">&lt;Label&gt;</span>
+<span class="lineno">14 </span>           <span class="nt">&lt;ogc:PropertyName&gt;</span>name<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">15 </span>         <span class="nt">&lt;/Label&gt;</span>
+<span class="lineno">16 </span>         <span class="nt">&lt;Halo&gt;</span>
+<span class="lineno">17 </span>           <span class="nt">&lt;Radius&gt;</span>3<span class="nt">&lt;/Radius&gt;</span>
+<span class="lineno">18 </span>           <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">19 </span>             <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FFFFFF<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">20 </span>           <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">21 </span>         <span class="nt">&lt;/Halo&gt;</span>
+<span class="lineno">22 </span>       <span class="nt">&lt;/TextSymbolizer&gt;</span>
+<span class="lineno">23 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">24 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id14">
+<h3>Details<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>This example is similar to the <a class="reference internal" href="#sld-cookbook-polygons-polygonwithdefaultlabel"><span class="std std-ref">Polygon with default label</span></a>, with the addition of a halo around the labels on <strong>lines 16-21</strong>.  A halo creates a color buffer around the label to improve label legibility.  <strong>Line 17</strong> sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and <strong>line 19</strong> sets the color of the halo to white (<code class="docutils literal notranslate"><span class="pre">#FFFFFF</span></code>). Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.</p>
+</div>
+</div>
+<div class="section" id="polygon-with-styled-label">
+<span id="sld-cookbook-polygons-polygonwithstyledlabel"></span><h2>Polygon with styled label<a class="headerlink" href="#polygon-with-styled-label" title="Permalink to this headline">¶</a></h2>
+<p>This example improves the label style from the <a class="reference internal" href="#sld-cookbook-polygons-polygonwithdefaultlabel"><span class="std std-ref">Polygon with default label</span></a> example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The label placement optimizations discussed below (the <code class="docutils literal notranslate"><span class="pre">&lt;VendorOption&gt;</span></code> tags) are SLD extensions that are custom to GeoServer.  They are not part of the SLD 1.0 specification.</p>
+</div>
+<div class="figure align-center" id="id30">
+<img alt="../../../_images/polygon_polygonwithstyledlabel.png" src="../../../_images/polygon_polygonwithstyledlabel.png" />
+<p class="caption"><span class="caption-text"><em>Polygon with styled label</em></span><a class="headerlink" href="#id30" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id15">
+<h3>Code<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/122c8d860d7d1757df778624844038df/polygon_polygonwithstyledlabel.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Polygon</span> <span class="pre">with</span> <span class="pre">styled</span> <span class="pre">label&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 4 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 5 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#40FF40<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 6 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno"> 7 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno"> 8 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#FFFFFF<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 9 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">10 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">11 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">12 </span>       <span class="nt">&lt;TextSymbolizer&gt;</span>
+<span class="lineno">13 </span>         <span class="nt">&lt;Label&gt;</span>
+<span class="lineno">14 </span>           <span class="nt">&lt;ogc:PropertyName&gt;</span>name<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">15 </span>         <span class="nt">&lt;/Label&gt;</span>
+<span class="lineno">16 </span>         <span class="nt">&lt;Font&gt;</span>
+<span class="lineno">17 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-family&quot;</span><span class="nt">&gt;</span>Arial<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">18 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-size&quot;</span><span class="nt">&gt;</span>11<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">19 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-style&quot;</span><span class="nt">&gt;</span>normal<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">20 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-weight&quot;</span><span class="nt">&gt;</span>bold<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">21 </span>         <span class="nt">&lt;/Font&gt;</span>
+<span class="lineno">22 </span>         <span class="nt">&lt;LabelPlacement&gt;</span>
+<span class="lineno">23 </span>           <span class="nt">&lt;PointPlacement&gt;</span>
+<span class="lineno">24 </span>             <span class="nt">&lt;AnchorPoint&gt;</span>
+<span class="lineno">25 </span>               <span class="nt">&lt;AnchorPointX&gt;</span>0.5<span class="nt">&lt;/AnchorPointX&gt;</span>
+<span class="lineno">26 </span>               <span class="nt">&lt;AnchorPointY&gt;</span>0.5<span class="nt">&lt;/AnchorPointY&gt;</span>
+<span class="lineno">27 </span>             <span class="nt">&lt;/AnchorPoint&gt;</span>
+<span class="lineno">28 </span>           <span class="nt">&lt;/PointPlacement&gt;</span>
+<span class="lineno">29 </span>         <span class="nt">&lt;/LabelPlacement&gt;</span>
+<span class="lineno">30 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">31 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">32 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">33 </span>         <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;autoWrap&quot;</span><span class="nt">&gt;</span>60<span class="nt">&lt;/VendorOption&gt;</span>
+<span class="lineno">34 </span>         <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;maxDisplacement&quot;</span><span class="nt">&gt;</span>150<span class="nt">&lt;/VendorOption&gt;</span>
+<span class="lineno">35 </span>       <span class="nt">&lt;/TextSymbolizer&gt;</span>
+<span class="lineno">36 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">37 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id16">
+<h3>Details<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<p>This example is similar to the <a class="reference internal" href="#sld-cookbook-polygons-polygonwithdefaultlabel"><span class="std std-ref">Polygon with default label</span></a> example, with additional styling options within the <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code> on lines <strong>12-35</strong>. <strong>Lines 16-21</strong> set the font styling. <strong>Line 17</strong> sets the font family to be Arial, <strong>line 18</strong> sets the font size to 11 pixels, <strong>line 19</strong> sets the font style to “normal” (as opposed to “italic” or “oblique”), and <strong>line 20</strong> sets the font weight to “bold” (as opposed to “normal”).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;LabelPlacement&gt;</span></code> tag on <strong>lines 22-29</strong> affects where the label is placed relative to the centroid of the polygon. <strong>Line 21</strong> centers the label by positioning it 50% (or 0.5) of the way horizontally along the centroid of the polygon. <strong>Line 22</strong> centers the label vertically in exactly the same way.</p>
+<p>Finally, there are two added touches for label placement optimization: <strong>line 33</strong> ensures that long labels are split across multiple lines by setting line wrapping on the labels to 60 pixels, and <strong>line 34</strong> allows the label to be displaced by up to 150 pixels. This ensures that labels are compacted and less likely to spill over polygon boundaries. Notice little Massive County in the corner, whose label is now displayed.”</p>
+</div>
+</div>
+<div class="section" id="attribute-based-polygon">
+<h2>Attribute-based polygon<a class="headerlink" href="#attribute-based-polygon" title="Permalink to this headline">¶</a></h2>
+<p>This example styles the polygons differently based on the “pop” (Population) attribute.</p>
+<div class="figure align-center" id="id31">
+<img alt="../../../_images/polygon_attributebasedpolygon.png" src="../../../_images/polygon_attributebasedpolygon.png" />
+<p class="caption"><span class="caption-text"><em>Attribute-based polygon</em></span><a class="headerlink" href="#id31" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id17">
+<h3>Code<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/cc69fdedd3ea662ad685fc168bf10797/polygon_attributebasedpolygon.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Attribute-based</span> <span class="pre">polygon&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;Name&gt;</span>SmallPop<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno"> 4 </span>       <span class="nt">&lt;Title&gt;</span>Less Than 200,000<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno"> 5 </span>       <span class="nt">&lt;ogc:Filter&gt;</span>
+<span class="lineno"> 6 </span>         <span class="nt">&lt;ogc:PropertyIsLessThan&gt;</span>
+<span class="lineno"> 7 </span>           <span class="nt">&lt;ogc:PropertyName&gt;</span>pop<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno"> 8 </span>           <span class="nt">&lt;ogc:Literal&gt;</span>200000<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno"> 9 </span>         <span class="nt">&lt;/ogc:PropertyIsLessThan&gt;</span>
+<span class="lineno">10 </span>       <span class="nt">&lt;/ogc:Filter&gt;</span>
+<span class="lineno">11 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno">12 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">13 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#66FF66<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">14 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">15 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">16 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">17 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">18 </span>       <span class="nt">&lt;Name&gt;</span>MediumPop<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">19 </span>       <span class="nt">&lt;Title&gt;</span>200,000 to 500,000<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno">20 </span>       <span class="nt">&lt;ogc:Filter&gt;</span>
+<span class="lineno">21 </span>         <span class="nt">&lt;ogc:And&gt;</span>
+<span class="lineno">22 </span>           <span class="nt">&lt;ogc:PropertyIsGreaterThanOrEqualTo&gt;</span>
+<span class="lineno">23 </span>             <span class="nt">&lt;ogc:PropertyName&gt;</span>pop<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">24 </span>             <span class="nt">&lt;ogc:Literal&gt;</span>200000<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">25 </span>           <span class="nt">&lt;/ogc:PropertyIsGreaterThanOrEqualTo&gt;</span>
+<span class="lineno">26 </span>           <span class="nt">&lt;ogc:PropertyIsLessThan&gt;</span>
+<span class="lineno">27 </span>             <span class="nt">&lt;ogc:PropertyName&gt;</span>pop<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">28 </span>             <span class="nt">&lt;ogc:Literal&gt;</span>500000<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">29 </span>           <span class="nt">&lt;/ogc:PropertyIsLessThan&gt;</span>
+<span class="lineno">30 </span>         <span class="nt">&lt;/ogc:And&gt;</span>
+<span class="lineno">31 </span>       <span class="nt">&lt;/ogc:Filter&gt;</span>
+<span class="lineno">32 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno">33 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">34 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#33CC33<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">35 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">36 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">37 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">38 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">39 </span>       <span class="nt">&lt;Name&gt;</span>LargePop<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">40 </span>       <span class="nt">&lt;Title&gt;</span>Greater Than 500,000<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno">41 </span>       <span class="nt">&lt;ogc:Filter&gt;</span>
+<span class="lineno">42 </span>         <span class="nt">&lt;ogc:PropertyIsGreaterThan&gt;</span>
+<span class="lineno">43 </span>           <span class="nt">&lt;ogc:PropertyName&gt;</span>pop<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">44 </span>           <span class="nt">&lt;ogc:Literal&gt;</span>500000<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">45 </span>         <span class="nt">&lt;/ogc:PropertyIsGreaterThan&gt;</span>
+<span class="lineno">46 </span>       <span class="nt">&lt;/ogc:Filter&gt;</span>
+<span class="lineno">47 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno">48 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">49 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#009900<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">50 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">51 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">52 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">53 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id18">
+<h3>Details<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Refer to the <a class="reference internal" href="#sld-cookbook-polygons-attributes"><span class="std std-ref">Example polygons layer</span></a> to see the attributes for the layer.  This example has eschewed labels in order to simplify the style, but you can refer to the example <a class="reference internal" href="#sld-cookbook-polygons-polygonwithstyledlabel"><span class="std std-ref">Polygon with styled label</span></a> to see which attributes correspond to which polygons.</p>
+</div>
+<p>Each polygon in our fictional country has a population that is represented by the population (“pop”) attribute. This style contains three rules that alter the fill based on the value of “pop” attribute, with smaller values yielding a lighter color and larger values yielding a darker color.</p>
+<p>The three rules are designed as follows:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Rule order</strong></p></td>
+<td><p><strong>Rule name</strong></p></td>
+<td><p><strong>Population</strong> (“pop”)</p></td>
+<td><p><strong>Color</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>SmallPop</p></td>
+<td><p>Less than 200,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#66FF66</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>MediumPop</p></td>
+<td><p>200,000 to 500,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#33CC33</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>LargePop</p></td>
+<td><p>Greater than 500,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#009900</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The order of the rules does not matter in this case, since each shape is only rendered by a single rule.</p>
+<p>The first rule, on <strong>lines 2-16</strong>, specifies the styling of polygons whose population attribute is less than 200,000.  <strong>Lines 5-10</strong> set this filter, with <strong>lines 6-9</strong> setting the “less than” filter, <strong>line 7</strong> denoting the attribute (“pop”), and <strong>line 8</strong> the value of 200,000.  The color of the polygon fill is set to a light green (<code class="docutils literal notranslate"><span class="pre">#66FF66</span></code>) on <strong>line 13</strong>.</p>
+<p>The second rule, on <strong>lines 17-37</strong>, is similar, specifying a style for polygons whose population attribute is greater than or equal to 200,000 but less than 500,000.  The filter is set on <strong>lines 20-31</strong>.  This filter is longer than in the first rule because two criteria need to be specified instead of one: a “greater than or equal to” and a “less than” filter.  Notice the <code class="docutils literal notranslate"><span class="pre">And</span></code> on <strong>line 21</strong> and <strong>line 30</strong>.  This mandates that both filters need to be true for the rule to be applicable.  The color of the polygon fill is set to a medium green on (<code class="docutils literal notranslate"><span class="pre">#33CC33</span></code>) on <strong>line 34</strong>.</p>
+<p>The third rule, on <strong>lines 38-52</strong>, specifies a style for polygons whose population attribute is greater than or equal to 500,000.  The filter is set on <strong>lines 41-46</strong>.  The color of the polygon fill is the only other difference in this rule, which is set to a dark green (<code class="docutils literal notranslate"><span class="pre">#009900</span></code>) on <strong>line 49</strong>.</p>
+</div>
+</div>
+<div class="section" id="zoom-based-polygon">
+<h2>Zoom-based polygon<a class="headerlink" href="#zoom-based-polygon" title="Permalink to this headline">¶</a></h2>
+<p>This example alters the style of the polygon at different zoom levels.</p>
+<div class="figure align-center" id="id32">
+<img alt="../../../_images/polygon_zoombasedpolygonlarge.png" src="../../../_images/polygon_zoombasedpolygonlarge.png" />
+<p class="caption"><span class="caption-text"><em>Zoom-based polygon: Zoomed in</em></span><a class="headerlink" href="#id32" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id33">
+<img alt="../../../_images/polygon_zoombasedpolygonmedium.png" src="../../../_images/polygon_zoombasedpolygonmedium.png" />
+<p class="caption"><span class="caption-text"><em>Zoom-based polygon: Partially zoomed</em></span><a class="headerlink" href="#id33" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id34">
+<img alt="../../../_images/polygon_zoombasedpolygonsmall.png" src="../../../_images/polygon_zoombasedpolygonsmall.png" />
+<p class="caption"><span class="caption-text"><em>Zoom-based polygon: Zoomed out</em></span><a class="headerlink" href="#id34" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id19">
+<h3>Code<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/2e4a039955924f98adb452f1ddd4a221/polygon_zoombasedpolygon.sld"><code class="xref download docutils literal notranslate"><span class="pre">View</span> <span class="pre">and</span> <span class="pre">download</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">&quot;Zoom-based</span> <span class="pre">polygon&quot;</span> <span class="pre">SLD</span></code></a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>   <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno"> 2 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno"> 3 </span>       <span class="nt">&lt;Name&gt;</span>Large<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno"> 4 </span>       <span class="nt">&lt;MaxScaleDenominator&gt;</span>100000000<span class="nt">&lt;/MaxScaleDenominator&gt;</span>
+<span class="lineno"> 5 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno"> 6 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno"> 7 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#0000CC<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno"> 8 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno"> 9 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno">10 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">11 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>7<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">12 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">13 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">14 </span>       <span class="nt">&lt;TextSymbolizer&gt;</span>
+<span class="lineno">15 </span>         <span class="nt">&lt;Label&gt;</span>
+<span class="lineno">16 </span>           <span class="nt">&lt;ogc:PropertyName&gt;</span>name<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">17 </span>         <span class="nt">&lt;/Label&gt;</span>
+<span class="lineno">18 </span>         <span class="nt">&lt;Font&gt;</span>
+<span class="lineno">19 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-family&quot;</span><span class="nt">&gt;</span>Arial<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">20 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-size&quot;</span><span class="nt">&gt;</span>14<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">21 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-style&quot;</span><span class="nt">&gt;</span>normal<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">22 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-weight&quot;</span><span class="nt">&gt;</span>bold<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">23 </span>         <span class="nt">&lt;/Font&gt;</span>
+<span class="lineno">24 </span>         <span class="nt">&lt;LabelPlacement&gt;</span>
+<span class="lineno">25 </span>           <span class="nt">&lt;PointPlacement&gt;</span>
+<span class="lineno">26 </span>             <span class="nt">&lt;AnchorPoint&gt;</span>
+<span class="lineno">27 </span>               <span class="nt">&lt;AnchorPointX&gt;</span>0.5<span class="nt">&lt;/AnchorPointX&gt;</span>
+<span class="lineno">28 </span>               <span class="nt">&lt;AnchorPointY&gt;</span>0.5<span class="nt">&lt;/AnchorPointY&gt;</span>
+<span class="lineno">29 </span>             <span class="nt">&lt;/AnchorPoint&gt;</span>
+<span class="lineno">30 </span>           <span class="nt">&lt;/PointPlacement&gt;</span>
+<span class="lineno">31 </span>         <span class="nt">&lt;/LabelPlacement&gt;</span>
+<span class="lineno">32 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">33 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FFFFFF<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">34 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">35 </span>       <span class="nt">&lt;/TextSymbolizer&gt;</span>
+<span class="lineno">36 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">37 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">38 </span>       <span class="nt">&lt;Name&gt;</span>Medium<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">39 </span>       <span class="nt">&lt;MinScaleDenominator&gt;</span>100000000<span class="nt">&lt;/MinScaleDenominator&gt;</span>
+<span class="lineno">40 </span>       <span class="nt">&lt;MaxScaleDenominator&gt;</span>200000000<span class="nt">&lt;/MaxScaleDenominator&gt;</span>
+<span class="lineno">41 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno">42 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">43 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#0000CC<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">44 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">45 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno">46 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">47 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>4<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">48 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">49 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">50 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">51 </span>     <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">52 </span>       <span class="nt">&lt;Name&gt;</span>Small<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">53 </span>       <span class="nt">&lt;MinScaleDenominator&gt;</span>200000000<span class="nt">&lt;/MinScaleDenominator&gt;</span>
+<span class="lineno">54 </span>       <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+<span class="lineno">55 </span>         <span class="nt">&lt;Fill&gt;</span>
+<span class="lineno">56 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#0000CC<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">57 </span>         <span class="nt">&lt;/Fill&gt;</span>
+<span class="lineno">58 </span>         <span class="nt">&lt;Stroke&gt;</span>
+<span class="lineno">59 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">60 </span>           <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/CssParameter&gt;</span>
+<span class="lineno">61 </span>         <span class="nt">&lt;/Stroke&gt;</span>
+<span class="lineno">62 </span>       <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="lineno">63 </span>     <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">64 </span>   <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id20">
+<h3>Details<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<p>It is often desirable to make shapes larger at higher zoom levels when creating a natural-looking map. This example varies the thickness of the lines according to the zoom level. Polygons already do this by nature of being two dimensional, but another way to adjust styling of polygons based on zoom level is to adjust the thickness of the stroke (to be larger as the map is zoomed in) or to limit labels to only certain zoom levels. This is ensures that the size and quantity of strokes and labels remains legible and doesn’t overshadow the polygons themselves.</p>
+<p>Zoom levels (or more accurately, scale denominators) refer to the scale of the map. A scale denominator of 10,000 means the map has a scale of 1:10,000 in the units of the map projection.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Determining the appropriate scale denominators (zoom levels) to use is beyond the scope of this example.</p>
+</div>
+<p>This style contains three rules, defined as follows:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 40%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Rule order</strong></p></td>
+<td><p><strong>Rule name</strong></p></td>
+<td><p><strong>Scale denominator</strong></p></td>
+<td><p><strong>Stroke width</strong></p></td>
+<td><p><strong>Label display?</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Large</p></td>
+<td><p>1:100,000,000 or less</p></td>
+<td><p>7</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Medium</p></td>
+<td><p>1:100,000,000 to 1:200,000,000</p></td>
+<td><p>4</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Small</p></td>
+<td><p>Greater than 1:200,000,000</p></td>
+<td><p>2</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+<p>The first rule, on <strong>lines 2-36</strong>, is for the smallest scale denominator, corresponding to when the view is “zoomed in”.  The scale rule is set on <strong>line 40</strong> such that the rule will apply only where the scale denominator is 100,000,000 or less. <strong>Line 7</strong> defines the fill as blue (<code class="docutils literal notranslate"><span class="pre">#0000CC</span></code>).  Note that the fill is kept constant across all rules regardless of the scale denominator.  As in the <a class="reference internal" href="#sld-cookbook-polygons-polygonwithdefaultlabel"><span class="std std-ref">Polygon with default label</span></a> or <a class="reference internal" href="#sld-cookbook-polygons-polygonwithstyledlabel"><span class="std std-ref">Polygon with styled label</span></a> examples, the rule also contains a <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code> at <strong>lines 14-35</strong> for drawing a text label on top of the polygon.  <strong>Lines 19-22</strong> set the font information to be Arial, 14 pixels, and bold with no italics.  The label is centered both horizontally and vertically along the centroid of the polygon on by setting <code class="docutils literal notranslate"><span class="pre">&lt;AnchorPointX&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;AnchorPointY&gt;</span></code> to both be 0.5 (or 50%) on <strong>lines 27-28</strong>.  Finally, the color of the font is set to white (<code class="docutils literal notranslate"><span class="pre">#FFFFFF</span></code>) in <strong>line 33</strong>.</p>
+<p>The second rule, on <strong>lines 37-50</strong>, is for the intermediate scale denominators, corresponding to when the view is “partially zoomed”.  The scale rules on <strong>lines 39-40</strong> set the rule such that it will apply to any map with a scale denominator between 100,000,000 and 200,000,000.  (The <code class="docutils literal notranslate"><span class="pre">&lt;MinScaleDenominator&gt;</span></code> is inclusive and the <code class="docutils literal notranslate"><span class="pre">&lt;MaxScaleDenominator&gt;</span></code> is exclusive, so a zoom level of exactly 200,000,000 would <em>not</em> apply here.)  Aside from the scale, there are two differences between this rule and the first: the width of the stroke is set to 4 pixels on <strong>line 47</strong> and a <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code> is not present so that no labels will be displayed.</p>
+<p>The third rule, on <strong>lines 51-63</strong>, is for the largest scale denominator, corresponding to when the map is “zoomed out”.  The scale rule is set on <strong>line 53</strong> such that the rule will apply to any map with a scale denominator of 200,000,000 or greater. Again, the only differences between this rule and the others are the width of the lines, which is set to 1 pixel on <strong>line 60</strong>, and the absence of a <code class="docutils literal notranslate"><span class="pre">&lt;TextSymbolizer&gt;</span></code> so that no labels will be displayed.</p>
+<p>The resulting style produces a polygon stroke that gets larger as one zooms in and labels that only display when zoomed in to a sufficient level.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="lines.html" title="previous chapter">Lines</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="rasters.html" title="next chapter">Rasters</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Polygons</a><ul>
+<li><a class="reference internal" href="#example-polygons-layer">Example polygons layer</a></li>
+<li><a class="reference internal" href="#simple-polygon">Simple polygon</a><ul>
+<li><a class="reference internal" href="#code">Code</a></li>
+<li><a class="reference internal" href="#details">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#simple-polygon-with-stroke">Simple polygon with stroke</a><ul>
+<li><a class="reference internal" href="#id1">Code</a></li>
+<li><a class="reference internal" href="#id2">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transparent-polygon">Transparent polygon</a><ul>
+<li><a class="reference internal" href="#id3">Code</a></li>
+<li><a class="reference internal" href="#id4">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#offset-inner-lines">Offset inner lines</a><ul>
+<li><a class="reference internal" href="#id5">Code</a></li>
+<li><a class="reference internal" href="#id6">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#graphic-fill">Graphic fill</a><ul>
+<li><a class="reference internal" href="#id7">Code</a></li>
+<li><a class="reference internal" href="#id8">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hatching-fill">Hatching fill</a><ul>
+<li><a class="reference internal" href="#id9">Code</a></li>
+<li><a class="reference internal" href="#id10">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#polygon-with-default-label">Polygon with default label</a><ul>
+<li><a class="reference internal" href="#id11">Code</a></li>
+<li><a class="reference internal" href="#id12">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#label-halo">Label halo</a><ul>
+<li><a class="reference internal" href="#id13">Code</a></li>
+<li><a class="reference internal" href="#id14">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#polygon-with-styled-label">Polygon with styled label</a><ul>
+<li><a class="reference internal" href="#id15">Code</a></li>
+<li><a class="reference internal" href="#id16">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#attribute-based-polygon">Attribute-based polygon</a><ul>
+<li><a class="reference internal" href="#id17">Code</a></li>
+<li><a class="reference internal" href="#id18">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zoom-based-polygon">Zoom-based polygon</a><ul>
+<li><a class="reference internal" href="#id19">Code</a></li>
+<li><a class="reference internal" href="#id20">Details</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="lines.html" title="previous chapter">Lines</a></li>
+            <li>Next: <a href="rasters.html" title="next chapter">Rasters</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/cookbook/polygons.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

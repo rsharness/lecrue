@@ -1,0 +1,1309 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deployment And Setup Of The XMPP Python Wrappers &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="A Remote “Gdal Contour” Process Binding Example" href="running_example.html" />
+    <link rel="prev" title="Installation Of OpenFire XMPP Server To Exchange Messages" href="install_xmpp.html" /> 
+  </head><body class="community/remote-wps/install_python">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WPS Remote community module</a> &raquo;</li>
+    <li>Deployment And Setup Of The XMPP Python Wrappers</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="running_example.html" title="A Remote “Gdal Contour” Process Binding Example" accesskey="N">Next</a></li>
+  <li>
+    <a href="install_xmpp.html" title="Installation Of OpenFire XMPP Server To Exchange Messages" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="deployment-and-setup-of-the-xmpp-python-wrappers">
+<span id="extensions-wps-remote-install-python"></span><h1>Deployment And Setup Of The XMPP Python Wrappers<a class="headerlink" href="#deployment-and-setup-of-the-xmpp-python-wrappers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="remote-wps-python-wrapper-framework">
+<h2>Remote WPS Python Wrapper Framework<a class="headerlink" href="#remote-wps-python-wrapper-framework" title="Permalink to this headline">¶</a></h2>
+<p>The Remote WPS Python framework source code is available on a public GitHub Repository of GeoSolutions S.A.S.</p>
+<p>Users can install the “wps-remote” Python package by using the PyPi distribution</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">wps</span><span class="o">-</span><span class="n">remote</span><span class="o">==</span><span class="mf">2.11</span><span class="o">.</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>The source code repository is available at the following address:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://github.com/geoserver/wps-remote">https://github.com/geoserver/wps-remote</a></p>
+</div></blockquote>
+<p>The source code is available on the main development (<strong>main</strong>) branch.</p>
+</div>
+<div class="section" id="how-the-system-works">
+<h2>How The System Works<a class="headerlink" href="#how-the-system-works" title="Permalink to this headline">¶</a></h2>
+<p>This setup will configure the Remote WPS Python Wrapper to launch a Python executable called <code class="docutils literal notranslate"><span class="pre">test.py</span></code> that performs a <code class="docutils literal notranslate"><span class="pre">gdal_contour</span></code> on a GeoTIFF DEM.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">test.py</span></code> executable takes in input just two parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-i</span></code>; “–interval”, nargs=’?’, default=”10”, help=”Elevation interval between contours.”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-w</span></code>; “–workdir”, nargs=’?’, default=””, help=”Remote process sandbox working directory.”</p></li>
+</ul>
+<p>The paths of the command line and GeoTIFF to process (provided with the source code as sample data), are hard-coded into the Python code and must be changed accordingly to the system settings as explained later in the docs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gdalContour</span> <span class="pre">=</span> <span class="pre">r'/usr/bin/gdal_contour'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src</span> <span class="pre">=</span> <span class="pre">r'/share/xmpp_data/resource_dir/srtm_39_04/srtm_39_04_c.tif'</span></code></p></li>
+</ul>
+<p>The assumptions are that during the execution, the algorithms send logging and progress info to the standard output in a form similar to the following one:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">2016</span>-02-15 <span class="m">15</span>:18:03,594 - main.create_logger - <span class="o">[</span>INFO<span class="o">]</span> ProgressInfo:100%
+</pre></div>
+</div>
+<p>The log format has been configured through the <code class="docutils literal notranslate"><span class="pre">logger_test.properties</span></code> file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>loggers<span class="o">]</span>
+<span class="nv">keys</span><span class="o">=</span>root
+
+<span class="o">[</span>handlers<span class="o">]</span>
+<span class="nv">keys</span><span class="o">=</span>consoleHandler
+
+<span class="o">[</span>formatters<span class="o">]</span>
+<span class="nv">keys</span><span class="o">=</span>simpleFormatter
+
+<span class="o">[</span>logger_root<span class="o">]</span>
+<span class="nv">level</span><span class="o">=</span>DEBUG
+<span class="nv">handlers</span><span class="o">=</span>consoleHandler
+
+<span class="o">[</span>handler_consoleHandler<span class="o">]</span>
+<span class="nv">class</span><span class="o">=</span>StreamHandler
+<span class="nv">level</span><span class="o">=</span>DEBUG
+<span class="nv">formatter</span><span class="o">=</span>simpleFormatter
+<span class="nv">args</span><span class="o">=(</span>sys.stdout,<span class="o">)</span>
+
+<span class="o">[</span>formatter_simpleFormatter<span class="o">]</span>
+<span class="nv">format</span><span class="o">=</span>%<span class="o">(</span>asctime<span class="o">)</span>s - %<span class="o">(</span>name<span class="o">)</span>s - <span class="o">[</span>%<span class="o">(</span>levelname<span class="o">)</span>s<span class="o">]</span> %<span class="o">(</span>message<span class="o">)</span>s
+<span class="nv">datefmt</span><span class="o">=</span>
+</pre></div>
+</div>
+<p>The role of the Remote WPS Python wrapper is to take care of the communication between GeoServer WPS and the <code class="docutils literal notranslate"><span class="pre">test.py</span></code> executable.</p>
+<p>The Python wrapper must be configured by specifying the number and type of input and output parameters of the executable, other than the connection parameter of the remote XMPP Server.
+The Python wrapper knows how to invoke the executables from the command line and how to parse and interpret the logging information thanks to some properties files containing a set of regular expressions which will be presented in details further in this document.</p>
+<p>There must be a running instance of the Python wrapper for each executable, every one with its own specific configuration and XMPP user.
+The wrapper instances will connect automatically to the XMPP Server and GeoServer will send an <strong>“invite”</strong> message as soon it recognizes a new authenticated user appearing on the XMPP communication channels.
+In order to register the WPS Process into the GeoServer through the Remote Process Factory, the Python wrapper must reply to the invitation with a <strong>“register”</strong> message containing all the details about the I/O params of the executable.
+All those passages are managed automatically and transparently to the users by the Remote WPS Python framework.</p>
+<p>Every time a user issues a new GeoServer WPS execute request, the Python wrapper starts a new thread calling the executables with the input parameters coming from GeoServer itself.
+The two running instances are connected through a unique “process execution ID” generated by GeoServer Remote Process Factory.</p>
+<p>From now on, the Python wrapper thread follows the entire execution and takes care of sending feedbacks and logging information to the GeoServer Remote Process Factory, which are translated and forwarded to the GeoServer WPS Execution Manager.
+From the outside the users will experience a standard execution of an OGC WPS compliant process.</p>
+</div>
+<div class="section" id="summary-of-the-configuration-steps">
+<h2>Summary Of The Configuration Steps<a class="headerlink" href="#summary-of-the-configuration-steps" title="Permalink to this headline">¶</a></h2>
+<p>Connecting a new executable instance to GeoServer through the Python wrapper requires few configuration steps summarized here below:</p>
+<ol class="arabic">
+<li><dl class="simple">
+<dt><strong>Clone a structure of</strong> <code class="docutils literal notranslate"><span class="pre">.properties</span></code> <strong>files containing:</strong></dt><dd><ul class="simple">
+<li><p>The connection parameter to the XMPP Server</p></li>
+<li><p>The descriptor of the executable command line</p></li>
+<li><p>The descriptor of the process I/O parameters</p></li>
+<li><p>The logging informations</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Update the</strong> <code class="docutils literal notranslate"><span class="pre">remote.config</span></code> <strong>file with the correct XMPP Server information:</strong></dt><dd><ul class="simple">
+<li><p>Provide remote host and port parameters</p></li>
+<li><p>Provide domain and XMPP communication secured channels details</p></li>
+<li><p>Provide pointers to the shared folder</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>Update the</strong> <code class="docutils literal notranslate"><span class="pre">logger.properties</span></code> <strong>file with the full path to the</strong> <code class="docutils literal notranslate"><span class="pre">service.log</span></code> <strong>file.</strong></p></li>
+<li><dl>
+<dt><strong>Update the</strong> <code class="docutils literal notranslate"><span class="pre">service.config</span></code> <strong>file with the executables parameters:</strong></dt><dd><ul>
+<li><p>The service name and the namespace</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>there must exist an user on the XMPP Server named as <code class="docutils literal notranslate"><span class="pre">namespace.serviceName</span></code> and a communication channel with the same identified of the service namespace.</p>
+<p>e.g.:</p>
+<ul class="simple">
+<li><p>service = gdalContour</p></li>
+<li><p>namespace = default</p></li>
+</ul>
+<p>means that on the XMPP Server we are looking for a communication channel named <code class="docutils literal notranslate"><span class="pre">default</span></code> and we will try to connect with the username <code class="docutils literal notranslate"><span class="pre">default.gdalContour</span></code>.</p>
+<p>Both of them must be defined before running the Python wrapper daemon.</p>
+</div>
+</li>
+<li><p>The description of the service and the full path to the main executable</p></li>
+<li><p>Other secondary parameters like the local output folder (where to store temporary results of the execution) and the max running time</p></li>
+<li><p>The description of the Inputs and the actions to be taken</p></li>
+<li><p>The description of the Outputs and the actions to be taken</p></li>
+<li><p>The description of the logging information and the actions to be taken</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="installation-and-configuration-steps">
+<h1>Installation and Configuration Steps<a class="headerlink" href="#installation-and-configuration-steps" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basic-environment-preparation">
+<h2>Basic Environment Preparation<a class="headerlink" href="#basic-environment-preparation" title="Permalink to this headline">¶</a></h2>
+<p>The following commands will prepare a MS Windows 7+, Windows 2008+ Server ISO machine for the deployment of:</p>
+<ol class="arabic simple">
+<li><p>Remote WPS Python wrapper</p></li>
+<li><p>Sample configuration and testing of a sample executable <code class="docutils literal notranslate"><span class="pre">test.py</span></code> running the <code class="docutils literal notranslate"><span class="pre">gdal_contour</span></code> on a GeoTIFF DEM</p></li>
+</ol>
+<p><strong>Preparation of the system: standard and basic OS packages</strong></p>
+<p><em>Python</em></p>
+<p>The system requires Python 2.7.9+ with few packages in order to work correctly. The installation of Python on a Windows system is quite fast</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as administrator</span>
+
+<span class="c1">#.1 Download the Python 2.7.9 installation package from the browser, choosing the best suitable distribution accordingly to the OS</span>
+
+  https://www.python.org/downloads/release/python-279/
+
+<span class="c1">#.2 Define the following System Environment Variables</span>
+
+<span class="nv">PATH</span><span class="o">=</span>%PATH%<span class="p">;</span>C:<span class="se">\P</span>ython27<span class="p">;</span>C:<span class="se">\P</span>ython27<span class="se">\S</span>cripts
+<span class="nv">PYTHONPATH</span><span class="o">=</span>.<span class="se">\;</span>C:<span class="se">\P</span>ython27<span class="p">;</span>C:<span class="se">\w</span>ork<span class="se">\R</span>emoteWPS
+</pre></div>
+</div>
+<p><em>Other Mandatory Python Packages</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as administrator</span>
+
+<span class="c1"># From a Command Line prompt</span>
+
+$&gt; pip install wps-remote<span class="o">==</span><span class="m">2</span>.11.0
+</pre></div>
+</div>
+<p><strong>Configure the RemoteWPS Environment</strong></p>
+<p><em>NFS Shared Folder</em></p>
+<p>Link the shared folder to the <code class="docutils literal notranslate"><span class="pre">C:/share</span></code> through the NFS protocol. This is possible simply by turning on the NFS Services of the MS Windows functionalities and creating a client NFS connection to the NFS server.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>“Services for NFS” have been removed on Windows 10. They are available only on Windows 10 Enterprise edition. For older Windows versions you can use the following procedure in order to enable NFS Client</p>
+<p><strong>Installing the client</strong></p>
+<ol class="arabic simple">
+<li><p>Go to Control Panel → Programs → Programs and Features</p></li>
+<li><p>Select: Turn Windows features on or off” from the left hand navigation.</p></li>
+<li><p>Scroll down to “Services for NFS” and click the “plus” on the left</p></li>
+<li><p>Check “Client for NFS”</p></li>
+<li><p>Select “Ok”</p></li>
+<li><p>Windows should install the client. Once the client package is install you will have the “mount” command available.</p></li>
+</ol>
+<p><strong>Mounting the export</strong></p>
+<p>This assumes the following:</p>
+<ul>
+<li><p>You know and can ping the hostname of the machine with the NFS exports</p></li>
+<li><p>The name of the exported filesystem ( eg. /export, /home/users, /some/cool/file/path )</p></li>
+<li><p>The file systems are properly exported and accessible</p>
+<ul>
+<li><p>Open a command prompt. ( <code class="docutils literal notranslate"><span class="pre">Win</span></code> + <code class="docutils literal notranslate"><span class="pre">R</span></code>, enter “cmd” and press OK )</p></li>
+<li><p>Type:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">mount</span> <span class="pre">\\{machinename}\{filesystem}</span> <span class="pre">{driveletter}</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mount</span> \\<span class="n">filehost</span>\<span class="n">home</span>\<span class="n">users</span> <span class="n">H</span><span class="p">:</span>
+<span class="n">mount</span> \\<span class="n">server1234</span>\<span class="n">long</span>\<span class="n">term</span>\<span class="n">file</span>\<span class="n">storage</span> <span class="n">S</span><span class="p">:</span>
+<span class="n">mount</span> \\<span class="n">nas324</span>\<span class="n">exports</span> <span class="n">E</span><span class="p">:</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is important that the shared folder structure is fully replicated on the Windows machine and the folder writable by the Windows processes.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">|</span> /share
+<span class="p">|</span>
+<span class="p">|</span>-- xmpp_data
+<span class="p">|</span>
+<span class="p">|</span>-- -- output
+<span class="p">|</span>
+<span class="p">|</span>-- -- resource_dir
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="first-deploy-of-the-remotewps-python-framework">
+<h2>First Deploy Of The RemoteWPS Python Framework<a class="headerlink" href="#first-deploy-of-the-remotewps-python-framework" title="Permalink to this headline">¶</a></h2>
+<p>The wps-remote WHL archive contains a folder with a sample configuration</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xmpp_data</span>
+</pre></div>
+</div>
+<p>Extract this folder and proceed with the next steps.</p>
+<p>The files can also be downloaded from the GitHub source repository.</p>
+<p>To clone the RemoteWPS Python Framework into a working folder, e.g.:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; <span class="nb">cd</span> C:<span class="se">\w</span>ork
+
+$&gt; git clone https://github.com/geoserver/wps-remote RemoteWPS
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Setting Up The</strong> <code class="docutils literal notranslate"><span class="pre">remote.config</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Edit the file xmpp_data/configs/remote.config</span>
+
+      <span class="o">[</span>DEFAULT<span class="o">]</span>
+
+      <span class="nv">bus_class_name</span> <span class="o">=</span> xmppBus.XMPPBus
+
+      <span class="nv">port</span> <span class="o">=</span> <span class="m">5223</span>
+      <span class="nv">address</span> <span class="o">=</span>  <span class="m">127</span>.0.0.1
+      <span class="nv">domain</span> <span class="o">=</span> geoserver.org
+
+      <span class="c1"># . Those are the connection parameters to the XMPP Server.</span>
+      <span class="c1"># . The user must exists on the Server and its name must be</span>
+      <span class="c1"># . equal to the service name.</span>
+      <span class="nv">user</span> <span class="o">=</span> default.GdalContour
+      <span class="nv">password</span> <span class="o">=</span> R3m0T3wP5
+
+      <span class="nv">mucService</span> <span class="o">=</span> conference.%<span class="o">(</span>domain<span class="o">)</span>s
+      <span class="nv">mucServicePassword</span> <span class="o">=</span> admin
+
+      <span class="nv">resource_file_dir</span> <span class="o">=</span> /share/xmpp_data/resource_dir
+
+      <span class="c1"># . Configure this option (along with &#39;backup_on_wps_execution_shared_dir&#39;</span>
+      <span class="c1"># . on single outputs of &#39;service.config&#39;) in order to make a copy</span>
+      <span class="c1"># . of the results into a shared folder before sending messages to XMPP</span>
+      <span class="c1"># . WARNING: this option takes precedence on &quot;UPLOADER&quot; option</span>
+      <span class="c1"># wps_execution_shared_dir = /share/xmpp_data/share</span>
+
+      <span class="c1"># . This section is used to configure the uploader class and connection</span>
+      <span class="c1"># . parameters.</span>
+      <span class="c1"># . This is necessary in order to let the &#39;upload_data&#39; option work on</span>
+      <span class="c1"># . single outputs of &#39;service.config&#39;</span>
+      <span class="o">[</span>UPLOADER<span class="o">]</span>
+      <span class="c1"># There are different implementations of the FTP Uploader available right now:</span>
+      <span class="c1"># . Plain standard FTP Protocol (based on ftplib)</span>
+      <span class="c1">#       ftpUpload.FtpUpload</span>
+      <span class="c1"># . FTP over TLS (FTPS) Protocol (based on ftplib)</span>
+      <span class="c1">#       ftpsUpload.FtpsUpload</span>
+      <span class="c1"># . S-FTP Protocol (based on paramiko Python lib)</span>
+      <span class="c1">#       sftpUpload.SFtpUpload</span>
+      <span class="nv">uploader_class_name</span> <span class="o">=</span> ftpUpload.FtpUpload
+      <span class="nv">uploader_host</span> <span class="o">=</span> ftp.&lt;your_host_here&gt;:&lt;your_port_here_default_21&gt;
+      <span class="nv">uploader_username</span> <span class="o">=</span> &lt;ftp_username&gt;
+      <span class="nv">uploader_password</span> <span class="o">=</span> &lt;ftp_password_encrypted&gt;
+
+      <span class="c1"># . &quot;encryptor&quot; you can use encrypted passwords with a private/public key couple</span>
+      <span class="c1">#</span>
+      <span class="c1"># . To generate a new private key use the following command:</span>
+      <span class="c1">#     openssl genrsa -out myTestKey.pem -passout pass:&quot;f00bar&quot; -des3 2048</span>
+      <span class="c1">#</span>
+      <span class="c1"># . To generate a new public key use the following command:</span>
+      <span class="c1">#     openssl rsa -pubout -in myTestKey.pem -passin pass:&quot;f00bar&quot; -out myTestKey.pub</span>
+      <span class="c1">#</span>
+      <span class="c1"># . To encrypt your password use the following utility</span>
+      <span class="c1">#     python encrypt.py password path/to/rsakey.pub passphrase</span>
+      <span class="c1">#</span>
+      <span class="c1"># . To double check the password is correct use the following utility</span>
+      <span class="c1">#     python decrypt.py password path/to/rsakey.pem passphrase</span>
+      <span class="nv">uploader_private_rsa_key</span> <span class="o">=</span> /share/xmpp_data/ssl/myTestKey.pem
+      <span class="nv">uploader_passphrase</span> <span class="o">=</span> f00bar
+</pre></div>
+</div>
+<p>The requisites for this configuration to work properly are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Make sure the <code class="docutils literal notranslate"><span class="pre">&lt;XMPP_server_ip_address&gt;</span></code> is reachable and the port <strong>5223</strong> is allowed by the Firewall</p></li>
+<li><p>Make sure the <code class="docutils literal notranslate"><span class="pre">default.GdalContour</span></code> user exists into the XMPP Server and that the password is correct</p></li>
+</ol>
+<div class="figure align-center">
+<img alt="../../_images/python001.jpg" src="../../_images/python001.jpg" />
+</div>
+<ol class="arabic simple" start="3">
+<li><p>The MUC Service and the MUC Service Password are correct</p></li>
+<li><p>The resource dir and the shared folder exists and are writable</p></li>
+</ol>
+</div></blockquote>
+<p><strong>Setting Up The</strong> <code class="docutils literal notranslate"><span class="pre">logger.properties</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Edit the file xmpp_data/configs/logger.properties</span>
+
+<span class="o">[</span>loggers<span class="o">]</span>
+<span class="nv">keys</span><span class="o">=</span>root
+
+<span class="o">[</span>handlers<span class="o">]</span>
+<span class="nv">keys</span><span class="o">=</span>consoleHandler,file
+
+<span class="o">[</span>formatters<span class="o">]</span>
+<span class="nv">keys</span><span class="o">=</span>simpleFormatter,consoleFormatter
+
+<span class="o">[</span>logger_root<span class="o">]</span>
+<span class="nv">level</span><span class="o">=</span>DEBUG
+<span class="nv">handlers</span><span class="o">=</span>file, consoleHandler
+
+<span class="o">[</span>handler_consoleHandler<span class="o">]</span>
+<span class="nv">class</span><span class="o">=</span>StreamHandler
+<span class="nv">level</span><span class="o">=</span>DEBUG
+<span class="nv">formatter</span><span class="o">=</span>consoleFormatter
+<span class="nv">args</span><span class="o">=(</span>sys.stdout,<span class="o">)</span>
+<span class="nv">filter</span><span class="o">=</span>
+
+<span class="o">[</span>handler_file<span class="o">]</span>
+<span class="nv">class</span><span class="o">=</span>handlers.TimedRotatingFileHandler
+<span class="nv">interval</span><span class="o">=</span>midnight
+<span class="nv">backupCount</span><span class="o">=</span><span class="m">5</span>
+<span class="nv">formatter</span><span class="o">=</span>simpleFormatter
+<span class="nv">level</span><span class="o">=</span>DEBUG
+<span class="nv">args</span><span class="o">=(</span><span class="s1">&#39;/share/xmpp_data/service.log&#39;</span>,<span class="o">)</span>
+
+<span class="o">[</span>formatter_simpleFormatter<span class="o">]</span>
+<span class="nv">format</span><span class="o">=</span>%<span class="o">(</span>asctime<span class="o">)</span>s - %<span class="o">(</span>name<span class="o">)</span>s - %<span class="o">(</span>levelname<span class="o">)</span>s - %<span class="o">(</span>message<span class="o">)</span>s
+<span class="nv">datefmt</span><span class="o">=</span>
+
+<span class="o">[</span>formatter_consoleFormatter<span class="o">]</span>
+<span class="nv">format</span><span class="o">=</span>%<span class="o">(</span>asctime<span class="o">)</span>s <span class="o">[</span>%<span class="o">(</span>levelname<span class="o">)</span>s<span class="o">]</span> %<span class="o">(</span>message<span class="o">)</span>s
+<span class="nv">datefmt</span><span class="o">=</span>
+</pre></div>
+</div>
+<p>The requisites for this configuration to work properly are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Make sure the “C:/share/xmpp_data/” exists and is writable</p></li>
+</ol>
+</div></blockquote>
+<p><strong>Setting Up The</strong> <code class="docutils literal notranslate"><span class="pre">service.config</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Edit the file xmpp_data/configs/myservice/service.config</span>
+
+      <span class="c1"># This is a INI file to be read with python ConfigParser (https://docs.python.org/2/library/configparser.html)</span>
+      <span class="c1"># Is possible to reference another variable in the ini file using the format %(&lt;variable name&gt;)s (note the &#39;s&#39; at the end)</span>
+
+      <span class="c1"># ########################################### #</span>
+      <span class="c1"># Default Service Params                      #</span>
+      <span class="c1"># ########################################### #</span>
+
+      <span class="o">[</span>DEFAULT<span class="o">]</span>
+      <span class="nv">service</span> <span class="o">=</span> GdalContour
+      <span class="nv">namespace</span> <span class="o">=</span> default
+      <span class="nv">description</span> <span class="o">=</span> GDAL Contour Remote Service
+      <span class="nv">executable_path</span> <span class="o">=</span> /share/xmpp_data/configs/myservice/code
+      <span class="nv">executable_cmd</span> <span class="o">=</span> python %<span class="o">(</span>executable_path<span class="o">)</span>s/test.py
+      <span class="nv">output_dir</span> <span class="o">=</span> /share/xmpp_data/output/
+      <span class="nv">unique_execution_id</span> <span class="o">=</span> %<span class="o">(</span>unique_exe_id<span class="o">)</span>s
+      <span class="nv">workdir</span> <span class="o">=</span> %<span class="o">(</span>output_dir<span class="o">)</span>s/%<span class="o">(</span>unique_execution_id<span class="o">)</span>s
+      <span class="nv">active</span> <span class="o">=</span> True
+      <span class="nv">max_running_time_seconds</span> <span class="o">=</span> <span class="m">300</span>
+
+      <span class="c1"># . This option allows you to set the CPU and Memory average load scan time.</span>
+      <span class="c1"># . It is espressed in &#39;minutes&#39; and if disabled here it will be set by default</span>
+      <span class="c1"># . to 15 minutes.</span>
+      <span class="nv">load_average_scan_minutes</span> <span class="o">=</span> <span class="m">1</span>
+
+      <span class="c1"># . Use this option to completely avoid using this host (and prevent starting a new</span>
+      <span class="c1"># . &#39;processbot&#39;) whenever one of the following process names are running.</span>
+      <span class="c1"># . In other words, if one of the following processes are currently running on this machine,</span>
+      <span class="c1"># . GeoServer won&#39;t send any WPS execute request until they are finished.</span>
+      <span class="nv">process_blacklist</span> <span class="o">=</span> <span class="o">[</span>resource consuming process name1, resource consuming process name2<span class="o">]</span>
+
+      <span class="c1"># ########################################### #</span>
+      <span class="c1"># Inputs and Actions Declaration              #</span>
+      <span class="c1"># ########################################### #</span>
+
+      <span class="o">[</span>Input1<span class="o">]</span>
+      <span class="nv">class</span> <span class="o">=</span> param
+      <span class="nv">name</span> <span class="o">=</span> interval
+      <span class="nv">title</span> <span class="o">=</span> Elevation Interval
+      <span class="nb">type</span> <span class="o">=</span> int
+      <span class="nv">description</span> <span class="o">=</span> Elevation interval between contours.
+      <span class="nv">min</span> <span class="o">=</span> <span class="m">1</span>
+      <span class="nv">max</span> <span class="o">=</span> <span class="m">1</span>
+      <span class="nv">default</span> <span class="o">=</span> <span class="m">200</span>
+
+      <span class="o">[</span>Action1<span class="o">]</span>
+      <span class="nv">class</span> <span class="o">=</span> cmdline
+      <span class="nv">input_ref</span> <span class="o">=</span> interval
+      <span class="nb">alias</span> <span class="o">=</span> i
+      <span class="nv">template</span> <span class="o">=</span> -name value
+
+      <span class="o">[</span>Const1<span class="o">]</span>
+      <span class="nv">class</span> <span class="o">=</span> const
+      <span class="nv">name</span> <span class="o">=</span> workdir
+      <span class="nb">type</span> <span class="o">=</span> string
+      <span class="nv">description</span> <span class="o">=</span> Remote process sandbox working directory
+      <span class="nv">value</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s
+
+
+      <span class="o">[</span>Action2<span class="o">]</span>
+      <span class="nv">class</span> <span class="o">=</span> cmdline
+      <span class="nv">input_ref</span> <span class="o">=</span> workdir
+      <span class="nb">alias</span> <span class="o">=</span> w
+      <span class="nv">template</span> <span class="o">=</span> -name value
+
+      <span class="c1"># ########################################### #</span>
+      <span class="c1"># Output Parameters Declaration               #</span>
+      <span class="c1"># ########################################### #</span>
+
+      <span class="o">[</span>Output1<span class="o">]</span>
+      <span class="nv">name</span> <span class="o">=</span> result1
+      <span class="nb">type</span> <span class="o">=</span> application/zip
+      <span class="nv">description</span> <span class="o">=</span> WPS Resource Binary File
+      <span class="nv">title</span> <span class="o">=</span> SRTM
+      <span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s/contour.zip
+      <span class="nv">publish_as_layer</span> <span class="o">=</span> <span class="nb">true</span>
+      <span class="nv">publish_default_style</span> <span class="o">=</span> polygon
+      <span class="nv">publish_target_workspace</span> <span class="o">=</span> it.geosolutions
+      <span class="nv">publish_layer_name</span> <span class="o">=</span> contour
+
+      <span class="c1"># . Enable this option in order to perform a backup of this output</span>
+      <span class="c1"># . before sending it to GeoServer.</span>
+      <span class="c1"># . WARNING: This option works only along with &#39;wps_execution_shared_dir&#39;</span>
+      <span class="c1"># .          option on &#39;remote.config&#39;, and takes precedence on &#39;upload_data&#39;</span>
+      <span class="c1"># backup_on_wps_execution_shared_dir = true</span>
+
+      <span class="c1"># . Enable this option if you want the output to be uploaded on remote host.</span>
+      <span class="c1"># . Notice that you must also configure uploader parameters on &#39;remote.config&#39;</span>
+      <span class="c1"># upload_data = true</span>
+
+      <span class="c1"># . Optionally it is possible to specify a root folder if the uploader class supports it.</span>
+      <span class="c1"># upload_data_root = /remote-wps/default</span>
+
+      <span class="o">[</span>Output2<span class="o">]</span>
+      <span class="nv">name</span> <span class="o">=</span> result2
+      <span class="nb">type</span> <span class="o">=</span> application/x-netcdf
+      <span class="nv">description</span> <span class="o">=</span> NetCDF Binary File
+      <span class="nv">title</span> <span class="o">=</span> flexpart
+      <span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>output_dir<span class="o">)</span>s/flexpart.nc
+      <span class="nv">publish_as_layer</span> <span class="o">=</span> <span class="nb">true</span>
+      <span class="nv">publish_default_style</span> <span class="o">=</span> raster
+      <span class="nv">publish_target_workspace</span> <span class="o">=</span> it.geosolutions
+      <span class="nv">publish_layer_name</span> <span class="o">=</span> flexpart
+
+      <span class="c1"># . Enable this option in order to perform a backup of this output</span>
+      <span class="c1"># . before sending it to GeoServer.</span>
+      <span class="c1"># . WARNING: This option works only along with &#39;wps_execution_shared_dir&#39;</span>
+      <span class="c1"># .          option on &#39;remote.config&#39;, and takes precedence on &#39;upload_data&#39;</span>
+      <span class="c1"># backup_on_wps_execution_shared_dir = true</span>
+
+      <span class="c1"># . Enable this option if you want the output to be uploaded on remote host.</span>
+      <span class="c1"># . Notice that you must also configure uploader parameters on &#39;remote.config&#39;</span>
+      <span class="c1"># upload_data = true</span>
+
+      <span class="c1"># . Optionally it is possible to specify a root folder if the uploader class supports it.</span>
+      <span class="c1"># upload_data_root = /remote-wps/default</span>
+
+      <span class="o">[</span>Output3<span class="o">]</span>
+      <span class="nv">name</span> <span class="o">=</span> result3
+      <span class="nb">type</span> <span class="o">=</span> application/owc
+      <span class="nv">description</span> <span class="o">=</span> WPS OWC Json MapContext
+      <span class="nv">layers_to_publish</span> <span class="o">=</span> result2
+      <span class="nv">publish_as_layer</span> <span class="o">=</span> <span class="nb">true</span>
+      <span class="nv">publish_layer_name</span> <span class="o">=</span> owc_json_ctx
+      <span class="nv">publish_metadata</span> <span class="o">=</span> /share/xmpp_data/resource_dir/owc_json_ctx.json
+
+      <span class="c1"># ########################################### #</span>
+      <span class="c1"># Logging Options Declaration                 #</span>
+      <span class="c1"># ########################################### #</span>
+
+      <span class="o">[</span>Logging<span class="o">]</span>
+      <span class="nv">stdout_parser</span> <span class="o">=</span> <span class="o">[</span>.*<span class="se">\[</span>DEBUG<span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span>INFO<span class="se">\]</span> ProgressInfo<span class="se">\:</span><span class="o">([</span>-+<span class="o">]</span>?<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>*<span class="se">\.</span>?<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>*<span class="o">)</span><span class="se">\%</span>, .*<span class="se">\[</span><span class="o">(</span>INFO<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>WARN<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>ERROR<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>CRITICAL<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)]</span>
+      <span class="nv">stdout_action</span> <span class="o">=</span> <span class="o">[</span>ignore,          progress,                                          log,              log,              abort,               abort<span class="o">]</span>
+</pre></div>
+</div>
+<p>The requisites for this configuration to work properly are:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Make sure the <code class="docutils literal notranslate"><span class="pre">default.GdalContour</span></code> user exists into the XMPP Server and that the password is correct</p></li>
+<li><p>Make sure the <code class="docutils literal notranslate"><span class="pre">default</span></code> channel exists on the XMPP Server</p></li>
+<li><p>Make sure the executable path and command are correct</p></li>
+<li><p>Make sure the <code class="docutils literal notranslate"><span class="pre">output_dir</span></code> exists and is writable</p></li>
+<li><p>Make sure the <code class="docutils literal notranslate"><span class="pre">max_running_time_seconds</span></code> have been set to a value high enough to allow the executables to complete the jobs.</p>
+<p>The GeoServer instance must also respect the WPS execution timings which must be configured accordingly. In order to do that access to the GeoServer Web Admin GUI.</p>
+<blockquote>
+<div><p><a class="reference external" href="http://host:8080/geoserver/web/">http://host:8080/geoserver/web/</a></p>
+</div></blockquote>
+<p>login as administrator (default credentials are admin/geoserver which should be changed anyway).</p>
+<p>From the Web Processing Service settings page</p>
+<div class="figure align-center">
+<img alt="../../_images/python002.png" src="../../_images/python002.png" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/python003.png" src="../../_images/python003.png" />
+</div>
+<p>The timeouts and the number of parallel executions (both async and sync) must be tuned accordingly to the execution needs.</p>
+</li>
+<li><p>Make sure the inputs have been configured correctly for the command line execution</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Input1<span class="o">]</span>
+<span class="nv">class</span> <span class="o">=</span> param
+<span class="nv">name</span> <span class="o">=</span> interval
+<span class="nv">title</span> <span class="o">=</span> Elevation Interval
+<span class="nb">type</span> <span class="o">=</span> int
+<span class="nv">description</span> <span class="o">=</span> Elevation interval between contours.
+<span class="nv">min</span> <span class="o">=</span> <span class="m">1</span>
+<span class="nv">max</span> <span class="o">=</span> <span class="m">1</span>
+<span class="nv">default</span> <span class="o">=</span> <span class="m">200</span>
+
+<span class="o">[</span>Action1<span class="o">]</span>
+<span class="nv">class</span> <span class="o">=</span> cmdline
+<span class="nv">input_ref</span> <span class="o">=</span> interval
+<span class="nb">alias</span> <span class="o">=</span> i
+<span class="nv">template</span> <span class="o">=</span> -name value
+</pre></div>
+</div>
+<p>The configuration above sets an input of type <code class="docutils literal notranslate"><span class="pre">int</span></code> (the expected value will be interpreted as text and declared as Literal to the WPS), which is mandatory (<strong>min = 1</strong>) and can have a single value (<strong>max = 1</strong>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">[Action1]</span></code> is connected to the input through the <code class="docutils literal notranslate"><span class="pre">input_ref</span></code> which is equal to the <code class="docutils literal notranslate"><span class="pre">[Input1].name</span></code>.</p>
+<p>In the example above the action simply gets the input value specified by the user and forward it to the command line.</p>
+<p>The final result will be something lihe this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$&gt; /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py &lt;input_value_here&gt;
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">[Action1].template</span></code> property allows to specify the name of the option if required by the executable.</p>
+<p>As an instance the following value for the <code class="docutils literal notranslate"><span class="pre">[Action1].template</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="o">=</span> <span class="n">i</span>
+<span class="n">template</span> <span class="o">=</span> <span class="o">-</span><span class="n">name</span> <span class="n">value</span>
+</pre></div>
+</div>
+<p>will result in something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$&gt; /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py -i &lt;input_value&gt;
+</pre></div>
+</div>
+<p>There exists other types of input and actions.</p>
+<p>As an instance it is possible to specify <code class="docutils literal notranslate"><span class="pre">constant</span></code> input types like the following one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Const1]
+class = const
+name = workdir
+type = string
+description = Remote process sandbox working directory
+value = %(workdir)s
+
+[Action2]
+class = cmdline
+input_ref = workdir
+alias = w
+template = -name value
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">[Const1].value</span></code> can be a constant value or a reference to the configuration file properties.</p>
+<p>In the example above we are going to pass to the command line the full path of the process workind directory, which is a unique folder created at runtime where the RemoteWPS framework stores temporary and intermediate results of the process execution.</p>
+<p>Enabling the constant input above, the resulting command line will be something like the following one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$&gt; /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py -i &lt;input_value&gt; -w /share/xmpp_data/output/&lt;exec_id&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <strong>&lt;exec_id&gt;</strong> is known at runtime only.</p>
+</div>
+</li>
+<li><p>Make sure the outputs have been configured correctly for the command line execution</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Output1<span class="o">]</span>
+<span class="nv">name</span> <span class="o">=</span> result1
+<span class="nb">type</span> <span class="o">=</span> application/zip
+<span class="nv">description</span> <span class="o">=</span> WPS Resource Binary File
+<span class="nv">title</span> <span class="o">=</span> SRTM
+<span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s/contour.zip
+<span class="nv">publish_as_layer</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">publish_default_style</span> <span class="o">=</span> polygon
+<span class="nv">publish_target_workspace</span> <span class="o">=</span> it.geosolutions
+<span class="nv">publish_layer_name</span> <span class="o">=</span> contour
+</pre></div>
+</div>
+<p>In the example above we declare to the WPS only <strong>one</strong> output of type <code class="docutils literal notranslate"><span class="pre">application/zip</span></code>.</p>
+<p>In this case the RemoteWPS framework expects to find a <code class="docutils literal notranslate"><span class="pre">contour.zip</span></code> file at the end of the execution into the working directory (see above).</p>
+<p>There are many kind of possible outputs which can be defined here. As an instance it is possible to define an output of type <code class="docutils literal notranslate"><span class="pre">string</span></code> which can read the outcome from a file and stream it out as plain text.</p>
+<p>It is also possible to define several kind of binary outputs depending on the executable outcomes.
+For more details please refer to the Remote WPS Python framework specific documentation at the end of this section.</p>
+</li>
+<li><p>Make sure the regular expressions of the “stdout_parser” are correct and valid accordingly to the output of the executable</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Logging<span class="o">]</span>
+<span class="nv">stdout_parser</span> <span class="o">=</span> <span class="o">[</span>.*<span class="se">\[</span>DEBUG<span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span>INFO<span class="se">\]</span> ProgressInfo<span class="se">\:</span><span class="o">([</span>-+<span class="o">]</span>?<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>*<span class="se">\.</span>?<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>*<span class="o">)</span><span class="se">\%</span>, .*<span class="se">\[</span><span class="o">(</span>INFO<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>WARN<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>ERROR<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>CRITICAL<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)]</span>
+<span class="nv">stdout_action</span> <span class="o">=</span> <span class="o">[</span>ignore,          progress,                                          log,              log,              log,               abort<span class="o">]</span>
+</pre></div>
+</div>
+<p>The example configuration above:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Ignores all <code class="docutils literal notranslate"><span class="pre">STDOUT</span></code> debug logs received from <code class="docutils literal notranslate"><span class="pre">test.py</span></code></p></li>
+<li><p>Translates <strong>as</strong> <em>progress info message</em> any number parsed by the regex from <code class="docutils literal notranslate"><span class="pre">STDOUT</span></code> and sends it to GeoServer WPS.</p></li>
+<li><p>Logs all <code class="docutils literal notranslate"><span class="pre">STDOUT</span></code> info, warn and error logs received from <code class="docutils literal notranslate"><span class="pre">test.py</span></code></p></li>
+<li><p>Translates <strong>as</strong> <em>abort message</em> any keyword <strong>CRITICAL</strong> parsed by the regex from <code class="docutils literal notranslate"><span class="pre">STDOUT</span></code> and sends it to GeoServer WPS.</p></li>
+</ul>
+</div></blockquote>
+<p>At least <strong>progress</strong> and <strong>abort</strong> messages are mandatory in order to take track of the process execution progress and fault state.</p>
+</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="a-running-example">
+<h2>A Running Example<a class="headerlink" href="#a-running-example" title="Permalink to this headline">¶</a></h2>
+<p>In the section <a class="reference internal" href="running_example.html#extensions-wps-remote-install-example"><span class="std std-ref">A Remote “Gdal Contour” Process Binding Example</span></a> will show how to run the example and how to parse the results in GeoServer.</p>
+</div>
+</div>
+<div class="section" id="annex-a-remote-wps-python-wrapper-reference">
+<h1>ANNEX A: Remote WPS Python Wrapper Reference<a class="headerlink" href="#annex-a-remote-wps-python-wrapper-reference" title="Permalink to this headline">¶</a></h1>
+<p>This section is meant to be a summary of the current possible options for the RemoteWPS Python Wrapper <code class="docutils literal notranslate"><span class="pre">service.config</span></code> configuration.</p>
+<div class="section" id="default-section">
+<h2>Default Section<a class="headerlink" href="#default-section" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># ########################################### #</span>
+<span class="c1"># Default Service Params                      #</span>
+<span class="c1"># ########################################### #</span>
+
+<span class="o">[</span>DEFAULT<span class="o">]</span>
+<span class="nv">service</span> <span class="o">=</span> GdalContour
+<span class="nv">namespace</span> <span class="o">=</span> default
+<span class="nv">description</span> <span class="o">=</span> GDAL Contour Remote Service
+<span class="nv">executable_path</span> <span class="o">=</span> /work/RemoteWPS/xmpp_data/configs/myservice/code
+<span class="nv">executable_cmd</span> <span class="o">=</span> python %<span class="o">(</span>executable_path<span class="o">)</span>s/test.py
+<span class="nv">output_dir</span> <span class="o">=</span> /share/xmpp_data/output/
+<span class="nv">unique_execution_id</span> <span class="o">=</span> %<span class="o">(</span>unique_exe_id<span class="o">)</span>s
+<span class="nv">workdir</span> <span class="o">=</span> %<span class="o">(</span>output_dir<span class="o">)</span>s/%<span class="o">(</span>unique_execution_id<span class="o">)</span>s
+<span class="nv">sharedir</span> <span class="o">=</span> /home/myproc/repository/default
+<span class="nv">active</span> <span class="o">=</span> True
+<span class="nv">max_running_time_seconds</span> <span class="o">=</span> <span class="m">300</span>
+<span class="nv">load_average_scan_minutes</span> <span class="o">=</span> <span class="m">1</span>
+<span class="nv">process_blacklist</span> <span class="o">=</span> <span class="o">[</span>resource consuming process name1, resource consuming process name2<span class="o">]</span>
+</pre></div>
+</div>
+<ul>
+<li><p><strong>service</strong>; The name of the WPS service. On GeoServer the WPS Process will be represented as <code class="docutils literal notranslate"><span class="pre">namespace.service</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The XMPP Server <em>must</em> have a registered user named like the fully qualified service name <code class="docutils literal notranslate"><span class="pre">namespace.service</span></code></p>
+</div>
+</li>
+<li><p><strong>namespace</strong>; The namespace (or prefix) of the service. Along with the <em>service</em> parameter, it represents the fully qualified name of the service.</p></li>
+<li><p><strong>description</strong>; This contains the textual description of the GeoServer WPS Process.</p></li>
+<li><p><strong>executable_path</strong>; Full path of the executable to wrap.</p></li>
+<li><p><strong>executable_cmd</strong>; Executable command.</p></li>
+<li><p><strong>output_dir</strong>; The base output folder where the Python wrapper stores logs and temporary files.</p></li>
+<li><p><strong>unique_execution_id</strong>; The unique ID generated by GeoServer and sent to the process via the <em>REQUEST</em> command message.</p></li>
+<li><p><strong>workdir</strong>; Temporary folder where to store the outcomes and log files.</p></li>
+<li><p><strong>sharedir</strong>; Shared folder where to <strong>backup</strong> outcomes with <code class="docutils literal notranslate"><span class="pre">backup_on_wps_execution_shared_dir</span></code> property equal <em>true</em></p></li>
+<li><p><strong>active</strong>; <em>Boolean</em> which enables or disables the service.</p></li>
+<li><p><strong>max_running_time_seconds</strong>; After this time the Python Wrapper tries to shutdown the process and send a <em>FAILED</em> message to GeoServer.</p></li>
+<li><p><strong>load_average_scan_minutes</strong>; This option allows you to set the CPU and Memory average load scan time. It is espressed in ‘minutes’ and if disabled here it will be set by default to 15 minutes.</p></li>
+<li><p><strong>process_blacklist</strong>; Use this option to completely avoid using this host (and prevent starting a new ‘processbot’) whenever one of the following process names are running. In other words, if one of the following processes are currently running on this machine, GeoServer won’t send any WPS execute request until they are finished.</p></li>
+</ul>
+</div>
+<div class="section" id="inputs-section">
+<h2>Inputs Section<a class="headerlink" href="#inputs-section" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># ########################################### #</span>
+<span class="c1"># Inputs and Actions Declaration              #</span>
+<span class="c1"># ########################################### #</span>
+
+<span class="o">[</span>Input1<span class="o">]</span>
+<span class="nv">class</span> <span class="o">=</span> param
+<span class="nv">name</span> <span class="o">=</span> interval
+<span class="nv">title</span> <span class="o">=</span> Elevation Interval
+<span class="nb">type</span> <span class="o">=</span> int
+<span class="nv">description</span> <span class="o">=</span> Elevation interval between contours.
+<span class="nv">min</span> <span class="o">=</span> <span class="m">1</span>
+<span class="nv">max</span> <span class="o">=</span> <span class="m">1</span>
+<span class="nv">default</span> <span class="o">=</span> <span class="m">200</span>
+
+<span class="o">[</span>Action1<span class="o">]</span>
+<span class="nv">class</span> <span class="o">=</span> cmdline
+<span class="nv">input_ref</span> <span class="o">=</span> interval
+<span class="nb">alias</span> <span class="o">=</span> i
+<span class="nv">template</span> <span class="o">=</span> -name value
+
+<span class="o">[</span>Const1<span class="o">]</span>
+<span class="nv">class</span> <span class="o">=</span> const
+<span class="nv">name</span> <span class="o">=</span> workdir
+<span class="nb">type</span> <span class="o">=</span> string
+<span class="nv">description</span> <span class="o">=</span> Remote process sandbox working directory
+<span class="nv">value</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s
+
+<span class="o">[</span>Action2<span class="o">]</span>
+<span class="nv">class</span> <span class="o">=</span> cmdline
+<span class="nv">input_ref</span> <span class="o">=</span> workdir
+<span class="nb">alias</span> <span class="o">=</span> w
+<span class="nv">template</span> <span class="o">=</span> -name value
+</pre></div>
+</div>
+<p>The <em>Inputs Section</em> can contain three type of objects:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[Input#]</span></code>; Descriptor of the corresponding GeoServer WPS Input parameter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[Action#]</span></code>; <code class="docutils literal notranslate"><span class="pre">1..n</span></code> actions of the Python Wrapper associated to an <code class="docutils literal notranslate"><span class="pre">[Input]</span></code>. The reference is done through the <strong>input_ref</strong> property.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[Const#]</span></code>; Constant values passed to the executable and transparent to the GeoServer WPS.</p></li>
+</ol>
+</div></blockquote>
+<p><strong>[Input#]</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>class</strong>; Uses introspection to instantiate an Input parameter. Currently the only value admitted is <code class="docutils literal notranslate"><span class="pre">param</span></code></p></li>
+<li><p><strong>name</strong>; The name of the input parameter. This will be also the name of the GeoServer Input parameter.</p></li>
+<li><p><strong>title</strong>; The title of the input parameter. To be used as internal descriptor.</p></li>
+<li><p><strong>description</strong>; The description of the input parameter. This will be also the description of the GeoServer Input parameter.</p></li>
+<li><p><strong>type</strong>; The type of the input parameter. Allowed types are:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span></code>; Simple text input. Invalid characters will be automatically removed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>; Integer numeric input value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code>; Float numeric input value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">url</span></code>; Must contain a valid URL. Invalid characters will be automatically removed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application/json</span></code>; Threated as a JSON string. It will be parsed by the Python Wrapper and converted into a complex object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code>; Converted into a Python <code class="docutils literal notranslate"><span class="pre">datetime</span></code> object accordingly to the <strong>formatter</strong> property containing the date pattern and which must also be provided.</p></li>
+</ol>
+</li>
+<li><p><strong>min</strong>; Optional parameter which sets the minimum set of inputs of this type allowed by the GeoServer WPS. <em>0</em> by default.</p></li>
+<li><p><strong>max</strong>; Optional parameter which sets the maximum set of inputs of this type allowed by the GeoServer WPS. <em>0</em> (alias infinite) by default.</p></li>
+<li><p><strong>default</strong>; Optional parameter for setting the default value of this input if a value has not provided.</p></li>
+<li><p><strong>formatter</strong>; Optional parameter to be used along with <code class="docutils literal notranslate"><span class="pre">datetime</span></code> inputs. Defines the date pattern to be applied to the input string (e.g.: %Y-%m-%d %H:%M:%S)</p></li>
+</ul>
+</div></blockquote>
+<p><strong>[Action#]</strong></p>
+<blockquote>
+<div><ul>
+<li><p><strong>class</strong>; Uses introspection to instantiate the type of Action.</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdline</span></code>; The value of the associated input will be passed to the executable as a key-value pair accordingly to the <code class="docutils literal notranslate"><span class="pre">template</span></code> specified (e.g.: –name=value).</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">template</span></code>; Template of the key-value pair format (e.g.: template = -name value)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alias</span></code>; Alias of the key (e.g.: alias = i will be translated as -i value)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">createJSONfile</span></code>; The value of the associated input will be dumped to a JSON file and the reference to the file passed to the executable.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">target_filepath</span></code>; PATH Where to store the JSON file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">json_schema</span></code>; The PATH to the JSON Schema to be used to validate the input values.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">updateJSONfile</span></code>; The value of the associated input will be substituted into a target template JSON file, which then will be passed to the executbale as reference.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source_filepath</span></code>; PATH of the source JSON template file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target_filepath</span></code>; PATH of the target JSON file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">json_path_expr</span></code>; JSON path expression used to subsitute the values.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copyfile</span></code>; The value of the associated input will be interpreted as a path to a source file. The content of the file will be copied into a temporary file and then passed to the executbale as reference.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source_filepath</span></code>; PATH of the source JSON template file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target_filepath</span></code>; PATH of the target JSON file.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">updateINIfile</span></code>; The value of the associated input will be substituted into a target template INI file, which then will be passed to the executbale as reference.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source_filepath</span></code>; PATH of the source JSON template file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target_filepath</span></code>; PATH of the target JSON file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">section</span></code>; Section of the INI file where to store key-value pair entries.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">updateINIfileList</span></code>; The value of the associated input will be parsed as a <code class="docutils literal notranslate"><span class="pre">list</span></code> and substituted into a target template INI file, which then will be passed to the executbale as reference.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source_filepath</span></code>; PATH of the source JSON template file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target_filepath</span></code>; PATH of the target JSON file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">section</span></code>; Section of the INI file where to store key-value pair entries.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p><strong>input_ref</strong>; <code class="docutils literal notranslate"><span class="pre">name</span></code> of the input parameter referenced by this Action.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>[Const#]</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>class = const</strong></p></li>
+<li><p><strong>name</strong>; Name of the input parameter, used by an action as reference.</p></li>
+<li><p><strong>type</strong>; May be one of the <strong>[Input#].type</strong> ones.</p></li>
+<li><p><strong>description</strong>; Internal description of the parameter.</p></li>
+<li><p><strong>value</strong>; Fixed value parsed by the referencing Action.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="outputs-section">
+<h2>Outputs Section<a class="headerlink" href="#outputs-section" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># ########################################### #</span>
+<span class="c1"># Output Parameters Declaration               #</span>
+<span class="c1"># ########################################### #</span>
+
+<span class="c1"># WARNING: the name must start with the keyword &quot;result&quot;</span>
+
+<span class="o">[</span>Output1<span class="o">]</span>
+<span class="nv">name</span> <span class="o">=</span> result1
+<span class="nb">type</span> <span class="o">=</span> string
+<span class="nv">description</span> <span class="o">=</span> WPS Resource Plain Text
+<span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s/geoserverLayerOutput.xml
+
+<span class="o">[</span>Output2<span class="o">]</span>
+<span class="nv">name</span> <span class="o">=</span> result2
+<span class="nb">type</span> <span class="o">=</span> image/geotiff
+<span class="nv">description</span> <span class="o">=</span> WPS Resource Binary File
+<span class="nv">title</span> <span class="o">=</span> SRTM
+<span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s/srtm_39_04_c.tif
+<span class="nv">backup_on_wps_execution_shared_dir</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">publish_as_layer</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">publish_default_style</span> <span class="o">=</span> raster
+<span class="nv">publish_target_workspace</span> <span class="o">=</span> it.geosolutions
+<span class="nv">publish_layer_name</span> <span class="o">=</span> srtm_39_04_c
+<span class="c1"># Such metadata is a JSON snippet itself (/tmp/resource_dir/result2.json) with a small particularity.</span>
+<span class="c1"># Since you cannot know a-priori some of the final Layer properties,</span>
+<span class="c1"># you can use inside the json (/tmp/resource_dir/result2.json) some keywords which will be updated</span>
+<span class="c1"># automatically by the RemoteWPS which are the following ones:</span>
+<span class="c1">#</span>
+<span class="c1"># ${type}</span>
+<span class="c1"># ${name}</span>
+<span class="c1"># ${title}</span>
+<span class="c1"># ${description}</span>
+<span class="c1"># ${lastUpdated}</span>
+<span class="c1"># ${getMapBaseUrl}</span>
+<span class="c1"># ${srs}</span>
+<span class="c1"># ${bbox}</span>
+<span class="c1"># ${workspace}</span>
+<span class="c1"># ${layers}</span>
+<span class="c1"># ${styles}</span>
+<span class="nv">publish_metadata</span> <span class="o">=</span> /&lt;path_to&gt;/resource_dir/result2.json
+
+<span class="o">[</span>Output3<span class="o">]</span>
+<span class="nv">name</span> <span class="o">=</span> result3
+<span class="nb">type</span> <span class="o">=</span> image/geotiff<span class="p">;</span>stream
+<span class="nv">description</span> <span class="o">=</span> WPS Resource Binary Stream
+<span class="nv">title</span> <span class="o">=</span> This Is A GeoTIFF Layer
+<span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s/srtm_39_04_c.tif
+<span class="nv">publish_as_layer</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">publish_default_style</span> <span class="o">=</span> raster
+<span class="nv">publish_target_workspace</span> <span class="o">=</span> it.geosolutions
+<span class="nv">publish_layer_name</span> <span class="o">=</span> srtm_39_04_c
+
+<span class="o">[</span>Output4<span class="o">]</span>
+<span class="nv">name</span> <span class="o">=</span> result4
+<span class="nb">type</span> <span class="o">=</span> application/x-netcdf
+<span class="nv">description</span> <span class="o">=</span> NetCDF Binary File
+<span class="nv">title</span> <span class="o">=</span> Wind
+<span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s/RS1_STB_1FSCLS20111003_175545_00000018xS2x_16bxx_83066_29447_wind.nc
+<span class="nv">backup_on_wps_execution_shared_dir</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">publish_as_layer</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">publish_default_style</span> <span class="o">=</span> raster
+<span class="nv">publish_target_workspace</span> <span class="o">=</span> it.geosolutions
+<span class="nv">publish_layer_name</span> <span class="o">=</span> wind
+<span class="c1"># Such metadata is a JSON snippet itself (/tmp/resource_dir/result3.json) with a small particularity.</span>
+<span class="c1"># Since you cannot know a-priori some of the final Layer properties,</span>
+<span class="c1"># you can use inside the json (/tmp/resource_dir/result4.json) some keywords which will be updated</span>
+<span class="c1"># automatically by the RemoteWPS which are the following ones:</span>
+<span class="c1">#</span>
+<span class="c1"># ${type}</span>
+<span class="c1"># ${name}</span>
+<span class="c1"># ${title}</span>
+<span class="c1"># ${description}</span>
+<span class="c1"># ${lastUpdated}</span>
+<span class="c1"># ${getMapBaseUrl}</span>
+<span class="c1"># ${srs}</span>
+<span class="c1"># ${bbox}</span>
+<span class="c1"># ${workspace}</span>
+<span class="c1"># ${layers}</span>
+<span class="c1"># ${styles}</span>
+<span class="nv">publish_metadata</span> <span class="o">=</span> /&lt;path_to&gt;/resource_dir/result4.json
+
+<span class="c1"># ########################################### #</span>
+<span class="c1"># GML Possible type values are                #</span>
+<span class="c1">#  text/xml;subtype=gml/3.1.1                 #</span>
+<span class="c1">#  text/xml;subtype=gml/2.1.2                 #</span>
+<span class="c1">#  application/gml-3.1.1                      #</span>
+<span class="c1">#  application/gml-2.1.2                      #</span>
+<span class="c1"># ########################################### #</span>
+<span class="o">[</span>Output5<span class="o">]</span>
+<span class="nv">name</span> <span class="o">=</span> result5
+<span class="nb">type</span> <span class="o">=</span> text/xml<span class="p">;</span><span class="nv">subtype</span><span class="o">=</span>gml/3.1.1
+<span class="nv">description</span> <span class="o">=</span> WPS Resource GML
+<span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s/geoserverLoadLayerOutput.xml
+
+<span class="o">[</span>Output6<span class="o">]</span>
+<span class="nv">name</span> <span class="o">=</span> result6
+<span class="nb">type</span> <span class="o">=</span> video/mp4
+<span class="nv">description</span> <span class="o">=</span> Video MP4 Binary File
+<span class="nv">title</span> <span class="o">=</span> Wind
+<span class="nv">filepath</span> <span class="o">=</span> %<span class="o">(</span>workdir<span class="o">)</span>s/RS1_STB_1FSCLS20111003_175545_00000018xS2x_16bxx_83066_29447_wind.mp4
+<span class="nv">backup_on_wps_execution_shared_dir</span> <span class="o">=</span> <span class="nb">false</span>
+
+<span class="o">[</span>Output7<span class="o">]</span>
+<span class="nv">name</span> <span class="o">=</span> result7
+<span class="nb">type</span> <span class="o">=</span> application/owc
+<span class="nv">description</span> <span class="o">=</span> WPS OWC Json MapContext
+<span class="nv">layers_to_publish</span> <span class="o">=</span> result2<span class="p">;</span>result4
+<span class="nv">publish_as_layer</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">publish_layer_name</span> <span class="o">=</span> owc_json_ctx
+<span class="nv">publish_metadata</span> <span class="o">=</span> /&lt;path_to&gt;/resource_dir/owc_json_ctx.json
+</pre></div>
+</div>
+<p>The examples above represents all the possible types of Outputs currently supported by the Remote WPS Wrapper.</p>
+<blockquote>
+<div><ul>
+<li><p><strong>type = string</strong></p>
+<blockquote>
+<div><p>The content of the file specified by the <code class="docutils literal notranslate"><span class="pre">filepath</span></code> is read and sent to the WPS. The GeoServer WPS declares this as a <code class="docutils literal notranslate"><span class="pre">text/plain</span></code> output type.</p>
+</div></blockquote>
+</li>
+<li><p><strong>type = image/geotiff</strong></p>
+<blockquote>
+<div><p>The content of the binary GeoTIFF specified by the <code class="docutils literal notranslate"><span class="pre">filepath</span></code> is read and sent to the WPS. The GeoServer WPS declares this as a <code class="docutils literal notranslate"><span class="pre">otput</span> <span class="pre">binary</span></code> RAW FILE output type.</p>
+</div></blockquote>
+</li>
+<li><p><strong>type = image/geotiff;stream</strong></p>
+<blockquote>
+<div><p>The content of the binary GeoTIFF specified by the <code class="docutils literal notranslate"><span class="pre">filepath</span></code> is read and sent to the WPS. The GeoServer WPS declares this as a <code class="docutils literal notranslate"><span class="pre">otput</span> <span class="pre">binary</span></code> RAW STREAM output type.</p>
+</div></blockquote>
+</li>
+<li><p><strong>type = application/x-netcdf</strong></p>
+<blockquote>
+<div><p>The content of the binary NetCDF specified by the <code class="docutils literal notranslate"><span class="pre">filepath</span></code> is read and sent to the WPS. The GeoServer WPS declares this as a <code class="docutils literal notranslate"><span class="pre">otput</span> <span class="pre">binary</span></code> RAW FILE output type.</p>
+</div></blockquote>
+</li>
+<li><p><strong>type = text/xml;subtype=gml/3.1.1</strong></p>
+<blockquote>
+<div><p>The content of the file specified by the <code class="docutils literal notranslate"><span class="pre">filepath</span></code> is read and sent to the WPS. The GeoServer WPS declares this as a <code class="docutils literal notranslate"><span class="pre">text/xml</span></code> output type.</p>
+</div></blockquote>
+</li>
+<li><p><strong>type = video/mp4</strong></p>
+<blockquote>
+<div><p>The content of the binary MPEG-4 specified by the <code class="docutils literal notranslate"><span class="pre">filepath</span></code> is read and sent to the WPS. The GeoServer WPS declares this as a <code class="docutils literal notranslate"><span class="pre">otput</span> <span class="pre">binary</span></code> RAW FILE output type.</p>
+</div></blockquote>
+</li>
+<li><p><strong>type = application/owc</strong></p>
+<blockquote>
+<div><p>This is a particular type of output. From the GeoServer WPS point of view is a <code class="docutils literal notranslate"><span class="pre">text/plain</span></code> JSON output type describing a Web Mapping Context.</p>
+<p>The Remote WPS Plugin on GeoServer side takes care of publishing the layers specified by <code class="docutils literal notranslate"><span class="pre">layers_to_publish</span> <span class="pre">=</span> <span class="pre">result2;result4</span></code> and render the templates specified by <code class="docutils literal notranslate"><span class="pre">publish_metadata</span></code> of each output.</p>
+<p>The outcome will be a complex JSON WMC describing the map to publish.</p>
+<p>In order to activate this funcionality, update the GeoServer <code class="docutils literal notranslate"><span class="pre">remoteProcess.properties</span></code> on the <code class="docutils literal notranslate"><span class="pre">GEOSERVER_DATA_DIR</span></code> with a new option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># full path to the template used to generate the OWS WMC Json output</span>
+
+<span class="nv">owc_wms_json_template</span> <span class="o">=</span> /tmp/resource_dir/wmc_template.json
+</pre></div>
+</div>
+<p><em>Sample</em> <code class="docutils literal notranslate"><span class="pre">wmc_template.json</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
+  &quot;type&quot;: &quot;FeatureCollection&quot;,
+  &quot;id&quot;: &quot;GeoServer OWC Map Context: version of 2015-07-14&quot;,
+  &quot;geometry&quot;: {
+              &quot;type&quot;:&quot;Polygon&quot;,
+              &quot;coordinates&quot;: ${renderingArea}
+    },
+    &quot;features&quot; : [
+            &lt;#list featureList?keys as key&gt;
+            {
+                &quot;type&quot;: &quot;Feature&quot;,
+                &quot;id&quot;: &quot;${featureList[key].name}&quot;,
+                &quot;geometry&quot;:
+                {
+                &quot;type&quot; : &quot;Polygon&quot;,
+                &quot;coordinates&quot; : ${featureList[key].geometryCoords}
+            },
+            &quot;properties&quot;: {
+                &lt;#if featureList[key].owcProperties != &quot;&quot;&gt;${featureList[key].owcProperties},&lt;/#if&gt;
+                &quot;offerings&quot; : [
+                    {
+                      &quot;code&quot; : &quot;http://www.opengis.net/spec/owc-atom/1.0/req/wms&quot;,
+                      &quot;operations&quot; : [{
+                          &quot;code&quot; : &quot;GetCapabilities&quot;,
+                          &quot;method&quot; : &quot;GET&quot;,
+                          &quot;type&quot; : &quot;application/xml&quot;,
+                          &quot;href&quot; : &quot;${featureList[key].getMapBaseUrl}?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities&quot;,
+                          &quot;request&quot;:{},
+                          &quot;result&quot;:{}
+                        },{
+                          &quot;code&quot; : &quot;GetMap&quot;,
+                          &quot;method&quot; : &quot;GET&quot;,
+                          &quot;type&quot; : &quot;image/png&quot;,
+                          &quot;href&quot; : &quot;${featureList[key].getMapBaseUrl}?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;SRS=${featureList[key].srs}&amp;BBOX=${featureList[key].bbox}&amp;WIDTH=500&amp;HEIGHT=500&amp;LAYERS=${featureList[key].layers}&amp;STYLES=${featureList[key].styles}&amp;FORMAT=image/png&amp;BGCOLOR=0xffffff&amp;TRANSPARENT=TRUE&amp;EXCEPTIONS=application/vnd.ogc.se_xml&quot;,
+                          &quot;request&quot;:{},
+                          &quot;result&quot;:{}
+                        }],
+                      &quot;contents&quot; : []
+                    }
+                &lt;#if featureList[key].type == &quot;VECTOR&quot;&gt;
+                    ,{
+                      &quot;code&quot; : &quot;http://www.opengis.net/spec/owc-atom/1.0/req/wfs&quot;,
+                      &quot;operations&quot; : [{
+                          &quot;code&quot; : &quot;DescribeFeatureType&quot;,
+                          &quot;method&quot; : &quot;GET&quot;,
+                          &quot;type&quot; : &quot;application/xml&quot;,
+                          &quot;href&quot; : &quot;${featureList[key].getMapBaseUrl}?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=${featureList[key].layers}&quot;,
+                          &quot;request&quot;:{},
+                          &quot;result&quot;:{}
+                        },{
+                          &quot;code&quot; : &quot;GetFeature&quot;,
+                          &quot;method&quot; : &quot;GET&quot;,
+                          &quot;type&quot; : &quot;application/xml&quot;,
+                          &quot;href&quot; : &quot;${featureList[key].getMapBaseUrl}?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=GetFeature&amp;TYPENAME=${featureList[key].layers}&quot;,
+                          &quot;request&quot;:{},
+                          &quot;result&quot;:{}
+                        }],
+                      &quot;contents&quot; : []
+                    }
+            &lt;#elseif featureList[key].type == &quot;RASTER&quot;&gt;
+                    ,{
+                      &quot;code&quot; : &quot;http://www.opengis.net/spec/owc-atom/1.0/req/wcs&quot;,
+                      &quot;operations&quot; : [{
+                          &quot;code&quot; : &quot;DescribeCoverage&quot;,
+                          &quot;method&quot; : &quot;GET&quot;,
+                          &quot;type&quot; : &quot;application/xml&quot;,
+                          &quot;href&quot; : &quot;${featureList[key].getMapBaseUrl}?SERVICE=WCS&amp;VERSION=1.1.0&amp;REQUEST=GetCapabilities&amp;IDENTIFIER=${featureList[key].layers}&quot;,
+                          &quot;request&quot;:{},
+                          &quot;result&quot;:{}
+                        },{
+                          &quot;code&quot; : &quot;GetCoverage&quot;,
+                          &quot;method&quot; : &quot;GET&quot;,
+                          &quot;type&quot; : &quot;image/tiff&quot;,
+                          &quot;href&quot; : &quot;${featureList[key].getMapBaseUrl}?SERVICE=WCS&amp;VERSION=1.1.0&amp;REQUEST=GetCoverage&amp;IDENTIFIER=${featureList[key].layers}&amp;BOUNDINGBOX=${featureList[key].bbox}&amp;FORMAT=GeoTIFF&quot;,
+                          &quot;request&quot;:{},
+                          &quot;result&quot;:{}
+                        }],
+                      &quot;contents&quot; : []
+                    }
+            &lt;/#if&gt;
+            ]
+           }
+         }&lt;#if key_has_next&gt;,&lt;/#if&gt;
+     &lt;/#list&gt;
+     ]
+  ,
+
+  &quot;properties&quot; : {
+            ${owcProperties}
+      }
+
+}
+</pre></div>
+</div>
+<p><em>Sample</em> <code class="docutils literal notranslate"><span class="pre">owc_json_ctx.json</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&quot;lang&quot; : &quot;en&quot;,
+&quot;title&quot; : &quot;Sample Title goes here&quot;,
+&quot;subtitle&quot; : &quot;Sample sub-title goes here&quot;,
+&quot;generator&quot; : &quot;Sample generator&quot;,
+&quot;rights&quot; : &quot;Sample Legal Constraints and CopyRights (C)&quot;,
+&quot;authors&quot; : [{&quot;name&quot; : &quot;Author1 Name&quot;}, {&quot;name&quot; : &quot;Author2 Name&quot;}],
+&quot;contributors&quot; : [{&quot;name&quot; : &quot;Contrib1 Name&quot;}, {&quot;name&quot; : &quot;Contrib2 Name&quot;}],
+&quot;categories&quot; : [{
+        &quot;term&quot; : &quot;wms&quot;,
+        &quot;label&quot; : &quot;This file is compliant with version 1.0 of OGC Context&quot;
+    },{
+        &quot;term&quot; : &quot;maps&quot;,
+        &quot;label&quot; : &quot;This file contains maps&quot;
+}],
+&quot;links&quot; : [{
+        &quot;rel&quot; : &quot;profile&quot;,
+        &quot;href&quot; : &quot;http://www.opengis.net/spec/owc-atom/1.0/req/core&quot;,
+        &quot;title&quot; : &quot;This file is compliant with version 1.0 of OGC Context&quot;
+    },{
+        &quot;rel&quot; : &quot;via&quot;,
+        &quot;type&quot; : &quot;application/xml&quot;,
+        &quot;href&quot; : &quot;http://www.opengis.uab.cat/wms/satcat/metadades/EPSG_23031/Cat_20110301.htm&quot;,
+        &quot;title&quot; : &quot;HMTL metadata in Catalan&quot;
+    }]
+</pre></div>
+</div>
+<p><em>Sample</em> <code class="docutils literal notranslate"><span class="pre">result#.json</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&quot;title&quot; : &quot;Result 2&quot;,
+&quot;updated&quot; : &quot;${lastUpdated}&quot;,
+&quot;content&quot; : &quot;Sample Content Description for result 2 goes here&quot;,
+&quot;authors&quot; : [
+    {
+      &quot;name&quot; : &quot;GeoServer Administrator&quot;,
+      &quot;email&quot; : &quot;info@sample.author.com&quot;
+    }
+],
+&quot;authors&quot; : [{&quot;name&quot; : &quot;Author2.1 Name&quot;}, {&quot;name&quot; : &quot;Author2.2 Name&quot;}],
+&quot;contributors&quot; : [{&quot;name&quot; : &quot;Contrib2.1 Name&quot;}, {&quot;name&quot; : &quot;Contrib2.2 Name&quot;}],
+&quot;categories&quot; : [{&quot;name&quot; : &quot;Category2.1 Name&quot;}, {&quot;name&quot; : &quot;Category2.2 Name&quot;}],
+&quot;links&quot; : [
+    {
+     &quot;rel&quot; : &quot;enclosure&quot;,
+     &quot;type&quot; : &quot;image/png&quot;,
+     &quot;title&quot; : &quot;WMS output for ${title}&quot;,
+     &quot;href&quot; : &quot;${getMapBaseUrl}?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;SRS=${srs}&amp;BBOX=${bbox}&amp;WIDTH=500&amp;HEIGHT=500&amp;LAYERS=${layers}&amp;FORMAT=image/png&amp;BGCOLOR=0xffffff&amp;TRANSPARENT=TRUE&amp;EXCEPTIONS=application/vnd.ogc.se_xml&quot;
+    },
+    {
+     &quot;rel&quot; : &quot;icon&quot;,
+     &quot;type&quot; : &quot;image/png&quot;,
+     &quot;title&quot; : &quot;Preview for ${title}&quot;,
+     &quot;href&quot; : &quot;${getMapBaseUrl}?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;SRS=${srs}&amp;BBOX=${bbox}&amp;WIDTH=100&amp;HEIGHT=100&amp;LAYERS=${layers}&amp;STYLES=${styles}&amp;FORMAT=image/png&amp;BGCOLOR=0xffffff&amp;TRANSPARENT=TRUE&amp;EXCEPTIONS=application/vnd.ogc.se_xml&quot;
+    },
+    {
+     &quot;rel&quot; : &quot;via&quot;,
+     &quot;type&quot; : &quot;application/vnd.ogc.wms_xml&quot;,
+     &quot;title&quot; : &quot;Original GetCapabilities document&quot;,
+     &quot;href&quot; : &quot;${getMapBaseUrl}?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities&quot;
+    }
+]
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>Other options for the Outputs</strong></p>
+<blockquote>
+<div><ul>
+<li><p><strong>backup_on_wps_execution_shared_dir</strong>; This is a boolean which tells to the Remote WPS to store first the outcome into the <strong>sharedir</strong> defined into the <code class="docutils literal notranslate"><span class="pre">[DEFAULT]</span></code> section before streaming out to GeoServer. This allows the Remote WPS to preserve the outcomes even when the resources are cleaned out.</p></li>
+<li><p><strong>upload_data</strong>; This is a boolean which tells to the Remote WPS to upload first the outcome into the <strong>host</strong> defined into the <code class="docutils literal notranslate"><span class="pre">[UPLOADER]</span></code> section before streaming out to GeoServer. This allows the Remote WPS to preserve the outcomes even when the resources are cleaned out.</p>
+<blockquote>
+<div><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If both enabled for a certain output, the <strong>backup_on_wps_execution_shared_dir</strong> takes precedence to the <strong>upload_data</strong> one.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>publish_as_layer</strong>; A boolean to instruct GeoServer Remote WPS to <em>try</em> to automatically publish the outcome as a new Layer through the GeoServer <strong>Importer</strong> Plugin.</p></li>
+<li><p><strong>publish_default_style</strong>; The default style to use when publishing the Layer.</p></li>
+<li><p><strong>publish_target_workspace</strong>; The default workspace to use when publishing the Layer.</p></li>
+<li><p><strong>publish_layer_name</strong>; The default name to use when publishing the Layer.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="logging-section">
+<h2>Logging Section<a class="headerlink" href="#logging-section" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># ########################################### #</span>
+<span class="c1"># Logging RegEx and Levels                    #</span>
+<span class="c1"># ########################################### #</span>
+
+<span class="o">[</span>Logging<span class="o">]</span>
+<span class="nv">stdout_parser</span> <span class="o">=</span> <span class="o">[</span>.*<span class="se">\[</span>DEBUG<span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span>INFO<span class="se">\]</span> ProgressInfo<span class="se">\:</span><span class="o">([</span>-+<span class="o">]</span>?<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>*<span class="se">\.</span>?<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>*<span class="o">)</span><span class="se">\%</span>, .*<span class="se">\[</span><span class="o">(</span>INFO<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>WARN<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>ERROR<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)</span>, .*<span class="se">\[</span><span class="o">(</span>CRITICAL<span class="o">)</span><span class="se">\]</span><span class="o">(</span>.*<span class="o">)]</span>
+<span class="nv">stdout_action</span> <span class="o">=</span> <span class="o">[</span>ignore,          progress,                                          log,              log,              log,               abort<span class="o">]</span>
+</pre></div>
+</div>
+<ul>
+<li><p><strong>stdout_parser</strong></p>
+<blockquote>
+<div><p>This property must contain a <em>list</em> of regular expressions matching the possible executable <code class="docutils literal notranslate"><span class="pre">STDOUT</span></code> logging messages the user wants to forward to GeoServer.</p>
+<p>As an instance</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>.*\[DEBUG\](.*)
+</pre></div>
+</div>
+<p>Matches all the messages containing the keyword <code class="docutils literal notranslate"><span class="pre">[DEBUG]</span></code> and forwards to the corresponding <strong>stdout_action</strong> (<em>see below</em>) the content of the first matching group <code class="docutils literal notranslate"><span class="pre">(.*)</span></code></p>
+<p>In this case everything after <code class="docutils literal notranslate"><span class="pre">[DEBUG]</span></code> is forwarded to the action.</p>
+<p>Another example</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>.*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%
+</pre></div>
+</div>
+<p>Matches all the messages containing the keyword <code class="docutils literal notranslate"><span class="pre">[INFO]</span> <span class="pre">ProgressInfo:&lt;any_number&gt;%</span></code> and forwards to the corresponding <strong>stdout_action</strong> (<em>see below</em>) the content of the first matching group <code class="docutils literal notranslate"><span class="pre">([-+]?[0-9]*\.?[0-9]*)</span></code></p>
+<p>In this case the expression extracts a float number form the text along with the sign <code class="docutils literal notranslate"><span class="pre">[-+]</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>stdout_action</strong></p>
+<blockquote>
+<div><p>This property must contain a <em>list</em> of keywords associated to a <em>particular action</em> which will take the content of the corresponding regular expression and forwards it to GeoServer packaged ad a specific XMPP message.</p>
+<p>As an instance</p>
+<ul class="simple">
+<li><p><em>progress</em>; gets the content of the match and sends a <strong>PROGRESS</strong> XMPP message to GeoServer. The <strong>PROGRESS</strong> messgae must always contain a number.</p></li>
+<li><p><em>abort</em>; gets the content of the match and sends a <strong>ABORT</strong> XMPP message to GeoServer. This will cause GeoServer to mark the WPS Process as <strong>FAILED</strong>.</p></li>
+<li><p><em>ignore</em>; simply throws out everything matching the corresponding regular expression.</p></li>
+<li><p><em>log</em>; sends a <strong>LOG</strong> message to GeoServer with the content of the match. This will appear into the GeoServer Log file.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install_xmpp.html" title="previous chapter">Installation Of OpenFire XMPP Server To Exchange Messages</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="running_example.html" title="next chapter">A Remote “Gdal Contour” Process Binding Example</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Deployment And Setup Of The XMPP Python Wrappers</a><ul>
+<li><a class="reference internal" href="#remote-wps-python-wrapper-framework">Remote WPS Python Wrapper Framework</a></li>
+<li><a class="reference internal" href="#how-the-system-works">How The System Works</a></li>
+<li><a class="reference internal" href="#summary-of-the-configuration-steps">Summary Of The Configuration Steps</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installation-and-configuration-steps">Installation and Configuration Steps</a><ul>
+<li><a class="reference internal" href="#basic-environment-preparation">Basic Environment Preparation</a></li>
+<li><a class="reference internal" href="#first-deploy-of-the-remotewps-python-framework">First Deploy Of The RemoteWPS Python Framework</a></li>
+<li><a class="reference internal" href="#a-running-example">A Running Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#annex-a-remote-wps-python-wrapper-reference">ANNEX A: Remote WPS Python Wrapper Reference</a><ul>
+<li><a class="reference internal" href="#default-section">Default Section</a></li>
+<li><a class="reference internal" href="#inputs-section">Inputs Section</a></li>
+<li><a class="reference internal" href="#outputs-section">Outputs Section</a></li>
+<li><a class="reference internal" href="#logging-section">Logging Section</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install_xmpp.html" title="previous chapter">Installation Of OpenFire XMPP Server To Exchange Messages</a></li>
+            <li>Next: <a href="running_example.html" title="next chapter">A Remote “Gdal Contour” Process Binding Example</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/remote-wps/install_python.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

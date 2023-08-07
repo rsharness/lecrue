@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using the ImageMosaic extension &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="GeoPackage" href="../geopkg.html" />
+    <link rel="prev" title="ImageMosaic configuration" href="configuration.html" /> 
+  </head><body class="data/raster/imagemosaic/tutorial">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Raster data</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">ImageMosaic</a> &raquo;</li>
+    <li>Using the ImageMosaic extension</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../geopkg.html" title="GeoPackage" accesskey="N">Next</a></li>
+  <li>
+    <a href="configuration.html" title="ImageMosaic configuration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="using-the-imagemosaic-extension">
+<span id="data-imagemosaic-tutorial"></span><h1>Using the ImageMosaic extension<a class="headerlink" href="#using-the-imagemosaic-extension" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will show you how to configure and publish an ImageMosaic store and coverage, followed by some configuration examples.</p>
+<div class="section" id="configuring-a-coverage-in-geoserver">
+<h2>Configuring a coverage in GeoServer<a class="headerlink" href="#configuring-a-coverage-in-geoserver" title="Permalink to this headline">¶</a></h2>
+<p>This is a process very similar to creating a featuretype. More specifically, one has to perform the steps highlighted in the sections below:</p>
+<div class="section" id="create-a-new-store">
+<h3>Create a new store<a class="headerlink" href="#create-a-new-store" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>Go to <span class="menuselection">Data Panel ‣ Stores</span> and click <span class="guilabel">Add new Store</span>.</p></li>
+<li><p>Select <span class="guilabel">ImageMosaic</span> under <span class="guilabel">Raster Data Source</span>:</p>
+<div class="figure align-default" id="id1">
+<img alt="../../../_images/imagemosaiccreate.png" src="../../../_images/imagemosaiccreate.png" />
+<p class="caption"><span class="caption-text">ImageMosaic in the list of raster data stores</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>In order to create a new mosaic it is necessary to choose a workspace and store name in the <span class="guilabel">Basic Store Info</span> section, as well as a URL in the <span class="guilabel">Connection Parameters</span> section. Valid URLs include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The absolute path to the shapefile index, or a directory containing the shapefile index.</p></li>
+<li><p>The absolute path to the configuration file (<cite>*.properties`</cite>) or a directory containing the configuration file. If <code class="docutils literal notranslate"><span class="pre">datastore.properties</span></code> and <code class="docutils literal notranslate"><span class="pre">indexer.properties</span></code> exist, they should be in the same directory as this configuration file.</p></li>
+<li><p>The absolute path of a directory where the files you want to mosaic reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data present in the given directory and any subdirectories.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Click <span class="guilabel">Save</span>:</p>
+<div class="figure align-default" id="id2">
+<img alt="../../../_images/imagemosaicconfigure.png" src="../../../_images/imagemosaicconfigure.png" />
+<p class="caption"><span class="caption-text">Configuring an ImageMosaic data store</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="create-a-new-coverage">
+<h3>Create a new coverage<a class="headerlink" href="#create-a-new-coverage" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>Navigate to <span class="menuselection">Data Panel ‣ Layers</span> and click <span class="guilabel">Add a new resource</span>.</p></li>
+<li><p>Choose the name of the store you just created:</p>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/vito_newlayerchoser.png" src="../../../_images/vito_newlayerchoser.png" />
+<p class="caption"><span class="caption-text">Layer Chooser</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click the layer you wish to configure and you will be presented with the Coverage Editor:</p>
+<div class="figure align-default" id="id4">
+<img alt="../../../_images/vito_coverageeditor.png" src="../../../_images/vito_coverageeditor.png" />
+<p class="caption"><span class="caption-text">Coverage Editor</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Make sure there is a value for <span class="guilabel">Native SRS</span>, then click the <span class="guilabel">Submit</span> button. If the <span class="guilabel">Native CRS</span> is <code class="docutils literal notranslate"><span class="pre">UNKNOWN</span></code>, you must declare the SRS in the <span class="guilabel">Declared SRS</span> field.</p></li>
+<li><p>Click <span class="guilabel">Save</span>.</p></li>
+<li><p>Use the <span class="guilabel">Layer Preview</span> to view the mosaic.</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided index. It is also possible that the shapefile index is empty (no granules were found in the provided directory) or it might be that the granules’ paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with an editor. Alternately, you can delete the index and let GeoServer recreate it from the root directory.</p>
+</div>
+</div>
+</div>
+<div class="section" id="configuration-examples">
+<h2>Configuration examples<a class="headerlink" href="#configuration-examples" title="Permalink to this headline">¶</a></h2>
+<p>Below are a few examples of mosaic configurations to demonstrate how we can make use of the ImageMosaic parameters.</p>
+<div class="section" id="dem-bathymetry">
+<h3>DEM/Bathymetry<a class="headerlink" href="#dem-bathymetry" title="Permalink to this headline">¶</a></h3>
+<p>Such a mosaic can be used to serve large amounts of data representing altitude or depth and therefore does not specify colors directly (it needs an SLD to generate pictures). In our case, we have a DEM dataset which consists of a set of raw GeoTIFF files.</p>
+<p>The first operation is to create the CoverageStore specifying, for example, the path of the shapefile in the <span class="guilabel">URL</span> field.</p>
+<p>Inside the Coverage Editor Publishing tab, you can specify the <span class="guilabel">dem</span> default style in order to represent the visualization style of the mosaic. The following is an example style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+  <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+  <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld      http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;NamedLayer&gt;</span>
+    <span class="nt">&lt;Name&gt;</span>gtopo<span class="nt">&lt;/Name&gt;</span>
+    <span class="nt">&lt;UserStyle&gt;</span>
+      <span class="nt">&lt;Name&gt;</span>dem<span class="nt">&lt;/Name&gt;</span>
+      <span class="nt">&lt;Title&gt;</span>Simple DEM style<span class="nt">&lt;/Title&gt;</span>
+      <span class="nt">&lt;Abstract&gt;</span>Classic elevation color progression<span class="nt">&lt;/Abstract&gt;</span>
+      <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+        <span class="nt">&lt;Rule&gt;</span>
+          <span class="nt">&lt;RasterSymbolizer&gt;</span>
+            <span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
+            <span class="nt">&lt;ColorMap&gt;</span>
+              <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#000000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;-9999&quot;</span> <span class="na">label=</span><span class="s">&quot;nodata&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1.0&quot;</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#AAFFAA&quot;</span> <span class="na">quantity=</span><span class="s">&quot;0&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#00FF00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1000&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FFFF00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1200&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FF7F00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1400&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#BF7F3F&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1600&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#000000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;2000&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/ColorMap&gt;</span>
+          <span class="nt">&lt;/RasterSymbolizer&gt;</span>
+        <span class="nt">&lt;/Rule&gt;</span>
+      <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+    <span class="nt">&lt;/UserStyle&gt;</span>
+  <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+<p>In this way you have a clear distinction between the different intervals of the dataset that compose the mosaic, like the background and the “nodata” area.</p>
+<div class="figure align-default">
+<img alt="../../../_images/vito_config_1.png" src="../../../_images/vito_config_1.png" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The “nodata” on the sample mosaic is -9999. The default background value is for mosaics is 0.0.</p>
+</div>
+<p>The result is the following:</p>
+<div class="figure align-default" id="id5">
+<img alt="../../../_images/vito_1.png" src="../../../_images/vito_1.png" />
+<p class="caption"><span class="caption-text">Basic configuration</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>By setting the other configuration parameters appropriately, it is possible to improve both the appearance of the mosaic as well as its performance. For instance, we could:</p>
+<ul>
+<li><p>Make the “nodata” areas transparent and coherent with the real data. To achieve this we need to change the opacity of the “nodata” ColorMapEntry in the <code class="docutils literal notranslate"><span class="pre">dem</span></code> style to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> and set the <code class="docutils literal notranslate"><span class="pre">BackgroundValues</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">-9999</span></code> so that empty areas will be filled with this value. The result is as follows:</p>
+<div class="figure align-default" id="id6">
+<img alt="../../../_images/vito_2.png" src="../../../_images/vito_2.png" />
+<p class="caption"><span class="caption-text">Advanced configuration</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Allow multithreaded granules loading. By setting the <code class="docutils literal notranslate"><span class="pre">AllowMultiThreading</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">true</span></code>, GeoServer will load the granules in parallel using multiple threads with a increase in performance on some architectures.</p></li>
+</ul>
+<p>The configuration parameters are as follows:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>MaxAllowedTiles</p></th>
+<td><p>2147483647</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>BackgroundValues</p></th>
+<td><p>-9999</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>OutputTransparentColor</p></th>
+<td><p>“no color”</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>InputTransparentColor</p></th>
+<td><p>“no color”</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>AllowMultiThreading</p></th>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>USE_JAI_IMAGEREAD</p></th>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>SUGGESTED_TILE_SIZE</p></th>
+<td><p>512,512</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="aerial-imagery">
+<h3>Aerial imagery<a class="headerlink" href="#aerial-imagery" title="Permalink to this headline">¶</a></h3>
+<p>In this example we are going to create a mosaic that will serve aerial imagery, specifically RGB GeoTIFFs. Because this is visual data, in the Coverage Editor you can use the basic <code class="docutils literal notranslate"><span class="pre">raster</span></code> style, which is just a stub SLD to instruct the GeoServer raster renderer to not do anything particular in terms of color management:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+  <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+  <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld      http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;NamedLayer&gt;</span>
+    <span class="nt">&lt;Name&gt;</span>raster<span class="nt">&lt;/Name&gt;</span>
+    <span class="nt">&lt;UserStyle&gt;</span>
+      <span class="nt">&lt;Name&gt;</span>raster<span class="nt">&lt;/Name&gt;</span>
+      <span class="nt">&lt;Title&gt;</span>Raster<span class="nt">&lt;/Title&gt;</span>
+      <span class="nt">&lt;Abstract&gt;</span>A sample style for rasters, good for displaying imagery       <span class="nt">&lt;/Abstract&gt;</span>
+      <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+        <span class="nt">&lt;FeatureTypeName&gt;</span>Feature<span class="nt">&lt;/FeatureTypeName&gt;</span>
+        <span class="nt">&lt;Rule&gt;</span>
+          <span class="nt">&lt;RasterSymbolizer&gt;</span>
+            <span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
+          <span class="nt">&lt;/RasterSymbolizer&gt;</span>
+        <span class="nt">&lt;/Rule&gt;</span>
+      <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+    <span class="nt">&lt;/UserStyle&gt;</span>
+  <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+<p>The result is the following:</p>
+<div class="figure align-default" id="id7">
+<img alt="../../../_images/prato_1.png" src="../../../_images/prato_1.png" />
+<p class="caption"><span class="caption-text">Basic configuration</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Those ugly black areas are the result of applying the default mosaic parameters to a mosaic that does not entirely cover its bounding box. The areas within the BBOX that are not covered with data will default to a value of 0 on each band. Since this mosaic is RGB we can simply set the <code class="docutils literal notranslate"><span class="pre">OutputTransparentColor</span></code> to <code class="docutils literal notranslate"><span class="pre">0,0,0</span></code> in order to get transparent fills for the BBOX.</p>
+</div>
+<p>The various parameters can be set as follows:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>MaxAllowedTiles</p></th>
+<td><p>2147483647</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>BackgroundValues</p></th>
+<td><p>(default)</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>OutputTransparentColor</p></th>
+<td><p>#000000</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>InputTransparentColor</p></th>
+<td><p>“no color”</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>AllowMultiThreading</p></th>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>USE_JAI_IMAGEREAD</p></th>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>SUGGESTED_TILE_SIZE</p></th>
+<td><p>512,512</p></td>
+</tr>
+</tbody>
+</table>
+<p>The result is the following:</p>
+<div class="figure align-default" id="id8">
+<img alt="../../../_images/prato_2.png" src="../../../_images/prato_2.png" />
+<p class="caption"><span class="caption-text">Advanced configuration</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="scanned-maps">
+<h3>Scanned maps<a class="headerlink" href="#scanned-maps" title="Permalink to this headline">¶</a></h3>
+<p>In this case we want to show how to serve scanned maps (mostly B&amp;W images) via a GeoServer mosaic.</p>
+<p>In the Coverage Editor you can use the basic <code class="docutils literal notranslate"><span class="pre">raster</span></code> since there is no need to use any of the advanced RasterSymbolizer capabilities.</p>
+<p>The result is the following.</p>
+<div class="figure align-default" id="id9">
+<img alt="../../../_images/iacovella_1.png" src="../../../_images/iacovella_1.png" />
+<p class="caption"><span class="caption-text">Basic configuration</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<p>This mosaic, formed by two single granules, shows a typical case where the “nodata” collar areas of the granules overlap, as shown in the picture above.
+In this case we can use the <code class="docutils literal notranslate"><span class="pre">InputTransparentColor</span></code> parameter to make the collar areas disappear during the superimposition process — in this case, by using an <code class="docutils literal notranslate"><span class="pre">InputTransparentColor</span></code> of <code class="docutils literal notranslate"><span class="pre">#FFFFFF</span></code>.</p>
+<p>The final configuration parameters are the following:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>MaxAllowedTiles</p></th>
+<td><p>2147483647</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>BackgroundValues</p></th>
+<td><p>(default)</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>OutputTransparentColor</p></th>
+<td><p>“no color”</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>InputTransparentColor</p></th>
+<td><p>#FFFFFF</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>AllowMultiThreading</p></th>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>USE_JAI_IMAGEREAD</p></th>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>SUGGESTED_TILE_SIZE</p></th>
+<td><p>512,512</p></td>
+</tr>
+</tbody>
+</table>
+<p>This is the result:</p>
+<div class="figure align-default" id="id10">
+<img alt="../../../_images/iacovella_2.png" src="../../../_images/iacovella_2.png" />
+<p class="caption"><span class="caption-text">Advanced configuration</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="dynamic-imagery">
+<h3>Dynamic imagery<a class="headerlink" href="#dynamic-imagery" title="Permalink to this headline">¶</a></h3>
+<p>A mosaic need not be static. It can contain granules which change, are added or deleted. In this example, we will create a mosaic that changes over time.</p>
+<ol class="arabic simple">
+<li><p>Create a mosaic in the standard way. (The specific configuration isn’t important.)</p></li>
+</ol>
+<div class="figure align-default" id="id11">
+<img alt="../../../_images/tutorial_dynamic1.png" src="../../../_images/tutorial_dynamic1.png" />
+<p class="caption"><span class="caption-text">This mosaic contains 5 granules. Note that <code class="docutils literal notranslate"><span class="pre">InputTransparentColor</span></code> is set to <code class="docutils literal notranslate"><span class="pre">#FFFFFF</span></code> here.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+<p>To add new granules, the index that was created when the mosaic was originally created needs to be regenerated. There are two ways to do this:</p>
+<ul class="simple">
+<li><p>Manually through the file system</p></li>
+<li><p>Through the <a class="reference internal" href="../../../rest/index.html#rest"><span class="std std-ref">REST</span></a> interface</p></li>
+</ul>
+<p>To update an ImageMosaic through the file system:</p>
+<ol class="arabic simple">
+<li><p>Update the contents of the mosaic by copying the new files into place. (Subdirectories are acceptable.)</p></li>
+<li><p>Delete the index files. These files are contained in the top level directory containing the mosaic files and include (but are not limited to) the following:</p>
+<ul class="simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">&lt;mosaic_name&gt;.dbf</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">&lt;mosaic_name&gt;.fix</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">&lt;mosaic_name&gt;.prj</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">&lt;mosaic_name&gt;.properties</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">&lt;mosaic_name&gt;.shp</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">&lt;mosaic_name&gt;.shx</span></code></p></li>
+</ul>
+</li>
+<li><p><em>(Optional but recommended)</em> Edit the layer definition in GeoServer, making to sure to update the bounding box information (if changed).</p></li>
+<li><p>Save the layer. The index will be recreated.</p></li>
+</ol>
+<div class="figure align-default" id="id12">
+<img alt="../../../_images/tutorial_dynamic2.png" src="../../../_images/tutorial_dynamic2.png" />
+<p class="caption"><span class="caption-text">This mosaic contains 9 granules</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please see the REST section for information on <a class="reference internal" href="../../../rest/imagemosaic.html#rest-imagemosaic"><span class="std std-ref">Uploading a new image mosaic</span></a>.</p>
+</div>
+</div>
+<div class="section" id="multi-resolution-imagery-with-reprojection">
+<span id="multi-crs-mosaic"></span><h3>Multi-resolution imagery with reprojection<a class="headerlink" href="#multi-resolution-imagery-with-reprojection" title="Permalink to this headline">¶</a></h3>
+<p>As a general rule, we want to have the highest resolution granules shown “on top”, with the lower-resolution granules filling in the gaps as necessary.</p>
+<p>In this example, we will serve up overlapping granules that have varying resolutions. In addition, we will mix resolutions, such that the higher resolution granule is reprojected to match the resolution of the lower resolution granules.</p>
+<ol class="arabic">
+<li><p>In the Coverage Editor, use the basic <code class="docutils literal notranslate"><span class="pre">raster</span></code> style.</p></li>
+<li><p>Create the mosaic in GeoServer.</p></li>
+<li><p>One important configuration setting is the <span class="guilabel">SORTING</span> parameter of the layer. In order to see the highest resolution imagery on top (the typical case), it must be set to <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">resolution</kbd> <kbd class="kbd docutils literal notranslate">A</kbd></kbd>. (For the case of lowest resolution on top, use <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">resolution</kbd> <kbd class="kbd docutils literal notranslate">D</kbd></kbd> .)</p></li>
+<li><p>Make any other configuration changes.</p></li>
+<li><p>Also, in order to allow for multiple CRSs in a single mosaic, an <code class="file docutils literal notranslate"><span class="pre">indexer.properties</span></code> file will need to be created. Use the following</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GranuleAcceptors</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">gce</span><span class="o">.</span><span class="n">imagemosaic</span><span class="o">.</span><span class="n">acceptors</span><span class="o">.</span><span class="n">HeterogeneousCRSAcceptorFactory</span>
+<span class="n">GranuleHandler</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">gce</span><span class="o">.</span><span class="n">imagemosaic</span><span class="o">.</span><span class="n">granulehandler</span><span class="o">.</span><span class="n">ReprojectingGranuleHandlerFactory</span>
+<span class="n">HeterogeneousCRS</span><span class="o">=</span><span class="n">true</span>
+<span class="n">MosaicCRS</span><span class="o">=</span><span class="n">EPSG</span>\<span class="p">:</span><span class="mi">4326</span>
+<span class="n">PropertyCollectors</span><span class="o">=</span><span class="n">CRSExtractorSPI</span><span class="p">(</span><span class="n">crs</span><span class="p">),</span><span class="n">ResolutionExtractorSPI</span><span class="p">(</span><span class="n">resolution</span><span class="p">)</span>
+<span class="n">Schema</span><span class="o">=*</span><span class="n">the_geom</span><span class="p">:</span><span class="n">Polygon</span><span class="p">,</span><span class="n">location</span><span class="p">:</span><span class="n">String</span><span class="p">,</span><span class="n">crs</span><span class="p">:</span><span class="n">String</span><span class="p">,</span><span class="n">resolution</span><span class="p">:</span><span class="n">String</span>
+</pre></div>
+</div>
+<p>The MosaicCRS property is not mandatory, but it’s a good idea to set a predictable target CRS that all granule footprints can be reprojected into,
+otherwise the mosaic machinery will use the CRS of the first indexed granule.</p>
+</li>
+<li><p>Save this file in the root of the mosaic directory (along with the index files). The result is the following:</p>
+<div class="figure align-default" id="id13">
+<img alt="../../../_images/tutorial_reproj_artifact.png" src="../../../_images/tutorial_reproj_artifact.png" />
+<p class="caption"><span class="caption-text">Closeup of granule overlap (high resolution granule on right)</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>To remove the reprojection artifact (shown in the above as a black area) edit the layer configuration to set <code class="docutils literal notranslate"><span class="pre">InputTransparentColor</span></code> to <code class="docutils literal notranslate"><span class="pre">#000000</span></code>.</p>
+<div class="figure align-default" id="id14">
+<img alt="../../../_images/tutorial_reproj_noartifact.png" src="../../../_images/tutorial_reproj_noartifact.png" />
+<p class="caption"><span class="caption-text">Closeup of granule overlap (high resolution granule on right)</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="referring-to-a-datastore-configured-in-geoserver">
+<h2>Referring to a datastore configured in GeoServer<a class="headerlink" href="#referring-to-a-datastore-configured-in-geoserver" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to make the mosaic refer to an existing data store. The <strong>``datastore.properties``</strong> file in this case will
+contain only one or two properties, referring to the store to be used via the <code class="docutils literal notranslate"><span class="pre">StoreName</span></code> property.
+For simple cases, e.g., a PostGIS store, the following will be sufficient:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">StoreName</span><span class="o">=</span><span class="n">workspace</span><span class="p">:</span><span class="n">storename</span>
+</pre></div>
+</div>
+<p>For Oracle or H2, it’s best to also specify the SPI in order to inform the mosaic that it needs to work around
+specific limitations of the storage (e.g., forced uppercase attribute usage, limitation in attribute name length and the like):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">StoreName</span><span class="o">=</span><span class="n">workspace</span><span class="p">:</span><span class="n">storename</span>
+<span class="n">SPI</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">oracle</span><span class="o">.</span><span class="n">OracleNGDataStoreFactory</span>
+</pre></div>
+</div>
+<p>The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using
+the directory name as the table name.
+In case a specific table name needs to be used, add an <strong>``indexer.properties``</strong> specifying the <code class="docutils literal notranslate"><span class="pre">TypeName</span></code> property,
+e.g.:</p>
+<blockquote>
+<div><p>TypeName=myMosaicTypeName</p>
+</div></blockquote>
+<p>In case the index “table” already exists instead, then a <strong>``indexer.properties``</strong> file will be required, with the following contents:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">UseExistingSchema</span><span class="o">=</span><span class="n">true</span>
+<span class="n">TypeName</span><span class="o">=</span><span class="n">nameOfTheFeatureTypeContainingTheIndex</span>
+<span class="n">AbsolutePath</span><span class="o">=</span><span class="n">true</span>
+</pre></div>
+</div>
+<p>The above assumes <code class="docutils literal notranslate"><span class="pre">location</span></code> attribute provides absolute paths to the mosaic granules, instead of paths relative to
+the mosaic configuration files directory.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="configuration.html" title="previous chapter">ImageMosaic configuration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../geopkg.html" title="next chapter">GeoPackage</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Using the ImageMosaic extension</a><ul>
+<li><a class="reference internal" href="#configuring-a-coverage-in-geoserver">Configuring a coverage in GeoServer</a><ul>
+<li><a class="reference internal" href="#create-a-new-store">Create a new store</a></li>
+<li><a class="reference internal" href="#create-a-new-coverage">Create a new coverage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration-examples">Configuration examples</a><ul>
+<li><a class="reference internal" href="#dem-bathymetry">DEM/Bathymetry</a></li>
+<li><a class="reference internal" href="#aerial-imagery">Aerial imagery</a></li>
+<li><a class="reference internal" href="#scanned-maps">Scanned maps</a></li>
+<li><a class="reference internal" href="#dynamic-imagery">Dynamic imagery</a></li>
+<li><a class="reference internal" href="#multi-resolution-imagery-with-reprojection">Multi-resolution imagery with reprojection</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#referring-to-a-datastore-configured-in-geoserver">Referring to a datastore configured in GeoServer</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="configuration.html" title="previous chapter">ImageMosaic configuration</a></li>
+            <li>Next: <a href="../geopkg.html" title="next chapter">GeoPackage</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/raster/imagemosaic/tutorial.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filter functions &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Filter Function Reference" href="function_reference.html" />
+    <link rel="prev" title="ECQL Reference" href="ecql_reference.html" /> 
+  </head><body class="filter/function">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Filtering</a> &raquo;</li>
+    <li>Filter functions</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="function_reference.html" title="Filter Function Reference" accesskey="N">Next</a></li>
+  <li>
+    <a href="ecql_reference.html" title="ECQL Reference" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="filter-functions">
+<span id="filter-function"></span><h1>Filter functions<a class="headerlink" href="#filter-functions" title="Permalink to this headline">¶</a></h1>
+<p>The OGC Filter Encoding specification provides a generic concept of a <em>filter function</em>.
+A filter function is a named function with any number of arguments, which can be used in a filter expression to perform specific calculations.
+This provides much richer expressiveness for defining filters.
+Filter functions can be used in both the XML Filter Encoding language and
+the textual ECQL language, using the syntax appropriate to the language.</p>
+<p>GeoServer provides many different kinds of filter functions,
+covering a wide range of functionality including mathematics, string formatting, and geometric operations.
+A complete list is provided in the <a class="reference internal" href="function_reference.html#filter-function-reference"><span class="std std-ref">Filter Function Reference</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Filter Encoding specification provides a standard syntax for filter functions, but does not mandate a specific set of functions.  Servers are free to provide whatever functions they want, so some function expressions may work only in specific software.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following examples show how filter functions are used.
+The first shows enhanced WFS filtering using the <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> function.
+The second shows how to use functions in SLD to get improved label rendering.</p>
+<div class="section" id="wfs-filtering">
+<h3>WFS filtering<a class="headerlink" href="#wfs-filtering" title="Permalink to this headline">¶</a></h3>
+<p>Let’s assume we have a feature type whose geometry field, <code class="docutils literal notranslate"><span class="pre">geom</span></code>, can contain any kind of geometry.
+For a certain application we need to extract only the features whose geometry is a simple point or a multipoint.
+This can be done using a GeoServer-specific filter function named <code class="docutils literal notranslate"><span class="pre">geometryType</span></code>.
+Here is the WFS request including the filter function:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wfs:GetFeature</span> <span class="na">service=</span><span class="s">&quot;WFS&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+  <span class="na">outputFormat=</span><span class="s">&quot;GML2&quot;</span>
+  <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span>
+  <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+  <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wfs</span>
+<span class="s">                      http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wfs:Query</span> <span class="na">typeName=</span><span class="s">&quot;sf:archsites&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ogc:Filter&gt;</span>
+       <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+          <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;geometryType&quot;</span><span class="nt">&gt;</span>
+             <span class="nt">&lt;ogc:PropertyName&gt;</span>geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+          <span class="nt">&lt;/ogc:Function&gt;</span>
+          <span class="nt">&lt;ogc:Literal&gt;</span>Point<span class="nt">&lt;/ogc:Literal&gt;</span>
+       <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+    <span class="nt">&lt;/ogc:Filter&gt;</span>
+    <span class="nt">&lt;/wfs:Query&gt;</span>
+<span class="nt">&lt;/wfs:GetFeature&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="wfs-2-0-namespaces">
+<h3>WFS 2.0 namespaces<a class="headerlink" href="#wfs-2-0-namespaces" title="Permalink to this headline">¶</a></h3>
+<p>WFS 2.0 does not depend on any one GML version and thus requires an explicit namespace and schemaLocation for GML.
+This POST example selects features using a spatial query. Note the complete declaration of namespace prefixes.
+In a GET request, namespaces can be placed on a Filter element.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wfs:GetFeature</span> <span class="na">service=</span><span class="s">&quot;WFS&quot;</span> <span class="na">version=</span><span class="s">&quot;2.0.0&quot;</span>
+    <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs/2.0&quot;</span>
+    <span class="na">xmlns:fes=</span><span class="s">&quot;http://www.opengis.net/fes/2.0&quot;</span>
+    <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span>
+    <span class="na">xmlns:sf=</span><span class="s">&quot;http://www.openplans.org/spearfish&quot;</span>
+    <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+    <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wfs/2.0</span>
+<span class="s">                        http://schemas.opengis.net/wfs/2.0/wfs.xsd</span>
+<span class="s">                        http://www.opengis.net/gml/3.2</span>
+<span class="s">                        http://schemas.opengis.net/gml/3.2.1/gml.xsd&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wfs:Query</span> <span class="na">typeNames=</span><span class="s">&quot;sf:bugsites&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;fes:Filter&gt;</span>
+            <span class="nt">&lt;fes:Not&gt;</span>
+                <span class="nt">&lt;fes:Disjoint&gt;</span>
+                    <span class="nt">&lt;fes:ValueReference&gt;</span>sf:the_geom<span class="nt">&lt;/fes:ValueReference&gt;</span>
+                    <span class="c">&lt;!-- gml:id is mandatory on GML 3.2 geometry elements --&gt;</span>
+                    <span class="nt">&lt;gml:Polygon</span>
+                            <span class="na">gml:id=</span><span class="s">&quot;polygon.1&quot;</span>
+                            <span class="na">srsName=</span><span class="s">&#39;http://www.opengis.net/def/crs/EPSG/0/26713&#39;</span><span class="nt">&gt;</span>
+                        <span class="nt">&lt;gml:exterior&gt;</span>
+                            <span class="nt">&lt;gml:LinearRing&gt;</span>
+                                <span class="c">&lt;!-- pairs must form a closed ring --&gt;</span>
+                                <span class="nt">&lt;gml:posList&gt;</span>590431 4915204 590430
+                                    4915205 590429 4915204 590430
+                                    4915203 590431 4915204<span class="nt">&lt;/gml:posList&gt;</span>
+                            <span class="nt">&lt;/gml:LinearRing&gt;</span>
+                        <span class="nt">&lt;/gml:exterior&gt;</span>
+                    <span class="nt">&lt;/gml:Polygon&gt;</span>
+                <span class="nt">&lt;/fes:Disjoint&gt;</span>
+            <span class="nt">&lt;/fes:Not&gt;</span>
+        <span class="nt">&lt;/fes:Filter&gt;</span>
+    <span class="nt">&lt;/wfs:Query&gt;</span>
+<span class="nt">&lt;/wfs:GetFeature&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sld-formatting">
+<h3>SLD formatting<a class="headerlink" href="#sld-formatting" title="Permalink to this headline">¶</a></h3>
+<p>We want to display elevation labels in a contour map. The elevations are stored as floating point values, so the raw numeric values may display with unwanted decimal places (such as “150.0” or “149.999999”).
+We want to ensure the numbers are rounded appropriately (i.e. to display “150”).
+To achieve this the <code class="docutils literal notranslate"><span class="pre">numberFormat</span></code> filter function can be used in the SLD label content expression:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>...
+<span class="nt">&lt;TextSymbolizer&gt;</span>
+  <span class="nt">&lt;Label&gt;</span>
+    <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;numberFormat&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ogc:Literal&gt;</span>##<span class="nt">&lt;/ogc:Literal&gt;</span>
+      <span class="nt">&lt;ogc:PropertyName&gt;</span>ELEVATION<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+    <span class="nt">&lt;/ogc:Function&gt;</span>
+  <span class="nt">&lt;/Label&gt;</span>
+  ...
+<span class="nt">&lt;/TextSymbolizer&gt;</span>
+...
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="performance-implications">
+<h2>Performance implications<a class="headerlink" href="#performance-implications" title="Permalink to this headline">¶</a></h2>
+<p>Using filter functions in SLD symbolizer expressions does not have significant overhead, unless the function is performing very heavy computation.</p>
+<p>However, using functions in WFS filtering or SLD rule expressions may cause performance issues in certain cases. This is usually because specific filter functions are not recognized by a native data store filter encoder, and thus GeoServer must execute the functions in memory instead.</p>
+<p>For example, given a filter like <code class="docutils literal notranslate"><span class="pre">BBOX(geom,-10,30,20,45)</span> <span class="pre">and</span> <span class="pre">geometryType(geom)</span> <span class="pre">=</span> <span class="pre">'Point'</span></code> most data stores will split the filter into two separate parts. The bounding box filter will be encoded as a primary filter and executed in SQL, while the <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> function will be executed in memory on the results coming from the primary filter.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="ecql_reference.html" title="previous chapter">ECQL Reference</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="function_reference.html" title="next chapter">Filter Function Reference</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Filter functions</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#wfs-filtering">WFS filtering</a></li>
+<li><a class="reference internal" href="#wfs-2-0-namespaces">WFS 2.0 namespaces</a></li>
+<li><a class="reference internal" href="#sld-formatting">SLD formatting</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performance-implications">Performance implications</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="ecql_reference.html" title="previous chapter">ECQL Reference</a></li>
+            <li>Next: <a href="function_reference.html" title="next chapter">Filter Function Reference</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/filter/function.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raster Access &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="REST Configuration" href="REST.html" />
+    <link rel="prev" title="Image Processing" href="image_processing/index.html" /> 
+  </head><body class="configuration/raster_access">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Server configuration</a> &raquo;</li>
+    <li>Raster Access</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="REST.html" title="REST Configuration" accesskey="N">Next</a></li>
+  <li>
+    <a href="image_processing/index.html" title="Image Processing" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="raster-access">
+<span id="config-converageaccess"></span><h1>Raster Access<a class="headerlink" href="#raster-access" title="Permalink to this headline">¶</a></h1>
+<p>The Coverage Access Settings page in the Server menu in the <a class="reference internal" href="../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a> provides configuration options to customize thread pool executors and ImageIO caching memory.</p>
+<div class="figure align-default" id="id1">
+<img alt="../_images/raster_access.png" src="../_images/raster_access.png" />
+<p class="caption"><span class="caption-text">Raster Access Settings</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="memory-use">
+<span id="imageio-settings"></span><span id="thread-pool-executor-settings"></span><h2>Memory Use<a class="headerlink" href="#memory-use" title="Permalink to this headline">¶</a></h2>
+<p>WMS requests usually produce relatively small images whilst WCS requests may frequently deal with bigger datasets. Caching the image in memory before encoding it may be helpful when the size of the image isn’t too big. For a huge image (as one produced by a big WCS request) it would be better instead caching through a temporary file with respect to caching in memory.
+This section allows to specify a threshold image size to let GeoServer decide whether to use a <a class="reference external" href="http://docs.oracle.com/javase/1.5.0/docs/api/javax/imageio/stream/MemoryCacheImageOutputStream.html/">MemoryCacheImageOutputStream</a> or <a class="reference external" href="http://docs.oracle.com/javase/1.5.0/docs/api/javax/imageio/stream/FileCacheImageOutputStream.html/">FileCacheImageOutputStream</a> when encoding the images.</p>
+<p><strong>ImageIO Cache Memory Threshold</strong>—Sets the threshold size (expressed in KiloBytes) which will make GeoServer choose between file cache vs memory based cache.
+If the estimated size of the image to be encoded is smaller than the threshold value, a <cite>MemoryCacheImageOutputStream</cite> will be used resulting into caching the image in memory. If the estimated size of the image to be encoded is greater than the threshold value, a <cite>FileCacheImageOutputStream</cite> will be used.</p>
+</div>
+<div class="section" id="cpu-use">
+<h2>CPU Use<a class="headerlink" href="#cpu-use" title="Permalink to this headline">¶</a></h2>
+<p>The imageMosaic reader may load, in parallel, different files that make up the mosaic by means of a
+<a class="reference external" href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ThreadPoolExecutor.html/">ThreadPoolExecutor</a> .
+A global ThreadPoolExecutor instance is shared by all the readers supporting and using concurrent reads. This section
+of the Coverage Access Settings administration page allows configuration of the Executor parameters.</p>
+<p><strong>Core Pool Size</strong>—Sets the core pool size of the thread pool executor. A positive integer must be specified.</p>
+<p><strong>Maximum Pool Size</strong>—Sets the maximum pool size of the thread pool executor. A positive integer must be specified.</p>
+<p><strong>Keep Alive Time</strong>—Sets the time to be wait by the executor before terminating an idle thread in case there are more threads than <cite>corePoolSize</cite>.</p>
+<p><strong>Queue Type</strong>—The executor service uses a <a class="reference external" href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/BlockingQueue.html/">BlockingQueue</a> to manage submitted tasks.
+Using an <cite>unbounded</cite> queue is recommended which allows to queue all the pending requests with no limits (Unbounded). With a <cite>direct</cite> type, incoming requests will be rejected when there are already <cite>maximumPoolSize</cite> busy threads.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a new task is submitted to the list of tasks to be executed, and less than <cite>corePoolSize</cite> threads are running, a new thread is created to handle the request. Incoming tasks are queued in case <cite>corePoolSize</cite> or more threads are running.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a request can’t be queued or there are less than <cite>corePoolSize</cite> threads running, a new thread is created unless this would exceed <cite>maximumPoolSize</cite>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the pool currently has more than <cite>corePoolSize</cite> threads, excess threads will be terminated if they have been idle for more than the <cite>keepAliveTime</cite>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a new task is submitted to the list of tasks to be executed and there are more than <cite>corePoolSize</cite> but less than <cite>maximumPoolSize</cite> threads running, a new thread will be created only if the queue is full. This means that when using an <cite>Unbounded</cite> queue, no more threads than <cite>corePoolSize</cite> will be running and <cite>keepAliveTime</cite> has no influence.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <cite>corePoolSize</cite> and <cite>maximumPoolSize</cite> are the same, a fixed-size thread pool is used.</p>
+</div>
+</div>
+</div>
+<div class="section" id="system-properties-configuration">
+<h1>System Properties Configuration<a class="headerlink" href="#system-properties-configuration" title="Permalink to this headline">¶</a></h1>
+<p>There are some additional global configuration parameters involved in raster access which can be specified through System properties.</p>
+<div class="section" id="max-oversampling-factor">
+<h2>Max Oversampling Factor<a class="headerlink" href="#max-oversampling-factor" title="Permalink to this headline">¶</a></h2>
+<p>When dealing with reprojection, the underlying raster read operation might do some oversampling in order to provide the requested output resolution. Depending on the reprojection and the requested area, the oversampling factor might be high.</p>
+<p>Consider an untiled whole world request of an EPSG:4326 raster, towards EPSG:3857, filling a 1024x768 image. Due to the big distortion introduced by the Mercator Projection at high latitudes, the underlying read operation may result in actually reading 20000x8000 pixels, in other words, an oversampling factor of almost 20. Image processing operations will work on that big input image before returning back the desired 1024x768 image.</p>
+<p>This can be very time consuming (you may notice long rendering time for that). It’s possible to put a limit on the maximum oversampling factor by adding the following java option to GeoServer startup script and restart it:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>-Dorg.geotools.coverage.max.oversample=N
+</pre></div>
+</div>
+</div></blockquote>
+<p>With N a number representing the maximum oversampling factor. By this way, the underlying read operation will use a reading resolution within that limit, making the rendering faster. The speed gain has however a penalty, output quality decrease at the poles. So you may want to play a bit with this value to find the optimal trade-off between speed and quality. For example, you could start trying with a value of 3 and check the results, and then slowly increase it until the output matches the desired quality within an acceptable rendering time.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="image_processing/index.html" title="previous chapter">Image Processing</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="REST.html" title="next chapter">REST Configuration</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Raster Access</a><ul>
+<li><a class="reference internal" href="#memory-use">Memory Use</a></li>
+<li><a class="reference internal" href="#cpu-use">CPU Use</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#system-properties-configuration">System Properties Configuration</a><ul>
+<li><a class="reference internal" href="#max-oversampling-factor">Max Oversampling Factor</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="image_processing/index.html" title="previous chapter">Image Processing</a></li>
+            <li>Next: <a href="REST.html" title="next chapter">REST Configuration</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/configuration/raster_access.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

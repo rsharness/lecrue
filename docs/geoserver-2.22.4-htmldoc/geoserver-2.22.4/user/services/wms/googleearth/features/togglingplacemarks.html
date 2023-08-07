@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toggling Placemarks &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Customizing Placemarks" href="customizingplacemarks.html" />
+    <link rel="prev" title="KML Reflector" href="kmlreflector.html" /> 
+  </head><body class="services/wms/googleearth/features/togglingplacemarks">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Google Earth</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features</a> &raquo;</li>
+    <li>Toggling Placemarks</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="customizingplacemarks.html" title="Customizing Placemarks" accesskey="N">Next</a></li>
+  <li>
+    <a href="kmlreflector.html" title="KML Reflector" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="toggling-placemarks">
+<span id="ge-feature-toggling-placemarks"></span><h1>Toggling Placemarks<a class="headerlink" href="#toggling-placemarks" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="vector-placemarks">
+<h2>Vector Placemarks<a class="headerlink" href="#vector-placemarks" title="Permalink to this headline">¶</a></h2>
+<p>When GeoServer generates KML for a vector dataset, it attaches information from the data to each feature that is created. When clicking on a vector feature, a pop-up window is displayed. This is called a <strong>placemark</strong>. By default this is a simple list which displays attribute data, although this information can be customized using Freemarker templates.</p>
+<p>If you would like this information not to be shown when a feature is clicked (either for security reasons, or simply to have a cleaner user interface), it is possible to disable this functionality. To do so, use the <code class="docutils literal notranslate"><span class="pre">kmattr</span></code> parameter in a KML request to turn off attribution.</p>
+<p>The syntax for <code class="docutils literal notranslate"><span class="pre">kmattr</span></code> is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">format_options</span><span class="o">=</span><span class="n">kmattr</span><span class="p">:[</span><span class="n">true</span><span class="o">|</span><span class="n">false</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">kmattr</span></code> is a “format option”, so the syntax is slightly different from the usual key-value pair. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/kml?layers=topp:states&amp;format_options=kmattr:false
+</pre></div>
+</div>
+</div>
+<div class="section" id="raster-placemarks">
+<h2>Raster Placemarks<a class="headerlink" href="#raster-placemarks" title="Permalink to this headline">¶</a></h2>
+<p>Unlike vector features, where the placemark is enabled by default, placemarks are disabled by default with raster images of features. To enable this feature, you can use the <code class="docutils literal notranslate"><span class="pre">kmplacemark</span></code> format option in your KML request. The syntax is similar to the <code class="docutils literal notranslate"><span class="pre">kmattr</span></code> format option specified above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">format_options</span><span class="o">=</span><span class="n">kmplacemark</span><span class="p">:[</span><span class="n">true</span><span class="o">|</span><span class="n">false</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For example, using the KML reflector, the syntax would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/kml?layers=topp:states&amp;format_options=kmplacemark:true
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="kmlreflector.html" title="previous chapter">KML Reflector</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="customizingplacemarks.html" title="next chapter">Customizing Placemarks</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Toggling Placemarks</a><ul>
+<li><a class="reference internal" href="#vector-placemarks">Vector Placemarks</a></li>
+<li><a class="reference internal" href="#raster-placemarks">Raster Placemarks</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="kmlreflector.html" title="previous chapter">KML Reflector</a></li>
+            <li>Next: <a href="customizingplacemarks.html" title="next chapter">Customizing Placemarks</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/features/togglingplacemarks.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

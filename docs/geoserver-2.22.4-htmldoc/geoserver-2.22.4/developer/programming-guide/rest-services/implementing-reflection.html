@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Implementing a RESTful Service with Reflection &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Implementing a REST PathMapper" href="implementing-mapper.html" />
+    <link rel="prev" title="Implementing a RESTful Service with Maps" href="implementing-map.html" /> 
+  </head><body class="programming-guide/rest-services/implementing-reflection">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">REST Services</a> &raquo;</li>
+    <li>Implementing a RESTful Service with Reflection</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="implementing-mapper.html" title="Implementing a REST PathMapper" accesskey="N">Next</a></li>
+  <li>
+    <a href="implementing-map.html" title="Implementing a RESTful Service with Maps" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="implementing-a-restful-service-with-reflection">
+<span id="rest-services-implementing-reflection"></span><h1>Implementing a RESTful Service with Reflection<a class="headerlink" href="#implementing-a-restful-service-with-reflection" title="Permalink to this headline">¶</a></h1>
+<p>The previous section showed how to save some effort when implementing a
+RESTful service by taking advantage of the <code class="docutils literal notranslate"><span class="pre">MapResource</span></code> base class. This section will show how to make use of a different base class, but for a
+similar purpose.</p>
+<p>The class used is <code class="docutils literal notranslate"><span class="pre">org.geoserver.rest.ReflectiveResource</span></code>. The idea with
+<code class="docutils literal notranslate"><span class="pre">ReflectiveResource</span></code> is that a resource is backed by an arbitrary object.
+The <code class="docutils literal notranslate"><span class="pre">ReflectiveResource</span></code> class uses reflection to automatically create
+representations of the resource as XML or JSON.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>This section builds off the example in the previous section
+<a class="reference internal" href="implementing-map.html#rest-services-implementing-map"><span class="std std-ref">Implementing a RESTful Service with Maps</span></a>.</p>
+</div>
+<div class="section" id="create-a-new-java-bean">
+<h2>Create a new java bean<a class="headerlink" href="#create-a-new-java-bean" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>The use of <code class="docutils literal notranslate"><span class="pre">ReflectiveResource</span></code> requires we have an underlying object to
+to work with. Create a class named <code class="docutils literal notranslate"><span class="pre">Hello</span></code> in the package
+<code class="docutils literal notranslate"><span class="pre">org.geoserver.hellorest</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.hellorest</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="p">{</span>
+
+   <span class="n">String</span> <span class="n">message</span><span class="p">;</span>
+
+   <span class="kd">public</span> <span class="nf">Hello</span><span class="p">(</span> <span class="n">String</span> <span class="n">message</span> <span class="p">)</span> <span class="p">{</span>
+       <span class="k">this</span><span class="p">.</span><span class="na">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="kd">public</span> <span class="n">String</span> <span class="nf">getMessage</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="n">message</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="create-a-new-resource-class">
+<h2>Create a new resource class<a class="headerlink" href="#create-a-new-resource-class" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Create a new class called <code class="docutils literal notranslate"><span class="pre">HelloReflectiveResource</span></code> in the package
+<code class="docutils literal notranslate"><span class="pre">org.geoserver.hellorest</span></code>, which extends from <code class="docutils literal notranslate"><span class="pre">ReflectiveResource</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.hellorest</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.geoserver.rest.ReflectiveResource</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloReflectiveResource</span> <span class="kd">extends</span> <span class="n">ReflectiveResource</span> <span class="p">{</span>
+
+   <span class="nd">@Override</span>
+   <span class="kd">protected</span> <span class="n">Object</span> <span class="nf">handleObjectGet</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+       <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>The first method to implement is <code class="docutils literal notranslate"><span class="pre">handleObjectGet()</span></code>. The purpose of this
+method is to return the underlying object representing the resource. In
+this case, an instance of the <code class="docutils literal notranslate"><span class="pre">Hello</span></code> class created in the previous step.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@Override</span>
+<span class="kd">protected</span> <span class="n">Object</span> <span class="nf">handleObjectGet</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="k">new</span> <span class="n">Hello</span><span class="p">(</span> <span class="s">&quot;Hello World&quot;</span> <span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="update-the-application-context">
+<h2>Update the application context<a class="headerlink" href="#update-the-application-context" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>The next step is to update an application context and tell GeoServer
+about the new resource created in the previous section. Update the
+<code class="docutils literal notranslate"><span class="pre">applicationContext.xml</span></code> file so that it looks like the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="cp">&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;</span>
+
+ <span class="nt">&lt;beans&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;hello&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.hellorest.HelloResource&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;helloMap&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.hellorest.HelloMapResource&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;helloReflective&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.hellorest.HelloReflectiveResource&quot;</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;helloMapping&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.rest.RESTMapping&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;routes&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;map&gt;</span>
+            <span class="nt">&lt;entry&gt;</span>
+              <span class="nt">&lt;key&gt;&lt;value&gt;</span>/hello.{format}<span class="nt">&lt;/value&gt;&lt;/key&gt;</span>
+              <span class="c">&lt;!--value&gt;hello&lt;/value--&gt;</span>
+              <span class="c">&lt;!--value&gt;helloMap&lt;/value--&gt;</span>
+              <span class="nt">&lt;value&gt;</span>helloReflective<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/entry&gt;</span>
+         <span class="nt">&lt;/map&gt;</span>
+      <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+<span class="nt">&lt;/beans&gt;</span>
+</pre></div>
+</div>
+<p>There are two things to note above. The first is the addition of the
+<code class="docutils literal notranslate"><span class="pre">helloReflective</span></code> bean. The second is a change to the <code class="docutils literal notranslate"><span class="pre">helloMapping</span></code>
+bean, which now maps to the <code class="docutils literal notranslate"><span class="pre">helloReflective</span></code> bean.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="test">
+<h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Create a new test class called <code class="docutils literal notranslate"><span class="pre">HelloReflectiveResourceTest</span></code> in the
+package <code class="docutils literal notranslate"><span class="pre">org.geoserver.hellorest</span></code>, which extends from
+<code class="docutils literal notranslate"><span class="pre">org.geoserver.test.GeoServerTestSupport</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.hellorest</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.geoserver.test.GeoServerTestSupport</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloReflectiveResourceTest</span> <span class="kd">extends</span> <span class="n">GeoServerTestSupport</span> <span class="p">{</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Add a test named <code class="docutils literal notranslate"><span class="pre">testGetAsXML()</span></code> which makes a GET request for
+<code class="docutils literal notranslate"><span class="pre">/rest/hello.xml</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
+
+<span class="kn">import</span> <span class="nn">org.w3c.dom.Document</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.w3c.dom.Node</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testGetAsXML</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+     <span class="c1">//make the request, parsing the result as a dom</span>
+     <span class="n">Document</span> <span class="n">dom</span> <span class="o">=</span> <span class="n">getAsDOM</span><span class="p">(</span> <span class="s">&quot;/rest/hello.xml&quot;</span> <span class="p">);</span>
+
+     <span class="c1">//print out the result</span>
+     <span class="n">print</span><span class="p">(</span><span class="n">dom</span><span class="p">);</span>
+
+     <span class="c1">//make assertions</span>
+     <span class="n">Node</span> <span class="n">message</span> <span class="o">=</span> <span class="n">getFirstElementByTagName</span><span class="p">(</span> <span class="n">dom</span><span class="p">,</span> <span class="s">&quot;message&quot;</span><span class="p">);</span>
+     <span class="n">assertNotNull</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+     <span class="n">assertEquals</span><span class="p">(</span> <span class="s">&quot;Hello World&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">.</span><span class="na">getFirstChild</span><span class="p">().</span><span class="na">getNodeValue</span><span class="p">()</span> <span class="p">);</span>
+   <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Add a second test named <code class="docutils literal notranslate"><span class="pre">testGetAsJSON()</span></code> which makes a GET request
+for <code class="docutils literal notranslate"><span class="pre">/rest/hello.json</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="p">...</span>
+
+<span class="kn">import</span> <span class="nn">net.sf.json.JSON</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">net.sf.json.JSONObject</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testGetAsJSON</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+     <span class="c1">//make the request, parsing the result into a json object</span>
+     <span class="n">JSON</span> <span class="n">json</span> <span class="o">=</span> <span class="n">getAsJSON</span><span class="p">(</span> <span class="s">&quot;/rest/hello.json&quot;</span><span class="p">);</span>
+
+     <span class="c1">//print out the result</span>
+     <span class="n">print</span><span class="p">(</span><span class="n">json</span><span class="p">);</span>
+
+     <span class="c1">//make assertions</span>
+     <span class="n">assertTrue</span><span class="p">(</span> <span class="n">json</span> <span class="k">instanceof</span> <span class="n">JSONObject</span> <span class="p">);</span>
+     <span class="n">JSONObject</span> <span class="n">hello</span> <span class="o">=</span> <span class="p">((</span><span class="n">JSONObject</span><span class="p">)</span> <span class="n">json</span><span class="p">).</span><span class="na">getJSONObject</span><span class="p">(</span> <span class="s">&quot;org.geoserver.hellorest.Hello&quot;</span> <span class="p">);</span>
+     <span class="n">assertEquals</span><span class="p">(</span> <span class="s">&quot;Hello World&quot;</span><span class="p">,</span> <span class="n">hello</span><span class="p">.</span><span class="na">get</span><span class="p">(</span> <span class="s">&quot;message&quot;</span> <span class="p">)</span> <span class="p">);</span>
+   <span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Build and test the <code class="docutils literal notranslate"><span class="pre">hello_test</span></code> module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_rest</span><span class="p">]</span><span class="o">%</span> <span class="n">mvn</span> <span class="n">clean</span> <span class="n">install</span> <span class="o">-</span><span class="n">Dtest</span><span class="o">=</span><span class="n">HelloMapReflectiveResourceTest</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="implementing-map.html" title="previous chapter">Implementing a RESTful Service with Maps</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="implementing-mapper.html" title="next chapter">Implementing a REST PathMapper</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Implementing a RESTful Service with Reflection</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#create-a-new-java-bean">Create a new java bean</a></li>
+<li><a class="reference internal" href="#create-a-new-resource-class">Create a new resource class</a></li>
+<li><a class="reference internal" href="#update-the-application-context">Update the application context</a></li>
+<li><a class="reference internal" href="#test">Test</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="implementing-map.html" title="previous chapter">Implementing a RESTful Service with Maps</a></li>
+            <li>Next: <a href="implementing-mapper.html" title="next chapter">Implementing a REST PathMapper</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/rest-services/implementing-reflection.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

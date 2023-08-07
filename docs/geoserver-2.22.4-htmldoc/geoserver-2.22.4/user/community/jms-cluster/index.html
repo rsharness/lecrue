@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JMS based Clustering &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Installation of the JMS Cluster modules" href="installation.html" />
+    <link rel="prev" title="JDBCStore configuration" href="../jdbcstore/configuration.html" /> 
+  </head><body class="community/jms-cluster/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>JMS based Clustering</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="installation.html" title="Installation of the JMS Cluster modules" accesskey="N">Next</a></li>
+  <li>
+    <a href="../jdbcstore/configuration.html" title="JDBCStore configuration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="jms-based-clustering">
+<h1>JMS based Clustering<a class="headerlink" href="#jms-based-clustering" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The are several approaches to implement a clustered deployment  with GeoServer, based on different mixes of data directory sharing plus configuration reload.
+The JMS based clustering module architecture is depicted in the following diagram:</p>
+<div class="figure align-center">
+<img alt="Illustration  Clustering Solution for GeoServer" src="../../_images/Schema.png" />
+</div>
+<p>This module implements a robust Primary/Replica approach which leverages on a Message Oriented Middleware (MOM) where:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The Primaries accept changes to the internal configuration, persist them on their own data directory but also forward them to the Replicas via the MOM</p></li>
+<li><p>The Replicas should not be used to change  their configuration from either REST or the User Interface, since are configured to inject configuration changes disseminated by the Primary(s) via the MOM</p></li>
+<li><p>The MOM is used to make the Primary and the Replicas exchange messages in a durable fashion</p></li>
+<li><p>Each Replicas has its own data directory and it is responsible for keeping it aligned with the Primary’s one. In case a Replicas goes down when it goes up again he might receive a bunch of JMS messages to align its configuration to the Primary’s one.</p></li>
+<li><p>A Node can be both Primary and Replica at the same time, this means that we don’t have a single point of failure, i.e. the Primary itself</p></li>
+</ul>
+</div></blockquote>
+<p>Summarizing, the Primary as well as each Replicas use a private data directory, Replicas receive changes from the Primary, which is the only one where configuration changes are allowed, via JMS messages. Such messages transport GeoServer configuration objects that the Replicas inject directly in their own in-memory configuration and then persist on disk on their data directory, completely removing the need for a configuration reload for each configuration change.</p>
+<p>To make things simpler, in the default configuration the MOM is actually embedded and running inside each
+GeoServer, using multicast to find its peers and thus allowing for a clustering installation without
+the need to have a separate MOM deploy.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>The GeoServer Primary/Replica integration is implemented using JMS, Spring and a MOM (Message Oriented Middleware), in particular ActiveMQ.
+The schema in Illustration  represents a complete high level design of Primary/Replica platform.
+It is composed by 3 distinct actors:</p>
+<ol class="arabic simple">
+<li><p>GeoServer Primary</p></li>
+<li><p>GeoServer Replicas</p></li>
+<li><p>The MOM (ActiveMQ)</p></li>
+</ol>
+<div class="figure align-center">
+<img alt="Illustration  Component Diagram for the MOM based clustering" src="../../_images/Arch.png" />
+</div>
+<p>This structure allows to have:</p>
+<ol class="arabic simple">
+<li><p>Queue fail-over components (using MOM).</p></li>
+<li><p>Replica down are automatically handled using durable topic (which will store message to re-synch changes happens if one of the replicas is down when the message was made available)</p></li>
+<li><p>Primary down will not affect any replicas synchronization process.</p></li>
+</ol>
+<p>This full blown deployment is composed by:</p>
+<ul class="simple">
+<li><p>A pure Primary GeoServer(s), this instance can only send events to the topic. It cannot act as a replica</p></li>
+<li><p>A set of GeoServer which can work as both Primary and Replica. These instances can send and receive messages to/from the topic. They can work as Primaries (sending message to other subscribers) as well as Replicas (these instances are also subscribers of the topic).</p></li>
+<li><p>A set of pure Replicas GeoServer instances whic can only receive messages from the topic.</p></li>
+<li><p>A set of MOM brokers so that each GeoServer instance is configured with a set of available brokers (failover). Each broker use the shared database as persistence. Doing so if a broker fails for some reason, messages can still be written and read from the shared database.</p></li>
+</ul>
+<p>All the produced code is based on spring-jms to ensure portability amongst different MOM, but if you look at the schema, we are also leveraging ActiveMQ VirtualTopics to get dynamic routing (you can dynamically attach primary and replica).</p>
+<p>The VirtualTopics feature has also other advantages explained here: <a class="reference external" href="http://activemq.apache.org/virtual-destinations.html">http://activemq.apache.org/virtual-destinations.html</a></p>
+<p>As said above, in the default configuration the MOM runs inside GeoServer itself, simplifying the topology and
+the setup effort.</p>
+<div class="section" id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p>To install the jms cluster modules into an existing GeoServer refer to the <a class="reference internal" href="installation.html#jms-installation"><span class="std std-ref">Installation of the JMS Cluster modules</span></a> page</p>
+</div>
+</div>
+<div class="section" id="how-to-configure-geoserver-instances">
+<h2>How to configure GeoServer Instances<a class="headerlink" href="#how-to-configure-geoserver-instances" title="Permalink to this headline">¶</a></h2>
+<p>The configuration for the GeoServer is very simple and can be performed using the provided GUI or modifying the <code class="docutils literal notranslate"><span class="pre">cluster.properties</span></code> file which is stored into the <code class="docutils literal notranslate"><span class="pre">GEOSERVER_DATA_DIR</span></code> under the <code class="docutils literal notranslate"><span class="pre">cluster</span></code> folder (e.g. <code class="docutils literal notranslate"><span class="pre">${GEOSERVER_DATA_DIR}/cluster</span></code>).</p>
+<p>To override the default destination of this configuration file you have to setup the <strong>CLUSTER_CONFIG_DIR</strong> variable defining the destination folder of the <strong>cluster.properties</strong> file.
+This is <em>mandatory</em> when you want to share the same GEOSERVER_DATA_DIR, but not required if you are giving each GeoServer its own data directory.</p>
+<p>In case of shared data directory, it will be necessary to add a different system variable to each JVM running a GeoServer, e.g.:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-DCLUSTER_CONFIG_DIR=/var/geoserver/clusterConfig/1</span></code> to the JVM running the first node</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-DCLUSTER_CONFIG_DIR=/var/geoserver/clusterConfig/2</span></code> to the JVM running the second node</p></li>
+<li><p>and so on</p></li>
+</ul>
+<p>If the directories are missing, GeoServer will create them and provide a initial <code class="docutils literal notranslate"><span class="pre">cluster.properties</span></code>
+with reasonable defaults.</p>
+</div>
+<div class="section" id="instance-name">
+<h2>Instance name<a class="headerlink" href="#instance-name" title="Permalink to this headline">¶</a></h2>
+<p>The instance.name is used to distinguish from which GeoServer instance the message is coming from, so each GeoServer instance should use a different, unique (for a single cluster) name.</p>
+</div>
+<div class="section" id="broker-url">
+<h2>Broker URL<a class="headerlink" href="#broker-url" title="Permalink to this headline">¶</a></h2>
+<p>The broker.url field is used to instruct the internal JMS machinery where to publish messages to (primary GeoServer installation) or where to consume messages from (replica GeoServer installation). Many options are available for configuring the connection between the GeoServer instance and the JMS broker, for a complete list, please, check <a class="reference external" href="http://activemq.apache.org/configuring-transports.html">http://activemq.apache.org/configuring-transports.html</a>. In case when (recommended) failover set up  is put in place multiple broker URLs can be used. See <a class="reference external" href="http://activemq.apache.org/failover-transport-reference.html">http://activemq.apache.org/failover-transport-reference.html</a> for more information about how to configure that.
+Note
+GeoServer will not complete the start-up phase until the target broker is correctly activated and reachable.</p>
+</div>
+<div class="section" id="limitations-and-future-extensions">
+<h2>Limitations and future extensions<a class="headerlink" href="#limitations-and-future-extensions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="data">
+<h3>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h3>
+<p>NO DATA IS SENT THROUGH THE JMS CHANNEL
+The clustering solution we have put in place is specific for managing the GeoServer internal configuration, no data is transferred between primary and replicas. For that purpose use external mechanisms (ref. [GeoServer REST]).
+In principle this is not a limitation per se since usually in a clustered environment data is stored in shared locations outside the data directory. With our solution this is a requirement since each replicas will have its own private data directory.</p>
+</div>
+<div class="section" id="things-to-avoid">
+<h3>Things to avoid<a class="headerlink" href="#things-to-avoid" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>NEVER RELOAD THE GEOSERVER CATALOG ON A PRIMARY</strong>: Each primary instance should never call the catalog reload since this propagates the creation of all the resources, styles, etc to all the connected replicas.</p></li>
+<li><p><strong>NEVER CHANGE CONFIGURATION USING A PURE REPLICA</strong>: This will make the configuration of the specific replica out of synch with the others.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="refs">
+<h2>Refs:<a class="headerlink" href="#refs" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation of the JMS Cluster modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="activemq/activemqBroker.html">HOWTO configure ActiveMQ broker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="activemq/activemqBroker.html#persistence-configuration">Persistence Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="activemq/activemqBroker.html#oracle-datasource">Oracle datasource</a></li>
+<li class="toctree-l3"><a class="reference internal" href="activemq/activemqBroker.html#postgres-datasource">Postgres datasource</a></li>
+<li class="toctree-l3"><a class="reference internal" href="activemq/activemqBroker.html#kaha-datasource-embedded-database">Kaha datasource (Embedded database)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="activemq/activemqBroker.html#control-instances-using-jmx">Control instances using JMX</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="activemq/JDBC.html">JDBC Primary/Replica</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="activemq/JDBC.html#startup">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="activemq/JDBC.html#primary-failure">Primary failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="activemq/JDBC.html#configuring-jdbc-primary-replica">Configuring JDBC Primary/Replica</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="activemq/SharedFolder.html">Shared File System Primary/Replica</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="activemq/SharedFolder.html#startup">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="activemq/SharedFolder.html#primary-failure">Primary failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="activemq/SharedFolder.html#primary-restart">Primary restart</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="bibliography">
+<h2>Bibliography:<a class="headerlink" href="#bibliography" title="Permalink to this headline">¶</a></h2>
+<p>[JMS specs]
+Sun microsystens - Java Message Service - Version 1.1 April 12, 2002</p>
+<p>[JMS]
+Snyder Bosanac Davies - ActiveMQ in action - Manning</p>
+<p>[GeoServer]
+<a class="reference external" href="http://docs.geoserver.org/">http://docs.geoserver.org/</a></p>
+<p>[GeoServer REST]
+<a class="reference external" href="http://docs.geoserver.org/latest/en/user/rest/index.html#rest">http://docs.geoserver.org/latest/en/user/rest/index.html#rest</a></p>
+<p>[ActiveMQ]
+<a class="reference external" href="http://activemq.apache.org/">http://activemq.apache.org/</a></p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../jdbcstore/configuration.html" title="previous chapter">JDBCStore configuration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="installation.html" title="next chapter">Installation of the JMS Cluster modules</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">JMS based Clustering</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#description">Description</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-configure-geoserver-instances">How to configure GeoServer Instances</a></li>
+<li><a class="reference internal" href="#instance-name">Instance name</a></li>
+<li><a class="reference internal" href="#broker-url">Broker URL</a></li>
+<li><a class="reference internal" href="#limitations-and-future-extensions">Limitations and future extensions</a><ul>
+<li><a class="reference internal" href="#data">Data</a></li>
+<li><a class="reference internal" href="#things-to-avoid">Things to avoid</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#refs">Refs:</a></li>
+<li><a class="reference internal" href="#bibliography">Bibliography:</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../jdbcstore/configuration.html" title="previous chapter">JDBCStore configuration</a></li>
+            <li>Next: <a href="installation.html" title="next chapter">Installation of the JMS Cluster modules</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/jms-cluster/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

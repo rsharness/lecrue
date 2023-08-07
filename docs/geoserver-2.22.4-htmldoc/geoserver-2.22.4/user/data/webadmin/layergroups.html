@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Layer Groups &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Vector data" href="../vector/index.html" />
+    <link rel="prev" title="Layers" href="layers.html" /> 
+  </head><body class="data/webadmin/layergroups">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Data settings</a> &raquo;</li>
+    <li>Layer Groups</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../vector/index.html" title="Vector data" accesskey="N">Next</a></li>
+  <li>
+    <a href="layers.html" title="Layers" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="layer-groups">
+<span id="data-webadmin-layergroups"></span><h1>Layer Groups<a class="headerlink" href="#layer-groups" title="Permalink to this headline">¶</a></h1>
+<p>A layer group is a container in which layers and other layer groups can be organized in a hierarchical structure. A layer group can be referred to by a single name in WMS requests.  This allows simpler requests, as one layer can be specified instead of multiple individual layers.
+A layer group also provides a consistent, fixed ordering of the layers it contains, and can specify alternate (non-default) styles for layers.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../_images/data_layergroups.png" src="../../_images/data_layergroups.png" />
+<p class="caption"><span class="caption-text">Layer Groups page</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="layer-group-modes">
+<h2>Layer Group modes<a class="headerlink" href="#layer-group-modes" title="Permalink to this headline">¶</a></h2>
+<p>Layer group behaviour can be configured by setting its <span class="guilabel">mode</span>. There are 5 available values:</p>
+<ul class="simple">
+<li><p><strong>single</strong>: the layer group is exposed as a single layer with a name, acting as an alias for a list of layers. The layers are still showing up as top level entries in the WMS capabilities document (unless explicitly referred by a tree group).</p></li>
+<li><p><strong>opaque container</strong>: the layer group is exposed as a single layer with a name, acting as an alias for a list of layers. However, the layers and sub-groups contained in it won’t show up in the capabilities document (unless explicitly referred by a tree group) and won’t be available by themselves in WMS calls and in the WMS capabilities document, but only  as part of the group.</p></li>
+<li><p><strong>named tree</strong>: the layer group can be referred to by one name, but also exposes its nested layers and groups in the capabilities document.</p></li>
+<li><p><strong>container tree</strong>: the layer group is exposed in the capabilities document, but does not have a name, making it impossible to render it on its own. This is called “containing category” in the WMS specification.</p></li>
+<li><p><strong>Earth Observation tree</strong>: a special type of group created to manage the WMS Earth Observation requirements. This group does not render its nested layers and groups, but only a “preview layer” called Root Layer. When this mode is chosen, a new field “Root Layer” will be exposed in the configuration UI.</p></li>
+</ul>
+<p>If a layer is included in any non <em>single</em> mode group, it will no longer be listed in the flat layer list.  It will still be possible to include the layer in other layer groups.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 8%" />
+<col style="width: 23%" />
+<col style="width: 19%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer Group Mode</p></th>
+<th class="head"><p>Named</p></th>
+<th class="head"><p>Contains Children</p></th>
+<th class="head"><p>Lists Children</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Single</p></td>
+<td><p>named</p></td>
+<td></td>
+<td><p>no</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Opaque Container</p></td>
+<td><p>named</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>hides children</p></td>
+</tr>
+<tr class="row-even"><td><p>Named Tree</p></td>
+<td><p>named</p></td>
+<td><p>yes</p></td>
+<td><p>lists children</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Container Tree</p></td>
+<td></td>
+<td><p>yes</p></td>
+<td><p>lists children</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Earth Observation Tree</p></td>
+<td><p>named</p></td>
+<td><p>yes</p></td>
+<td><p>lists children</p></td>
+<td><p>has root layer</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="edit-a-layer-group">
+<h2>Edit a Layer Group<a class="headerlink" href="#edit-a-layer-group" title="Permalink to this headline">¶</a></h2>
+<p>To view or edit a layer group, click the layer group name.  A layer group configuration page will be displayed.  The initial fields allow you to configure the name, title, abstract, workspace, bounds, projection and mode of the layer group. To automatically set the bounding box, select the <span class="guilabel">Generate Bounds</span> button or the <span class="guilabel">Generate Bounds From CRS</span> button to use the bounds defined in the CRS (if available). You may also provide your own custom bounding box extents. To select an appropriate projection click the <span class="guilabel">Find</span> button.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A layer group can contain layers with dissimilar bounds and projections. GeoServer automatically reprojects all layers to the projection of the layer group.</p>
+</div>
+<p>The new <span class="guilabel">Enabled</span> checkbox, if disabled, will cause the layer group to just show up at configuration time (and in REST config), while the new <span class="guilabel">Advertised</span> checkbox, if unchecked, will make it to not be available in GetCapabilities request and in the layer preview. The behaviour of layer group regarding both checkboxes will not affect the behaviour of any of the layers being grouped, which will follow respectively that specified  in the corresponding edit page.</p>
+<div class="figure align-default">
+<img alt="../../_images/data_layergroups_edit.png" src="../../_images/data_layergroups_edit.png" />
+</div>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/data_layergroups_edit_table.png" src="../../_images/data_layergroups_edit_table.png" />
+<p class="caption"><span class="caption-text">Layer Groups Edit page</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The table at the bottom of the page lists layers and groups contained within the current layer group. We refer to layers and layer groups as <span class="guilabel">publishable elements</span>. When a layer group is processed, the layers are rendered in the order provided, so the <span class="guilabel">publishable elements</span> at the bottom of list will be rendered last and will show on top of the other <span class="guilabel">publishable elements</span>.</p>
+<p>A <span class="guilabel">publishable element</span> can be positioned higher or lower on this list by clicking the green up or down arrows, respectively, or can be simply dragged in the target position. The layer at the top of the list is the first one to be painted, the layer below it will be painted second, and so on, the last layer will be painted on top of all others (this is the so called “painter’s model”).</p>
+<p>The <span class="guilabel">Style</span> column shows the style associated with each layer. To change the style associated with a layer, click the appropriate style link. A list of enabled styles will be displayed. Clicking on a style name reassigns the layer’s style.</p>
+<div class="figure align-default" id="id3">
+<img alt="../../_images/data_layergroups_edit_styles.png" src="../../_images/data_layergroups_edit_styles.png" />
+<p class="caption"><span class="caption-text">Style editing for a layer within a layer group</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>To remove a <span class="guilabel">publishable element</span> from the layer group, select its button in the <span class="guilabel">Remove</span> column. You will now be prompted to confirm or cancel this deletion.</p>
+<p>A layer can be added to the list by clicking the <span class="guilabel">Add Layer…</span> button at the top of the table. From the list of layers, select the layer to be added by clicking the layer name. The selected layer will be appended to the bottom of the <span class="guilabel">publishable</span> list.</p>
+<div class="figure align-default" id="id4">
+<img alt="../../_images/data_layergroups_add_layer.png" src="../../_images/data_layergroups_add_layer.png" />
+<p class="caption"><span class="caption-text">Dialog for adding a layer to a layer group</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>A layer group can be added by clicking the <span class="guilabel">Add Layer Group…</span> button at the top of the table. From the list of layer groups, select the layer group to be added by clicking its name. The selected group will be appended to the bottom of the <span class="guilabel">publishable</span> list.</p>
+<div class="figure align-default" id="id5">
+<img alt="../../_images/data_layergroups_add_layergroup.png" src="../../_images/data_layergroups_add_layergroup.png" />
+<p class="caption"><span class="caption-text">Dialog for adding a layer group to a layer group</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>A style group can be added by clicking the <span class="guilabel">Add Style Group…</span> button at the top of the table. From the list of styles, select the <a class="reference internal" href="../../styling/sld/working.html#sld-working"><span class="std std-ref">style group</span></a> to be added by clicking its name. The selected style will be appended to the bottom of the <span class="guilabel">publishable</span> list.</p>
+<div class="figure align-default" id="id6">
+<img alt="../../_images/data_layergroups_add_stylegroup.png" src="../../_images/data_layergroups_add_stylegroup.png" />
+<p class="caption"><span class="caption-text">Dialog for adding a style group to a layer group</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p>You can view layer groups in the <a class="reference internal" href="layerpreview.html#layerpreview"><span class="std std-ref">Layer Preview</span></a> section of the web admin.</p>
+<div class="figure align-default" id="id7">
+<img alt="../../_images/data_layergroups_tasmania.png" src="../../_images/data_layergroups_tasmania.png" />
+<p class="caption"><span class="caption-text">Openlayers preview of the layer group “tasmania”</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, a layer group is queryable when at least a child layer is queryable. Uncheck “Queryable” box if you want to explicitly indicate that it is not queryable independently of how the child layers are configured.</p>
+</div>
+<p>Security tab allows to set data access rules at layer group level.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information on data access rules, please see the section on <a class="reference internal" href="../../security/webadmin/data.html#security-webadmin-data"><span class="std std-ref">Data</span></a>.</p>
+</div>
+<div class="figure align-default">
+<img alt="../../_images/data_layergroups_security.png" src="../../_images/data_layergroups_security.png" />
+</div>
+<p>To create/edit layergroup’s data access rules simply check/uncheck checkboxes according to desired access mode and role.
+The Grant access to any role checkbox grant each role for each access mode.</p>
+<div class="section" id="layer-group-styles">
+<h3>Layer Group Styles<a class="headerlink" href="#layer-group-styles" title="Permalink to this headline">¶</a></h3>
+<p>The user can also define styles for a Layer Group. By style in this context we mean a different group definition that, while carrying the same meaning, uses a different set of styles, or even a different set of layers (e.g., night versus day style, or full versus simplified). The styles are named and can be thus be referenced through the styles parameter in the various WMS operations (GetMap, GetLegendGraphic, GetFeatureInfo), while the usual Layer Group configuration is kept as the default style.</p>
+<p>To add a new style on the <span class="guilabel">Data</span> tab scroll down until reaching the <span class="guilabel">Layer Group Styles</span> section and click on <span class="guilabel">Add new</span>.</p>
+<div class="figure align-default">
+<img alt="../../_images/add-group-style.png" src="../../_images/add-group-style.png" />
+</div>
+<p>A form will pop up. Once defined a <span class="guilabel">name</span> (mandatory), it is possible to select the a list of layers and  corresponding styles for the group style definition.</p>
+<div class="figure align-default">
+<img alt="../../_images/group-style-definition.png" src="../../_images/group-style-definition.png" />
+</div>
+<p>In the above example the style uses the same list of layers, but different styles have been defined for the <code class="docutils literal notranslate"><span class="pre">tiger:giant_polygon</span></code> and <code class="docutils literal notranslate"><span class="pre">tiger:poly_landmarks</span></code> layers, respectively <code class="docutils literal notranslate"><span class="pre">giant-polygon-2</span></code> and <code class="docutils literal notranslate"><span class="pre">poly_landmarks-2</span></code>.
+However the Layer Group Style might also contain a different list of layers comparing to the default one.</p>
+<p>Once a style has been defined it will appear in the <code class="docutils literal notranslate"><span class="pre">GetCapabilities</span></code> document and clients will be able to reference it in the <code class="docutils literal notranslate"><span class="pre">styles</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">GetMap</span></code>, <code class="docutils literal notranslate"><span class="pre">GetLegendGraphic</span></code> and <code class="docutils literal notranslate"><span class="pre">GetFeatureInfo</span></code> operations, using the <span class="guilabel">name</span> defined at configuration time.</p>
+<p>The base configuration will be treated as the default Style of the Layer Group and used when either no style name is provided or the style name matches the default Layer Group Style name.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The overall functionality is available only for Layer Group with mode SINGLE or OPAQUE. If a Layer Group is defined with another mode, the style name eventually present in a WMS operation will be ignored if not matching the default style name. Moreover the Layer Group Style section will not be available and the Style will not be advertised in the GetCapabilities response. This is due to the group internal structure appearing in the capabilities layer tree: only one list of sub-layers and sub-groups can be advertised.</p>
+</div>
+</div>
+</div>
+<div class="section" id="add-a-layer-group">
+<h2>Add a Layer Group<a class="headerlink" href="#add-a-layer-group" title="Permalink to this headline">¶</a></h2>
+<p>The buttons for adding and removing a layer group can be found at the top of the <span class="guilabel">Layer Groups</span> page.</p>
+<div class="figure align-default" id="id8">
+<img alt="../../_images/data_layergroups_add_remove.png" src="../../_images/data_layergroups_add_remove.png" />
+<p class="caption"><span class="caption-text">Buttons to add or remove a layer group</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<p>To add a new layer group, select the “Add a new layer group” button. You will be prompted to name the layer group.</p>
+<div class="figure align-default" id="id9">
+<img alt="../../_images/data_layergroups_name.png" src="../../_images/data_layergroups_name.png" />
+<p class="caption"><span class="caption-text">New layer group dialog</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<p>When finished, click <span class="guilabel">Submit</span>. You will be redirected to an empty layer group configuration page. Begin by adding layers by clicking the <span class="guilabel">Add layer…</span> button (described in the previous section). Once the layers are positioned accordingly, press <span class="guilabel">Generate Bounds</span> to automatically generate the bounding box and projection. You may also press the <span class="guilabel">Generate Bounds From CRS</span> button to use the CRS bounds (if available). Press <span class="guilabel">Save</span> to save the new layer group.</p>
+<div class="figure align-default" id="id10">
+<img alt="../../_images/data_layergroups_edit.png" src="../../_images/data_layergroups_edit.png" />
+<p class="caption"><span class="caption-text">New layer group configuration page</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="remove-a-layer-group">
+<h2>Remove a Layer Group<a class="headerlink" href="#remove-a-layer-group" title="Permalink to this headline">¶</a></h2>
+<p>To remove a layer group, select it by clicking the checkbox next to the layer group. Multiple layer groups can be selected, or all can be selected by clicking the checkbox in the header.  Click the <span class="guilabel">Remove selected layer group(s)</span> link. You will be asked to confirm or cancel the deletion. Selecting <span class="guilabel">OK</span> removes the selected layer group(s).</p>
+<div class="figure align-default" id="id11">
+<img alt="../../_images/data_layergroups_delete.png" src="../../_images/data_layergroups_delete.png" />
+<p class="caption"><span class="caption-text">Removing a layer group</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="layer-group-keywords">
+<h2>Layer Group Keywords<a class="headerlink" href="#layer-group-keywords" title="Permalink to this headline">¶</a></h2>
+<p>Is possible to associate a layer group with some keywords that will be used to assist catalog searching.</p>
+<div class="figure align-default" id="id12">
+<img alt="../../_images/data_layergroups_keywords.png" src="../../_images/data_layergroups_keywords.png" />
+<p class="caption"><span class="caption-text">Layer groups keywords editor</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+<p>Layer groups keywords will no be merged with contained layers keywords but keywords of a layer group should be logically inherited by contained layers.</p>
+</div>
+<div class="section" id="root-layer-in-capabilities">
+<h2>Root Layer in Capabilities<a class="headerlink" href="#root-layer-in-capabilities" title="Permalink to this headline">¶</a></h2>
+<p>Capabilities documents in GeoServer always have a top level (root) Layer element that works as a container of all the available layers and groups.</p>
+<p>When a layer group is the only top level element in the Capabilities document, it is possible to remove this root Layer and return
+a hierarchy where the layer group is the root instead.</p>
+<p>To enable this functionality, choose the <strong>No</strong> option from the Root Layer in Capabilities section.</p>
+<p>By default this behaviour is inherited from the global WMS service settings (<strong>WMS Global Settings</strong> option).
+Finally, it is possible to override the service settings and force a <strong>Yes</strong> to always include the GeoServer root element.</p>
+<div class="figure align-default" id="id13">
+<img alt="../../_images/data_layers_root_in_capabilities.png" src="../../_images/data_layers_root_in_capabilities.png" />
+<p class="caption"><span class="caption-text">Layer groups root layer in capabilities options</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="http-settings">
+<h3>HTTP Settings<a class="headerlink" href="#http-settings" title="Permalink to this headline">¶</a></h3>
+<p>Cache parameters that apply to the HTTP response from client requests.</p>
+<ul class="simple">
+<li><p><strong>Response Cache Headers</strong>— If selected, conforming HTTP clients will not request the same tile twice within the time specified in <span class="guilabel">Cache Time</span>. One hour measured in seconds (3600), is the default value for <span class="guilabel">Cache Time</span>. Layer group <strong>Response Cache Headers</strong> configuration replace <strong>Response Cache Headers</strong> configured in layers defined in layer group.</p></li>
+</ul>
+<div class="figure align-default">
+<img alt="../../_images/data_http_response_caching_settings.png" src="../../_images/data_http_response_caching_settings.png" />
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="layers.html" title="previous chapter">Layers</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../vector/index.html" title="next chapter">Vector data</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Layer Groups</a><ul>
+<li><a class="reference internal" href="#layer-group-modes">Layer Group modes</a></li>
+<li><a class="reference internal" href="#edit-a-layer-group">Edit a Layer Group</a><ul>
+<li><a class="reference internal" href="#layer-group-styles">Layer Group Styles</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#add-a-layer-group">Add a Layer Group</a></li>
+<li><a class="reference internal" href="#remove-a-layer-group">Remove a Layer Group</a></li>
+<li><a class="reference internal" href="#layer-group-keywords">Layer Group Keywords</a></li>
+<li><a class="reference internal" href="#root-layer-in-capabilities">Root Layer in Capabilities</a><ul>
+<li><a class="reference internal" href="#http-settings">HTTP Settings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="layers.html" title="previous chapter">Layers</a></li>
+            <li>Next: <a href="../vector/index.html" title="next chapter">Vector data</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/webadmin/layergroups.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,316 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDAL based WCS Output Format &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GeoMesa data store" href="../geomesa/index.html" />
+    <link rel="prev" title="Installing WFS FlatGeobuf output format" href="../flatgeobuf/installing.html" /> 
+  </head><body class="community/gdal/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>GDAL based WCS Output Format</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../geomesa/index.html" title="GeoMesa data store" accesskey="N">Next</a></li>
+  <li>
+    <a href="../flatgeobuf/installing.html" title="Installing WFS FlatGeobuf output format" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="gdal-based-wcs-output-format">
+<span id="gdal-wcs-output-format"></span><h1>GDAL based WCS Output Format<a class="headerlink" href="#gdal-based-wcs-output-format" title="Permalink to this headline">¶</a></h1>
+<p>The gdal_translate based output format leverages the availability of the gdal_translate command to allow the generation of more output formats than GeoServer can natively produce.
+The basic idea is to dump to the file system a file that gdal_translate can translate, invoke it, zip and return the output of the translation.</p>
+<p>This extension is thus the equivalent of the <a class="reference internal" href="../../extensions/ogr.html#ogr-extension"><span class="std std-ref">OGR extension</span></a> for raster data.</p>
+<div class="section" id="out-of-the-box-behaviour">
+<h2>Out of the box behaviour<a class="headerlink" href="#out-of-the-box-behaviour" title="Permalink to this headline">¶</a></h2>
+<p>Out of the box the plugin assumes the following:</p>
+<ul class="simple">
+<li><p>gdal_translate is available in the path</p></li>
+<li><p>the GDAL_DATA variable is pointing to the GDAL data directory (which stores the spatial reference information for GDAL)</p></li>
+</ul>
+<p>In the default configuration the following formats are supported:</p>
+<ul class="simple">
+<li><p>JPEG-2000 part 1 (ISO/IEC 15444-1)</p></li>
+<li><p>Geospatial PDF</p></li>
+<li><p>Arc/Info ASCII Grid</p></li>
+<li><p>ASCII Gridded XYZ</p></li>
+</ul>
+<p>The list might be shorter if gdal_translate has not been built with support for the above formats (for example, the default JPEG-2000 format relies on the <a class="reference external" href="http://www.gdal.org/frmt_jpeg2000.html">JasPer-based GDAL driver</a>).</p>
+<p>Once installed in GeoServer, a bunch of new supported formats will be listed in the <code class="docutils literal notranslate"><span class="pre">ServiceMetadata</span></code> section of the WCS 2.0 GetCapabilities document, e.g. <code class="docutils literal notranslate"><span class="pre">image/jp2</span></code> and <code class="docutils literal notranslate"><span class="pre">application/pdf</span></code>.</p>
+</div>
+<div class="section" id="gdal-translate-conversion-abilities">
+<h2>gdal_translate conversion abilities<a class="headerlink" href="#gdal-translate-conversion-abilities" title="Permalink to this headline">¶</a></h2>
+<p>The gdal_translate utility is usually able to convert more formats than the default setup of this output format allows for, but the exact list depends on how the utility was built from sources. To get a full list of the formats available by your ogr2ogr build just run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gdal_translate</span> <span class="o">--</span><span class="n">long</span><span class="o">-</span><span class="n">usage</span>
+</pre></div>
+</div>
+<p>and you’ll get the full set of options usable by the program, along with the supported formats.</p>
+<p>For example, the above produces the following output using gdal 1.11.2 compiled with libgeotiff 1.4.0, libpng 1.6,  libjpeg-turbo 1.3.1, libjasper 1.900.1 and libecwj2 3.3:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">gdal_translate</span> <span class="p">[</span><span class="o">--</span><span class="n">help</span><span class="o">-</span><span class="n">general</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">long</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">ot</span> <span class="p">{</span><span class="n">Byte</span><span class="o">/</span><span class="n">Int16</span><span class="o">/</span><span class="n">UInt16</span><span class="o">/</span><span class="n">UInt32</span><span class="o">/</span><span class="n">Int32</span><span class="o">/</span><span class="n">Float32</span><span class="o">/</span><span class="n">Float64</span><span class="o">/</span>
+          <span class="n">CInt16</span><span class="o">/</span><span class="n">CInt32</span><span class="o">/</span><span class="n">CFloat32</span><span class="o">/</span><span class="n">CFloat64</span><span class="p">}]</span> <span class="p">[</span><span class="o">-</span><span class="n">strict</span><span class="p">]</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">of</span> <span class="nb">format</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">band</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">mask</span> <span class="n">band</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">expand</span> <span class="p">{</span><span class="n">gray</span><span class="o">|</span><span class="n">rgb</span><span class="o">|</span><span class="n">rgba</span><span class="p">}]</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">outsize</span> <span class="n">xsize</span><span class="p">[</span><span class="o">%</span><span class="p">]</span> <span class="n">ysize</span><span class="p">[</span><span class="o">%</span><span class="p">]]</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">unscale</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">scale</span><span class="p">[</span><span class="n">_bn</span><span class="p">]</span> <span class="p">[</span><span class="n">src_min</span> <span class="n">src_max</span> <span class="p">[</span><span class="n">dst_min</span> <span class="n">dst_max</span><span class="p">]]]</span><span class="o">*</span> <span class="p">[</span><span class="o">-</span><span class="n">exponent</span><span class="p">[</span><span class="n">_bn</span><span class="p">]</span> <span class="n">exp_val</span><span class="p">]</span><span class="o">*</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">srcwin</span> <span class="n">xoff</span> <span class="n">yoff</span> <span class="n">xsize</span> <span class="n">ysize</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">projwin</span> <span class="n">ulx</span> <span class="n">uly</span> <span class="n">lrx</span> <span class="n">lry</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">epo</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">eco</span><span class="p">]</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">a_srs</span> <span class="n">srs_def</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a_ullr</span> <span class="n">ulx</span> <span class="n">uly</span> <span class="n">lrx</span> <span class="n">lry</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a_nodata</span> <span class="n">value</span><span class="p">]</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">gcp</span> <span class="n">pixel</span> <span class="n">line</span> <span class="n">easting</span> <span class="n">northing</span> <span class="p">[</span><span class="n">elevation</span><span class="p">]]</span><span class="o">*</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">mo</span> <span class="s2">&quot;META-TAG=VALUE&quot;</span><span class="p">]</span><span class="o">*</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">sds</span><span class="p">]</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">co</span> <span class="s2">&quot;NAME=VALUE&quot;</span><span class="p">]</span><span class="o">*</span> <span class="p">[</span><span class="o">-</span><span class="n">stats</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">norat</span><span class="p">]</span>
+    <span class="n">src_dataset</span> <span class="n">dst_dataset</span>
+
+<span class="n">GDAL</span> <span class="mf">1.11</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="n">released</span> <span class="mi">2015</span><span class="o">/</span><span class="mi">02</span><span class="o">/</span><span class="mi">10</span>
+
+<span class="n">The</span> <span class="n">following</span> <span class="nb">format</span> <span class="n">drivers</span> <span class="n">are</span> <span class="n">configured</span> <span class="ow">and</span> <span class="n">support</span> <span class="n">output</span><span class="p">:</span>
+  <span class="n">VRT</span><span class="p">:</span> <span class="n">Virtual</span> <span class="n">Raster</span>
+  <span class="n">GTiff</span><span class="p">:</span> <span class="n">GeoTIFF</span>
+  <span class="n">NITF</span><span class="p">:</span> <span class="n">National</span> <span class="n">Imagery</span> <span class="n">Transmission</span> <span class="n">Format</span>
+  <span class="n">HFA</span><span class="p">:</span> <span class="n">Erdas</span> <span class="n">Imagine</span> <span class="n">Images</span> <span class="p">(</span><span class="o">.</span><span class="n">img</span><span class="p">)</span>
+  <span class="n">ELAS</span><span class="p">:</span> <span class="n">ELAS</span>
+  <span class="n">AAIGrid</span><span class="p">:</span> <span class="n">Arc</span><span class="o">/</span><span class="n">Info</span> <span class="n">ASCII</span> <span class="n">Grid</span>
+  <span class="n">DTED</span><span class="p">:</span> <span class="n">DTED</span> <span class="n">Elevation</span> <span class="n">Raster</span>
+  <span class="n">PNG</span><span class="p">:</span> <span class="n">Portable</span> <span class="n">Network</span> <span class="n">Graphics</span>
+  <span class="n">JPEG</span><span class="p">:</span> <span class="n">JPEG</span> <span class="n">JFIF</span>
+  <span class="n">MEM</span><span class="p">:</span> <span class="n">In</span> <span class="n">Memory</span> <span class="n">Raster</span>
+  <span class="n">GIF</span><span class="p">:</span> <span class="n">Graphics</span> <span class="n">Interchange</span> <span class="n">Format</span> <span class="p">(</span><span class="o">.</span><span class="n">gif</span><span class="p">)</span>
+  <span class="n">XPM</span><span class="p">:</span> <span class="n">X11</span> <span class="n">PixMap</span> <span class="n">Format</span>
+  <span class="n">BMP</span><span class="p">:</span> <span class="n">MS</span> <span class="n">Windows</span> <span class="n">Device</span> <span class="n">Independent</span> <span class="n">Bitmap</span>
+  <span class="n">PCIDSK</span><span class="p">:</span> <span class="n">PCIDSK</span> <span class="n">Database</span> <span class="n">File</span>
+  <span class="n">PCRaster</span><span class="p">:</span> <span class="n">PCRaster</span> <span class="n">Raster</span> <span class="n">File</span>
+  <span class="n">ILWIS</span><span class="p">:</span> <span class="n">ILWIS</span> <span class="n">Raster</span> <span class="n">Map</span>
+  <span class="n">SGI</span><span class="p">:</span> <span class="n">SGI</span> <span class="n">Image</span> <span class="n">File</span> <span class="n">Format</span> <span class="mf">1.0</span>
+  <span class="n">SRTMHGT</span><span class="p">:</span> <span class="n">SRTMHGT</span> <span class="n">File</span> <span class="n">Format</span>
+  <span class="n">Leveller</span><span class="p">:</span> <span class="n">Leveller</span> <span class="n">heightfield</span>
+  <span class="n">Terragen</span><span class="p">:</span> <span class="n">Terragen</span> <span class="n">heightfield</span>
+  <span class="n">ISIS2</span><span class="p">:</span> <span class="n">USGS</span> <span class="n">Astrogeology</span> <span class="n">ISIS</span> <span class="n">cube</span> <span class="p">(</span><span class="n">Version</span> <span class="mi">2</span><span class="p">)</span>
+  <span class="n">ERS</span><span class="p">:</span> <span class="n">ERMapper</span> <span class="o">.</span><span class="n">ers</span> <span class="n">Labelled</span>
+  <span class="n">ECW</span><span class="p">:</span> <span class="n">ERDAS</span> <span class="n">Compressed</span> <span class="n">Wavelets</span> <span class="p">(</span><span class="n">SDK</span> <span class="mf">3.</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">JP2ECW</span><span class="p">:</span> <span class="n">ERDAS</span> <span class="n">JPEG2000</span> <span class="p">(</span><span class="n">SDK</span> <span class="mf">3.</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">FIT</span><span class="p">:</span> <span class="n">FIT</span> <span class="n">Image</span>
+  <span class="n">JPEG2000</span><span class="p">:</span> <span class="n">JPEG</span><span class="o">-</span><span class="mi">2000</span> <span class="n">part</span> <span class="mi">1</span> <span class="p">(</span><span class="n">ISO</span><span class="o">/</span><span class="n">IEC</span> <span class="mi">15444</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">RMF</span><span class="p">:</span> <span class="n">Raster</span> <span class="n">Matrix</span> <span class="n">Format</span>
+  <span class="n">RST</span><span class="p">:</span> <span class="n">Idrisi</span> <span class="n">Raster</span> <span class="n">A</span><span class="o">.</span><span class="mi">1</span>
+  <span class="n">INGR</span><span class="p">:</span> <span class="n">Intergraph</span> <span class="n">Raster</span>
+  <span class="n">GSAG</span><span class="p">:</span> <span class="n">Golden</span> <span class="n">Software</span> <span class="n">ASCII</span> <span class="n">Grid</span> <span class="p">(</span><span class="o">.</span><span class="n">grd</span><span class="p">)</span>
+  <span class="n">GSBG</span><span class="p">:</span> <span class="n">Golden</span> <span class="n">Software</span> <span class="n">Binary</span> <span class="n">Grid</span> <span class="p">(</span><span class="o">.</span><span class="n">grd</span><span class="p">)</span>
+  <span class="n">GS7BG</span><span class="p">:</span> <span class="n">Golden</span> <span class="n">Software</span> <span class="mi">7</span> <span class="n">Binary</span> <span class="n">Grid</span> <span class="p">(</span><span class="o">.</span><span class="n">grd</span><span class="p">)</span>
+  <span class="n">R</span><span class="p">:</span> <span class="n">R</span> <span class="n">Object</span> <span class="n">Data</span> <span class="n">Store</span>
+  <span class="n">PNM</span><span class="p">:</span> <span class="n">Portable</span> <span class="n">Pixmap</span> <span class="n">Format</span> <span class="p">(</span><span class="n">netpbm</span><span class="p">)</span>
+  <span class="n">ENVI</span><span class="p">:</span> <span class="n">ENVI</span> <span class="o">.</span><span class="n">hdr</span> <span class="n">Labelled</span>
+  <span class="n">EHdr</span><span class="p">:</span> <span class="n">ESRI</span> <span class="o">.</span><span class="n">hdr</span> <span class="n">Labelled</span>
+  <span class="n">PAux</span><span class="p">:</span> <span class="n">PCI</span> <span class="o">.</span><span class="n">aux</span> <span class="n">Labelled</span>
+  <span class="n">MFF</span><span class="p">:</span> <span class="n">Vexcel</span> <span class="n">MFF</span> <span class="n">Raster</span>
+  <span class="n">MFF2</span><span class="p">:</span> <span class="n">Vexcel</span> <span class="n">MFF2</span> <span class="p">(</span><span class="n">HKV</span><span class="p">)</span> <span class="n">Raster</span>
+  <span class="n">BT</span><span class="p">:</span> <span class="n">VTP</span> <span class="o">.</span><span class="n">bt</span> <span class="p">(</span><span class="n">Binary</span> <span class="n">Terrain</span><span class="p">)</span> <span class="mf">1.3</span> <span class="n">Format</span>
+  <span class="n">LAN</span><span class="p">:</span> <span class="n">Erdas</span> <span class="o">.</span><span class="n">LAN</span><span class="o">/.</span><span class="n">GIS</span>
+  <span class="n">IDA</span><span class="p">:</span> <span class="n">Image</span> <span class="n">Data</span> <span class="ow">and</span> <span class="n">Analysis</span>
+  <span class="n">LCP</span><span class="p">:</span> <span class="n">FARSITE</span> <span class="n">v</span><span class="o">.</span><span class="mi">4</span> <span class="n">Landscape</span> <span class="n">File</span> <span class="p">(</span><span class="o">.</span><span class="n">lcp</span><span class="p">)</span>
+  <span class="n">GTX</span><span class="p">:</span> <span class="n">NOAA</span> <span class="n">Vertical</span> <span class="n">Datum</span> <span class="o">.</span><span class="n">GTX</span>
+  <span class="n">NTv2</span><span class="p">:</span> <span class="n">NTv2</span> <span class="n">Datum</span> <span class="n">Grid</span> <span class="n">Shift</span>
+  <span class="n">CTable2</span><span class="p">:</span> <span class="n">CTable2</span> <span class="n">Datum</span> <span class="n">Grid</span> <span class="n">Shift</span>
+  <span class="n">KRO</span><span class="p">:</span> <span class="n">KOLOR</span> <span class="n">Raw</span>
+  <span class="n">ARG</span><span class="p">:</span> <span class="n">Azavea</span> <span class="n">Raster</span> <span class="n">Grid</span> <span class="nb">format</span>
+  <span class="n">USGSDEM</span><span class="p">:</span> <span class="n">USGS</span> <span class="n">Optional</span> <span class="n">ASCII</span> <span class="n">DEM</span> <span class="p">(</span><span class="ow">and</span> <span class="n">CDED</span><span class="p">)</span>
+  <span class="n">ADRG</span><span class="p">:</span> <span class="n">ARC</span> <span class="n">Digitized</span> <span class="n">Raster</span> <span class="n">Graphics</span>
+  <span class="n">BLX</span><span class="p">:</span> <span class="n">Magellan</span> <span class="n">topo</span> <span class="p">(</span><span class="o">.</span><span class="n">blx</span><span class="p">)</span>
+  <span class="n">Rasterlite</span><span class="p">:</span> <span class="n">Rasterlite</span>
+  <span class="n">PostGISRaster</span><span class="p">:</span> <span class="n">PostGIS</span> <span class="n">Raster</span> <span class="n">driver</span>
+  <span class="n">SAGA</span><span class="p">:</span> <span class="n">SAGA</span> <span class="n">GIS</span> <span class="n">Binary</span> <span class="n">Grid</span> <span class="p">(</span><span class="o">.</span><span class="n">sdat</span><span class="p">)</span>
+  <span class="n">KMLSUPEROVERLAY</span><span class="p">:</span> <span class="n">Kml</span> <span class="n">Super</span> <span class="n">Overlay</span>
+  <span class="n">XYZ</span><span class="p">:</span> <span class="n">ASCII</span> <span class="n">Gridded</span> <span class="n">XYZ</span>
+  <span class="n">HF2</span><span class="p">:</span> <span class="n">HF2</span><span class="o">/</span><span class="n">HFZ</span> <span class="n">heightfield</span> <span class="n">raster</span>
+  <span class="n">PDF</span><span class="p">:</span> <span class="n">Geospatial</span> <span class="n">PDF</span>
+  <span class="n">ZMap</span><span class="p">:</span> <span class="n">ZMap</span> <span class="n">Plus</span> <span class="n">Grid</span>
+</pre></div>
+</div>
+<p>The full list of formats that gdal_translate is able to support is available on the <a class="reference external" href="http://www.gdal.org/formats_list.html">GDAL site</a>. Mind that this output format can handle only outputs that are file based and that do support creation. So, for example, you won’t be able to use the PostGIS Raster output (since it’s database based) or the Arc/Info Binary Grid (creation not supported).</p>
+</div>
+<div class="section" id="customisation">
+<h2>Customisation<a class="headerlink" href="#customisation" title="Permalink to this headline">¶</a></h2>
+<p>If gdal_translate is not available in the default path, the GDAL_DATA environment variable is not set, or if the output formats needs tweaking, a <code class="docutils literal notranslate"><span class="pre">gdal_translate.xml</span></code> configuration file can be created to customize the output format. The file should be put inside a <code class="docutils literal notranslate"><span class="pre">gdal</span></code> folder in the root of the GeoServer data directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GeoServer will automatically detect any change to the file and reload the configuration, without a need to restart.</p>
+</div>
+<p>The default configuration is equivalent to the following xml file:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ToolConfiguration&gt;</span>
+  <span class="nt">&lt;executable&gt;</span>gdal_translate<span class="nt">&lt;/executable&gt;</span>
+  <span class="nt">&lt;environment&gt;</span>
+    <span class="nt">&lt;variable</span> <span class="na">name=</span><span class="s">&quot;GDAL_DATA&quot;</span> <span class="na">value=</span><span class="s">&quot;/usr/local/share/gdal&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/environment&gt;</span>
+  <span class="nt">&lt;formats&gt;</span>
+    <span class="nt">&lt;Format&gt;</span>
+      <span class="nt">&lt;toolFormat&gt;</span>JPEG2000<span class="nt">&lt;/toolFormat&gt;</span>
+      <span class="nt">&lt;geoserverFormat&gt;</span>GDAL-JPEG2000<span class="nt">&lt;/geoserverFormat&gt;</span>
+      <span class="nt">&lt;fileExtension&gt;</span>.jp2<span class="nt">&lt;/fileExtension&gt;</span>
+      <span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+      <span class="nt">&lt;mimeType&gt;</span>image/jp2<span class="nt">&lt;/mimeType&gt;</span>
+      <span class="nt">&lt;type&gt;</span>binary<span class="nt">&lt;/type&gt;</span> <span class="c">&lt;!-- not really needed, it&#39;s the default --&gt;</span>
+      <span class="nt">&lt;option&gt;</span>-co<span class="nt">&lt;/option&gt;</span>
+      <span class="nt">&lt;option&gt;</span>FORMAT=JP2<span class="nt">&lt;/option&gt;</span>
+    <span class="nt">&lt;/Format&gt;</span>
+    <span class="nt">&lt;Format&gt;</span>
+      <span class="nt">&lt;toolFormat&gt;</span>PDF<span class="nt">&lt;/toolFormat&gt;</span>
+      <span class="nt">&lt;geoserverFormat&gt;</span>GDAL-PDF<span class="nt">&lt;/geoserverFormat&gt;</span>
+      <span class="nt">&lt;fileExtension&gt;</span>.pdf<span class="nt">&lt;/fileExtension&gt;</span>
+      <span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+      <span class="nt">&lt;mimeType&gt;</span>application/pdf<span class="nt">&lt;/mimeType&gt;</span>
+      <span class="nt">&lt;formatAdapters&gt;</span>
+             <span class="nt">&lt;GrayAlphaToRGBA/&gt;</span>
+             <span class="nt">&lt;PalettedToRGB/&gt;</span>
+      <span class="nt">&lt;/formatAdapters&gt;</span>
+    <span class="nt">&lt;/Format&gt;</span>
+    <span class="nt">&lt;Format&gt;</span>
+      <span class="nt">&lt;toolFormat&gt;</span>AAIGrid<span class="nt">&lt;/toolFormat&gt;</span>
+      <span class="nt">&lt;geoserverFormat&gt;</span>GDAL-ArcInfoGrid<span class="nt">&lt;/geoserverFormat&gt;</span>
+      <span class="nt">&lt;fileExtension&gt;</span>.asc<span class="nt">&lt;/fileExtension&gt;</span>
+      <span class="nt">&lt;singleFile&gt;</span>false<span class="nt">&lt;/singleFile&gt;</span>
+    <span class="nt">&lt;/Format&gt;</span>
+    <span class="nt">&lt;Format&gt;</span>
+      <span class="nt">&lt;toolFormat&gt;</span>XYZ<span class="nt">&lt;/toolFormat&gt;</span>
+      <span class="nt">&lt;geoserverFormat&gt;</span>GDAL-XYZ<span class="nt">&lt;/geoserverFormat&gt;</span>
+      <span class="nt">&lt;fileExtension&gt;</span>.txt<span class="nt">&lt;/fileExtension&gt;</span>
+      <span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+      <span class="nt">&lt;mimeType&gt;</span>text/plain<span class="nt">&lt;/mimeType&gt;</span>
+      <span class="nt">&lt;type&gt;</span>text<span class="nt">&lt;/type&gt;</span>
+    <span class="nt">&lt;/Format&gt;</span>
+  <span class="nt">&lt;/formats&gt;</span>
+<span class="nt">&lt;/ToolConfiguration&gt;</span>
+</pre></div>
+</div>
+<p>The file showcases all possible usage of the configuration elements:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">executable</span></code> can be just gdal_translate if the command is in the path, otherwise it should be the full path to the executable. For example, on a Linux box with a custom build GDAL library might be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">executable</span><span class="o">&gt;/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">gdal_translate</span><span class="o">&lt;/</span><span class="n">executable</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">environment</span></code> contains a list of <code class="docutils literal notranslate"><span class="pre">variable</span></code> elements, which can be used to define environment variables that should be set prior to invoking gdal_translate. For example, to setup a GDAL_DATA environment variable pointing to the GDAL data directory, the configuration might be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">environment</span><span class="o">&gt;</span>
+ <span class="o">&lt;</span><span class="n">variable</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;GDAL_DATA&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;/usr/local/share/gdal&quot;</span> <span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">environment</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Format</span></code> defines a single format, which is defined by the following tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">toolFormat</span></code>: the name of the format to be passed to gdal_translate with the -of option (case insensitive).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">geoserverFormat</span></code>: is the name of the output format as advertised by GeoServer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fileExtension</span></code>: is the extension of the file generated after the translation, if any (can be omitted)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">option</span></code>: can be used to add one or more options to the gdal_translate command line. As you can see by the JPEG2000 example, each item must be contained in its own <code class="docutils literal notranslate"><span class="pre">option</span></code> tag. You can get a full list of options by running <code class="docutils literal notranslate"><span class="pre">gdal_translate</span> <span class="pre">--help</span></code> or by visiting the <a class="reference external" href="http://www.gdal.org">GDAL website</a>). Also, consider that each format supports specific creation options, listed in the description page for each format (for example, here is the <a class="reference external" href="http://www.gdal.org/frmt_jpeg2000.html">JPEG2000 one</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">singleFile</span></code>: if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mimeType</span></code>: the mime type of the file returned when using <code class="docutils literal notranslate"><span class="pre">singleFile</span></code>. If not specified <code class="docutils literal notranslate"><span class="pre">application/octet-stream</span></code> will be used as a default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">formatAdapters</span></code>: transformations on the coverage that might need to be applied in order to successfully encode the output. The transformations are applied only if their input conditions are met.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>The available format adapters are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GrayAlphaToRGBA</span></code>: expands a gray image with alpha channel to RGBA (mandatory for geospatial PDF for example)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PallettedToRGB</span></code>: expands a paletted image RGB(A) (mandatory for geospatial PDF for example)</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../flatgeobuf/installing.html" title="previous chapter">Installing WFS FlatGeobuf output format</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../geomesa/index.html" title="next chapter">GeoMesa data store</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GDAL based WCS Output Format</a><ul>
+<li><a class="reference internal" href="#out-of-the-box-behaviour">Out of the box behaviour</a></li>
+<li><a class="reference internal" href="#gdal-translate-conversion-abilities">gdal_translate conversion abilities</a></li>
+<li><a class="reference internal" href="#customisation">Customisation</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../flatgeobuf/installing.html" title="previous chapter">Installing WFS FlatGeobuf output format</a></li>
+            <li>Next: <a href="../geomesa/index.html" title="next chapter">GeoMesa data store</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/gdal/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

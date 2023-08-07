@@ -1,0 +1,646 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Source Code &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/default.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quickstart" href="quickstart/index.html" />
+    <link rel="prev" title="Tools" href="tools.html" /> 
+  </head><body class="source">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+    <li>Source Code</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="quickstart/index.html" title="Quickstart" accesskey="N">Next</a></li>
+  <li>
+    <a href="tools.html" title="Tools" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="source-code">
+<span id="source"></span><h1>Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h1>
+<p>The GeoServer source code is located on GitHub at <a class="reference external" href="https://github.com/geoserver/geoserver">https://github.com/geoserver/geoserver</a>.</p>
+<p>To clone the repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">geoserver</span><span class="o">.</span><span class="n">git</span> <span class="n">geoserver</span>
+</pre></div>
+</div>
+<p>To list available branches in the repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">branch</span>
+   <span class="mf">2.15</span><span class="o">.</span><span class="n">x</span>
+   <span class="mf">2.16</span><span class="o">.</span><span class="n">x</span>
+ <span class="o">*</span> <span class="n">main</span>
+</pre></div>
+</div>
+<p>To switch to the 2.16.x branch above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="mf">2.16</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+<div class="section" id="git">
+<h2>Git<a class="headerlink" href="#git" title="Permalink to this headline">¶</a></h2>
+<p>Git is a distributed version control system with a steep learning curve.
+Luckily there is lots of great documentation around. Before continuing developers should take the
+time to educate themselves about git. The following are good references:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://git-scm.com/book/">The Git Book</a></p></li>
+<li><p><a class="reference external" href="http://www.sbf5.com/~cduan/technical/git/">A nice introduction</a></p></li>
+<li><p><a class="reference external" href="https://help.github.com/en/articles/about-pull-requests">Git Pull Requests</a></p></li>
+</ul>
+</div>
+<div class="section" id="git-client-configuration">
+<span id="gitconfig"></span><h2>Git client configuration<a class="headerlink" href="#git-client-configuration" title="Permalink to this headline">¶</a></h2>
+<p>To review global settings:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git config --global --get-regexp core.*
+</pre></div>
+</div>
+<p>On Linux and Windows machines:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">core</span><span class="o">.</span><span class="n">autocrlf</span> <span class="nb">input</span>
+<span class="n">core</span><span class="o">.</span><span class="n">safecrlf</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>On macOS using decomposed unicode paths, and a default APFS case-insensitive file system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">core</span><span class="o">.</span><span class="n">autocrlf</span> <span class="nb">input</span>
+<span class="n">core</span><span class="o">.</span><span class="n">safecrlf</span> <span class="n">true</span>
+<span class="n">core</span><span class="o">.</span><span class="n">ignorecase</span> <span class="n">false</span>
+<span class="n">core</span><span class="o">.</span><span class="n">precomposeunicode</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>We recommend making these changes to <code class="docutils literal notranslate"><span class="pre">--global</span></code> (or <code class="docutils literal notranslate"><span class="pre">--system</span></code>) as they reflect the operating system and file system on your local machine.</p>
+<p>Some useful reading on this subject:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://git-scm.com/docs/git-config">git config</a> (git)</p></li>
+</ul>
+<div class="section" id="line-endings">
+<h3>Line endings<a class="headerlink" href="#line-endings" title="Permalink to this headline">¶</a></h3>
+<p>When a repository is shared across different platforms it is necessary to have a
+strategy in place for dealing with file line endings. In general git is pretty good about
+dealing this without explicit configuration but to be safe developers should set the
+<code class="docutils literal notranslate"><span class="pre">core.autocrlf</span></code> setting to “input”:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git config --global core.autocrlf input
+</pre></div>
+</div>
+<p>The value “input” respects the line ending form as present in the git repository.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is also a good idea, especially for Windows users, to set the <code class="docutils literal notranslate"><span class="pre">core.safecrlf</span></code>
+option to “true”:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git config --global core.safecrlf <span class="nb">true</span>
+</pre></div>
+</div>
+<p>This will prevent commits that may potentially modify file line endings.</p>
+</div>
+<p>Some useful reading on this subject:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://help.github.com/articles/dealing-with-line-endings">Configuring Git to handle line endings</a> (GitHub)</p></li>
+<li><p><a class="reference external" href="http://stackoverflow.com/questions/170961/whats-the-best-crlf-handling-strategy-with-git">What’s the best CRLF (carriage return, line feed) handling strategy with Git?</a> (Stack Overflow)</p></li>
+<li><p><a class="reference external" href="https://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/">Mind the end of the End of Your Line</a> (Tim Clem)</p></li>
+</ul>
+</div>
+<div class="section" id="file-paths">
+<h3>File paths<a class="headerlink" href="#file-paths" title="Permalink to this headline">¶</a></h3>
+<p>For those working on non case-sensitive, please keep in mind that our repository is case-sensitive:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git config --global core.ignorecase <span class="nb">false</span>
+</pre></div>
+</div>
+<p>Take extra care when adding files to prevent problems for others. To correct a file added with the wrong case:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git mv --cached HttpHandler.java HTTPHandler.java
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>File paths can use two different representations of select unicode characters:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 38%" />
+<col style="width: 23%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Representation</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Operating System Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Precomposed form</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Ü</span></code></p></td>
+<td><p>Linux, Windows</p></td>
+</tr>
+<tr class="row-odd"><td><p>Decomposed form</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">U</span></code> + <code class="docutils literal notranslate"><span class="pre">¨</span></code></p></td>
+<td><p>macOS</p></td>
+</tr>
+</tbody>
+</table>
+<p>Files committed in decomposed form show up as untracked (even with no modification made).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git status
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Untracked</span> <span class="n">files</span><span class="p">:</span>
+   <span class="p">(</span><span class="n">use</span> <span class="s2">&quot;git add &lt;file&gt;...&quot;</span> <span class="n">to</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">what</span> <span class="n">will</span> <span class="n">be</span> <span class="n">committed</span><span class="p">)</span>
+
+   <span class="o">...</span>
+
+   <span class="s2">&quot;Entit</span><span class="se">\303\251</span><span class="s2">G</span><span class="se">\303\251</span><span class="s2">n</span><span class="se">\303\251</span><span class="s2">rique/&quot;</span>
+</pre></div>
+</div>
+<p>GeoServer requires macOS users to use the following setting:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git config --global core.precomposeunicode <span class="nb">true</span>
+</pre></div>
+</div>
+<p>This setting converts paths to precomposed form when adding files to the repository.</p>
+<p>To fix a file added in decomposed form it must be removed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git config --global core.precomposeunicode <span class="nb">false</span>
+mv EntitéGénérique /tmp/EntitéGénérique
+git rm EntitéGénérique
+git commit -m <span class="s2">&quot;Remove EntitéGénérique with decomposed filename&quot;</span>
+</pre></div>
+</div>
+<p>And then added:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git config --global core.precomposeunicode <span class="nb">true</span>
+mv /tmp/EntitéGénérique EntitéGénérique
+git add EntitéGénérique
+git commit -m <span class="s2">&quot;Restore EntitéGénérique with precomposed filename&quot;</span>
+</pre></div>
+</div>
+</div>
+<p>Some useful reading on this subject:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.git-tower.com/help/mac/faq-and-tips/faq/unicode-filenames">Untracked filenames with unicode names</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="committing">
+<h2>Committing<a class="headerlink" href="#committing" title="Permalink to this headline">¶</a></h2>
+<p>In order to commit the following steps must be taken:</p>
+<ol class="arabic simple">
+<li><p>Configure your git client for cross platform projects. See <a class="reference internal" href="#gitconfig"><span class="std std-ref">notes</span></a> below.</p></li>
+<li><p>Register for commit access as described <a class="reference internal" href="policies/committing.html#comitting"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>Fork the canonical GeoServer repository into your github account.</p></li>
+<li><p>Clone the forked repository to create a local repository</p></li>
+<li><p>Create a remote reference to the canonical repository using a non-read only URL (<code class="docutils literal notranslate"><span class="pre">git&#64;github.com:geoserver/geoserver.git</span></code>).</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The next section describes how the git repositories are distributed for the project and
+how to manage local repository remote references.</p>
+</div>
+</div>
+<div class="section" id="repository-distribution">
+<h2>Repository distribution<a class="headerlink" href="#repository-distribution" title="Permalink to this headline">¶</a></h2>
+<p>Git is a distributed versioning system which means there is strictly no notion of a single
+central repository, but many distributed ones. For GeoServer these are:</p>
+<ul class="simple">
+<li><p>The <strong>canonical</strong> repository located on GitHub that serves as the official authoritative
+copy of the source code for project</p></li>
+<li><p>Developers’ <strong>forked</strong> repositories on GitHub. These repositories
+generally contain everything in the canonical repository, as well any feature or
+topic branches a developer is working on and wishes to back up or share.</p></li>
+<li><p>Developers’ <strong>local</strong> repositories on their own systems.  This is where development work is actually done.</p></li>
+</ul>
+<p>Even though there are numerous copies of the repository they can all interoperate because
+they share a common history. This is the magic of git!</p>
+<p>In order to interoperate with other repositories hosted on GitHub,
+a local repository must contain <em>remote references</em> to them.
+A local repository typically contains the following remote references:</p>
+<ul class="simple">
+<li><p>A remote called <strong>origin</strong> that points to the developers’ forked GitHub repository.</p></li>
+<li><p>A remote called <strong>upstream</strong> that points to the canonical GitHub repository.</p></li>
+<li><p>Optionally, some remotes that point to other developers’ forked repositories on GitHub.</p></li>
+</ul>
+<p>To set up a local repository in this manner:</p>
+<ol class="arabic">
+<li><p>Clone your fork of the canonical repository (where “bob” is replaced with your GitHub account name):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">bob</span><span class="o">/</span><span class="n">geoserver</span><span class="o">.</span><span class="n">git</span> <span class="n">geoserver</span>
+<span class="o">%</span> <span class="n">cd</span> <span class="n">geoserver</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the <code class="docutils literal notranslate"><span class="pre">upstream</span></code> remote pointing to the canonical repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">upstream</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">geoserver</span><span class="o">/</span><span class="n">geoserver</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>Or if your account does not have push access to the canonical repository use the read-only url:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">upstream</span> <span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">geoserver</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</li>
+<li><p>Optionally, create remotes pointing to other developer’s forks. These remotes are typically
+read-only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">aaime</span> <span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">aaime</span><span class="o">/</span><span class="n">geoserver</span><span class="o">.</span><span class="n">git</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">jdeolive</span> <span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">jdeolive</span><span class="o">/</span><span class="n">geoserver</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="repository-structure">
+<h2>Repository structure<a class="headerlink" href="#repository-structure" title="Permalink to this headline">¶</a></h2>
+<p>A git repository contains a number of branches. These branches fall into three categories:</p>
+<ol class="arabic simple">
+<li><p><strong>Primary</strong> branches that correspond to major versions of the software</p></li>
+<li><p><strong>Release</strong> branches that are used to manage releases of the primary branches</p></li>
+<li><p><strong>Feature</strong> or topic branches that developers do development on</p></li>
+</ol>
+<div class="section" id="primary-branches">
+<h3>Primary branches<a class="headerlink" href="#primary-branches" title="Permalink to this headline">¶</a></h3>
+<p>Primary branches are present in all repositories and correspond to the main release streams of the
+project. These branches consist of:</p>
+<ul class="simple">
+<li><p>The <strong>main</strong> branch that is the current unstable development version of the project</p></li>
+<li><p>The current <strong>stable</strong> branch that is the current stable development version of the project</p></li>
+<li><p>The branches for previous stable versions</p></li>
+</ul>
+<p>For example at present these branches are:</p>
+<ul class="simple">
+<li><p><strong>main</strong> - The 2.17.x release stream, where unstable development such as major new features take place</p></li>
+<li><p><strong>2.16.x</strong> - The 2.16.x release stream, where stable development such as bug fixing and stable features take place</p></li>
+<li><p><strong>2.15.x</strong> - The 2.15.x release stream, which is at end-of-life and has no active development</p></li>
+</ul>
+</div>
+<div class="section" id="release-tags">
+<h3>Release tags<a class="headerlink" href="#release-tags" title="Permalink to this headline">¶</a></h3>
+<p>Release tags are used to mark releases from the stable or maintenance branches. These can be used to create a release branch if an emergency patch needs to be made:</p>
+<ul class="simple">
+<li><p>2.15-M0</p></li>
+<li><p>2.15-RC</p></li>
+<li><p>2.15.0</p></li>
+<li><p>2.15.1</p></li>
+</ul>
+<p>Release tags are only used during a versioned release of the software. At any given time a release branch
+corresponds to the exact state of the last release from that branch. During release these branches are tagged.</p>
+<p>Release branches are also present in all repositories.</p>
+</div>
+<div class="section" id="feature-branches">
+<h3>Feature branches<a class="headerlink" href="#feature-branches" title="Permalink to this headline">¶</a></h3>
+<p>Feature branches are what developers use for day-to-day development. This can include small-scale bug fixes or
+major new features. Feature branches serve as a staging area for work that allows a developer to freely commit to
+them without affecting the primary branches. For this reason feature branches generally only live
+in a developer’s local repository, and possibly their remote forked repository. Feature branches are never pushed
+up into the canonical repository.</p>
+<p>When a developer feels a particular feature is complete enough the feature branch is merged into a primary branch,
+usually <code class="docutils literal notranslate"><span class="pre">main</span></code>. If the work is suitable for the current stable branch the changeset can be ported back to the
+stable branch as well. This is explained in greater detail in the <a class="reference internal" href="#source-workflow"><span class="std std-ref">Development workflow</span></a> section.</p>
+</div>
+</div>
+<div class="section" id="codebase-structure">
+<h2>Codebase structure<a class="headerlink" href="#codebase-structure" title="Permalink to this headline">¶</a></h2>
+<p>Each branch has the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">build</span><span class="o">/</span>
+<span class="n">doc</span><span class="o">/</span>
+<span class="n">src</span><span class="o">/</span>
+<span class="n">data</span><span class="o">/</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">build</span></code> - release and continuous integration scripts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doc</span></code> - sources for the user and developer guides</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src</span></code> - java sources for GeoServer itself</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> - a variety of GeoServer data directories / configurations</p></li>
+</ul>
+</div>
+<div class="section" id="development-workflow">
+<span id="source-workflow"></span><h2>Development workflow<a class="headerlink" href="#development-workflow" title="Permalink to this headline">¶</a></h2>
+<p>This section contains examples of workflows a developer will typically use on a daily basis.
+To follow these examples it is crucial to understand the phases that a changeset goes though in the git
+workflow. The lifecycle of a single changeset is:</p>
+<ol class="arabic simple">
+<li><p>The change is made in a developer’s local repository.</p></li>
+<li><p>The change is <strong>staged</strong> for commit.</p></li>
+<li><p>The staged change is <strong>committed</strong>.</p></li>
+<li><p>The committed changed is <strong>pushed</strong> up to a remote repository</p></li>
+</ol>
+<p>There are many variations on this general workflow.
+For instance, it is common to make many local commits and then push them all up in batch to a remote repository.
+Also, for brevity multiple local commits may be <em>squashed</em> into a single final commit.</p>
+<div class="section" id="updating-from-canonical">
+<h3>Updating from canonical<a class="headerlink" href="#updating-from-canonical" title="Permalink to this headline">¶</a></h3>
+<p>Generally developers always work on a recent version of the official source code. The following example
+shows how to pull down the latest changes for the main development branch from the canonical repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">pull</span> <span class="n">upstream</span> <span class="n">main</span>
+</pre></div>
+</div>
+<p>Similarly for the stable branch:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="mf">2.2</span><span class="o">.</span><span class="n">x</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">pull</span> <span class="n">upstream</span> <span class="mf">2.2</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="making-local-changes">
+<h3>Making local changes<a class="headerlink" href="#making-local-changes" title="Permalink to this headline">¶</a></h3>
+<p>As mentioned above, git has a two-phase workflow in which changes are first staged and then committed
+locally. For example, to change, stage and commit a single file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+<span class="c1"># do some work on file x</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">add</span> <span class="n">x</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;commit message&quot;</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>Again there are many
+variations but generally the staging process involves using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span></code> to stage files that have been added
+or modified, and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">rm</span></code> to stage files that have been deleted. <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">mv</span></code> is used to move files and
+stage the changes in one step.</p>
+<p>At any time you can run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code> to check what files have been changed in the working area
+and what has been staged for commit. It also shows the current branch, which is useful when
+switching frequently between branches.</p>
+</div>
+<div class="section" id="pushing-changes-to-canonical">
+<h3>Pushing changes to canonical<a class="headerlink" href="#pushing-changes-to-canonical" title="Permalink to this headline">¶</a></h3>
+<p>Once a developer has made some local commits they generally will want to push them up to a remote repository.
+For the primary branches these commits should always be pushed up to the canonical repository. If they are for
+some reason not suitable to be pushed to the canonical repository then the work should not be done on a primary
+branch, but on a feature branch.</p>
+<p>For example, to push a local bug fix up to the canonical <code class="docutils literal notranslate"><span class="pre">main</span></code> branch:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+<span class="c1"># make a change</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">add</span><span class="o">/</span><span class="n">rm</span><span class="o">/</span><span class="n">mv</span> <span class="o">...</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;making change x&quot;</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">pull</span> <span class="n">upstream</span> <span class="n">main</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">push</span> <span class="n">upstream</span> <span class="n">main</span>
+</pre></div>
+</div>
+<p>The example shows the practice of first pulling from canonical before pushing to it. Developers should <strong>always</strong> do
+this. In fact, if there are commits in canonical that have not been pulled down, by default git will not allow
+you to push the change until you have pulled those commits.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A <strong>merge commit</strong> may occur when one branch is merged with another.
+A merge commit occurs when two branches are merged and the merge is not a “fast-forward” merge.
+This happens when the target branch has changed since the commits were created.
+Fast-forward merges are worth <a class="reference external" href="http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging">reading about</a>.</p>
+<p>An easy way to avoid merge commits is to do a “rebase” when pulling down changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">pull</span> <span class="o">--</span><span class="n">rebase</span> <span class="n">upstream</span> <span class="n">main</span>
+</pre></div>
+</div>
+<p>The rebase makes local changes appear in git history after the changes that are pulled down.
+This allows the following merge to be fast-forward. This is not a required practice since merge commits are fairly harmless,
+but they should be avoided where possible since they clutter up the commit history and make the git log harder to read.</p>
+</div>
+</div>
+<div class="section" id="working-with-feature-branches">
+<h3>Working with feature branches<a class="headerlink" href="#working-with-feature-branches" title="Permalink to this headline">¶</a></h3>
+<p>As mentioned before, it is always a good idea to work on a feature branch rather than directly on a primary branch.
+A classic problem every developer who has used a version control system has run into is when they have
+worked on a feature locally and made a ton of changes, but then need to switch context to work on some other feature or
+bug fix. The developer tries to make the fix in the midst of the other changes
+and ends up committing a file that should not have been changed.
+Feature branches are the remedy for this problem.</p>
+<p>To create a new feature branch off the main branch:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">my_feature</span> <span class="n">main</span>
+<span class="o">%</span> <span class="c1"># make some changes</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">add</span><span class="o">/</span><span class="n">rm</span><span class="p">,</span> <span class="n">etc</span><span class="o">...</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;first part of my_feature&quot;</span>
+</pre></div>
+</div>
+<p>Rinse, wash, repeat. The nice about thing about using a feature branch is that it is easy to switch context
+to work on something else. Just <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span></code> whatever other branch you need to work on,
+and then return to the feature branch when ready.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a branch is checked out, all the files in the working area are modified to reflect
+the current state of the branch.  When using development tools which cache the state of the
+project (such as Eclipse) it may be necessary to refresh their state to match the file system.
+If the branch is very different it may even be necessary to perform a rebuild so that
+build artifacts match the modified source code.</p>
+</div>
+</div>
+<div class="section" id="merging-feature-branches">
+<h3>Merging feature branches<a class="headerlink" href="#merging-feature-branches" title="Permalink to this headline">¶</a></h3>
+<p>Once a developer is done with a feature branch it must be merged into one of the primary branches and pushed up
+to the canonical repository. The way to do this is with the <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code> command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">merge</span> <span class="n">my_feature</span>
+</pre></div>
+</div>
+<p>It’s as easy as that. After the feature branch has been merged into the primary branch push it up as described before:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">pull</span> <span class="o">--</span><span class="n">rebase</span> <span class="n">upstream</span> <span class="n">main</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">push</span> <span class="n">upstream</span> <span class="n">main</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="porting-changes-between-primary-branches">
+<h3>Porting changes between primary branches<a class="headerlink" href="#porting-changes-between-primary-branches" title="Permalink to this headline">¶</a></h3>
+<p>Often a single change (such as a bug fix) has to be committed to multiple branches. Unfortunately primary
+branches <strong>cannot</strong> be merged with the <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code> command. Instead we use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">cherry-pick</span></code>.</p>
+<p>As an example consider making a change to main:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+<span class="o">%</span> <span class="c1"># make the change</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">add</span><span class="o">/</span><span class="n">rm</span><span class="o">/</span><span class="n">etc</span><span class="o">...</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;fixing bug GEOS-XYZ&quot;</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">pull</span> <span class="o">--</span><span class="n">rebase</span> <span class="n">upstream</span> <span class="n">main</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">push</span> <span class="n">upstream</span> <span class="n">main</span>
+</pre></div>
+</div>
+<p>We want to backport the bug fix to the stable branch as well. To do so we have to note the commit
+id of the change we just made on main. The <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span></code> command will provide this. Let’s assume the commit
+id is “123”. Backporting to the stable branch then becomes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="mf">2.2</span><span class="o">.</span><span class="n">x</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">cherry</span><span class="o">-</span><span class="n">pick</span> <span class="mi">123</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">pull</span> <span class="o">--</span><span class="n">rebase</span> <span class="n">upstream</span> <span class="mf">2.2</span><span class="o">.</span><span class="n">x</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">push</span> <span class="n">upstream</span> <span class="mf">2.2</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="cleaning-up-feature-branches">
+<h3>Cleaning up feature branches<a class="headerlink" href="#cleaning-up-feature-branches" title="Permalink to this headline">¶</a></h3>
+<p>Consider the following situation. A developer has been working on a feature branch and has gone back
+and forth to and from it making commits here and there. The result is that the feature branch has accumulated
+a number of commits on it. But all the commits are related, and what we want is really just one commit.</p>
+<p>This is easy with git and you have two options:</p>
+<ol class="arabic simple">
+<li><p>Do an <strong>interactive rebase</strong> on the feature branch</p></li>
+<li><p>Do a <strong>merge with squash</strong></p></li>
+</ol>
+<div class="section" id="interactive-rebase">
+<h4>Interactive rebase<a class="headerlink" href="#interactive-rebase" title="Permalink to this headline">¶</a></h4>
+<p>Rebasing allows us to rewrite the commits on a branch, deleting commits we don’t want, or merging commits that should
+really be done. You can read more about interactive rebasing <a class="reference external" href="http://git-scm.com/book/en/Git-Tools-Rewriting-History#Changing-Multiple-Commit-Messages">here</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Much care should be taken with rebasing. You should <strong>never</strong> rebase commits that are public (that is, commits that have
+been copied outside your local repository). Rebasing public commits changes branch history and results in the inability to merge
+with other repositories.</p>
+</div>
+<p>The following example shows an interactive rebase on a feature branch:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">my_feature</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">log</span>
+</pre></div>
+</div>
+<p>The git log shows the current commit on the branch is commit “123”.
+We make some changes and commit the result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">commit</span> <span class="s2">&quot;fixing bug x&quot;</span> <span class="c1"># results in commit 456</span>
+</pre></div>
+</div>
+<p>We realize we forgot to stage a change before committing, so we add the file and commit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;oops, forgot to commit that file&quot;</span> <span class="c1"># results in commit 678</span>
+</pre></div>
+</div>
+<p>Then we notice a small mistake, so we fix and commit again:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;darn, made a typo&quot;</span> <span class="c1"># results in commit #910</span>
+</pre></div>
+</div>
+<p>At this point we have three commits when what we really want is one. So we rebase,
+specifying the revision immediately prior to the first commit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">rebase</span> <span class="o">-</span><span class="n">i</span> <span class="mi">123</span>
+</pre></div>
+</div>
+<p>This invokes an editor that allows indicating which commits should be combined.
+Git then <em>squashes</em> the commits into an equivalent single commit.
+After this we can merge the cleaned-up feature branch into main as usual:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">merge</span> <span class="n">my_feature</span>
+</pre></div>
+</div>
+<p>Again, be sure to read up on this feature before attempting to use it. And again, <strong>never rebase a public commit</strong>.</p>
+</div>
+<div class="section" id="merge-with-squash">
+<h4>Merge with squash<a class="headerlink" href="#merge-with-squash" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code> command takes an option <code class="docutils literal notranslate"><span class="pre">--squash</span></code> that performs the merge
+against the working area but does not commit the result to the target branch.
+This squashes all the commits from the feature branch into a single changeset that
+is staged and ready to be committed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">merge</span> <span class="o">--</span><span class="n">squash</span> <span class="n">my_feature</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;implemented feature x&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="more-useful-reading">
+<h2>More useful reading<a class="headerlink" href="#more-useful-reading" title="Permalink to this headline">¶</a></h2>
+<p>The content in this section is not intended to be a comprehensive introduction to git. There are many things not covered
+that are invaluable to day-to-day work with git. Some more useful info:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://webdeveloperplus.com/general/10-useful-advanced-git-commands/">10 useful git commands</a></p></li>
+<li><p><a class="reference external" href="http://git-scm.com/book/en/Git-Tools-Stashing">Git stashing</a></p></li>
+<li><p><a class="reference external" href="http://docs.geotools.org/latest/developer/procedures/git.html">GeoTools git primer</a></p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="tools.html" title="previous chapter">Tools</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="quickstart/index.html" title="next chapter">Quickstart</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Source Code</a><ul>
+<li><a class="reference internal" href="#git">Git</a></li>
+<li><a class="reference internal" href="#git-client-configuration">Git client configuration</a><ul>
+<li><a class="reference internal" href="#line-endings">Line endings</a></li>
+<li><a class="reference internal" href="#file-paths">File paths</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#committing">Committing</a></li>
+<li><a class="reference internal" href="#repository-distribution">Repository distribution</a></li>
+<li><a class="reference internal" href="#repository-structure">Repository structure</a><ul>
+<li><a class="reference internal" href="#primary-branches">Primary branches</a></li>
+<li><a class="reference internal" href="#release-tags">Release tags</a></li>
+<li><a class="reference internal" href="#feature-branches">Feature branches</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#codebase-structure">Codebase structure</a></li>
+<li><a class="reference internal" href="#development-workflow">Development workflow</a><ul>
+<li><a class="reference internal" href="#updating-from-canonical">Updating from canonical</a></li>
+<li><a class="reference internal" href="#making-local-changes">Making local changes</a></li>
+<li><a class="reference internal" href="#pushing-changes-to-canonical">Pushing changes to canonical</a></li>
+<li><a class="reference internal" href="#working-with-feature-branches">Working with feature branches</a></li>
+<li><a class="reference internal" href="#merging-feature-branches">Merging feature branches</a></li>
+<li><a class="reference internal" href="#porting-changes-between-primary-branches">Porting changes between primary branches</a></li>
+<li><a class="reference internal" href="#cleaning-up-feature-branches">Cleaning up feature branches</a><ul>
+<li><a class="reference internal" href="#interactive-rebase">Interactive rebase</a></li>
+<li><a class="reference internal" href="#merge-with-squash">Merge with squash</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#more-useful-reading">More useful reading</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="tools.html" title="previous chapter">Tools</a></li>
+            <li>Next: <a href="quickstart/index.html" title="next chapter">Quickstart</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/source.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

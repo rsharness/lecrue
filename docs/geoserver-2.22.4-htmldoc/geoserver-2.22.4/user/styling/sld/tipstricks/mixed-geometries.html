@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Styling mixed geometry types &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Styling using Transformation Functions" href="transformation-func.html" />
+    <link rel="prev" title="SLD Tips and Tricks" href="index.html" /> 
+  </head><body class="styling/sld/tipstricks/mixed-geometries">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Tips and Tricks</a> &raquo;</li>
+    <li>Styling mixed geometry types</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="transformation-func.html" title="Styling using Transformation Functions" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="SLD Tips and Tricks" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="styling-mixed-geometry-types">
+<span id="mixed-geometries"></span><h1>Styling mixed geometry types<a class="headerlink" href="#styling-mixed-geometry-types" title="Permalink to this headline">¶</a></h1>
+<p>On occasion one might need to style a geometry column whose geometry type can be different for each feature
+(some are polygons, some are points, etc), and use different styling for different geometry types.</p>
+<p>SLD 1.0 does not provide a clean solution for dealing with this situation.
+Point, Line, and Polygon symbolizers do not select geometry by type, since each can apply to all geometry types:</p>
+<ul class="simple">
+<li><p>Point symbolizers apply to any kind of geometry. If the geometry is not a point, the centroid of the geometry is used.</p></li>
+<li><p>Line symbolizers apply to both lines and polygons.  For polygons the boundary is styled.</p></li>
+<li><p>Polygon symbolizers apply to lines, by adding a closing segment connecting the first and last points of the line.</p></li>
+</ul>
+<p>There is also no standard filter predicate to identify geometry type which could be used in rules.</p>
+<p>This section suggests a number of ways to accomplish styling by geometry type.
+They require either data restructuring or the use of non-standard filter functions.</p>
+<div class="section" id="restructuring-the-data">
+<h2>Restructuring the data<a class="headerlink" href="#restructuring-the-data" title="Permalink to this headline">¶</a></h2>
+<p>There are a few ways to restructure the data so that it can be styled by geometry type using only standard SLD constructs.</p>
+<div class="section" id="split-the-table">
+<h3>Split the table<a class="headerlink" href="#split-the-table" title="Permalink to this headline">¶</a></h3>
+<p>The first and obvious one is to split the original table into a set of separate tables, each one containing a single geometry type. For example, if table <code class="docutils literal notranslate"><span class="pre">findings</span></code> has a geometry column that can contain point, lines, and polygons, three tables can be created, each one containing a single geometry type.</p>
+</div>
+<div class="section" id="separate-geometry-columns">
+<h3>Separate geometry columns<a class="headerlink" href="#separate-geometry-columns" title="Permalink to this headline">¶</a></h3>
+<p>A second way is to use one table and separate geometry columns. So, if the table <code class="docutils literal notranslate"><span class="pre">findings</span></code> has a <code class="docutils literal notranslate"><span class="pre">geom</span></code> column, the restructured table will have <code class="docutils literal notranslate"><span class="pre">point</span></code>, <code class="docutils literal notranslate"><span class="pre">line</span></code> and <code class="docutils literal notranslate"><span class="pre">polygon</span></code> columns, each of them containing just one geometry type. After the restructuring, the symbolizers will refer to a specific geometry, for example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+    <span class="nt">&lt;Geometry&gt;&lt;ogc:PropertyName&gt;</span>polygon<span class="nt">&lt;/ogc:PropertyName&gt;&lt;/Geometry&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>This way each symbolizer will match only the geometry types it is supposed to render, and skip over the rows that contain a null value.</p>
+</div>
+<div class="section" id="add-a-geometry-type-column">
+<h3>Add a geometry type column<a class="headerlink" href="#add-a-geometry-type-column" title="Permalink to this headline">¶</a></h3>
+<p>A third way is to add a geometry type column allowing standard filtering constructs to be used, and then build a separate rule per geometry type. In the example above a new attribute, <code class="docutils literal notranslate"><span class="pre">gtype</span></code> will be added containing the values <code class="docutils literal notranslate"><span class="pre">Point</span></code>, <code class="docutils literal notranslate"><span class="pre">Line</span></code> and <code class="docutils literal notranslate"><span class="pre">Polygon</span></code>. The following SLD template can be used after the change:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rule&gt;</span>
+   <span class="nt">&lt;ogc:Filter&gt;</span>
+      <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+         <span class="nt">&lt;ogc:PropertyName&gt;</span>gtype<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>Point<span class="nt">&lt;/ogc:Literal&gt;</span>
+      <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;/ogc:Filter&gt;</span>
+   <span class="nt">&lt;PointSymbolizer&gt;</span>
+      ...
+   <span class="nt">&lt;/PointSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+<span class="nt">&lt;Rule&gt;</span>
+   <span class="nt">&lt;ogc:Filter&gt;</span>
+      <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+         <span class="nt">&lt;ogc:PropertyName&gt;</span>gtype<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>Line<span class="nt">&lt;/ogc:Literal&gt;</span>
+      <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;/ogc:Filter&gt;</span>
+   <span class="nt">&lt;LineSymbolizer&gt;</span>
+      ...
+   <span class="nt">&lt;/LineSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+<span class="nt">&lt;Rule&gt;</span>
+   <span class="nt">&lt;ogc:Filter&gt;</span>
+      <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+         <span class="nt">&lt;ogc:PropertyName&gt;</span>gtype<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+         <span class="nt">&lt;ogc:Literal&gt;</span>Polygon<span class="nt">&lt;/ogc:Literal&gt;</span>
+      <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;/ogc:Filter&gt;</span>
+   <span class="nt">&lt;PolygonSymbolizer&gt;</span>
+      ...
+   <span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+</pre></div>
+</div>
+<p>The above suggestions assume that restructuring the data is technically possible.
+This is usually true in spatial databases that provide functions that allow determining the geometry type.</p>
+</div>
+<div class="section" id="create-views">
+<h3>Create views<a class="headerlink" href="#create-views" title="Permalink to this headline">¶</a></h3>
+<p>A less invasive way to get the same results without changing the structure of the table is to create views that have the required structure. This allows the original data to be kept intact, and the views may be used for rendering.</p>
+</div>
+</div>
+<div class="section" id="using-sld-rules-and-filter-functions">
+<h2>Using SLD rules and filter functions<a class="headerlink" href="#using-sld-rules-and-filter-functions" title="Permalink to this headline">¶</a></h2>
+<p>SLD 1.0 uses the OGC Filter 1.0 specification for filtering out the data to be styled by each rule.
+Filters can contain <a class="reference internal" href="../../../filter/function.html#filter-function"><span class="std std-ref">Filter functions</span></a> to compute properties of geometric values.
+In GeoServer, filtering by geometry type can be done using the <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> or <code class="docutils literal notranslate"><span class="pre">dimension</span></code> filter functions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Filter Encoding specification provides a standard syntax for filter functions, but does not mandate a specific set of functions.
+SLDs using these functions may not be portable to other styling software.</p>
+</div>
+<div class="section" id="geometrytype-function">
+<h3>geometryType function<a class="headerlink" href="#geometrytype-function" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> function takes a geometry property and returns a string, which (currently) is one of the values <code class="docutils literal notranslate"><span class="pre">Point</span></code>, <code class="docutils literal notranslate"><span class="pre">LineString</span></code>, <code class="docutils literal notranslate"><span class="pre">LinearRing</span></code>, <code class="docutils literal notranslate"><span class="pre">Polygon</span></code>, <code class="docutils literal notranslate"><span class="pre">MultiPoint</span></code>, <code class="docutils literal notranslate"><span class="pre">MultiLineString</span></code>, <code class="docutils literal notranslate"><span class="pre">MultiPolygon</span></code> and <code class="docutils literal notranslate"><span class="pre">GeometryCollection</span></code>.</p>
+<p>Using this function, a <code class="docutils literal notranslate"><span class="pre">Rule</span></code> matching only single points can be written as:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rule&gt;</span>
+   <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+      <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;geometryType&quot;</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;ogc:PropertyName&gt;</span>geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+      <span class="nt">&lt;/ogc:Function&gt;</span>
+      <span class="nt">&lt;ogc:Literal&gt;</span>Point<span class="nt">&lt;/ogc:Literal&gt;</span>
+   <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;PointSymbolizer&gt;</span>
+     ...
+   <span class="nt">&lt;/PointSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+</pre></div>
+</div>
+<p>The filter is more complex if it has to match all linear geometry types.
+In this case, it looks like:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rule&gt;</span>
+   <span class="nt">&lt;ogc:Filter&gt;</span>
+     <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+       <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;in3&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;geometryType&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;ogc:PropertyName&gt;</span>geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+          <span class="nt">&lt;/ogc:Function&gt;</span>
+          <span class="nt">&lt;ogc:Literal&gt;</span>LineString<span class="nt">&lt;/ogc:Literal&gt;</span>
+          <span class="nt">&lt;ogc:Literal&gt;</span>LinearRing<span class="nt">&lt;/ogc:Literal&gt;</span>
+          <span class="nt">&lt;ogc:Literal&gt;</span>MultiLineString<span class="nt">&lt;/ogc:Literal&gt;</span>
+       <span class="nt">&lt;/ogc:Function&gt;</span>
+       <span class="nt">&lt;ogc:Literal&gt;</span>true<span class="nt">&lt;/ogc:Literal&gt;</span>
+     <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;/ogc:Filter&gt;</span>
+   <span class="nt">&lt;LineSymbolizer&gt;</span>
+     ...
+   <span class="nt">&lt;/LineSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+</pre></div>
+</div>
+<p>This filter is read as <code class="docutils literal notranslate"><span class="pre">geometryType(geom)</span> <span class="pre">in</span> <span class="pre">(&quot;LineString&quot;,</span> <span class="pre">&quot;LinearRing&quot;,</span> <span class="pre">&quot;MultiLineString&quot;)</span></code>.
+Filter functions in Filter 1.0 have a fixed number of arguments,
+so there is a series of <code class="docutils literal notranslate"><span class="pre">in</span></code> functions whose names correspond to the number of arguments they accept: <code class="docutils literal notranslate"><span class="pre">in2</span></code>, <code class="docutils literal notranslate"><span class="pre">in3</span></code>, …, <code class="docutils literal notranslate"><span class="pre">in10</span></code>.</p>
+</div>
+<div class="section" id="dimension-function">
+<h3>dimension function<a class="headerlink" href="#dimension-function" title="Permalink to this headline">¶</a></h3>
+<p>A slightly simpler alternative is to use the geometry <code class="docutils literal notranslate"><span class="pre">dimension</span></code> function
+to select geometries of a desired dimension.
+Dimension 0 selects Points and MultiPoints,
+dimension 1 selects LineStrings, LinearRings and MultiLineStrings,
+and dimension 2 selects Polygons and MultiPolygons.
+The following example shows how to select linear geometries:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rule&gt;</span>
+   <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+      <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;dimension&quot;</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;ogc:PropertyName&gt;</span>geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+      <span class="nt">&lt;/ogc:Function&gt;</span>
+      <span class="nt">&lt;ogc:Literal&gt;</span>1<span class="nt">&lt;/ogc:Literal&gt;</span>
+   <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;LineSymbolizer&gt;</span>
+     ...
+   <span class="nt">&lt;/LineSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">SLD Tips and Tricks</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="transformation-func.html" title="next chapter">Styling using Transformation Functions</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Styling mixed geometry types</a><ul>
+<li><a class="reference internal" href="#restructuring-the-data">Restructuring the data</a><ul>
+<li><a class="reference internal" href="#split-the-table">Split the table</a></li>
+<li><a class="reference internal" href="#separate-geometry-columns">Separate geometry columns</a></li>
+<li><a class="reference internal" href="#add-a-geometry-type-column">Add a geometry type column</a></li>
+<li><a class="reference internal" href="#create-views">Create views</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-sld-rules-and-filter-functions">Using SLD rules and filter functions</a><ul>
+<li><a class="reference internal" href="#geometrytype-function">geometryType function</a></li>
+<li><a class="reference internal" href="#dimension-function">dimension function</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">SLD Tips and Tricks</a></li>
+            <li>Next: <a href="transformation-func.html" title="next chapter">Styling using Transformation Functions</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/tipstricks/mixed-geometries.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

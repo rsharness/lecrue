@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KML Super-Overlays &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="KML Regionation" href="kmlregionation.html" />
+    <link rel="prev" title="Filters" href="filters.html" /> 
+  </head><body class="services/wms/googleearth/features/kmlsuperoverlays">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Google Earth</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features</a> &raquo;</li>
+    <li>KML Super-Overlays</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="kmlregionation.html" title="KML Regionation" accesskey="N">Next</a></li>
+  <li>
+    <a href="filters.html" title="Filters" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="kml-super-overlays">
+<span id="ge-feature-kml-super-overlays"></span><h1>KML Super-Overlays<a class="headerlink" href="#kml-super-overlays" title="Permalink to this headline">¶</a></h1>
+<p>Super-overlays are a form of KML in which data is broken up into regions. This allows Google Earth to refresh/request only particular regions of the map when the view area changes. Super-overlays are used to efficiently publish large sets of data. (Please see <a class="reference external" href="http://code.google.com/apis/kml/documentation/kml_21tutorial.html#superoverlays">Google’s page on super-overlays</a> for more information.)</p>
+<p>GeoServer supports two types of super-overlays: <strong>raster</strong> and <strong>vector</strong>. With raster super-overlays, GeoServer intelligently produces imagery appropriate to the current zoom level and dynamically outputs new imagery when the zoom level changes. With vector super-overlays, feature data is requested for only the visible features and new features are dynamically loaded as necessary. Raster super-overlays require less resources on the client, but vector super-overlays have a higher output quality.</p>
+<p>When using the <a class="reference internal" href="kmlreflector.html#ge-feature-kml-reflector"><span class="std std-ref">KML Reflector</span></a>, super-overlays are enabled by default, whether the data in question is raster or vector.  For more information on the various options for KML super-overlay output, please see the page on the <a class="reference internal" href="kmlreflector.html#ge-feature-kml-reflector"><span class="std std-ref">KML Reflector</span></a>.</p>
+<div class="section" id="raster-super-overlays">
+<h2>Raster Super-Overlays<a class="headerlink" href="#raster-super-overlays" title="Permalink to this headline">¶</a></h2>
+<p>Consider this image, which is generated from GeoServer. When zoomed out, the data is at a small size.</p>
+<div class="figure align-center">
+<img alt="../../../../_images/tile0small.png" src="../../../../_images/tile0small.png" />
+</div>
+<p>When zooming in, the image grows larger, but since the image is at low resolution (originally designed to be viewed small), the quality degrades.</p>
+<div class="figure align-center">
+<img alt="../../../../_images/tile0.png" src="../../../../_images/tile0.png" />
+</div>
+<p>However, in a super-overlay, the KML document requests a new image from GeoServer of a higher resolution for that zoom level. As the new image is downloaded, the old image is replaced by the new image.</p>
+<div class="figure align-center">
+<img alt="../../../../_images/tile4.png" src="../../../../_images/tile4.png" />
+</div>
+</div>
+<div class="section" id="raster-super-overlays-and-geowebcache">
+<h2>Raster Super-Overlays and GeoWebCache<a class="headerlink" href="#raster-super-overlays-and-geowebcache" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer implements super-overlays in a way that is compatible with the WMS Tiling Client Recommendation. Super-overlays are generated such that the tiles of the super-overlay are the same tiles that a WMS tiling client would request. One can therefore use existing tile caching mechanisms and reap a potentially large performance benefit.</p>
+<p>The easiest way to tile cache a raster super overlay is to use GeoWebCache which is built into GeoServer:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">GEOSERVER_URL</span><span class="o">/</span><span class="n">gwc</span><span class="o">/</span><span class="n">service</span><span class="o">/</span><span class="n">kml</span><span class="o">/&lt;</span><span class="n">layername</span><span class="o">&gt;.&lt;</span><span class="n">imageformat</span><span class="o">&gt;.</span><span class="n">kmz</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">GEOSERVER_URL</span></code> is the URL of your GeoServer instance.</p>
+</div>
+<div class="section" id="vector-super-overlays">
+<h2>Vector Super-Overlays<a class="headerlink" href="#vector-super-overlays" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer can include the feature information directly in the KML document. This has lots of benefits. It allows the user to select (click on) features to see descriptions, toggle the display of individual features, as well as have better rendering, regardless of zoom level. For large datasets, however, the feature information can take a long time to download and use a lot of client-side resources. Vector super-overlays allow the client to only download part of a dataset, and request more features as necessary.</p>
+<p>Vector super-overlays can use the process of <a class="reference internal" href="kmlregionation.html#ge-feature-kml-regionation"><span class="std std-ref">KML Regionation</span></a> to organize features into a hierarchy. The regionation process can operate in a variety of modes. Most of the modes require a “regionation attribute” which is used to determine which features should be visible at a particular zoom level. Please see the <a class="reference internal" href="kmlregionation.html#ge-feature-kml-regionation"><span class="std std-ref">KML Regionation</span></a> page for more details.</p>
+</div>
+<div class="section" id="vector-super-overlays-and-geowebcache">
+<h2>Vector Super-Overlays and GeoWebCache<a class="headerlink" href="#vector-super-overlays-and-geowebcache" title="Permalink to this headline">¶</a></h2>
+<p>As with raster super-overlays, it is possible to cache vector super-overlays using GeoWebCache. Below is the syntax for generating a vector super-overlay KML document via GeoWebCache:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">GEOSERVER_URL</span><span class="o">/</span><span class="n">gwc</span><span class="o">/</span><span class="n">service</span><span class="o">/</span><span class="n">kml</span><span class="o">/&lt;</span><span class="n">layername</span><span class="o">&gt;.</span><span class="n">kml</span><span class="o">.</span><span class="n">kmz</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">GEOSERVER_URL</span></code> is the URL of your GeoServer instance.</p>
+<p>Unlike generating a super-overlay with the standard <a class="reference internal" href="kmlreflector.html#ge-feature-kml-reflector"><span class="std std-ref">KML Reflector</span></a>, it is not possible to specify the regionation properties as part of the URL. These parameters must be set in the <a class="reference internal" href="../../../../data/webadmin/layers.html#data-webadmin-layers"><span class="std std-ref">Layers</span></a> configuration which can be navigated to by clicking on ‘Layers’ in the left hand sidebar and then selecting your vector layer.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="filters.html" title="previous chapter">Filters</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="kmlregionation.html" title="next chapter">KML Regionation</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">KML Super-Overlays</a><ul>
+<li><a class="reference internal" href="#raster-super-overlays">Raster Super-Overlays</a></li>
+<li><a class="reference internal" href="#raster-super-overlays-and-geowebcache">Raster Super-Overlays and GeoWebCache</a></li>
+<li><a class="reference internal" href="#vector-super-overlays">Vector Super-Overlays</a></li>
+<li><a class="reference internal" href="#vector-super-overlays-and-geowebcache">Vector Super-Overlays and GeoWebCache</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="filters.html" title="previous chapter">Filters</a></li>
+            <li>Next: <a href="kmlregionation.html" title="next chapter">KML Regionation</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/features/kmlsuperoverlays.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

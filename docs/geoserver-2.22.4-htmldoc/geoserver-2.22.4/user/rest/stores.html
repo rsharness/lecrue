@@ -1,0 +1,451 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stores &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Uploading a new image mosaic" href="imagemosaic.html" />
+    <link rel="prev" title="Workspaces" href="workspaces.html" /> 
+  </head><body class="rest/stores">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">REST</a> &raquo;</li>
+    <li>Stores</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="imagemosaic.html" title="Uploading a new image mosaic" accesskey="N">Next</a></li>
+  <li>
+    <a href="workspaces.html" title="Workspaces" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="stores">
+<span id="rest-stores"></span><h1>Stores<a class="headerlink" href="#stores" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="uploading-a-shapefile">
+<h2>Uploading a shapefile<a class="headerlink" href="#uploading-a-shapefile" title="Permalink to this headline">¶</a></h2>
+<p><strong>Create a new store “roads” by uploading a shapefile “roads.zip”</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPUT</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: application/zip&quot;</span>
+  <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">binary</span> <span class="nd">@roads</span><span class="o">.</span><span class="n">zip</span>
+  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">datastores</span><span class="o">/</span><span class="n">roads</span><span class="o">/</span><span class="n">file</span><span class="o">.</span><span class="n">shp</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="listing-store-details">
+<h2>Listing store details<a class="headerlink" href="#listing-store-details" title="Permalink to this headline">¶</a></h2>
+<p><em>Retrieve information about a specific store*</em></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XGET</span>
+  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">datastores</span><span class="o">/</span><span class="n">roads</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-python admonition">
+<p class="admonition-title">python</p>
+<p>TBD</p>
+</div>
+<div class="admonition-java admonition">
+<p class="admonition-title">java</p>
+<p>TBD</p>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dataStore&gt;</span>
+  <span class="nt">&lt;name&gt;</span>roads<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;type&gt;</span>Shapefile<span class="nt">&lt;/type&gt;</span>
+  <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+  <span class="nt">&lt;workspace&gt;</span>
+    <span class="nt">&lt;name&gt;</span>acme<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;atom:link</span> <span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span> <span class="na">rel=</span><span class="s">&quot;alternate&quot;</span>
+     <span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/rest/workspaces/acme.xml&quot;</span> <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/workspace&gt;</span>
+  <span class="nt">&lt;connectionParameters&gt;</span>
+    <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;url&quot;</span><span class="nt">&gt;</span>file:/C:/path/to/data_dir/data/acme/roads/<span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;namespace&quot;</span><span class="nt">&gt;</span>http://acme<span class="nt">&lt;/entry&gt;</span>
+  <span class="nt">&lt;/connectionParameters&gt;</span>
+  <span class="nt">&lt;__default&gt;</span>false<span class="nt">&lt;/__default&gt;</span>
+  <span class="nt">&lt;featureTypes&gt;</span>
+    <span class="nt">&lt;atom:link</span> <span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span> <span class="na">rel=</span><span class="s">&quot;alternate&quot;</span>
+     <span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/featuretypes.xml&quot;</span>
+     <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/featureTypes&gt;</span>
+<span class="nt">&lt;/dataStore&gt;</span>
+</pre></div>
+</div>
+<p><em>Request</em></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The XML response only provides details about the store itself, so you can use HTML to see the contents of the store.</p>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -v -u admin:geoserver -XGET</span>
+<span class="go">  http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads.html</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="listing-featuretype-details">
+<h2>Listing featuretype details<a class="headerlink" href="#listing-featuretype-details" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default when a shapefile is uploaded, a featuretype is automatically created.</p>
+</div>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XGET</span>
+  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">datastores</span><span class="o">/</span><span class="n">roads</span><span class="o">/</span><span class="n">featuretypes</span><span class="o">/</span><span class="n">roads</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-python admonition">
+<p class="admonition-title">python</p>
+<p>TBD</p>
+</div>
+<div class="admonition-java admonition">
+<p class="admonition-title">java</p>
+<p>TBD</p>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;featureType&gt;</span>
+  <span class="nt">&lt;name&gt;</span>roads<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;nativeName&gt;</span>roads<span class="nt">&lt;/nativeName&gt;</span>
+  <span class="nt">&lt;namespace&gt;</span>
+    <span class="nt">&lt;name&gt;</span>acme<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;atom:link</span> <span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span> <span class="na">rel=</span><span class="s">&quot;alternate&quot;</span>
+     <span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/rest/namespaces/acme.xml&quot;</span> <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/namespace&gt;</span>
+  ...
+<span class="nt">&lt;/featureType&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-an-existing-shapefile">
+<h2>Adding an existing shapefile<a class="headerlink" href="#adding-an-existing-shapefile" title="Permalink to this headline">¶</a></h2>
+<p><strong>Publish a shapefile “rivers.shp” that already exists on the server without needing to be uploaded</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPUT</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/plain&quot;</span>
+  <span class="o">-</span><span class="n">d</span> <span class="s2">&quot;file:///data/shapefiles/rivers/rivers.shp&quot;</span>
+  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">datastores</span><span class="o">/</span><span class="n">rivers</span><span class="o">/</span><span class="n">external</span><span class="o">.</span><span class="n">shp</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">external.shp</span></code> part of the request URI indicates that the file is coming from outside the catalog.</p>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-a-directory-of-existing-shapefiles">
+<h2>Adding a directory of existing shapefiles<a class="headerlink" href="#adding-a-directory-of-existing-shapefiles" title="Permalink to this headline">¶</a></h2>
+<p><strong>Create a store containing a directory of shapefiles that already exists on the server without needing to be uploaded</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPUT</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/plain&quot;</span>
+  <span class="o">-</span><span class="n">d</span> <span class="s2">&quot;file:///data/shapefiles/&quot;</span>
+  <span class="s2">&quot;http://localhost:8080/geoserver/rest/workspaces/acme/datastores/shapefiles/external.shp?configure=all&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">configure=all</span></code> query string parameter sets each shapefile in the directory to be loaded and published.</p>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-a-postgis-database-store">
+<h2>Adding a PostGIS database store<a class="headerlink" href="#adding-a-postgis-database-store" title="Permalink to this headline">¶</a></h2>
+<p><strong>Add an existing PostGIS database named “nyc” as a new store</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This example assumes that a PostGIS database named <code class="docutils literal notranslate"><span class="pre">nyc</span></code> is present on the local system and is accessible by the user <code class="docutils literal notranslate"><span class="pre">bob</span></code>.</p>
+</div>
+<p>Given the following content saved as <code class="file docutils literal notranslate"><span class="pre">nycDataStore.xml</span></code>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dataStore&gt;</span>
+  <span class="nt">&lt;name&gt;</span>nyc<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;connectionParameters&gt;</span>
+    <span class="nt">&lt;host&gt;</span>localhost<span class="nt">&lt;/host&gt;</span>
+    <span class="nt">&lt;port&gt;</span>5432<span class="nt">&lt;/port&gt;</span>
+    <span class="nt">&lt;database&gt;</span>nyc<span class="nt">&lt;/database&gt;</span>
+    <span class="nt">&lt;user&gt;</span>bob<span class="nt">&lt;/user&gt;</span>
+    <span class="nt">&lt;passwd&gt;</span>postgres<span class="nt">&lt;/passwd&gt;</span>
+    <span class="nt">&lt;dbtype&gt;</span>postgis<span class="nt">&lt;/dbtype&gt;</span>
+  <span class="nt">&lt;/connectionParameters&gt;</span>
+<span class="nt">&lt;/dataStore&gt;</span>
+</pre></div>
+</div>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">T</span> <span class="n">nycDataStore</span><span class="o">.</span><span class="n">xml</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/xml&quot;</span>
+   <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">datastores</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="listing-a-postgis-database-store-details">
+<h2>Listing a PostGIS database store details<a class="headerlink" href="#listing-a-postgis-database-store-details" title="Permalink to this headline">¶</a></h2>
+<p><strong>Retrieve information about a PostGIS store</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XGET</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">datastores</span><span class="o">/</span><span class="n">nyc</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dataStore&gt;</span>
+  <span class="nt">&lt;name&gt;</span>nyc<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;type&gt;</span>PostGIS<span class="nt">&lt;/type&gt;</span>
+  <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+  <span class="nt">&lt;workspace&gt;</span>
+    <span class="nt">&lt;name&gt;</span>acme<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;atom:link</span> <span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span> <span class="na">rel=</span><span class="s">&quot;alternate&quot;</span>
+     <span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/rest/workspaces/acme.xml&quot;</span> <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/workspace&gt;</span>
+  <span class="nt">&lt;connectionParameters&gt;</span>
+    <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;port&quot;</span><span class="nt">&gt;</span>5432<span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;dbtype&quot;</span><span class="nt">&gt;</span>postgis<span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;host&quot;</span><span class="nt">&gt;</span>localhost<span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;user&quot;</span><span class="nt">&gt;</span>bob<span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;database&quot;</span><span class="nt">&gt;</span>nyc<span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&quot;namespace&quot;</span><span class="nt">&gt;</span>http://acme<span class="nt">&lt;/entry&gt;</span>
+  <span class="nt">&lt;/connectionParameters&gt;</span>
+  <span class="nt">&lt;__default&gt;</span>false<span class="nt">&lt;/__default&gt;</span>
+  <span class="nt">&lt;featureTypes&gt;</span>
+    <span class="nt">&lt;atom:link</span> <span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span> <span class="na">rel=</span><span class="s">&quot;alternate&quot;</span>
+     <span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/rest/workspaces/acme/datastores/nyc/featuretypes.xml&quot;</span>
+     <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/featureTypes&gt;</span>
+<span class="nt">&lt;/dataStore&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="publishing-a-table-from-an-existing-postgis-store">
+<h2>Publishing a table from an existing PostGIS store<a class="headerlink" href="#publishing-a-table-from-an-existing-postgis-store" title="Permalink to this headline">¶</a></h2>
+<p><strong>Publish a new featuretype from a PostGIS store table “buildings”</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This example assumes the table has already been created.</p>
+</div>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/xml&quot;</span>
+  <span class="o">-</span><span class="n">d</span> <span class="s2">&quot;&lt;featureType&gt;&lt;name&gt;buildings&lt;/name&gt;&lt;/featureType&gt;&quot;</span>
+  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">datastores</span><span class="o">/</span><span class="n">nyc</span><span class="o">/</span><span class="n">featuretypes</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This layer can viewed with a WMS GetMap request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms/reflect?layers=acme:buildings
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="creating-a-postgis-table">
+<h2>Creating a PostGIS table<a class="headerlink" href="#creating-a-postgis-table" title="Permalink to this headline">¶</a></h2>
+<p><strong>Create a new featuretype in GeoServer and simultaneously create a table in PostGIS</strong></p>
+<p>Given the following content saved as <code class="file docutils literal notranslate"><span class="pre">annotations.xml</span></code>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;featureType&gt;</span>
+  <span class="nt">&lt;name&gt;</span>annotations<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;nativeName&gt;</span>annotations<span class="nt">&lt;/nativeName&gt;</span>
+  <span class="nt">&lt;title&gt;</span>Annotations<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;srs&gt;</span>EPSG:4326<span class="nt">&lt;/srs&gt;</span>
+  <span class="nt">&lt;attributes&gt;</span>
+    <span class="nt">&lt;attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>the_geom<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>org.locationtech.jts.geom.Point<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/attribute&gt;</span>
+    <span class="nt">&lt;attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>description<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>java.lang.String<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/attribute&gt;</span>
+    <span class="nt">&lt;attribute&gt;</span>
+      <span class="nt">&lt;name&gt;</span>timestamp<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;binding&gt;</span>java.util.Date<span class="nt">&lt;/binding&gt;</span>
+    <span class="nt">&lt;/attribute&gt;</span>
+  <span class="nt">&lt;/attributes&gt;</span>
+<span class="nt">&lt;/featureType&gt;</span>
+</pre></div>
+</div>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">T</span> <span class="n">annotations</span><span class="o">.</span><span class="n">xml</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/xml&quot;</span>
+  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">datastores</span><span class="o">/</span><span class="n">nyc</span><span class="o">/</span><span class="n">featuretypes</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The NYC store must be a PostGIS store for this to succeed.</p>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+<p>A new and empty table named “annotations” in the “nyc” database will be created as well.</p>
+</div>
+<div class="section" id="adding-an-external-wmts-store">
+<h2>Adding an external WMTS Store<a class="headerlink" href="#adding-an-external-wmts-store" title="Permalink to this headline">¶</a></h2>
+<p><strong>Create a new WMTS store “Basemap-Nat-Geo-Datastore”</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/xml&quot;</span>
+  <span class="o">-</span><span class="n">d</span> <span class="s2">&quot;&lt;wmtsStore&gt;&lt;name&gt;basemap-nat-geo-datastore&lt;/name&gt;&lt;description&gt;esri-street-map&lt;/description&gt;&lt;capabilitiesURL&gt;https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/1.0.0/WMTSCapabilities.xml&lt;/capabilitiesURL&gt;&lt;type&gt;WMTS&lt;/type&gt;&lt;/wmtsStore&gt;&quot;</span>
+  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">wmtsstores</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-an-external-wmts-layer">
+<h2>Adding an external WMTS Layer<a class="headerlink" href="#adding-an-external-wmts-layer" title="Permalink to this headline">¶</a></h2>
+<p><strong>Publish a new WMTS Layer “NatGeo_World_Map” from the WMTS store “Basemap-Nat-Geo-Datastore”</strong></p>
+<p><em>Request</em></p>
+<div class="admonition-curl admonition">
+<p class="admonition-title">curl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XPOST</span> <span class="o">-</span><span class="n">H</span> <span class="s2">&quot;Content-type: text/xml&quot;</span>
+  <span class="o">-</span><span class="n">d</span> <span class="s2">&quot;&lt;wmtsLayer&gt;&lt;name&gt;NatGeo_World_Map&lt;/name&gt;&lt;/wmtsLayer&gt;&quot;</span>
+  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">workspaces</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">wmtsstores</span><span class="o">/</span><span class="n">Basemap</span><span class="o">-</span><span class="n">Nat</span><span class="o">-</span><span class="n">Geo</span><span class="o">-</span><span class="n">Datastore</span><span class="o">/</span><span class="n">layers</span>
+</pre></div>
+</div>
+</div>
+<p><em>Response</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">201</span> <span class="n">Created</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="workspaces.html" title="previous chapter">Workspaces</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="imagemosaic.html" title="next chapter">Uploading a new image mosaic</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Stores</a><ul>
+<li><a class="reference internal" href="#uploading-a-shapefile">Uploading a shapefile</a></li>
+<li><a class="reference internal" href="#listing-store-details">Listing store details</a></li>
+<li><a class="reference internal" href="#listing-featuretype-details">Listing featuretype details</a></li>
+<li><a class="reference internal" href="#adding-an-existing-shapefile">Adding an existing shapefile</a></li>
+<li><a class="reference internal" href="#adding-a-directory-of-existing-shapefiles">Adding a directory of existing shapefiles</a></li>
+<li><a class="reference internal" href="#adding-a-postgis-database-store">Adding a PostGIS database store</a></li>
+<li><a class="reference internal" href="#listing-a-postgis-database-store-details">Listing a PostGIS database store details</a></li>
+<li><a class="reference internal" href="#publishing-a-table-from-an-existing-postgis-store">Publishing a table from an existing PostGIS store</a></li>
+<li><a class="reference internal" href="#creating-a-postgis-table">Creating a PostGIS table</a></li>
+<li><a class="reference internal" href="#adding-an-external-wmts-store">Adding an external WMTS Store</a></li>
+<li><a class="reference internal" href="#adding-an-external-wmts-layer">Adding an external WMTS Layer</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="workspaces.html" title="previous chapter">Workspaces</a></li>
+            <li>Next: <a href="imagemosaic.html" title="next chapter">Uploading a new image mosaic</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/rest/stores.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

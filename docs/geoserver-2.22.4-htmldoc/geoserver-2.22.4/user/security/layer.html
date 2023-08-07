@@ -1,0 +1,579 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Layer security &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="REST Security" href="rest.html" />
+    <link rel="prev" title="Service Security" href="service.html" /> 
+  </head><body class="security/layer">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Security</a> &raquo;</li>
+    <li>Layer security</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="rest.html" title="REST Security" accesskey="N">Next</a></li>
+  <li>
+    <a href="service.html" title="Service Security" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="layer-security">
+<span id="security-layer"></span><h1>Layer security<a class="headerlink" href="#layer-security" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer allows access to be determined on a per-layer basis.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Layer security and <a class="reference internal" href="service.html#security-service"><span class="std std-ref">Service Security</span></a> cannot be combined. For example, it is not possible to specify access to a specific OWS service, only for one specific layer.</p>
+</div>
+<p>Providing access to layers is linked to <a class="reference internal" href="usergrouprole/roles.html#security-rolesystem-roles"><span class="std std-ref">roles</span></a>. Layers and roles are linked in a file called <code class="docutils literal notranslate"><span class="pre">layers.properties</span></code>, which is located in the <code class="docutils literal notranslate"><span class="pre">security</span></code> directory in your GeoServer data directory. The file contains the rules that control access to workspaces and layers.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The default layers security configuration in GeoServer allows any anonymous user to read data from any layer but only allows admin users to edit data.</p>
+</div>
+<div class="section" id="rules">
+<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this headline">¶</a></h2>
+<p>The syntax for a layer security rule can follow three different patterns (<code class="docutils literal notranslate"><span class="pre">[]</span></code> denotes optional parameters):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">globalLayerGroup</span><span class="o">.</span><span class="n">permission</span><span class="o">=</span><span class="n">role</span><span class="p">[,</span><span class="n">role2</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+<span class="n">workspace</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">permission</span><span class="o">=</span><span class="n">role</span><span class="p">[,</span><span class="n">role2</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+<span class="n">workspace</span><span class="o">.</span><span class="n">workspaceLayerGroup</span><span class="o">.</span><span class="n">permission</span><span class="o">=</span><span class="n">role</span><span class="p">[,</span><span class="n">role2</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The parameters include:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">globalLayerGroup</span></code>— Name of a global layer group (one without workspace associated to it).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code>— Name of the workspace. The wildcard <code class="docutils literal notranslate"><span class="pre">*</span></code> is used to indicate all workspaces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layer</span></code>— Name of a resource (featuretype/coverage/etc…). The wildcard <code class="docutils literal notranslate"><span class="pre">*</span></code> is used to indicate all layers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspaceLayerGroup</span></code>— Name of a workspace specific layer group.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">permission</span></code>— Type of access permission/mode.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">r</span></code>—Read access</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">w</span></code>—Write access</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>—Admin access</p></li>
+</ul>
+<p>See <a class="reference internal" href="#access-mode"><span class="std std-ref">Access modes</span></a> for more details.</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">role[,role2,...]</span></code> is the name(s) of predefined roles. The wildcard <code class="docutils literal notranslate"><span class="pre">*</span></code> is used to indicate the permission is applied to all users, including anonymous users.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a workspace or layer name is supposed to contain dots, they can be escaped using double backslashes (<code class="docutils literal notranslate"><span class="pre">\\</span></code>). For example, if a layer is named <code class="docutils literal notranslate"><span class="pre">layer.with.dots</span></code> the following syntax for a rule may be used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topp</span><span class="o">.</span><span class="n">layer</span>\\<span class="o">.</span><span class="k">with</span>\\<span class="o">.</span><span class="n">dots</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">role</span><span class="p">[,</span><span class="n">role2</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>General rules for layer security:</p>
+<ul class="simple">
+<li><p>Each entry must have a unique combination of workspace, layer, and permission values.</p></li>
+<li><p>If a permission at the global level is not specified, global permissions are assumed to allow read/write access.</p></li>
+<li><p>If a permission for a workspace is not specified, it inherits permissions from the global specification.</p></li>
+<li><p>If a permission for a layer is not specified, it inherits permissions from its workspace specification in all protocols except WMS (where layer groups rules play a role, see below).</p></li>
+<li><p>If a user belongs to multiple roles, the <strong>least restrictive</strong> permission they inherit will apply.</p></li>
+</ul>
+<p>For WMS, layers will be also secured by considering their containing layer groups. In particular:</p>
+<ul class="simple">
+<li><p>Rules with <em>Single</em> layer groups only affect the group itself, but not its contents. <em>Single</em> mode is considered just an alias for a list of layers, with no containment.</p></li>
+<li><p>Rules with other types of groups (<em>Named tree</em>, <em>Container tree</em>, <em>Earth Observation tree</em>) also affect contained layers and nested layer groups.
+If the group is not accessible, the layers and groups contained in that group will not be accessible either..
+The only exception is when another layer group which is accessible contains the same layer or nested group, in that case the layers they will show up under the allowed groups.</p></li>
+<li><p>Workspace rules gets precedence over global layer group ones when it comes to allow access to layers.</p></li>
+<li><p>Layer rules get precedence over all layer group rules when it comes to allow access to layers.</p></li>
+</ul>
+<p>The following tables summarizes the layer group behavior depending on whether they are used in a public or secured environment:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 49%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Mode</strong></p></th>
+<th class="head"><p><strong>Public behavior</strong></p></th>
+<th class="head"><p><strong>Restricted behavior</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Single</strong></p></td>
+<td><p>Looks like a stand-alone layer, can be requested directly and acts as an alias for a layer list. Layers are also visible at root level</p></td>
+<td><p>Does not control layer access at all</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Opaque container</strong></p></td>
+<td><p>Looks like a stand-alone layer, can be requested directly and acts as an alias for a layer list. Layers in it are not available for WMS requests</p></td>
+<td><p>Same as public behavior</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Named tree</strong></p></td>
+<td><p>Contained layers are visible as children in the capabilities document, the name can be used as a shortcut to request all layers.</p></td>
+<td><p>Restricting access to the group restricts also the contained layers, unless another “tree” group allows access to the same layer</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Container tree</strong></p></td>
+<td><p>Same as “named tree”, but does not have a name published in the capabilities document and thus cannot be requested directly</p></td>
+<td><p>Same as “named tree”</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="catalog-mode">
+<h2>Catalog Mode<a class="headerlink" href="#catalog-mode" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">layers.properties</span></code> file may contain a further directive that specifies how GeoServer will advertise secured layers and behave when a secured layer is accessed without the necessary privileges. The parameter is <code class="docutils literal notranslate"><span class="pre">mode</span></code> and is commonly referred to as the “catalog mode”.</p>
+<p>The syntax is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">option</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">option</span></code> may be one of three values:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hide</span></code></p></td>
+<td><p><em>(Default)</em> Hides layers that the user does not have read access to, and behaves as if a layer is read only if the user does not have write permissions. The capabilities documents will not contain the layers the current user cannot access. This is the highest security mode. As a result, it may not work very well with clients such as uDig or Google Earth.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">challenge</span></code></p></td>
+<td><p>Allows free access to metadata, but any attempt at accessing actual data is met by a HTTP 401 code (which forces most clients to show an authentication dialog). The capabilities documents contain the full list of layers. DescribeFeatureType and DescribeCoverage operations work successfully. This mode works fine with clients such as uDig or Google Earth.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mixed</span></code></p></td>
+<td><p>Hides the layers the user cannot read from the capabilities documents, but triggers authentication for any other attempt to access the data or the metadata. This option is useful if you don’t want the world to see the existence of some of your data, but you still want selected people to who have data access links to get the data after authentication.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="access-modes">
+<span id="access-mode"></span><h2>Access modes<a class="headerlink" href="#access-modes" title="Permalink to this headline">¶</a></h2>
+<p>The access mode defines what level of access should be granted on a specific workspace/layer to a particular role. There are three types of access mode:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">r</span></code>—<strong>Read mode</strong> (read data from a workspace/layer)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">w</span></code>—<strong>Write mode</strong> (write data to a workspace/layer)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>—<strong>Admin mode</strong> (access and modify the configuration of a workspace/layer)</p></li>
+</ul>
+<p>Some notes on the above access modes:</p>
+<ul class="simple">
+<li><p>Write does not imply Read, but Admin implies both Write <em>and</em> Read.</p></li>
+<li><p>Read and Write apply to the data of a layer, while Admin applies to the configuration of a layer.</p></li>
+<li><p>As Admin mode only refers to the configuration of the layer, it is not required for any OGC service request.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, it is possible to assign Admin permission only to an entire workspace, and not to specific layers.</p>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following examples illustrate some possible layer restrictions and the corresponding rules.</p>
+<div class="section" id="protecting-a-single-workspace-and-a-single-layer">
+<h3>Protecting a single workspace and a single layer<a class="headerlink" href="#protecting-a-single-workspace-and-a-single-layer" title="Permalink to this headline">¶</a></h3>
+<p>The following example demonstrates how to configure GeoServer as a primarily a read-only server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*.*.</span><span class="n">r</span><span class="o">=*</span>
+<span class="o">*.*.</span><span class="n">w</span><span class="o">=</span><span class="n">NO_ONE</span>
+<span class="n">private</span><span class="o">.*.</span><span class="n">r</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="n">private</span><span class="o">.*.</span><span class="n">w</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="n">topp</span><span class="o">.</span><span class="n">congress_district</span><span class="o">.</span><span class="n">w</span><span class="o">=</span><span class="n">STATE_LEGISLATORS</span>
+</pre></div>
+</div>
+<p>The mapping of roles to permissions is as follows:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Role</p></th>
+<th class="head"><p>private.*</p></th>
+<th class="head"><p>topp.*</p></th>
+<th class="head"><p>topp.congress_district</p></th>
+<th class="head"><p>(all other workspaces)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">NO_ONE</span></code></p></td>
+<td><p>(none)</p></td>
+<td><p>w</p></td>
+<td><p>(none)</p></td>
+<td><p>w</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TRUSTED_ROLE</span></code></p></td>
+<td><p>r/w</p></td>
+<td><p>r</p></td>
+<td><p>r</p></td>
+<td><p>r</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">STATE_LEGISLATORS</span></code></p></td>
+<td><p>(none)</p></td>
+<td><p>r</p></td>
+<td><p>r/w</p></td>
+<td><p>r</p></td>
+</tr>
+<tr class="row-odd"><td><p>(All other users)</p></td>
+<td><p>r</p></td>
+<td><p>r</p></td>
+<td><p>r</p></td>
+<td><p>r</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="locking-down-geoserver">
+<h3>Locking down GeoServer<a class="headerlink" href="#locking-down-geoserver" title="Permalink to this headline">¶</a></h3>
+<p>The following example demonstrates how to lock down GeoServer:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*.*.</span><span class="n">r</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="o">*.*.</span><span class="n">w</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="n">topp</span><span class="o">.*.</span><span class="n">r</span><span class="o">=*</span>
+<span class="n">army</span><span class="o">.*.</span><span class="n">r</span><span class="o">=</span><span class="n">MILITARY_ROLE</span><span class="p">,</span><span class="n">TRUSTED_ROLE</span>
+<span class="n">army</span><span class="o">.*.</span><span class="n">w</span><span class="o">=</span><span class="n">MILITARY_ROLE</span><span class="p">,</span><span class="n">TRUSTED_ROLE</span>
+</pre></div>
+</div>
+<p>The mapping of roles to permissions is as follows:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Role</p></th>
+<th class="head"><p>topp.*</p></th>
+<th class="head"><p>army.*</p></th>
+<th class="head"><p>(All other workspaces)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TRUSTED_ROLE</span></code></p></td>
+<td><p>r/w</p></td>
+<td><p>r/w</p></td>
+<td><p>r/w</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MILITARY_ROLE</span></code></p></td>
+<td><p>r</p></td>
+<td><p>r/w</p></td>
+<td><p>(none)</p></td>
+</tr>
+<tr class="row-even"><td><p>(All other users)</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+<td><p>(none)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="providing-restricted-administrative-access">
+<h3>Providing restricted administrative access<a class="headerlink" href="#providing-restricted-administrative-access" title="Permalink to this headline">¶</a></h3>
+<p>The following provides administrative access on a single workspace to a specific role, in additional to the full administrator role:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*.*.</span><span class="n">a</span><span class="o">=</span><span class="n">ROLE_ADMINISTRATOR</span>
+<span class="n">topp</span><span class="o">.*.</span><span class="n">a</span><span class="o">=</span><span class="n">ROLE_TOPP_ADMIN</span><span class="p">,</span><span class="n">ROLE_ADMINISTRATOR</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="managing-multi-level-permissions">
+<h3>Managing multi-level permissions<a class="headerlink" href="#managing-multi-level-permissions" title="Permalink to this headline">¶</a></h3>
+<p>The following example demonstrates how to configure GeoServer with global-, workspace–, and layer-level permissions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*.*.</span><span class="n">r</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="o">*.*.</span><span class="n">w</span><span class="o">=</span><span class="n">NO_ONE</span>
+<span class="n">topp</span><span class="o">.*.</span><span class="n">r</span><span class="o">=*</span>
+<span class="n">topp</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">USA_CITIZEN_ROLE</span><span class="p">,</span><span class="n">LAND_MANAGER_ROLE</span><span class="p">,</span><span class="n">TRUSTED_ROLE</span>
+<span class="n">topp</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">w</span><span class="o">=</span><span class="n">NO_ONE</span>
+<span class="n">topp</span><span class="o">.</span><span class="n">poly_landmarks</span><span class="o">.</span><span class="n">w</span><span class="o">=</span><span class="n">LAND_MANAGER_ROLE</span>
+<span class="n">topp</span><span class="o">.</span><span class="n">military_bases</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">MILITARY_ROLE</span>
+<span class="n">topp</span><span class="o">.</span><span class="n">military_bases</span><span class="o">.</span><span class="n">w</span><span class="o">=</span><span class="n">MILITARY_ROLE</span>
+</pre></div>
+</div>
+<p>The mapping of roles to permissions is as follows:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Role</p></th>
+<th class="head"><p>topp.states</p></th>
+<th class="head"><p>topp.poly_landmarks</p></th>
+<th class="head"><p>topp.military_bases</p></th>
+<th class="head"><p>topp.(all other layers)</p></th>
+<th class="head"><p>(All other workspaces)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">NO_ONE</span></code></p></td>
+<td><p>w</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+<td><p>w</p></td>
+<td><p>w</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TRUSTED_ROLE</span></code></p></td>
+<td><p>r</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+<td><p>r</p></td>
+<td><p>r</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MILITARY_ROLE</span></code></p></td>
+<td><p>(none)</p></td>
+<td><p>r</p></td>
+<td><p>r/w</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">USA_CITIZEN_ROLE</span></code></p></td>
+<td><p>r</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LAND_MANAGER_ROLE</span></code></p></td>
+<td><p>r</p></td>
+<td><p>r/w</p></td>
+<td><p>(none)</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+</tr>
+<tr class="row-odd"><td><p>(All other users)</p></td>
+<td><p>(none)</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+<td><p>r</p></td>
+<td><p>(none)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The entry <code class="docutils literal notranslate"><span class="pre">topp.states.w=NO_ONE</span></code> is not required because this permission would be inherited from the global level (the entry <code class="docutils literal notranslate"><span class="pre">*.*.w=NO_ONE</span></code>).</p>
+</div>
+</div>
+<div class="section" id="invalid-configuration">
+<h3>Invalid configuration<a class="headerlink" href="#invalid-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The following examples are invalid because the workspace, layer, and permission combinations are not unique:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topp</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">rw</span><span class="o">=</span><span class="n">ROLE1</span>
+<span class="n">topp</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">rw</span><span class="o">=</span><span class="n">ROLE2</span><span class="p">,</span><span class="n">ROLE3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="security-by-layer-group-in-wms">
+<h3>Security by layer group in WMS<a class="headerlink" href="#security-by-layer-group-in-wms" title="Permalink to this headline">¶</a></h3>
+<p>To clarify, lets assume the following starting situation, in which all layers and groups are visible:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>root
++- namedTreeGroupA
+|   |   ws1:layerA
+|   └   ws2:layerB
++- namedTreeGroupB
+|   |   ws2:layerB
+|   └   ws1:layerC
++- layerD
++- singleGroupC (contains ws1:layerA and layerD when requested)
+</pre></div>
+</div>
+<p>Here are a few examples of how the structure changes based on different security rules.</p>
+<ul>
+<li><p>Denying access to <code class="docutils literal notranslate"><span class="pre">namedTreeGroupA</span></code> by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">namedTreeGroupA</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">ROLE_PRIVATE</span>
+</pre></div>
+</div>
+<p>Will give the following capabilities tree to anonymous users:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>root
++- namedTreeGroupB
+|   |   ws2:layerB
+|   └   ws1:layerC
++- layerD
++- singleGroupC (contains only layerD when requested)
+</pre></div>
+</div>
+</li>
+<li><p>Denying access to <code class="docutils literal notranslate"><span class="pre">namedTreeGroupB</span></code> by</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">namedTreeGroupB</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">ROLE_PRIVATE</span>
+</pre></div>
+</div>
+<p>Will give the following capabilities tree to anonymous users:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>root
++- namedTreeGroupA
+|   |   ws1:layerA
+|   └   ws2:layerB
++- layerD
++- singleGroupC (contains ws1:layerA and layerD when requested)
+</pre></div>
+</div>
+</li>
+<li><p>Denying access to <code class="docutils literal notranslate"><span class="pre">singleGroupC</span></code> by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">singleGroupC</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">ROLE_PRIVATE</span>
+</pre></div>
+</div>
+<p>Will give the following capabilities tree to anonymous users:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>root
++- namedTreeGroupA
+|   |   ws1:layerA
+|   └   ws2:layerB
++- namedTreeGroupB
+|   |   ws2:layerB
+|   └   ws1:layerC
++- layerD
+</pre></div>
+</div>
+</li>
+<li><p>Denying access to everything, but allowing explicit access to namedTreeGroupA by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nameTreeGroupA</span><span class="o">.</span><span class="n">r</span><span class="o">=*</span>
+<span class="o">*.*.</span><span class="n">r</span><span class="o">=</span><span class="n">PRIVATE</span>
+<span class="o">*.*.</span><span class="n">w</span><span class="o">=</span><span class="n">PRIVATE</span>
+</pre></div>
+</div>
+<p>Will give the following capabilities tree to anonymous users:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>root
++- namedTreeGroupA
+    |   ws1:layerA
+    └   ws2:layerB
+</pre></div>
+</div>
+</li>
+<li><p>Denying access to <code class="docutils literal notranslate"><span class="pre">nameTreeGroupA</span></code> and <code class="docutils literal notranslate"><span class="pre">namedTreeGroupB</span></code> but explicitly allowing access to <code class="docutils literal notranslate"><span class="pre">ws1:layerA</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">namedTreeGroupA</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">ROLE_PRIVATE</span>
+<span class="n">namedTreeGroupB</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">ROLE_PRIVATE</span>
+<span class="n">ws1</span><span class="o">.</span><span class="n">layerA</span><span class="o">.</span><span class="n">r</span><span class="o">=*</span>
+</pre></div>
+</div>
+<p>Will give the following capabilities tree to anonymous users (notice how ws1:layerA popped up to the root):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span>
+<span class="o">+-</span> <span class="n">ws1</span><span class="p">:</span><span class="n">layerA</span>
+<span class="o">+-</span> <span class="n">layerD</span>
+</pre></div>
+</div>
+</li>
+<li><p>Denying access to <code class="docutils literal notranslate"><span class="pre">nameTreeGroupA</span></code> and <code class="docutils literal notranslate"><span class="pre">namedTreeGroupB</span></code> but explicitly allowing all layers in ws2
+(a workspace rule overrides global groups ones):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">namedTreeGroupA</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">ROLE_PRIVATE</span>
+<span class="n">namedTreeGroupB</span><span class="o">.</span><span class="n">r</span><span class="o">=</span><span class="n">ROLE_PRIVATE</span>
+<span class="n">ws2</span><span class="o">.*.</span><span class="n">r</span><span class="o">=*</span>
+</pre></div>
+</div>
+<p>Will give the following capabilities tree to anonymous users (notice how ws1:layerB popped up to the root):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span>
+<span class="o">+-</span> <span class="n">ws2</span><span class="p">:</span><span class="n">layerB</span>
+<span class="o">+-</span> <span class="n">layerD</span>
+<span class="o">+-</span> <span class="n">singleGroupC</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="service.html" title="previous chapter">Service Security</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="rest.html" title="next chapter">REST Security</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Layer security</a><ul>
+<li><a class="reference internal" href="#rules">Rules</a></li>
+<li><a class="reference internal" href="#catalog-mode">Catalog Mode</a></li>
+<li><a class="reference internal" href="#access-modes">Access modes</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#protecting-a-single-workspace-and-a-single-layer">Protecting a single workspace and a single layer</a></li>
+<li><a class="reference internal" href="#locking-down-geoserver">Locking down GeoServer</a></li>
+<li><a class="reference internal" href="#providing-restricted-administrative-access">Providing restricted administrative access</a></li>
+<li><a class="reference internal" href="#managing-multi-level-permissions">Managing multi-level permissions</a></li>
+<li><a class="reference internal" href="#invalid-configuration">Invalid configuration</a></li>
+<li><a class="reference internal" href="#security-by-layer-group-in-wms">Security by layer group in WMS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="service.html" title="previous chapter">Service Security</a></li>
+            <li>Next: <a href="rest.html" title="next chapter">REST Security</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/layer.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

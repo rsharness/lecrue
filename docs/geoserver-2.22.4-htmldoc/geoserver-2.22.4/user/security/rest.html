@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>REST Security &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="URL Checks" href="urlchecks.html" />
+    <link rel="prev" title="Layer security" href="layer.html" /> 
+  </head><body class="security/rest">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Security</a> &raquo;</li>
+    <li>REST Security</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="urlchecks.html" title="URL Checks" accesskey="N">Next</a></li>
+  <li>
+    <a href="layer.html" title="Layer security" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="rest-security">
+<span id="security-rest"></span><h1>REST Security<a class="headerlink" href="#rest-security" title="Permalink to this headline">¶</a></h1>
+<p>In addition to providing the ability to secure OWS style services, GeoServer also supports securing RESTful services.</p>
+<p>As with layer and service security, RESTful security configuration is based on <code class="docutils literal notranslate"><span class="pre">security_roles</span></code>. The mapping of request URI to role is defined in a file named <code class="docutils literal notranslate"><span class="pre">rest.properties</span></code>, located in the <code class="docutils literal notranslate"><span class="pre">security</span></code> directory of the GeoServer data directory.</p>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>The following syntax defines access control rules for RESTful services (parameters in brackets [] are optional):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uriPattern</span><span class="p">;</span><span class="n">method</span><span class="p">[,</span><span class="n">method</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">=</span><span class="n">role</span><span class="p">[,</span><span class="n">role</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The parameters are:</p>
+<ul class="simple">
+<li><p><strong>uriPattern</strong>—<a class="reference internal" href="#security-rest-ant-patterns"><span class="std std-ref">ant pattern</span></a> that matches a set of request URIs</p></li>
+<li><p><strong>method</strong>—HTTP request method, one of <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span></code>, <code class="docutils literal notranslate"><span class="pre">PUT</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>, or <code class="docutils literal notranslate"><span class="pre">HEAD</span></code></p></li>
+<li><p><strong>role</strong>—Name of a predefined role. The wildcard ‘* is used to indicate the permission is applied to all users, including anonymous users.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>URI patterns should account for the first component of the rest path, usually <code class="docutils literal notranslate"><span class="pre">rest</span></code> or <code class="docutils literal notranslate"><span class="pre">api</span></code></p></li>
+<li><p>Method and role lists should <strong>not</strong> contain any spaces</p></li>
+</ul>
+</div>
+<div class="section" id="ant-patterns">
+<span id="security-rest-ant-patterns"></span><h3>Ant patterns<a class="headerlink" href="#ant-patterns" title="Permalink to this headline">¶</a></h3>
+<p>Ant patterns are commonly used for pattern matching directory and file paths. The <a class="reference internal" href="#security-rest-examples"><span class="std std-ref">examples</span></a> section contains some basic instructions. The Apache ant <a class="reference external" href="http://ant.apache.org/manual/dirtasks.html">user manual</a> contains more sophisticated use cases.</p>
+</div>
+</div>
+<div class="section" id="examples">
+<span id="security-rest-examples"></span><h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Most of the examples in this section are specific to the GeoServer <a class="reference internal" href="../rest/index.html#rest"><span class="std std-ref">REST</span></a> but any RESTful GeoServer service may be configured in the same manner.</p>
+<div class="section" id="allowing-only-authenticated-access">
+<h3>Allowing only authenticated access<a class="headerlink" href="#allowing-only-authenticated-access" title="Permalink to this headline">¶</a></h3>
+<p>The most secure configuration is one that forces any request to be authenticated. The following example locks down access to all requests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span><span class="p">;</span><span class="n">GET</span><span class="p">,</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">ROLE_ADMINISTRATOR</span>
+</pre></div>
+</div>
+<p>A less restricting configuration locks down access to operations under the path <code class="docutils literal notranslate"><span class="pre">/rest</span></code>, but will allow anonymous access to requests that fall under other paths (for example <code class="docutils literal notranslate"><span class="pre">/api</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">rest</span><span class="o">/**</span><span class="p">;</span><span class="n">GET</span><span class="p">,</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">ROLE_ADMINISTRATOR</span>
+</pre></div>
+</div>
+<p>The following configuration is similar to the previous one except it grants access to a specific role rather than the administrator:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span><span class="p">;</span><span class="n">GET</span><span class="p">,</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">ROLE_TRUSTED</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ROLE_TRUSTED</span></code> is a role defined in <code class="docutils literal notranslate"><span class="pre">users.properties</span></code>.</p>
+</div>
+<div class="section" id="providing-anonymous-read-only-access">
+<h3>Providing anonymous read-only access<a class="headerlink" href="#providing-anonymous-read-only-access" title="Permalink to this headline">¶</a></h3>
+<p>The following configuration allows anonymous access when the <code class="docutils literal notranslate"><span class="pre">GET</span></code> (read) method is used but forces authentication for a <code class="docutils literal notranslate"><span class="pre">POST</span></code>, <code class="docutils literal notranslate"><span class="pre">PUT</span></code>, or <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> (write):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span><span class="p">;</span><span class="n">GET</span><span class="o">=</span><span class="n">IS_AUTHENTICATED_ANONYMOUSLY</span>
+<span class="o">/**</span><span class="p">;</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="securing-a-specific-resource">
+<h3>Securing a specific resource<a class="headerlink" href="#securing-a-specific-resource" title="Permalink to this headline">¶</a></h3>
+<p>The following configuration forces authentication for access to a particular resource (in this case a feature type):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">rest</span><span class="o">/**/</span><span class="n">states</span><span class="o">*</span><span class="p">;</span><span class="n">GET</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="o">/</span><span class="n">rest</span><span class="o">/**</span><span class="p">;</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+</pre></div>
+</div>
+<p>The following secures access to a set of resources (in this case all data stores):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">rest</span><span class="o">/**/</span><span class="n">datastores</span><span class="o">/*</span><span class="p">;</span><span class="n">GET</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="o">/</span><span class="n">rest</span><span class="o">/**/</span><span class="n">datastores</span><span class="o">/*.*</span><span class="p">;</span><span class="n">GET</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="o">/</span><span class="n">rest</span><span class="o">/**</span><span class="p">;</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="layer.html" title="previous chapter">Layer security</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="urlchecks.html" title="next chapter">URL Checks</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">REST Security</a><ul>
+<li><a class="reference internal" href="#syntax">Syntax</a><ul>
+<li><a class="reference internal" href="#ant-patterns">Ant patterns</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#allowing-only-authenticated-access">Allowing only authenticated access</a></li>
+<li><a class="reference internal" href="#providing-anonymous-read-only-access">Providing anonymous read-only access</a></li>
+<li><a class="reference internal" href="#securing-a-specific-resource">Securing a specific resource</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="layer.html" title="previous chapter">Layer security</a></li>
+            <li>Next: <a href="urlchecks.html" title="next chapter">URL Checks</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/rest.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

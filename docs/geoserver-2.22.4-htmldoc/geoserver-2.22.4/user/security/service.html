@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Security &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Layer security" href="layer.html" />
+    <link rel="prev" title="Root account" href="root.html" /> 
+  </head><body class="security/service">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Security</a> &raquo;</li>
+    <li>Service Security</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="layer.html" title="Layer security" accesskey="N">Next</a></li>
+  <li>
+    <a href="root.html" title="Root account" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="service-security">
+<span id="security-service"></span><h1>Service Security<a class="headerlink" href="#service-security" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer supports access control at the service level, allowing for the locking down of service operations to only authenticated users who have been granted a particular role. There are two main categories of services in GeoServer. The first is <a class="reference internal" href="../services/index.html#services"><span class="std std-ref">OWS services</span></a> such as WMS and WFS. The second are RESTful services, such as the GeoServer <a class="reference internal" href="../rest/index.html#rest"><span class="std std-ref">REST</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Service-level security and <a class="reference internal" href="layer.html#security-layer"><span class="std std-ref">Layer security</span></a> cannot be combined. For example, it is not possible to specify access to a specific OWS service only for one specific layer.</p>
+</div>
+<div class="section" id="ows-services">
+<h2>OWS services<a class="headerlink" href="#ows-services" title="Permalink to this headline">¶</a></h2>
+<p>OWS services support setting security access constraints globally for a particular service, or to a specific operation within that service. A few examples include:</p>
+<ul class="simple">
+<li><p>Securing the entire WFS service so only authenticated users have access to all WFS operations.</p></li>
+<li><p>Allowing anonymous access to read-only WFS operations such as GetCapabilities, but securing write operations such as Transaction.</p></li>
+<li><p>Disabling the WFS service in effect by securing all operations and not applying the appropriate roles to any users.</p></li>
+</ul>
+<p>OWS service security access rules are specified in a file named <code class="file docutils literal notranslate"><span class="pre">services.properties</span></code>, located in the <code class="docutils literal notranslate"><span class="pre">security</span></code> directory in the GeoServer data directory. The file contains a list of rules that map service operations to defined roles. The syntax for specifying rules is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">service</span><span class="o">&gt;.&lt;</span><span class="n">operation</span><span class="o">|*&gt;=&lt;</span><span class="n">role</span><span class="o">&gt;</span><span class="p">[,</span><span class="o">&lt;</span><span class="n">role2</span><span class="o">&gt;</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The parameters include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[]</span></code>—Denotes optional parameters</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|</span></code>—Denotes “or”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">service</span></code>—Identifier of an OGC service, such as <code class="docutils literal notranslate"><span class="pre">wfs</span></code>, <code class="docutils literal notranslate"><span class="pre">wms</span></code>, or <code class="docutils literal notranslate"><span class="pre">wcs</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operation</span></code>—Any operation supported by the service, examples include <code class="docutils literal notranslate"><span class="pre">GetFeature</span></code> for WFS, <code class="docutils literal notranslate"><span class="pre">GetMap</span></code> for WMS, <code class="docutils literal notranslate"><span class="pre">*</span></code> for all operations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">role[,role2,...]</span></code>—List of predefined role names</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is important that roles specified are actually linked to a user, otherwise the whole service/operation will be accessible to no one except for the <a class="reference internal" href="root.html#security-root"><span class="std std-ref">Root account</span></a>. However in some cases this may be the desired effect.</p>
+</div>
+<p>The default service security configuration in GeoServer contains no rules and allows any anonymous user to access any operation of any service. The following are some examples of desired security restrictions and the corresponding rules.</p>
+<div class="section" id="securing-the-entire-wfs-service">
+<h3>Securing the entire WFS service<a class="headerlink" href="#securing-the-entire-wfs-service" title="Permalink to this headline">¶</a></h3>
+<p>This rule grants access to any WFS operation only to authenticated users that have been granted the <code class="docutils literal notranslate"><span class="pre">ROLE_WFS</span></code> role:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wfs</span><span class="o">.*=</span><span class="n">ROLE_WFS</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="anonymous-wfs-access-only-for-read-only-operations">
+<h3>Anonymous WFS access only for read-only operations<a class="headerlink" href="#anonymous-wfs-access-only-for-read-only-operations" title="Permalink to this headline">¶</a></h3>
+<p>This rule grants anonymous access to all WFS operations (such as GetCapabilities and GetFeature) but restricts Transaction requests to authenticated users that have been granted the <code class="docutils literal notranslate"><span class="pre">ROLE_WFS_WRITE</span></code> role:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wfs</span><span class="o">.</span><span class="n">Transaction</span><span class="o">=</span><span class="n">ROLE_WFS_WRITE</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="securing-data-accessing-wfs-operations-and-write-operations">
+<h3>Securing data-accessing WFS operations and write operations<a class="headerlink" href="#securing-data-accessing-wfs-operations-and-write-operations" title="Permalink to this headline">¶</a></h3>
+<p>Used in conjunction, these two rules grant anonymous access to GetCapabilities and DescribeFeatureType, forcing the user to authenticate for the GetFeature operation (must be granted the <code class="docutils literal notranslate"><span class="pre">ROLE_WFS_READ</span></code> role), and to authenticate to perform transactions (must be granted the <code class="docutils literal notranslate"><span class="pre">ROLE_WFS_WRITE</span></code> role:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wfs</span><span class="o">.</span><span class="n">GetFeature</span><span class="o">=</span><span class="n">ROLE_WFS_READ</span>
+<span class="n">wfs</span><span class="o">.</span><span class="n">Transaction</span><span class="o">=</span><span class="n">ROLE_WFS_WRITE</span>
+</pre></div>
+</div>
+<p>Note this example does not specify whether a user accessing Transactions would also have access to GetFeature.</p>
+</div>
+</div>
+<div class="section" id="rest-services">
+<span id="security-service-rest"></span><h2>REST services<a class="headerlink" href="#rest-services" title="Permalink to this headline">¶</a></h2>
+<p>In addition to providing the ability to secure OWS services, GeoServer also allows for the securing of RESTful services.</p>
+<p>REST service security access rules are specified in a file named <code class="file docutils literal notranslate"><span class="pre">rest.properties</span></code>, located in the <code class="docutils literal notranslate"><span class="pre">security</span></code> directory of the GeoServer data directory. This file contains a list of rules mapping request URIs to defined roles. The rule syntax is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">uriPattern</span><span class="o">&gt;</span><span class="p">;</span><span class="o">&lt;</span><span class="n">method</span><span class="o">&gt;</span><span class="p">[,</span><span class="o">&lt;</span><span class="n">method</span><span class="o">&gt;</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">=&lt;</span><span class="n">role</span><span class="o">&gt;</span><span class="p">[,</span><span class="o">&lt;</span><span class="n">role</span><span class="o">&gt;</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The parameters include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[]</span></code>—Denote optional parameters</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uriPattern</span></code>—The <a class="reference internal" href="#security-service-ant-patterns"><span class="std std-ref">ant pattern</span></a> that matches a set of request URIs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">method</span></code>—HTTP request method, one of <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span></code>, <code class="docutils literal notranslate"><span class="pre">PUT</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>, or <code class="docutils literal notranslate"><span class="pre">HEAD</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">role</span></code>—Name of a predefined role. The wildcard <code class="docutils literal notranslate"><span class="pre">*</span></code> is used to indicate all users, including anonymous users.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>URI patterns should account for the first component of the rest path, usually <code class="docutils literal notranslate"><span class="pre">rest</span></code> or <code class="docutils literal notranslate"><span class="pre">api</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">method</span></code> and <code class="docutils literal notranslate"><span class="pre">role</span></code> lists should <strong>not</strong> contain any spaces</p></li>
+</ul>
+</div>
+<div class="section" id="ant-patterns">
+<span id="security-service-ant-patterns"></span><h3>Ant patterns<a class="headerlink" href="#ant-patterns" title="Permalink to this headline">¶</a></h3>
+<p>Ant patterns are commonly used for pattern matching directory and file paths. The following examples  provide some basic instructions. The Apache ant <a class="reference external" href="http://ant.apache.org/manual/dirtasks.html">user manual</a> contains more sophisticated use cases.</p>
+<p>These examples are specific to GeoServer <a class="reference internal" href="../rest/index.html#rest"><span class="std std-ref">REST</span></a>, but any RESTful GeoServer service could be configured in the same manner.</p>
+</div>
+<div class="section" id="disabling-anonymous-access-to-services">
+<h3>Disabling anonymous access to services<a class="headerlink" href="#disabling-anonymous-access-to-services" title="Permalink to this headline">¶</a></h3>
+<p>The most secure of configurations is one that forces any request, REST or otherwise, to be authenticated. The following will lock down access to all requests to users that are granted the <code class="docutils literal notranslate"><span class="pre">ROLE_ADMINISTRATOR</span></code> role:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span><span class="p">;</span><span class="n">GET</span><span class="p">,</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">ROLE_ADMINISTRATOR</span>
+</pre></div>
+</div>
+<p>A less restricting configuration locks down access to operations under the path <code class="docutils literal notranslate"><span class="pre">/rest</span></code> to users granted the <code class="docutils literal notranslate"><span class="pre">ROLE_ADMINISTRATOR</span></code> role, but will allow anonymous access to requests that fall under other paths (for example <code class="docutils literal notranslate"><span class="pre">/api</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">rest</span><span class="o">/**</span><span class="p">;</span><span class="n">GET</span><span class="p">,</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">ROLE_ADMINISTRATOR</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="allowing-anonymous-read-only-access">
+<h3>Allowing anonymous read-only access<a class="headerlink" href="#allowing-anonymous-read-only-access" title="Permalink to this headline">¶</a></h3>
+<p>The following configuration grants anonymous access when the <code class="docutils literal notranslate"><span class="pre">GET</span></code> method is used, but forces authentication for a <code class="docutils literal notranslate"><span class="pre">POST</span></code>, <code class="docutils literal notranslate"><span class="pre">PUT</span></code>, or <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span><span class="p">;</span><span class="n">GET</span><span class="o">=</span><span class="n">IS_AUTHENTICATED_ANONYMOUSLY</span>
+<span class="o">/**</span><span class="p">;</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="securing-a-specific-resource">
+<h3>Securing a specific resource<a class="headerlink" href="#securing-a-specific-resource" title="Permalink to this headline">¶</a></h3>
+<p>The following configuration forces authentication for access to a particular resource (in this case the <code class="docutils literal notranslate"><span class="pre">states</span></code> feature type):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">rest</span><span class="o">/**/</span><span class="n">states</span><span class="o">*</span><span class="p">;</span><span class="n">GET</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="o">/</span><span class="n">rest</span><span class="o">/**</span><span class="p">;</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+</pre></div>
+</div>
+<p>The following secures access to a set of resources (in this case all data stores).:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">rest</span><span class="o">/**/</span><span class="n">datastores</span><span class="o">/*</span><span class="p">;</span><span class="n">GET</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="o">/</span><span class="n">rest</span><span class="o">/**/</span><span class="n">datastores</span><span class="o">/*.*</span><span class="p">;</span><span class="n">GET</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+<span class="o">/</span><span class="n">rest</span><span class="o">/**</span><span class="p">;</span><span class="n">POST</span><span class="p">,</span><span class="n">PUT</span><span class="p">,</span><span class="n">DELETE</span><span class="o">=</span><span class="n">TRUSTED_ROLE</span>
+</pre></div>
+</div>
+<p>Note the trailing wildcards <code class="docutils literal notranslate"><span class="pre">/*</span></code> and <code class="docutils literal notranslate"><span class="pre">/*.*</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="root.html" title="previous chapter">Root account</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="layer.html" title="next chapter">Layer security</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Service Security</a><ul>
+<li><a class="reference internal" href="#ows-services">OWS services</a><ul>
+<li><a class="reference internal" href="#securing-the-entire-wfs-service">Securing the entire WFS service</a></li>
+<li><a class="reference internal" href="#anonymous-wfs-access-only-for-read-only-operations">Anonymous WFS access only for read-only operations</a></li>
+<li><a class="reference internal" href="#securing-data-accessing-wfs-operations-and-write-operations">Securing data-accessing WFS operations and write operations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rest-services">REST services</a><ul>
+<li><a class="reference internal" href="#ant-patterns">Ant patterns</a></li>
+<li><a class="reference internal" href="#disabling-anonymous-access-to-services">Disabling anonymous access to services</a></li>
+<li><a class="reference internal" href="#allowing-anonymous-read-only-access">Allowing anonymous read-only access</a></li>
+<li><a class="reference internal" href="#securing-a-specific-resource">Securing a specific resource</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="root.html" title="previous chapter">Root account</a></li>
+            <li>Next: <a href="layer.html" title="next chapter">Layer security</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/service.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

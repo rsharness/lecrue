@@ -1,0 +1,721 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raw data download processes &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Rendered map/animation download processes" href="mapAnimationDownload.html" />
+    <link rel="prev" title="WPS Download plugin" href="index.html" /> 
+  </head><body class="extensions/wps-download/rawDownload">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WPS Download plugin</a> &raquo;</li>
+    <li>Raw data download processes</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="mapAnimationDownload.html" title="Rendered map/animation download processes" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="WPS Download plugin" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="raw-data-download-processes">
+<span id="community-wpsrawdownload"></span><h1>Raw data download processes<a class="headerlink" href="#raw-data-download-processes" title="Permalink to this headline">¶</a></h1>
+<p>These processes allow download of vector and raster data in raw form, without rendering.</p>
+<div class="section" id="download-estimator-process">
+<h2>Download Estimator Process<a class="headerlink" href="#download-estimator-process" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Download Estimator Process</em> checks the size of the file to download. This process takes in input the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layername</span></code> : name of the layer to check</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROI</span></code> : ROI object to use for cropping data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> : filter for filtering input data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targetCRS</span></code> : CRS of the final layer if reprojection is needed</p></li>
+</ul>
+</div></blockquote>
+<p>This process will return a boolean which will be <strong>true</strong> if the downloaded file will not exceed the configured limits.</p>
+</div>
+<div class="section" id="download-process">
+<h2>Download Process<a class="headerlink" href="#download-process" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Download Process</em> calls the <em>Download Estimator Process</em>, checks the file size, and, if the file does not exceed the limits, download the file as a zip.
+The parameters to set are</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layerName</span></code> : the name of the layer to process/download</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> : a vector filter for filtering input data(optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outputFormat</span></code> : the MIME type of the format of the final file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targetCRS</span></code> : the CRS of the output file (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RoiCRS</span></code> : Region Of Interest CRS (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROI</span></code> : Region Of Interest object to use for cropping data (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cropToROI</span></code> : boolean parameter to allow cropping to actual ROI, or its envelope (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interpolation</span></code> : interpolation function to use when reprojecting / scaling raster data.  Values are NEAREST (default), BILINEAR, BICUBIC2, BICUBIC (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targetSizeX</span></code> : size X in pixels of the output (optional, applies for raster input only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targetSizeY</span></code> : size Y in pixels of the output (optional, applies for raster input only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">selectedBands</span></code> : a set of the band indices of the original raster that will be used for producing the final result (optional, applies for raster input only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">writeParameters</span></code> : a set of writing parameters (optional, applies for raster input only). See <a class="reference internal" href="#writing-params"><span class="std std-ref">Writing parameters</span></a> below section for more details on writing parameters defintion.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minimizeReprojections</span></code> : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS’s coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See <a class="reference internal" href="#heterogeneous-imagemosaic"><span class="std std-ref">RasterDownload of Heterogeneous CRS ImageMosaic</span></a> below section for more details on this param.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bestResolutionOnMatchingCRS</span></code> : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS’s coverages. See <a class="reference internal" href="#heterogeneous-imagemosaic"><span class="std std-ref">RasterDownload of Heterogeneous CRS ImageMosaic</span></a> below section for more details on this param.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targetVerticalCRS</span></code> : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See <a class="reference internal" href="#vertical-resampling"><span class="std std-ref">Vertical data resampling on download</span></a> below section for more details on this param</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">resolutionsDifferenceTolerance</span></code> : the parameter allows to specify a tolerance value to control the use of native resolution of the data, when no target size has been specified and granules are reprojected. If</p>
+<ul>
+<li><p>the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,</p></li>
+<li><p>native resolution is the same for all the requested granules,</p></li>
+<li><p>the unit of measure is the same for native and target CRS,</p></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<div><p>the reprojected coverage will be forced to use native resolutions.
+For example by specifying a value of 5.0, if the percentage difference between native and reprojected data is below 5%, assuming that also the other two conditions are respected, the native resolutions will be preserved. Default values is 0.</p>
+</div></blockquote>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">targetCRS</span></code> and <code class="docutils literal notranslate"><span class="pre">RoiCRS</span></code> parameters are using EPSG code terminology, so, valid parameters are literals like <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code> (if we are referring to a the  Geogaphic WGS84 CRS), <code class="docutils literal notranslate"><span class="pre">EPSG:3857</span></code> (for WGS84 Web Mercator CRS), etc.</p>
+</div>
+<div class="section" id="roi-definition">
+<h2>ROI Definition<a class="headerlink" href="#roi-definition" title="Permalink to this headline">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">ROI</span></code> parameter is a geometry object which can also be defined if three different forms:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>as <code class="docutils literal notranslate"><span class="pre">TEXT</span></code>, in various geometry textual formats/representations</p></li>
+<li><p>as <code class="docutils literal notranslate"><span class="pre">REFERENCE</span></code>, which is the textual result of an HTTP GET/POST request to a specific url</p></li>
+<li><p>as a <code class="docutils literal notranslate"><span class="pre">SUPPROCESS</span></code> result: the format produced as result of the process execution must be a compatible geometry textual format.</p></li>
+</ul>
+</div></blockquote>
+<p>As noted above, in all above forms/cases ROI geometry is defined as text, in specific formats. These can be:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">text/xml;</span> <span class="pre">subtype=gml/3.1.1</span></code>: conforming to gml specs 3.1.1</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text/xml;</span> <span class="pre">subtype=gml/2.1.2</span></code>: conforming to gml specs 2.1.2</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application/wkt</span></code>: the WKT geometry representation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application/json</span></code>: the JSON geometry representation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application/gml-3.1.1</span></code>: conforming to gml specs 3.1.1</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application/gml-2.1.2</span></code>: conforming to gml specs 2.1.2</p></li>
+</ul>
+</div></blockquote>
+<p>For example, a polygon used as ROI with the following WKT representation:</p>
+<p><code class="docutils literal notranslate"><span class="pre">POLYGON</span> <span class="pre">((</span> <span class="pre">500116.08576537756</span> <span class="pre">499994.25579707103,</span> <span class="pre">500116.08576537756</span> <span class="pre">500110.1012210889,</span> <span class="pre">500286.2657688021</span> <span class="pre">500110.1012210889,</span> <span class="pre">500286.2657688021</span> <span class="pre">499994.25579707103,</span> <span class="pre">500116.08576537756</span> <span class="pre">499994.25579707103</span> <span class="pre">))</span></code></p>
+<p>would be represented in the following forms:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>in application/wkt: <code class="docutils literal notranslate"><span class="pre">POLYGON</span> <span class="pre">((</span> <span class="pre">500116.08576537756</span> <span class="pre">499994.25579707103,</span> <span class="pre">500116.08576537756</span> <span class="pre">500110.1012210889,</span> <span class="pre">500286.2657688021</span> <span class="pre">500110.1012210889,</span> <span class="pre">500286.2657688021</span> <span class="pre">499994.25579707103,</span> <span class="pre">500116.08576537756</span> <span class="pre">499994.25579707103</span> <span class="pre">))</span></code></p></li>
+<li><p>in application/json: <code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:&quot;Polygon&quot;,&quot;coordinates&quot;:[[[500116.0858,499994.2558],[500116.0858,500110.1012],[500286.2658,500110.1012],[500286.2658,499994.2558],[500116.0858,499994.2558]]]}</span></code></p></li>
+<li><p>in text/xml:<code class="docutils literal notranslate"><span class="pre">500116.08576537756,499994.25579707103</span> <span class="pre">500116.08576537756,500110.1012210889</span> <span class="pre">500286.2657688021,500110.1012210889</span> <span class="pre">500286.2657688021,499994.25579707103</span> <span class="pre">500116.08576537756,499994.25579707103</span></code></p></li>
+<li><p>in application/xml: the following xml</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;gml:Polygon</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:outerBoundaryIs&gt;</span>
+    <span class="nt">&lt;gml:LinearRing&gt;</span>
+      <span class="nt">&lt;gml:coordinates&gt;</span>500116.08576537756,499994.25579707103 500116.08576537756,500110.1012210889 500286.2657688021,500110.1012210889 500286.2657688021,499994.25579707103 500116.08576537756,499994.25579707103<span class="nt">&lt;/gml:coordinates&gt;</span>
+    <span class="nt">&lt;/gml:LinearRing&gt;</span>
+  <span class="nt">&lt;/gml:outerBoundaryIs&gt;</span>
+<span class="nt">&lt;/gml:Polygon&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The general structure of a WPS Download request POST payload consists of two parts: the first (<code class="docutils literal notranslate"><span class="pre">&lt;wps:DataInputs&gt;</span></code>) contains the input parameters for the process, and the second (<code class="docutils literal notranslate"><span class="pre">&lt;wps:ResponseForm&gt;</span></code>) contains details about delivering the output. A typical pseudo payload is the following:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;ows:Identifier&gt;</span>gs:WPS_Process_Name_Here<span class="nt">&lt;/ows:Identifier&gt;</span>
+ <span class="nt">&lt;wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:Input&gt;</span>
+   <span class="nt">&lt;ows:Identifier&gt;</span>First_Param_Name<span class="nt">&lt;/ows:Identifier&gt;</span>
+   <span class="nt">&lt;wps:Data&gt;</span>
+     (First_Param_Data)
+   <span class="nt">&lt;/wps:Data&gt;</span>
+  <span class="nt">&lt;/wps:Input&gt;</span>
+  ...
+  ...
+ <span class="nt">&lt;/wps:DataInputs&gt;</span>
+ <span class="nt">&lt;wps:ResponseForm&gt;</span>
+  <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;application/zip&quot;</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+ <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Each parameter for the process is defined in its own <code class="docutils literal notranslate"><span class="pre">&lt;wps:Input&gt;</span></code> xml block. In case of simple type data, such as layerName, outputFormat, targetCRS, etc, input params xml blocks have the following form:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Input&gt;</span>
+ <span class="nt">&lt;ows:Identifier&gt;</span>layerName<span class="nt">&lt;/ows:Identifier&gt;</span>
+ <span class="nt">&lt;wps:Data&gt;</span>
+  <span class="nt">&lt;wps:LiteralData&gt;</span>nurc:Img_Sample<span class="nt">&lt;/wps:LiteralData&gt;</span>
+ <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">&lt;wps:LiteralData&gt;</span></code> tags wrapping the parameter value.
+In case of geometry parameters, such as filter, ROI, the parameter’s <code class="docutils literal notranslate"><span class="pre">&lt;wps:Input&gt;</span></code> block is different:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Input&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>ROI<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:ComplexData</span> <span class="na">mimeType=</span><span class="s">&quot;application/wkt&quot;</span><span class="nt">&gt;</span><span class="cp">&lt;![CDATA[POLYGON (( 500116.08576537756 499994.25579707103, 500116.08576537756 500110.1012210889, 500286.2657688021 500110.1012210889, 500286.2657688021 499994.25579707103, 500116.08576537756 499994.25579707103 ))]]&gt;</span><span class="nt">&lt;/wps:ComplexData&gt;</span>
+  <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">&lt;wps:ComplexData&gt;</span></code> tag, the <code class="docutils literal notranslate"><span class="pre">mimeType=&quot;application/wkt&quot;</span></code> parameter, and the <code class="docutils literal notranslate"><span class="pre">![CDATA[]</span></code> wrapping of the actual geometry data (in textual representation), according to the selected MIME type.</p>
+<p>Note that if the ROI parameter is defined as WKT, you will need to specify a RoiCRS input parameter as well.</p>
+<p>In case the ROI is defined using a REFERENCE source, the input block is slightly different:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Input&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>ROI<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;application/wkt&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;url_to_fetch_data&quot;</span> <span class="na">method=</span><span class="s">&quot;GET&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">&lt;wps:Reference&gt;</span></code> tag replacing <code class="docutils literal notranslate"><span class="pre">&lt;wps:ComplexData&gt;</span></code> tag, and the extra <code class="docutils literal notranslate"><span class="pre">xlink:href=&quot;url_to_fetch_data&quot;</span></code> parameter, which defines the url to perform the HTTP GET request. For POST request cases, tech method is switched to POST, and a <code class="docutils literal notranslate"><span class="pre">&lt;wps:Body&gt;</span></code> tag is used to wrap POST data:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;application/wkt&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;url_to_fetch_data&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wps:Body&gt;</span><span class="cp">&lt;![CDATA[request_body_data]]&gt;</span><span class="nt">&lt;/wps:Body&gt;</span>
+<span class="nt">&lt;/wps:Reference&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="filter-parameter-definition">
+<h2>Filter parameter definition<a class="headerlink" href="#filter-parameter-definition" title="Permalink to this headline">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">filter</span></code> parameter is a definition of a vector filter operation:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>as <code class="docutils literal notranslate"><span class="pre">TEXT</span></code>, in various textual formats/representations</p></li>
+<li><p>as <code class="docutils literal notranslate"><span class="pre">REFERENCE</span></code>, which is the textual result of an HTTP GET/POST request to a specific url</p></li>
+<li><p>as a <code class="docutils literal notranslate"><span class="pre">SUBPROCESS</span></code> result: the format produced as result of the process execution must be a compatible geometry textual format.</p></li>
+</ul>
+</div></blockquote>
+<p>Compatible text formats for filter definitions are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">text/xml;</span> <span class="pre">filter/1.0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text/xml;</span> <span class="pre">filter/1.1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text/xml;</span> <span class="pre">cql</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>For more details on filter formats/languages, one can see <a class="reference internal" href="../../filter/syntax.html"><span class="doc">Supported filter languages</span></a>  and <a class="reference internal" href="../../filter/function.html"><span class="doc">Filter functions</span></a>.
+Filter parameter applies to vector data. If this is the case with input data, a sample <code class="docutils literal notranslate"><span class="pre">&lt;wps:Input&gt;</span></code> block of a filter intersecting the  polygon we used earlier as an example for ROI definition would be:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Input&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>filter<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:ComplexData</span> <span class="na">mimeType=</span><span class="s">&quot;text/plain; subtype=cql&quot;</span><span class="nt">&gt;</span><span class="cp">&lt;![CDATA[&lt;Intersects&gt;</span>
+<span class="cp">       &lt;PropertyName&gt;GEOMETRY&lt;/PropertyName&gt;</span>
+<span class="cp">         &lt;gml:Polygon&gt;</span>
+<span class="cp">           &lt;gml:outerBoundaryIs&gt;</span>
+<span class="cp">             &lt;gml:LinearRing&gt;</span>
+<span class="cp">                &lt;gml:coordinates&gt;500116.08576537756,499994.25579707103 500116.08576537756,500110.1012210889 500286.2657688021,500110.1012210889 500286.2657688021,499994.25579707103 500116.08576537756,499994.25579707103&lt;/gml:coordinates&gt;</span>
+<span class="cp">              &lt;/gml:LinearRing&gt;</span>
+<span class="cp">           &lt;/gml:outerBoundaryIs&gt;</span>
+<span class="cp">         &lt;/gml:Polygon&gt;</span>
+<span class="cp">     &lt;/Intersects&gt;]]&gt;</span><span class="nt">&lt;/wps:ComplexData&gt;</span>
+  <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="sample-request">
+<h2>Sample request<a class="headerlink" href="#sample-request" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="synchronous-execution">
+<h3>Synchronous execution<a class="headerlink" href="#synchronous-execution" title="Permalink to this headline">¶</a></h3>
+<p>The following is a sample WPS request for processing a raster dataset.
+Suppose we want to use the North America sample imagery (<strong>nurc:Img_Sample</strong>) layer, to produce an <strong>80x80</strong> pixels downloadable <strong>tiff</strong> in <strong>EPSG:4326</strong></p>
+<p>Assuming that a local geoserver instance (setup for wps/wps-download support) is running, we issue a POST request to the url:</p>
+<p><code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8080/geoserver/ows?service=wps</span></code></p>
+<p>using the following payload:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;ows:Identifier&gt;</span>gs:Download<span class="nt">&lt;/ows:Identifier&gt;</span>
+ <span class="nt">&lt;wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:Input&gt;</span>
+   <span class="nt">&lt;ows:Identifier&gt;</span>layerName<span class="nt">&lt;/ows:Identifier&gt;</span>
+   <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:LiteralData&gt;</span>nurc:Img_Sample<span class="nt">&lt;/wps:LiteralData&gt;</span>
+   <span class="nt">&lt;/wps:Data&gt;</span>
+  <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;wps:Input&gt;</span>
+   <span class="nt">&lt;ows:Identifier&gt;</span>outputFormat<span class="nt">&lt;/ows:Identifier&gt;</span>
+   <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:LiteralData&gt;</span>image/tiff<span class="nt">&lt;/wps:LiteralData&gt;</span>
+   <span class="nt">&lt;/wps:Data&gt;</span>
+  <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;wps:Input&gt;</span>
+   <span class="nt">&lt;ows:Identifier&gt;</span>targetCRS<span class="nt">&lt;/ows:Identifier&gt;</span>
+   <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:LiteralData&gt;</span>EPSG:4326<span class="nt">&lt;/wps:LiteralData&gt;</span>
+   <span class="nt">&lt;/wps:Data&gt;</span>
+  <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;wps:Input&gt;</span>
+   <span class="nt">&lt;ows:Identifier&gt;</span>targetSizeX<span class="nt">&lt;/ows:Identifier&gt;</span>
+   <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:LiteralData&gt;</span>80<span class="nt">&lt;/wps:LiteralData&gt;</span>
+   <span class="nt">&lt;/wps:Data&gt;</span>
+  <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;wps:Input&gt;</span>
+   <span class="nt">&lt;ows:Identifier&gt;</span>targetSizeY<span class="nt">&lt;/ows:Identifier&gt;</span>
+   <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:LiteralData&gt;</span>80<span class="nt">&lt;/wps:LiteralData&gt;</span>
+   <span class="nt">&lt;/wps:Data&gt;</span>
+  <span class="nt">&lt;/wps:Input&gt;</span>
+ <span class="nt">&lt;/wps:DataInputs&gt;</span>
+ <span class="nt">&lt;wps:ResponseForm&gt;</span>
+  <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;application/zip&quot;</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+ <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>More parameters (from the parameter list above) can be used, for example, we can only select bands <strong>0 and 2</strong> from the original raster:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Input&gt;</span>
+ <span class="nt">&lt;ows:Identifier&gt;</span>bandIndices<span class="nt">&lt;/ows:Identifier&gt;</span>
+ <span class="nt">&lt;wps:Data&gt;</span>
+  <span class="nt">&lt;wps:LiteralData&gt;</span>0<span class="nt">&lt;/wps:LiteralData&gt;</span>
+ <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+<span class="nt">&lt;wps:Input&gt;</span>
+ <span class="nt">&lt;ows:Identifier&gt;</span>bandIndices<span class="nt">&lt;/ows:Identifier&gt;</span>
+ <span class="nt">&lt;wps:Data&gt;</span>
+  <span class="nt">&lt;wps:LiteralData&gt;</span>2<span class="nt">&lt;/wps:LiteralData&gt;</span>
+ <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Or, use a <strong>Region Of Interest</strong> to crop the dataset:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Input&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>ROI<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:ComplexData</span> <span class="na">mimeType=</span><span class="s">&quot;application/wkt&quot;</span><span class="nt">&gt;</span><span class="cp">&lt;![CDATA[&quot;POLYGON (( 500116.08576537756 499994.25579707103, 500116.08576537756 500110.1012210889, 500286.2657688021 500110.1012210889, 500286.2657688021 499994.25579707103, 500116.08576537756 499994.25579707103 ))]]&gt;</span><span class="nt">&lt;/wps:ComplexData&gt;</span>
+  <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+<span class="nt">&lt;wps:Input&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>RoiCRS<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:LiteralData&gt;</span>EPSG:32615<span class="nt">&lt;/wps:LiteralData&gt;</span>
+  <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The result produced is a zipped file to download.</p>
+</div>
+<div class="section" id="asynchronous-execution">
+<h3>Asynchronous execution<a class="headerlink" href="#asynchronous-execution" title="Permalink to this headline">¶</a></h3>
+<p>The process can also be performed asynchronously.
+In this case, the second part (<code class="docutils literal notranslate"><span class="pre">wps:ResponseForm</span></code>) of the wps download payload slightly changes, by using the <strong>storeExecuteResponse</strong> and <strong>status</strong> parameters, set to <strong>true</strong> for the <code class="docutils literal notranslate"><span class="pre">&lt;wps:ResponseDocument&gt;</span></code>:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:ResponseForm&gt;</span>
+  <span class="nt">&lt;wps:ResponseDocument</span> <span class="na">storeExecuteResponse=</span><span class="s">&quot;true&quot;</span> <span class="na">status=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;application/zip&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+  <span class="nt">&lt;/wps:ResponseDocument&gt;</span>&gt;
+<span class="nt">&lt;/wps:ResponseForm&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In case of asynchronous execution, the initial request to download data returns an xml indication that the process has successfully started:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;wps:ExecuteResponse</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;en&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">serviceInstance=</span><span class="s">&quot;http://127.0.0.1:8080/geoserver/ows?&quot;</span> <span class="na">statusLocation=</span><span class="s">&quot;http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;amp;version=1.0.0&amp;amp;request=GetExecutionStatus&amp;amp;executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wps:Process</span> <span class="na">wps:processVersion=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>gs:Download<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;ows:Title&gt;</span>Enterprise Download Process<span class="nt">&lt;/ows:Title&gt;</span>
+      <span class="nt">&lt;ows:Abstract&gt;</span>Downloads Layer Stream and provides a ZIP.<span class="nt">&lt;/ows:Abstract&gt;</span>
+  <span class="nt">&lt;/wps:Process&gt;</span>
+  <span class="nt">&lt;wps:Status</span> <span class="na">creationTime=</span><span class="s">&quot;2016-08-08T11:03:18.167Z&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;wps:ProcessAccepted&gt;</span>Process accepted.<span class="nt">&lt;/wps:ProcessAccepted&gt;</span>
+  <span class="nt">&lt;/wps:Status&gt;</span>
+<span class="nt">&lt;/wps:ExecuteResponse&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The response contains a <code class="docutils literal notranslate"><span class="pre">&lt;wps:Status&gt;</span></code> block indicating successful process creation and process start time. However, the important part in this response is the <strong>executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba</strong> attribute in the <code class="docutils literal notranslate"><span class="pre">&lt;wps:ExecuteResponse&gt;</span></code> tag. The <code class="docutils literal notranslate"><span class="pre">dd0d61f5-7da3-41ed-bd3f-15311fa660ba</span></code> ID can be used as a reference for this process, in order to issue new GET requests and to check process status. These requests have the form:</p>
+<p><code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;request=GetExecutionStatus&amp;executionId=277e24eb-365d-42e1-8329-44b8076d4fc0</span></code></p>
+<p>When issued (and process has finished on the server), this GET request returns the result to download/process as a base64 encoded zip:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:ExecuteResponse</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;en&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">serviceInstance=</span><span class="s">&quot;http://127.0.0.1:8080/geoserver/ows?&quot;</span> <span class="na">statusLocation=</span><span class="s">&quot;http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;amp;version=1.0.0&amp;amp;request=GetExecutionStatus&amp;amp;executionId=0c596a4d-7ddb-4a4e-bf35-4a64b47ee0d3&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wps:Process</span> <span class="na">wps:processVersion=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>gs:Download<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;ows:Title&gt;</span>Enterprise Download Process<span class="nt">&lt;/ows:Title&gt;</span>
+      <span class="nt">&lt;ows:Abstract&gt;</span>Downloads Layer Stream and provides a ZIP.<span class="nt">&lt;/ows:Abstract&gt;</span>
+  <span class="nt">&lt;/wps:Process&gt;</span>
+  <span class="nt">&lt;wps:Status</span> <span class="na">creationTime=</span><span class="s">&quot;2016-08-08T11:18:46.015Z&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;wps:ProcessSucceeded&gt;</span>Process succeeded.<span class="nt">&lt;/wps:ProcessSucceeded&gt;</span>
+  <span class="nt">&lt;/wps:Status&gt;</span>
+  <span class="nt">&lt;wps:ProcessOutputs&gt;</span>
+      <span class="nt">&lt;wps:Output&gt;</span>
+          <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+          <span class="nt">&lt;ows:Title&gt;</span>Zipped output files to download<span class="nt">&lt;/ows:Title&gt;</span>
+          <span class="nt">&lt;wps:Data&gt;</span>
+              <span class="nt">&lt;wps:ComplexData</span> <span class="na">encoding=</span><span class="s">&quot;base64&quot;</span> <span class="na">mimeType=</span><span class="s">&quot;application/zip&quot;</span><span class="nt">&gt;</span>UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00...(more zipped raster data following, ommited for space saving)...<span class="nt">&lt;/wps:ComplexData&gt;</span>
+          <span class="nt">&lt;/wps:Data&gt;</span>
+      <span class="nt">&lt;/wps:Output&gt;</span>
+  <span class="nt">&lt;/wps:ProcessOutputs&gt;</span>
+<span class="nt">&lt;/wps:ExecuteResponse&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="asynchronous-execution-output-as-a-reference">
+<h3>Asynchronous execution (output as a reference)<a class="headerlink" href="#asynchronous-execution-output-as-a-reference" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;wps:ResponseForm&gt;</span></code> of the previous asynchronous request payload example can be modified to get back a link to the file to be downloaded instead of the base64 encoded data.</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>...
+<span class="nt">&lt;wps:ResponseForm&gt;</span>
+  <span class="nt">&lt;wps:ResponseDocument</span> <span class="na">storeExecuteResponse=</span><span class="s">&quot;true&quot;</span> <span class="na">status=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wps:Output</span> <span class="na">asReference=</span><span class="s">&quot;true&quot;</span> <span class="na">mimeType=</span><span class="s">&quot;application/zip&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:Output&gt;</span>
+  <span class="nt">&lt;/wps:ResponseDocument&gt;</span>
+<span class="nt">&lt;/wps:ResponseForm&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note <code class="docutils literal notranslate"><span class="pre">&lt;wps:ResponseDocument&gt;</span></code> contains a <code class="docutils literal notranslate"><span class="pre">&lt;wps:Output&gt;</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">&lt;wps:RawDataOutput&gt;</span></code> being used by previous example.
+Moreover the attribute <strong>asReference</strong> set to <strong>true</strong> has been added to the <code class="docutils literal notranslate"><span class="pre">&lt;wps:Output&gt;</span></code>.</p>
+<p>This time, when issued (and process has finished on the server), the GET request returns the result to download as a link as part of <code class="docutils literal notranslate"><span class="pre">&lt;wps:Output&gt;&lt;wps:Reference&gt;</span></code> .</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+  <span class="nt">&lt;wps:ExecuteResponse</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;en&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">serviceInstance=</span><span class="s">&quot;http://127.0.0.1:8080/geoserver/ows?&quot;</span> <span class="na">statusLocation=</span><span class="s">&quot;http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;amp;version=1.0.0&amp;amp;request=GetExecutionStatus&amp;amp;executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wps:Process</span> <span class="na">wps:processVersion=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>gs:Download<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;ows:Title&gt;</span>Enterprise Download Process<span class="nt">&lt;/ows:Title&gt;</span>
+    <span class="nt">&lt;ows:Abstract&gt;</span>Downloads Layer Stream and provides a ZIP.<span class="nt">&lt;/ows:Abstract&gt;</span>
+  <span class="nt">&lt;/wps:Process&gt;</span>
+  <span class="nt">&lt;wps:Status</span> <span class="na">creationTime=</span><span class="s">&quot;2016-08-08T11:38:34.024Z&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wps:ProcessSucceeded&gt;</span>Process succeeded.<span class="nt">&lt;/wps:ProcessSucceeded&gt;</span>
+  <span class="nt">&lt;/wps:Status&gt;</span>
+  <span class="nt">&lt;wps:ProcessOutputs&gt;</span>
+    <span class="nt">&lt;wps:Output&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;ows:Title&gt;</span>Zipped output files to download<span class="nt">&lt;/ows:Title&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">href=</span><span class="s">&quot;http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;amp;version=1.0.0&amp;amp;request=GetExecutionResult&amp;amp;executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1&amp;amp;outputId=result.zip&amp;amp;mimetype=application%2Fzip&quot;</span> <span class="na">mimeType=</span><span class="s">&quot;application/zip&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/wps:Output&gt;</span>
+  <span class="nt">&lt;/wps:ProcessOutputs&gt;</span>
+<span class="nt">&lt;/wps:ExecuteResponse&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="output-format-and-response-mime-types">
+<h2>Output Format and Response mime-types<a class="headerlink" href="#output-format-and-response-mime-types" title="Permalink to this headline">¶</a></h2>
+<p>By default, downloading vector data results in a Shapefile, compressed in a zip file along with
+its SLD file. It’s also possible to download a GeoPackage file using <code class="docutils literal notranslate"><span class="pre">application/geopackage+sqlite3</span></code>
+as the value for the <code class="docutils literal notranslate"><span class="pre">mimeType</span></code> parameter.</p>
+<p>Similarly, for raster data, by default the downloaded raster gets zipped, along with the SLD style associated to the layer.
+In some cases, this can be unnecessary, especially if the output TIFF already has some type of internal compression or if we simply want to get back the TIFF output file without the ancillary SLD. Let’s consider downloading a RGB TIFF: the default raster.sld style won’t add anything useful to the output. In that case it’s possible to specify <code class="docutils literal notranslate"><span class="pre">image/tiff</span></code> in the Response’s output <code class="docutils literal notranslate"><span class="pre">mimeType</span></code>: the output TIFF will be provided as is, without extra steps of compression and file management.</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>...
+<span class="nt">&lt;wps:ResponseForm&gt;</span>
+  <span class="nt">&lt;wps:ResponseDocument</span> <span class="na">storeExecuteResponse=</span><span class="s">&quot;true&quot;</span> <span class="na">status=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wps:Output</span> <span class="na">asReference=</span><span class="s">&quot;true&quot;</span> <span class="na">mimeType=</span><span class="s">&quot;image/tiff&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:Output&gt;</span>
+  <span class="nt">&lt;/wps:ResponseDocument&gt;</span>
+<span class="nt">&lt;/wps:ResponseForm&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>It is also possible to download the raster data as a GeoPackage, using <code class="docutils literal notranslate"><span class="pre">application/geopackage+sqlite3</span></code>
+as the value for the <code class="docutils literal notranslate"><span class="pre">mimeType</span></code> parameter.</p>
+</div>
+<div class="section" id="writing-buffering-options">
+<h2>Writing buffering options<a class="headerlink" href="#writing-buffering-options" title="Permalink to this headline">¶</a></h2>
+<p>By default raster pixels are encoded using a file stream writing through a default 16KB data buffer.
+Depending on the network and disk setup, you might want to change the size of the buffer to improve performance. This can be done by adding this property to the <code class="docutils literal notranslate"><span class="pre">JAVA_OPTS</span></code>: <code class="docutils literal notranslate"><span class="pre">-Dorg.geoserver.wps.download.raster.buffer.size=sizeinbytes</span></code> where <code class="docutils literal notranslate"><span class="pre">sizeinbytes</span></code> is the actual value to be set, i.e. 1048576 to set a 1MB buffer.</p>
+<p>Moreover, when copying back data resources from within the WPS machinery to the final file output location, a default 16KB data buffer is being used.
+It’s also possible to change the size of such buffer by adding this property to the <code class="docutils literal notranslate"><span class="pre">JAVA_OPTS</span></code>: <code class="docutils literal notranslate"><span class="pre">-Dorg.geoserver.wps.copy.buffer.size=sizeinbytes</span></code> where <code class="docutils literal notranslate"><span class="pre">sizeinbytes</span></code> is the actual value to be set, i.e. 1048576 to set a 1MB buffer.</p>
+</div>
+<div class="section" id="writing-parameters">
+<span id="writing-params"></span><h2>Writing parameters<a class="headerlink" href="#writing-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">writeParameters</span></code> input element of a process execution allows to specify parameters to be applied by the <code class="docutils literal notranslate"><span class="pre">outputFormat</span></code> encoder when producing the output file.
+Writing parameters are listed as multiple <code class="docutils literal notranslate"><span class="pre">&lt;dwn:Parameter</span> <span class="pre">key=&quot;writingParameterName&quot;&gt;value&lt;/dwn:Parameter&gt;</span></code> within a <code class="docutils literal notranslate"><span class="pre">&lt;dwn:Parameters&gt;</span></code> parent element.
+See the below xml containing full syntax of a valid example for TIFF output format:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Input&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>writeParameters<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;wps:Data&gt;</span>
+       <span class="nt">&lt;wps:ComplexData</span> <span class="na">xmlns:dwn=</span><span class="s">&quot;http://geoserver.org/wps/download&quot;</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;dwn:Parameters&gt;</span>
+            <span class="nt">&lt;dwn:Parameter</span> <span class="na">key=</span><span class="s">&quot;tilewidth&quot;</span><span class="nt">&gt;</span>128<span class="nt">&lt;/dwn:Parameter&gt;</span>
+            <span class="nt">&lt;dwn:Parameter</span> <span class="na">key=</span><span class="s">&quot;tileheight&quot;</span><span class="nt">&gt;</span>128<span class="nt">&lt;/dwn:Parameter&gt;</span>
+            <span class="nt">&lt;dwn:Parameter</span> <span class="na">key=</span><span class="s">&quot;compression&quot;</span><span class="nt">&gt;</span>JPEG<span class="nt">&lt;/dwn:Parameter&gt;</span>
+            <span class="nt">&lt;dwn:Parameter</span> <span class="na">key=</span><span class="s">&quot;quality&quot;</span><span class="nt">&gt;</span>0.75<span class="nt">&lt;/dwn:Parameter&gt;</span>
+         <span class="nt">&lt;/dwn:Parameters&gt;</span>
+       <span class="nt">&lt;/wps:ComplexData&gt;</span>
+    <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="geotiff-tiff-supported-writing-parameters">
+<h3>GeoTIFF/TIFF supported writing parameters<a class="headerlink" href="#geotiff-tiff-supported-writing-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The supported writing parameters are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tilewidth</span></code> : Width of internal tiles, in pixels</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tileheight</span></code> : Height of internal tiles, in pixels</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compression</span></code> : Compression type used to store internal tiles. Supported values are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">CCITT</span> <span class="pre">RLE</span></code> (Lossless) (Huffman)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LZW</span></code>       (Lossless)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JPEG</span></code>      (Lossy)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZLib</span></code>      (Lossless)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PackBits</span></code>  (Lossless)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Deflate</span></code>   (Lossless)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quality</span></code> : Compression quality. Value is in the range [0 : 1]</p>
+<ul>
+<li><p>for <code class="docutils literal notranslate"><span class="pre">JPEG</span></code> lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).</p></li>
+<li><p>for <code class="docutils literal notranslate"><span class="pre">Deflate</span></code> lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]:  <code class="docutils literal notranslate"><span class="pre">(deflate</span> <span class="pre">level</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">8</span> <span class="pre">*</span> <span class="pre">(quality))</span></code>, where level 1 is for best speed and level 9 is for best compression. (default level is 9)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">writenodata</span></code> : Supported value is one of true/false. Note that, by default, a <a class="reference external" href="https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html">nodata TAG</a> is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.</p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="direct-download">
+<h1>Direct download<a class="headerlink" href="#direct-download" title="Permalink to this headline">¶</a></h1>
+<p>The raster process does its best to identify downloads that are in fact selecting a single, complete
+source file, and will perform a straight copy of it in such case.</p>
+<p>Conditions:</p>
+<ul class="simple">
+<li><p>A single, complete source file is selected by the request (e.g. full input GeoTIFF, or single
+full granule out of an image mosaic).</p></li>
+<li><p>The output format matches the input (e.g. both GeoTIFF)</p></li>
+<li><p>The write parameters, if present, match the structure of the input file (same compression, same tiling structure)</p></li>
+</ul>
+<p>In order to better support opportunities for direct download, it’s possible to specify the write
+parameter <code class="docutils literal notranslate"><span class="pre">compression</span></code> as <code class="docutils literal notranslate"><span class="pre">auto</span></code>: it won’t interfere with selection of a direct download,
+if possible, and will fall back to <code class="docutils literal notranslate"><span class="pre">deflate</span></code> in case the direct download is not possible.</p>
+<div class="section" id="rasterdownload-of-heterogeneous-crs-imagemosaic">
+<span id="heterogeneous-imagemosaic"></span><h2>RasterDownload of Heterogeneous CRS ImageMosaic<a class="headerlink" href="#rasterdownload-of-heterogeneous-crs-imagemosaic" title="Permalink to this headline">¶</a></h2>
+<p>An ImageMosaic made of granules in different coordinate reference systems (i.e. several DEM files in different UTM zones) is defined as ImageMosaic with Heterogeneous CRS. The ImageMosaic layer will expose a common CRS as the native one (i.e. 4326).</p>
+<p>By default, mosaicking granules with different CRSs will result into a reprojection from the original CRS of the granules to that common CRS.</p>
+<p>Since 2.17, a new parameter has been defined: <code class="docutils literal notranslate"><span class="pre">minimizeReprojections</span></code></p>
+<p>It will be used on Raster Download with a defined ROI and a TargetCRS being specified. When set to true, any Granule in the ROI having a nativeCRS matching the TargetCRS will not be affected by reprojection.</p>
+<p>Since 2.17, a new parameter has been defined: <code class="docutils literal notranslate"><span class="pre">bestResolutionOnMatchingCRS</span></code></p>
+<p>It will be used when <code class="docutils literal notranslate"><span class="pre">minimizeReprojections</span></code> is enabled too, on Raster Download with a defined ROI and a TargetCRS, without target size being specified.
+When set to true, the download will aim to preserve the native properties of the underlying granules matching the targetCRS, as much as possible.</p>
+<p>Back to the example, a RasterDownload specifying UTM32N as TargetCRS and a ROI covering an area containing UTM32N granules will result into getting those UTM32N granules without applying any intermediate reprojection, also providing back best raw resolution available for that CRS. So, if the ImageMosaic is a mix of UTM32N DEMs at 10 km resolution and UTM33N at 100 m resolution, the underlying reading request will use 10 km resolution, being the best resolution available in the targetCRS. When no granules are matching the targetCRS, the best resolution is taken from all the granules.</p>
+<p>Make sure to configure the ImageMosaic’s index to contain both crs and resolution attributes, in order to preserve as much as possible the native properties of the granules.</p>
+<p>A typical <code class="file docutils literal notranslate"><span class="pre">indexer.properties</span></code> of such ImageMosaic will look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GranuleAcceptors</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">gce</span><span class="o">.</span><span class="n">imagemosaic</span><span class="o">.</span><span class="n">acceptors</span><span class="o">.</span><span class="n">HeterogeneousCRSAcceptorFactory</span>
+<span class="n">GranuleHandler</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">gce</span><span class="o">.</span><span class="n">imagemosaic</span><span class="o">.</span><span class="n">granulehandler</span><span class="o">.</span><span class="n">ReprojectingGranuleHandlerFactory</span>
+<span class="n">HeterogeneousCRS</span><span class="o">=</span><span class="n">true</span>
+<span class="n">MosaicCRS</span><span class="o">=</span><span class="n">EPSG</span>\<span class="p">:</span><span class="n">XXXX</span>
+<span class="n">Schema</span><span class="o">=*</span><span class="n">the_geom</span><span class="p">:</span><span class="n">Polygon</span><span class="p">,</span><span class="n">location</span><span class="p">:</span><span class="n">String</span><span class="p">,</span><span class="n">crs</span><span class="p">:</span><span class="n">String</span><span class="p">,</span><span class="n">resX</span><span class="p">:</span><span class="n">double</span><span class="p">,</span><span class="n">resY</span><span class="p">:</span><span class="n">double</span>
+<span class="n">ResolutionXAttribute</span><span class="o">=</span><span class="n">resX</span>
+<span class="n">ResolutionYAttribute</span><span class="o">=</span><span class="n">resY</span>
+<span class="n">CrsAttribute</span><span class="o">=</span><span class="n">crs</span>
+<span class="n">PropertyCollectors</span><span class="o">=</span><span class="n">CRSExtractorSPI</span><span class="p">(</span><span class="n">crs</span><span class="p">),</span><span class="n">ResolutionXExtractorSPI</span><span class="p">(</span><span class="n">resX</span><span class="p">),</span><span class="n">ResolutionYExtractorSPI</span><span class="p">(</span><span class="n">resY</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="vertical-data-resampling-on-download">
+<span id="vertical-resampling"></span><h2>Vertical data resampling on download<a class="headerlink" href="#vertical-data-resampling-on-download" title="Permalink to this headline">¶</a></h2>
+<p>Coverages containing elevations data (i.e. DTM/DEM/DSM) have pixel values representing elevations/heights referred to a specific VerticalCRS.</p>
+<p>The associated VerticalCRS can be specified in the layer configuration, at the very bottom of the page, where a new optional Vertical Coordinate Reference System section shows up.</p>
+<p>The following example shows a DSM layer being configured to specify EPSG:5778 as adopted VerticalCRS.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/verticalCRS.png" src="../../_images/verticalCRS.png" />
+</div>
+</div></blockquote>
+<p>This section will only show up if:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The wps-download module has been deployed in GeoServer</p></li>
+<li><p>The underlying data is single-band and datatype is at least 16 bit. (i.e.: no Byte datatype, no RGB images, …)</p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="wps-download-vertical-resampling">
+<h3>WPS Download - Vertical resampling<a class="headerlink" href="#wps-download-vertical-resampling" title="Permalink to this headline">¶</a></h3>
+<p>Resampling the data to a different VerticalCRS as part of the Raster Download Process is possible by specifying the <strong>targetVerticalCRS</strong> parameter in the WPS Download request. For example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:Input&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>targetVerticalCRS<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:Data&gt;</span>
+    <span class="nt">&lt;wps:LiteralData&gt;</span>EPSG:9274<span class="nt">&lt;/wps:LiteralData&gt;</span>
+  <span class="nt">&lt;/wps:Data&gt;</span>
+<span class="nt">&lt;/wps:Input&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>An exception will be thrown when specifying a targetVerticalCRS but no source VerticalCRS has been assigned to the requested layer through the above setting.</p>
+</div>
+<div class="section" id="custom-verticalcrs-definitions-and-grid-transformations">
+<h4>Custom VerticalCRS definitions and grid transformations<a class="headerlink" href="#custom-verticalcrs-definitions-and-grid-transformations" title="Permalink to this headline">¶</a></h4>
+<p>Custom verticalCRS definitions can be specified in GeoServer via properties file as any other Coordinate Reference System, as explained in <a class="reference internal" href="../../configuration/crshandling/customcrs.html#crs-custom"><span class="std std-ref">Custom CRS Definitions</span></a> page.</p>
+<p>This is an example of the above VerticalCRS being added as a WKT in the <code class="file docutils literal notranslate"><span class="pre">user_projections/epsg.properties</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">9274</span><span class="o">=</span><span class="n">VERT_CS</span><span class="p">[</span><span class="s2">&quot;EVRF2000 Austria height&quot;</span><span class="p">,</span> \
+   <span class="n">VERT_DATUM</span><span class="p">[</span><span class="s2">&quot;European Vertical Reference Frame 2000 Austria&quot;</span><span class="p">,</span> \
+     <span class="mi">2000</span><span class="p">,</span> <span class="n">AUTHORITY</span><span class="p">[</span><span class="s2">&quot;EPSG&quot;</span><span class="p">,</span><span class="s2">&quot;1261&quot;</span><span class="p">]],</span> \
+   <span class="n">AXIS</span><span class="p">[</span><span class="s2">&quot;gravity-related height (H)&quot;</span><span class="p">,</span><span class="n">up</span><span class="p">],</span> \
+   <span class="n">UNIT</span><span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">,</span><span class="mf">1.0</span><span class="p">],</span> \
+<span class="n">AUTHORITY</span><span class="p">[</span><span class="s2">&quot;EPSG&quot;</span><span class="p">,</span><span class="s2">&quot;9274&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Transformations between VerticalCRSs can be supported through Vertical Grid Offset files (similarly to how NTV2 Grid Shift can be used in support of 2D grid transformation).</p>
+<p>Custom Coordinate Operations are defined in <code class="file docutils literal notranslate"><span class="pre">user_projections/epsg_operations.properties</span></code> file within the data directory (create it if it doesn’t exist).</p>
+<p>Each line in <code class="file docutils literal notranslate"><span class="pre">epsg_operations.properties</span></code> will describe a coordinate operation consisting of a <cite>source CRS</cite>, a <cite>target CRS</cite>, and a math transform with its parameter values. Use the following syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">source</span> <span class="n">crs</span> <span class="n">code</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">target</span> <span class="n">crs</span> <span class="n">code</span><span class="o">&gt;=&lt;</span><span class="n">WKT</span> <span class="n">math</span> <span class="n">transform</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The Math Transform is a <code class="docutils literal notranslate"><span class="pre">Vertical</span> <span class="pre">Offset</span> <span class="pre">by</span> <span class="pre">Grid</span> <span class="pre">Interpolation</span></code> requiring 2 parameters:</p>
+<ol class="arabic simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">Vertical</span> <span class="pre">offset</span> <span class="pre">file</span></code> referring an offset file containing a vertical offset for each pixel of the grid. The referred file need to be available in the <code class="file docutils literal notranslate"><span class="pre">user_projections</span></code> directory,</p></li>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">Interpolation</span> <span class="pre">CRS</span> <span class="pre">code</span></code> containing the EPSG code of the 2D CoordinateReferenceSystem of the grid file.</p></li>
+</ol>
+</div>
+<div class="section" id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<p>Custom Vertical Grid Shift file for the transformation between the above Vertical CRSs</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">5778</span><span class="p">,</span><span class="mi">9274</span><span class="o">=</span><span class="n">PARAM_MT</span><span class="p">[</span><span class="s2">&quot;Vertical Offset by Grid Interpolation&quot;</span><span class="p">,</span> \
+<span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;Vertical offset file&quot;</span><span class="p">,</span> <span class="s2">&quot;GV_Hoehengrid_V1.tif&quot;</span><span class="p">],</span> \
+<span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;Interpolation CRS code&quot;</span><span class="p">,</span> <span class="mi">4312</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only GeoTIFF vertical offset files are supported at the moment. Vertical resampling will access pixels from that GeoTIFF using tiled loading. Therefore, make sure that the grid file is not striped (a gdalinfo call reporting <code class="docutils literal notranslate"><span class="pre">Band</span> <span class="pre">1</span> <span class="pre">Block</span> <span class="pre">=</span> <span class="pre">NNN</span> <span class="pre">x</span> <span class="pre">1</span></code> means a striped file. In that case, consider retiling it for better access before using it as a Vertical Offset File)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">WPS Download plugin</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="mapAnimationDownload.html" title="next chapter">Rendered map/animation download processes</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Raw data download processes</a><ul>
+<li><a class="reference internal" href="#download-estimator-process">Download Estimator Process</a></li>
+<li><a class="reference internal" href="#download-process">Download Process</a></li>
+<li><a class="reference internal" href="#roi-definition">ROI Definition</a></li>
+<li><a class="reference internal" href="#filter-parameter-definition">Filter parameter definition</a></li>
+<li><a class="reference internal" href="#sample-request">Sample request</a><ul>
+<li><a class="reference internal" href="#synchronous-execution">Synchronous execution</a></li>
+<li><a class="reference internal" href="#asynchronous-execution">Asynchronous execution</a></li>
+<li><a class="reference internal" href="#asynchronous-execution-output-as-a-reference">Asynchronous execution (output as a reference)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#output-format-and-response-mime-types">Output Format and Response mime-types</a></li>
+<li><a class="reference internal" href="#writing-buffering-options">Writing buffering options</a></li>
+<li><a class="reference internal" href="#writing-parameters">Writing parameters</a><ul>
+<li><a class="reference internal" href="#geotiff-tiff-supported-writing-parameters">GeoTIFF/TIFF supported writing parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#direct-download">Direct download</a><ul>
+<li><a class="reference internal" href="#rasterdownload-of-heterogeneous-crs-imagemosaic">RasterDownload of Heterogeneous CRS ImageMosaic</a></li>
+<li><a class="reference internal" href="#vertical-data-resampling-on-download">Vertical data resampling on download</a><ul>
+<li><a class="reference internal" href="#wps-download-vertical-resampling">WPS Download - Vertical resampling</a><ul>
+<li><a class="reference internal" href="#custom-verticalcrs-definitions-and-grid-transformations">Custom VerticalCRS definitions and grid transformations</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">WPS Download plugin</a></li>
+            <li>Next: <a href="mapAnimationDownload.html" title="next chapter">Rendered map/animation download processes</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/wps-download/rawDownload.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

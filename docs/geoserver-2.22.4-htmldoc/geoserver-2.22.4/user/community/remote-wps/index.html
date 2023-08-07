@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WPS Remote community module &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Deployment And Setup Of GeoServer With WPS Remote Plugin" href="install_geoserver.html" />
+    <link rel="prev" title="PGRaster" href="../pgraster/pgraster.html" /> 
+  </head><body class="community/remote-wps/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>WPS Remote community module</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="install_geoserver.html" title="Deployment And Setup Of GeoServer With WPS Remote Plugin" accesskey="N">Next</a></li>
+  <li>
+    <a href="../pgraster/pgraster.html" title="PGRaster" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wps-remote-community-module">
+<span id="community-remotewps"></span><h1>WPS Remote community module<a class="headerlink" href="#wps-remote-community-module" title="Permalink to this headline">¶</a></h1>
+<p>The GeoServer WPS remote module allows to discover, run and monitor processes running on one or more remote machines,
+exposing them via the WPS protocol and allowing both synchronous and asynchronous runs of the same, with eventual progress
+monitoring.</p>
+<p>The remote process can be anything, from a Python script or a command line executable.
+The only constraint is to have a remote component able to handle few RPCs, like run, progress, complete (which means collect and send the outcome to the GeoServer machine), execution error (which means if any error occurs report the exception) and kill.
+On GeoServer side the module manages the same RPCs in order to perform the integration with the WPS.
+All the communications and command take place over the XMPP protocol, as a suitable cross-language communication system</p>
+<p>A reference implementation of the remote end is available at <a class="reference external" href="https://github.com/geoserver/wps-remote">https://github.com/geoserver/wps-remote</a>, a configurable Python/XMPP wrapper for remote commands.
+The Python XMPP wrapper resides into the remote machine and is able to send a presentation of the remote process through an XMPP message by JSON-encoding
+into the body the process inputs/outputs parameter descriptors along with their type.
+On the GeoServer side the WPS Remote module automatically recognizes and loads an XMPP implementation of the RemoteClient.
+The GeoServer plugin is able to inquire for new available services, un-marshall their inputs and outputs and build appropriate process wrapper
+for GeoServer WPS to use.
+At execution time, the new Process is able to interact with the RemoteClient plug-in implementation in order to send a request to the Service.py,
+follow the status of the remote process and get the outputs at the end.</p>
+<div class="section" id="orchestrating-remote-executable-through-geoserver-wps-and-xmpp">
+<h2>Orchestrating remote executable through GeoServer WPS and XMPP<a class="headerlink" href="#orchestrating-remote-executable-through-geoserver-wps-and-xmpp" title="Permalink to this headline">¶</a></h2>
+<p>The Remote WPS infrastructure is designed to run external programs <strong>asynchronously</strong> through the standard <em>OGC WPS</em> protocol interface on remote machines and to track their progress through the <em>XMPP Protocols</em>.</p>
+<p>The infrastructure relies on an <em>XMPP Server</em> (which can be external or embedded) in order to implement a <em>message passing distributed infrastructure</em> that uses the XMPP protocols for exchanging control and status messages between the GeoServer instances and the executables running on remote machines.</p>
+<p>A Python based framework, along with addoc GeoServer plugins, manages and translates the XMPP messages by decoupling the custom mechanism of launching external executables running on remote machines from the standard way of invoking OGC WPS compliant processes in GeoServer.</p>
+<p>The OGC WPS process I/O map is automatically generated by the Remote WPS GeoServer plug-ins at runtime.
+Every time the framework recognizes a new external executable declared on the XMPP channel, the Remote WPS GeoServer plug-in creates the equivalent OGC WPS compliant interface and establishes the communication between GeoServer and the external executable. Every time a GeoServer user starts a new OGC WPS compliant process run, the infrastructure performs a call to the external executable and takes care of managing the communication between the two entities asynchronously.</p>
+<p>The Remote WPS GeoServer plug-ins provide a new <em>ProcessFactory</em> which is responsible to register/unregister the OGC WPS compliant processes automatically and at runtime.
+Orchestration will be performed by the newly created GeoServer ProcessFactory upon a WPS execution request with the help of the XMPP Server which provides out-of-the-box nodes presence discovery and load balancing capabilities for the remote node through the interaction with the Python framework.</p>
+<p>The orchestrator will also be responsible for redirecting the messages generated by running executables on the remote machines to the correct GeoServer process and vice versa for control messages.
+Executables running on the remote hosts through the Python framework wrappers, will generate progress information which will be sent back to the orchestrator via XMPP.</p>
+<p>It is important to note that there are two levels of load balancing. One on the GeoServer side and one on the remote processing nodes side. The GeoServer load balancer will know which user has requested the processing and will be able to enforce system and resources limitations associated to it;
+as an instance, a user won’t be able to run more than M processes in parallel and a quota for both the inputs and outputs will be assigned to its executions. The Orchestrator will be responsible, in cooperation with the XMPP service, for balancing the load for a certain executables on the remote hosts and for deciding where to send a new execution request in case a certain executable has been deployed on multiple remote machines.</p>
+<p>Also note that the GeoServer instances comprising the cluster will share a specific directory where the WPS specific resources will be stored.</p>
+<div class="section" id="invoking-remote-processes-and-consuming-the-results">
+<h3>Invoking remote processes and consuming the results<a class="headerlink" href="#invoking-remote-processes-and-consuming-the-results" title="Permalink to this headline">¶</a></h3>
+<p>The executables on the remote hosts will be invoked through the command line by the Python framework wrappers in response to execution commands, received via the Orchestrator XMPP messages, as the result of a GeoServer WPS Execute call.</p>
+<p>On the remote machines the Python framework wrappers and scripts will act as XMPP clients providing the ability to:</p>
+<ul class="simple">
+<li><p>launch command-line executables using the inputs provided by the end user from the GeoServer process orchestrator</p></li>
+<li><p>send back to the orchestrator status messages with the progress and status of the execution</p></li>
+<li><p>receive eventual control messages from the orchestrator to tentatively kill running executions</p></li>
+<li><p>perform clean-up operations like looking for zombie executions and killing them or removing stale files on the file system from old executions</p></li>
+<li><p>perform runtime discovery of new remote executable</p></li>
+</ul>
+<p>The illustration below shows the interaction between the GeoServer Remote WPS plug-in and the Python framework wrappers. The whole communication is achieved through the XMPP protocols.
+The Python framework makes available a set of scripts and wrappers allowing to invoke the external executables and manage the entire execution by translating commands and outputs into XMPP messages to be sent and received by GeoServer.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/orchestrator2.png" src="../../_images/orchestrator2.png" />
+</div>
+</div></blockquote>
+<p>As mentioned above the remote executables should adhere to a certain contract in order to fully support all these functionalities. As an example the ability to kill an existing execution heavily relies on the fact that the current process accounted for this functionality, otherwise we would have to try and kill it using operating system calls.
+This might require the end user to create wrappers around the legacy executables in certain cases.</p>
+<p>Runtime discovery of new remote executable will be supported through adding new Properties files to a location known to the Python modules. A new OGC WPS compliant process will be directly exposed to GeoServer without restarting the GeoServer itself for the new remote executable since the Python wrappers will communicate the existence of a new executable by interacting with the GeoServer Orchestrator via XMPP messages.
+The end user will see as many OGC WPS compliant processes as properties configuration files on the remote machines thanks to the functionalities implemented by the Python framework scripts.</p>
+<p>An example of such a properties file can be like below:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>[Description]
+service = Service
+namespace = default
+description = A dummy service, replace with your own description
+executable = process.py
+process_buffer = 0
+result_size = 0
+active = True
+
+[Options]
+customargs = --path=D:\user\
+argformat = --key=value
+debug = True
+
+[Input]
+name = {&quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;A person name&quot;, &quot;enum&quot;: [&quot;Hans&quot;, &quot;Peter&quot;, &quot;Alex&quot;, &quot;Michi&quot;],
+&quot;default&quot;: &quot;Hans&quot;, &quot;max&quot;: 1}
+surname = {&quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;A persons surname&quot;, &quot;max&quot;: 1, &quot;default&quot;: &quot;Meier&quot;}
+child = {&quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;A child name&quot;, &quot;min&quot;: 0, &quot;max&quot;: 10}
+
+[Output]
+welcome = {&quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;A welcome message&quot;}
+goodbye = {&quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;A goodbye message&quot;}
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>the configuration above is a simplified and non-working example of a Remote Process wrapper configuration. The scope of the example above is just for better understand of the high-level scenario and is not meant to be used in a real use case.</p>
+</div>
+</div>
+<div class="section" id="deploy-diagram">
+<h3>Deploy Diagram<a class="headerlink" href="#deploy-diagram" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/deploy_diagram.png" src="../../_images/deploy_diagram.png" />
+</div>
+</div></blockquote>
+<p>The illustration shows a deploy diagram of a <em>Change Detection</em> executable running on a remote machine and exposed as a GeoServer WPS Process thought the <em>WPS Remote Plug-in</em>.</p>
+<ul class="simple">
+<li><p>The external users issue a processing request through GeoServer using the OGC WPS compliant protocol.</p></li>
+<li><p>The GeoServer Remote WPS plug-in, thanks to the WPS RemoteProcessFactory, will be able to expose the processes I/O map along with the process descriptors, and take care of the entire execution by providing feedbacks to the users in an OGC compliant way.</p></li>
+<li><p>On the remote machines, where the executables rely and where the real computation takes place, the Python framework, through the use of wrappers and ad h.o.c. scripts, handles transparently the communication with the Remote plug-in through the XMPP protocols.</p></li>
+<li><p>The XMPP Server, in the middle, handles the secured communication channels ensuring that the endpoints are correctly registered to the system and are able to exchange messages.</p></li>
+<li><p>The outcomes are exchanged through a shared folder.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="installation-and-configuration-steps">
+<h2>Installation and Configuration Steps<a class="headerlink" href="#installation-and-configuration-steps" title="Permalink to this headline">¶</a></h2>
+<p>The following sections will guide the user to the deployment and configuration of an example <em>GDAL CONTOUR</em> command exposed as a GeoServer WPS Process through the WPS Remote Plugin.</p>
+<p>The examples will show step-by-step procedures to configure and deploy the whole example on two different machines:</p>
+<ul class="simple">
+<li><p>Commands to deploy GeoServer with the WPS Remote Plug-in and an OpenFire XMPP Server, will be executed on a CentOS Minimal machine</p></li>
+<li><p>Commands to deploy the WPS Remote XMPP Python Wrapper and GDAL, will be executed on a Windows 7+ machine</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_geoserver.html">Deployment And Setup Of GeoServer With WPS Remote Plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_xmpp.html">Installation Of OpenFire XMPP Server To Exchange Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_python.html">Deployment And Setup Of The XMPP Python Wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_python.html#installation-and-configuration-steps">Installation and Configuration Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_python.html#annex-a-remote-wps-python-wrapper-reference">ANNEX A: Remote WPS Python Wrapper Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running_example.html">A Remote “Gdal Contour” Process Binding Example</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../pgraster/pgraster.html" title="previous chapter">PGRaster</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="install_geoserver.html" title="next chapter">Deployment And Setup Of GeoServer With WPS Remote Plugin</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WPS Remote community module</a><ul>
+<li><a class="reference internal" href="#orchestrating-remote-executable-through-geoserver-wps-and-xmpp">Orchestrating remote executable through GeoServer WPS and XMPP</a><ul>
+<li><a class="reference internal" href="#invoking-remote-processes-and-consuming-the-results">Invoking remote processes and consuming the results</a></li>
+<li><a class="reference internal" href="#deploy-diagram">Deploy Diagram</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installation-and-configuration-steps">Installation and Configuration Steps</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../pgraster/pgraster.html" title="previous chapter">PGRaster</a></li>
+            <li>Next: <a href="install_geoserver.html" title="next chapter">Deployment And Setup Of GeoServer With WPS Remote Plugin</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/remote-wps/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

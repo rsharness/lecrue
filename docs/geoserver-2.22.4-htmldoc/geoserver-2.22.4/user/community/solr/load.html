@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading spatial data into SOLR &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Optimize rendering of complex polygons" href="optimize.html" />
+    <link rel="prev" title="SOLR layer configuration" href="configure.html" /> 
+  </head><body class="community/solr/load">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SOLR data store</a> &raquo;</li>
+    <li>Loading spatial data into SOLR</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="optimize.html" title="Optimize rendering of complex polygons" accesskey="N">Next</a></li>
+  <li>
+    <a href="configure.html" title="SOLR layer configuration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="loading-spatial-data-into-solr">
+<span id="community-solr-load"></span><h1>Loading spatial data into SOLR<a class="headerlink" href="#loading-spatial-data-into-solr" title="Permalink to this headline">¶</a></h1>
+<p>This section provides a simple example on how to convert and load a shapefile into a SOLR instance.
+For more advanced needs and details about spatial support in SOLR consult the SOLR documentation,
+making sure to read the one associated to the version at hand (spatial support is still rapidly
+evolving).</p>
+<p>The current example has been developed and tested using GDAL 1.11 and SOLR 4.8, different versions
+of the tools and server might require a different syntax for upload.</p>
+<p>The SOLR instance is supposed to have the following definitions in its schema:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;geo&quot;</span> <span class="na">type=</span><span class="s">&quot;location_rpt&quot;</span> <span class="na">indexed=</span><span class="s">&quot;true&quot;</span> <span class="na">stored=</span><span class="s">&quot;true&quot;</span> <span class="na">multiValued=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;dynamicField</span> <span class="na">name=</span><span class="s">&quot;*_i&quot;</span>  <span class="na">type=</span><span class="s">&quot;int&quot;</span>    <span class="na">indexed=</span><span class="s">&quot;true&quot;</span>  <span class="na">stored=</span><span class="s">&quot;true&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;dynamicField</span> <span class="na">name=</span><span class="s">&quot;*_s&quot;</span>  <span class="na">type=</span><span class="s">&quot;string&quot;</span>  <span class="na">indexed=</span><span class="s">&quot;true&quot;</span>  <span class="na">stored=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>The above defines “geo” as explicit fields, leaving the other types to dynamic field interpretation.</p>
+<p>The SpatialRecursivePrefixTreeFieldType accepts geometries as WKT, so as a preparation for the
+import we are going to turn a shapefile into a CSV file with WKT syntax for the geometry.
+Let’s also remember that SOLR needs a unique id field for the records, and that the coordinates
+are supposed to be in WGS84.
+The shapefile in question is instead in UTM, has a linestring geometry, and some fields, cat,id and label.</p>
+<p>The following command translates the shapefile in CSV (the command should be typed in a single line,
+it has been split over multiple lines for ease of reading):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ogr2ogr</span>  <span class="o">-</span><span class="n">f</span> <span class="n">CSV</span>
+         <span class="o">-</span><span class="n">sql</span> <span class="s1">&#39;select FID as id, cat as cat_i, label as label_s,</span>
+              <span class="s2">&quot;roads&quot;</span> <span class="k">as</span> <span class="n">layer</span> <span class="n">FROM</span> <span class="n">roads</span><span class="s1">&#39;</span>
+         <span class="o">-</span><span class="n">lco</span> <span class="n">geometry</span><span class="o">=</span><span class="n">AS_WKT</span> <span class="o">-</span><span class="n">s_srs</span> <span class="s2">&quot;EPSG:26713&quot;</span> <span class="o">-</span><span class="n">t_srs</span> <span class="s2">&quot;EPSG:4326&quot;</span>
+         <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">roads</span><span class="o">.</span><span class="n">csv</span> <span class="n">roads</span><span class="o">.</span><span class="n">shp</span>
+</pre></div>
+</div>
+<p>Some observations:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The SQL is used mostly to include the special FID field into the results (a unique field is required)</p></li>
+<li><p>The reprojection is performed to ensure the output geometries are in WGS84</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">layer_s</span></code> dynamic field is added to</p></li>
+</ul>
+</div></blockquote>
+<p>This will generate a CSV file looking as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WKT</span><span class="p">,</span><span class="nb">id</span><span class="p">,</span><span class="n">cat_i</span><span class="p">,</span><span class="n">label_s</span><span class="p">,</span><span class="n">layer</span>
+<span class="s2">&quot;LINESTRING (-103.763291353072518 44.375039982911382,-103.763393874038698 44.375282535746727,-103.764152625689903 44.376816068582023,-103.763893508430911 44.377653708326527,-103.76287152579593 44.378473197876396,-103.762075892308829 44.379009292692757,-103.76203441159079 44.379195585236509,-103.762124217456204 44.379295262047272,-103.762168141872152 44.379399997909999,-103.762326134985983 44.379527769244149,-103.763328403265064 44.380245486928708,-103.764011871363465 44.381295133519728,-103.76411460103661 44.381526706124056,-103.764953940327757 44.382396618315049,-103.765097289111338 44.382919576408355,-103.765147974157941 44.383073790503197,-103.76593766187851 44.384162856249255,-103.765899236602976 44.384607239970421,-103.765854384388703 44.384597320206453)&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">unimproved</span> <span class="n">road</span><span class="p">,</span><span class="n">roads</span>
+<span class="s2">&quot;LINESTRING (-103.762930948900078 44.385847721442218,-103.763012156628747 44.386002223293282,-103.763510654805799 44.386297912655408,-103.763869052966967 44.386746022746649,-103.763971116268394 44.387444295314552,-103.764244098825387 44.387545690358827,-103.764264649212294 44.387677659170357,-103.764160551326043 44.387951214930865,-103.764540576800869 44.388042632912118,-103.764851624437995 44.388149874425885,-103.764841258550391 44.388303515682807,-103.76484332449354 44.388616502755184,-103.765188923261391 44.388927221995502,-103.765110961905023 44.389448103450221,-103.765245311197177 44.389619574129583,-103.765545516097987 44.389907903843323,-103.765765403056434 44.390420596862072,-103.766285436779711 44.391655378673697,-103.766354640463163 44.39205684519964,-103.76638734105434 44.392364628456725,-103.766410556756725 44.392776645318136,-103.765934443919321 44.393365174368313,-103.766220869020188 44.393571013181166,-103.766661604125247 44.393684955690581,-103.767294323528063 44.393734806102117,-103.767623238680557 44.394127721518785,-103.769273719703676 44.394900867042516,-103.769609703946827 44.395326786724503,-103.769732072038536 44.395745219647871,-103.769609607364416 44.396194309461826,-103.769310708537489 44.396691166475954,-103.768865902286791 44.397236074649896)&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">unimproved</span> <span class="n">road</span><span class="p">,</span><span class="n">roads</span>
+</pre></div>
+</div>
+<p>At this point the CSV can be imported into SOLR using CURL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="s2">&quot;http://solr.geo-solutions.it/solr/collection1/update/csv?commit=true&amp;separator=%2C&amp;fieldnames=geo,id,cat_i,label_s,layer_s&amp;header=true&quot;</span>
+     <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;Content-type:text/csv; charset=utf-8&#39;</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">binary</span> <span class="o">@/</span><span class="n">tmp</span><span class="o">/</span><span class="n">roads</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>Some observations:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The files gets uploaded as a <code class="docutils literal notranslate"><span class="pre">text/csv</span></code> file, older versions might require a <code class="docutils literal notranslate"><span class="pre">text/plain</span></code> mime type</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">fieldnames</span></code> overrides the CSV header and allows us to specify the field name as expected by SOLR</p></li>
+</ul>
+</div></blockquote>
+<p>At this point it’s possible to configure a layer showing only the roads in the GeoServer UI:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/solr_roads_configure.png" src="../../_images/solr_roads_configure.png" />
+<p class="caption"><span class="caption-text"><em>Setting up the roads layer</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>After setting the bounding box and the proper style, the layer preview will show the roads stored
+in SOLR:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/solr_roads_preview.png" src="../../_images/solr_roads_preview.png" />
+<p class="caption"><span class="caption-text"><em>Preview roads from SOLR layer</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="configure.html" title="previous chapter">SOLR layer configuration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="optimize.html" title="next chapter">Optimize rendering of complex polygons</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="configure.html" title="previous chapter">SOLR layer configuration</a></li>
+            <li>Next: <a href="optimize.html" title="next chapter">Optimize rendering of complex polygons</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/solr/load.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MongoDB Tutorial &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Apache Solr Tutorial" href="solr-tutorial.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+  </head><body class="data/app-schema/mongo-tutorial">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>MongoDB Tutorial</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="solr-tutorial.html" title="Apache Solr Tutorial" accesskey="N">Next</a></li>
+  <li>
+    <a href="tutorial.html" title="Tutorial" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="mongodb-tutorial">
+<span id="mongo-tutorial"></span><h1>MongoDB Tutorial<a class="headerlink" href="#mongodb-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial demonstrates how to use app-schema plugin with a MongoDB data store. This tutorial will focus on the MongoDB data store specificities is highly recommended to read the app-schema documentation before.</p>
+<div class="section" id="use-case">
+<h2>Use Case<a class="headerlink" href="#use-case" title="Permalink to this headline">¶</a></h2>
+<p>The use case for this tutorial will be to serve through app-schema the information about some meteorological stations stored in a MongoDB database. Note that this use case is completely fictional and only used to demonstrate the MongoDB and app-schema integration.</p>
+<p>First of all let’s insert some test data in a MongoDB data store:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">stations</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span>
+    <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;station 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contact&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;mail&quot;</span><span class="o">:</span> <span class="s2">&quot;station1@mail.com&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;coordinates&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="mi">50</span><span class="p">,</span>
+            <span class="mi">60</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Point&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;measurements&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;temp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unit&quot;</span><span class="o">:</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;values&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;time&quot;</span><span class="o">:</span> <span class="mi">1482146800</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="mi">20</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;wind&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unit&quot;</span><span class="o">:</span> <span class="s2">&quot;km/h&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;values&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;time&quot;</span><span class="o">:</span> <span class="mi">1482146833</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="mi">155</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">stations</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span>
+    <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;station 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contact&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;mail&quot;</span><span class="o">:</span> <span class="s2">&quot;station2@mail.com&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;coordinates&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="mi">100</span><span class="p">,</span>
+            <span class="o">-</span><span class="mi">50</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Point&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;measurements&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;temp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unit&quot;</span><span class="o">:</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;values&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;time&quot;</span><span class="o">:</span> <span class="mi">1482146911</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="mi">35</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;time&quot;</span><span class="o">:</span> <span class="mi">1482146935</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="mi">25</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;wind&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unit&quot;</span><span class="o">:</span> <span class="s2">&quot;km/h&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;values&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;time&quot;</span><span class="o">:</span> <span class="mi">1482146964</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="mi">80</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;pression&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unit&quot;</span><span class="o">:</span> <span class="s2">&quot;pa&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;values&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;time&quot;</span><span class="o">:</span> <span class="mi">1482147026</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="mi">1019</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;time&quot;</span><span class="o">:</span> <span class="mi">1482147051</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="mi">1015</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">stations</span><span class="p">.</span><span class="nx">createIndex</span><span class="p">({</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="o">:</span> <span class="s2">&quot;2dsphere&quot;</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>This is the schema that will be used to do the mappings in app-schema:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xs:schema</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+           <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+           <span class="na">xmlns:st=</span><span class="s">&quot;http://www.stations.org/1.0&quot;</span>
+           <span class="na">targetNamespace=</span><span class="s">&quot;http://www.stations.org/1.0&quot;</span>
+           <span class="na">elementFormDefault=</span><span class="s">&quot;qualified&quot;</span> <span class="na">attributeFormDefault=</span><span class="s">&quot;unqualified&quot;</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;xs:import</span> <span class="na">namespace=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+             <span class="na">schemaLocation=</span><span class="s">&quot;http://schemas.opengis.net/gml/3.2.1/gml.xsd&quot;</span><span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;xs:complexType</span> <span class="na">name=</span><span class="s">&quot;ContactType&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;xs:sequence&gt;</span>
+      <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;mail&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">type=</span><span class="s">&quot;xs:string&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/xs:sequence&gt;</span>
+  <span class="nt">&lt;/xs:complexType&gt;</span>
+
+  <span class="nt">&lt;xs:complexType</span> <span class="na">name=</span><span class="s">&quot;MeasurementPropertyType&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;xs:sequence</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;xs:element</span> <span class="na">ref=</span><span class="s">&quot;st:Measurement&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/xs:sequence&gt;</span>
+    <span class="nt">&lt;xs:attributeGroup</span> <span class="na">ref=</span><span class="s">&quot;gml:AssociationAttributeGroup&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/xs:complexType&gt;</span>
+
+  <span class="nt">&lt;xs:complexType</span> <span class="na">name=</span><span class="s">&quot;MeasurementType&quot;</span> <span class="na">abstract=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;xs:sequence&gt;</span>
+      <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">type=</span><span class="s">&quot;xs:string&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;unit&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">type=</span><span class="s">&quot;xs:string&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;values&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;unbounded&quot;</span> <span class="na">type=</span><span class="s">&quot;st:ValuePropertyType&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/xs:sequence&gt;</span>
+  <span class="nt">&lt;/xs:complexType&gt;</span>
+
+  <span class="nt">&lt;xs:complexType</span> <span class="na">name=</span><span class="s">&quot;ValuePropertyType&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;xs:sequence</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;xs:element</span> <span class="na">ref=</span><span class="s">&quot;st:Value&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/xs:sequence&gt;</span>
+    <span class="nt">&lt;xs:attributeGroup</span> <span class="na">ref=</span><span class="s">&quot;gml:AssociationAttributeGroup&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/xs:complexType&gt;</span>
+
+  <span class="nt">&lt;xs:complexType</span> <span class="na">name=</span><span class="s">&quot;ValueType&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;xs:sequence&gt;</span>
+      <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;timestamp&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">type=</span><span class="s">&quot;xs:long&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;value&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">type=</span><span class="s">&quot;xs:double&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/xs:sequence&gt;</span>
+  <span class="nt">&lt;/xs:complexType&gt;</span>
+
+  <span class="nt">&lt;xs:complexType</span> <span class="na">name=</span><span class="s">&quot;StationFeatureType&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;xs:complexContent&gt;</span>
+      <span class="nt">&lt;xs:extension</span> <span class="na">base=</span><span class="s">&quot;gml:AbstractFeatureType&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;xs:sequence&gt;</span>
+          <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">type=</span><span class="s">&quot;xs:string&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;contact&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">type=</span><span class="s">&quot;st:ContactType&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;measurement&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;unbounded&quot;</span> <span class="na">type=</span><span class="s">&quot;st:MeasurementPropertyType&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;geometry&quot;</span> <span class="na">type=</span><span class="s">&quot;gml:GeometryPropertyType&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/xs:sequence&gt;</span>
+      <span class="nt">&lt;/xs:extension&gt;</span>
+    <span class="nt">&lt;/xs:complexContent&gt;</span>
+  <span class="nt">&lt;/xs:complexType&gt;</span>
+
+  <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;StationFeature&quot;</span> <span class="na">type=</span><span class="s">&quot;st:StationFeatureType&quot;</span>  <span class="na">substitutionGroup=</span><span class="s">&quot;gml:_Feature&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;Measurement&quot;</span> <span class="na">type=</span><span class="s">&quot;st:MeasurementType&quot;</span>  <span class="na">substitutionGroup=</span><span class="s">&quot;gml:_Feature&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;xs:element</span> <span class="na">name=</span><span class="s">&quot;Value&quot;</span> <span class="na">type=</span><span class="s">&quot;st:ValueType&quot;</span>  <span class="na">substitutionGroup=</span><span class="s">&quot;gml:_Feature&quot;</span><span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/xs:schema&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mappings">
+<h2>Mappings<a class="headerlink" href="#mappings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mongodb-store">
+<h3>MongoDB Store<a class="headerlink" href="#mongodb-store" title="Permalink to this headline">¶</a></h3>
+<p>When configuring app-schema mappings for a MongoDB source some connection parameters tweaks might be needed, in order to ensure that the full set of recognized and made available to the mapping.
+The setup of a MongoDB Store implies the creation of a Mongo schema, inferred from the db collection.
+This process by default will use a random Mongo object from the collection. If that object doesn’t contain all attributes of interest, the result will be an incomplete schema.
+This behaviour can thus be controlled by means of the following two parameters, which should be provided inside the <code class="docutils literal notranslate"><span class="pre">&lt;parameters&gt;</span></code> element under the <code class="docutils literal notranslate"><span class="pre">&lt;DataStore&gt;</span></code> node:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">objs_id_schema</span></code>, which specifies a comma separated list of MongoDB JSON object to be used to build the schema (not needed if <code class="docutils literal notranslate"><span class="pre">max_objs_schema</span></code> is present).</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Parameter&gt;</span>
+  <span class="nt">&lt;name&gt;</span>objs_id_schema<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;value&gt;</span>6eb85d889396eb0475f815ef,6eb85d889396eb0475f815eg<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/Parameter&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_objs_schema</span></code>, which specifies the max number of MongoDB JSON object to be used to build the schema and where a value of <code class="docutils literal notranslate"><span class="pre">-1</span></code> means all the objects present in the collection (not needed if <code class="docutils literal notranslate"><span class="pre">objs_id_schema</span></code> is present).</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Parameter&gt;</span>
+  <span class="nt">&lt;name&gt;</span>max_objs_schema<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;value&gt;</span>-1<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/Parameter&gt;</span>
+</pre></div>
+</div>
+<p>Both parameters can also be specified via the REST API, see <a class="reference internal" href="../../rest/appschema.html#rest-app-schema"><span class="std std-ref">Cleaning schemas on internal MongoDB stores</span></a> for more details.</p>
+</div>
+<div class="section" id="nested-elements">
+<h3>Nested elements<a class="headerlink" href="#nested-elements" title="Permalink to this headline">¶</a></h3>
+<p>MongoDB objects may contain nested elements and nested collections. The following three functions make possible to select nested elements and link nested collections using a JSON path:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 30%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Function</strong></p></td>
+<td><p><strong>Example</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>jsonSelect</p></td>
+<td><p>jsonSelect(‘contact.mail’)</p></td>
+<td><p>Used to retrieve the value for the mapping from a MongoDB object.</p></td>
+</tr>
+<tr class="row-odd"><td><p>collectionLink</p></td>
+<td><p>collectionLink(‘measurements.values’)</p></td>
+<td><p>Used when chaining entities with a nested collection.</p></td>
+</tr>
+<tr class="row-even"><td><p>collectionId</p></td>
+<td><p>collectionId()</p></td>
+<td><p>Instructs the mapper to generate a ID for the nested collection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>nestedCollectionLink</p></td>
+<td><p>nestedCollectionLink()</p></td>
+<td><p>Used on the nested collection to create a link with the parent feature.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="mappings-file-example">
+<h3>Mappings file example<a class="headerlink" href="#mappings-file-example" title="Permalink to this headline">¶</a></h3>
+<p>A station data is composed of some meta-information about the station and a list of measurements. Each measurement as some meta-information and contains a list of values. The mappings will contain three top entities: the station, the measurements and the values.</p>
+<p>Follows a the complete mappings file:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;as:AppSchemaDataAccess</span> <span class="na">xmlns:as=</span><span class="s">&quot;http://www.geotools.org/app-schema&quot;</span>
+                      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+                      <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.geotools.org/app-schema AppSchemaDataAccess.xsd&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;namespaces&gt;</span>
+  <span class="nt">&lt;Namespace&gt;</span>
+    <span class="nt">&lt;prefix&gt;</span>st<span class="nt">&lt;/prefix&gt;</span>
+    <span class="nt">&lt;uri&gt;</span>http://www.stations.org/1.0<span class="nt">&lt;/uri&gt;</span>
+  <span class="nt">&lt;/Namespace&gt;</span>
+  <span class="nt">&lt;Namespace&gt;</span>
+    <span class="nt">&lt;prefix&gt;</span>gml<span class="nt">&lt;/prefix&gt;</span>
+    <span class="nt">&lt;uri&gt;</span>http://www.opengis.net/gml<span class="nt">&lt;/uri&gt;</span>
+  <span class="nt">&lt;/Namespace&gt;</span>
+<span class="nt">&lt;/namespaces&gt;</span>
+
+<span class="nt">&lt;sourceDataStores&gt;</span>
+  <span class="nt">&lt;DataStore&gt;</span>
+    <span class="nt">&lt;id&gt;</span>data_source<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;parameters&gt;</span>
+      <span class="nt">&lt;Parameter&gt;</span>
+        <span class="nt">&lt;name&gt;</span>data_store<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>mongodb://{mongoHost}:{mongoPort}/{dataBaseName}<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/Parameter&gt;</span>
+      <span class="nt">&lt;Parameter&gt;</span>
+        <span class="nt">&lt;name&gt;</span>namespace<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>http://www.stations.org/1.0<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/Parameter&gt;</span>
+      <span class="nt">&lt;Parameter&gt;</span>
+        <span class="nt">&lt;name&gt;</span>schema_store<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>file:{schemaStore}<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/Parameter&gt;</span>
+      <span class="nt">&lt;Parameter&gt;</span>
+        <span class="nt">&lt;name&gt;</span>data_store_type<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>complex<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/Parameter&gt;</span>
+      <span class="nt">&lt;Parameter&gt;</span>
+          <span class="nt">&lt;name&gt;</span>max_objs_schema<span class="nt">&lt;/name&gt;</span>
+          <span class="nt">&lt;value&gt;</span>-1<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/Parameter&gt;</span>
+    <span class="nt">&lt;/parameters&gt;</span>
+  <span class="nt">&lt;/DataStore&gt;</span>
+<span class="nt">&lt;/sourceDataStores&gt;</span>
+
+<span class="nt">&lt;targetTypes&gt;</span>
+  <span class="nt">&lt;FeatureType&gt;</span>
+    <span class="nt">&lt;schemaUri&gt;</span>stations.xsd<span class="nt">&lt;/schemaUri&gt;</span>
+  <span class="nt">&lt;/FeatureType&gt;</span>
+<span class="nt">&lt;/targetTypes&gt;</span>
+
+<span class="nt">&lt;typeMappings&gt;</span>
+  <span class="nt">&lt;FeatureTypeMapping&gt;</span>
+    <span class="nt">&lt;sourceDataStore&gt;</span>data_source<span class="nt">&lt;/sourceDataStore&gt;</span>
+    <span class="nt">&lt;sourceType&gt;</span>{collectionName}<span class="nt">&lt;/sourceType&gt;</span>
+    <span class="nt">&lt;targetElement&gt;</span>st:StationFeature<span class="nt">&lt;/targetElement&gt;</span>
+    <span class="nt">&lt;attributeMappings&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:StationFeature<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;idExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;id&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/idExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:name<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;name&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:contact/st:mail<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;contact.mail&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:measurement<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>collectionLink(&#39;measurements&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+          <span class="nt">&lt;linkElement&gt;</span>aaa<span class="nt">&lt;/linkElement&gt;</span>
+          <span class="nt">&lt;linkField&gt;</span>FEATURE_LINK[1]<span class="nt">&lt;/linkField&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+        <span class="nt">&lt;isMultiple&gt;</span>true<span class="nt">&lt;/isMultiple&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:geometry<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;geometry&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+    <span class="nt">&lt;/attributeMappings&gt;</span>
+  <span class="nt">&lt;/FeatureTypeMapping&gt;</span>
+  <span class="nt">&lt;FeatureTypeMapping&gt;</span>
+    <span class="nt">&lt;sourceDataStore&gt;</span>data_source<span class="nt">&lt;/sourceDataStore&gt;</span>
+    <span class="nt">&lt;sourceType&gt;</span>{collectionName}<span class="nt">&lt;/sourceType&gt;</span>
+    <span class="nt">&lt;mappingName&gt;</span>aaa<span class="nt">&lt;/mappingName&gt;</span>
+    <span class="nt">&lt;targetElement&gt;</span>st:Measurement<span class="nt">&lt;/targetElement&gt;</span>
+    <span class="nt">&lt;attributeMappings&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:Measurement<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;idExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>collectionId()<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/idExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:name<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;name&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:unit<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;unit&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:values<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>collectionLink(&#39;values&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+          <span class="nt">&lt;linkElement&gt;</span>st:Value<span class="nt">&lt;/linkElement&gt;</span>
+          <span class="nt">&lt;linkField&gt;</span>FEATURE_LINK[2]<span class="nt">&lt;/linkField&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+        <span class="nt">&lt;isMultiple&gt;</span>true<span class="nt">&lt;/isMultiple&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>FEATURE_LINK[1]<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>nestedCollectionLink()<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+    <span class="nt">&lt;/attributeMappings&gt;</span>
+  <span class="nt">&lt;/FeatureTypeMapping&gt;</span>
+  <span class="nt">&lt;FeatureTypeMapping&gt;</span>
+    <span class="nt">&lt;sourceDataStore&gt;</span>data_source<span class="nt">&lt;/sourceDataStore&gt;</span>
+    <span class="nt">&lt;sourceType&gt;</span>{collectionName}<span class="nt">&lt;/sourceType&gt;</span>
+    <span class="nt">&lt;targetElement&gt;</span>st:Value<span class="nt">&lt;/targetElement&gt;</span>
+    <span class="nt">&lt;attributeMappings&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:Value<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;idExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>collectionId()<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/idExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:timestamp<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;time&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>st:value<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;value&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+      <span class="nt">&lt;AttributeMapping&gt;</span>
+        <span class="nt">&lt;targetAttribute&gt;</span>FEATURE_LINK[2]<span class="nt">&lt;/targetAttribute&gt;</span>
+        <span class="nt">&lt;sourceExpression&gt;</span>
+          <span class="nt">&lt;OCQL&gt;</span>nestedCollectionLink()<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;/sourceExpression&gt;</span>
+      <span class="nt">&lt;/AttributeMapping&gt;</span>
+    <span class="nt">&lt;/attributeMappings&gt;</span>
+  <span class="nt">&lt;/FeatureTypeMapping&gt;</span>
+<span class="nt">&lt;/typeMappings&gt;</span>
+
+<span class="nt">&lt;/as:AppSchemaDataAccess&gt;</span>
+</pre></div>
+</div>
+<p>The mappings for the attributes are straightforward, for example the following mapping:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;AttributeMapping&gt;</span>
+    <span class="nt">&lt;targetAttribute&gt;</span>st:contact/st:mail<span class="nt">&lt;/targetAttribute&gt;</span>
+    <span class="nt">&lt;sourceExpression&gt;</span>
+        <span class="nt">&lt;OCQL&gt;</span>jsonSelect(&#39;contact.mail&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+    <span class="nt">&lt;/sourceExpression&gt;</span>
+<span class="nt">&lt;/AttributeMapping&gt;</span>
+</pre></div>
+</div>
+<p>The mapping above defines that the contact mail for a station will be available at the JSON path <code class="docutils literal notranslate"><span class="pre">contact.mail</span></code> and that the correspondent XML schema element is the XPATH <code class="docutils literal notranslate"><span class="pre">st:contact/st:mail</span></code>.</p>
+<p>The feature chaining is a little bit more complex. Let’s take as an example the chaining between <code class="docutils literal notranslate"><span class="pre">StationFeature</span></code> and <code class="docutils literal notranslate"><span class="pre">Measurement</span></code> features. In the <code class="docutils literal notranslate"><span class="pre">StationFeature</span></code> feature type the link to the Measurement entity is defined with the following mapping:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;AttributeMapping&gt;</span>
+    <span class="nt">&lt;targetAttribute&gt;</span>st:measurement<span class="nt">&lt;/targetAttribute&gt;</span>
+    <span class="nt">&lt;sourceExpression&gt;</span>
+        <span class="nt">&lt;OCQL&gt;</span>collectionLink(&#39;measurements&#39;)<span class="nt">&lt;/OCQL&gt;</span>
+        <span class="nt">&lt;linkElement&gt;</span>st:Measurement<span class="nt">&lt;/linkElement&gt;</span>
+        <span class="nt">&lt;linkField&gt;</span>FEATURE_LINK[1]<span class="nt">&lt;/linkField&gt;</span>
+    <span class="nt">&lt;/sourceExpression&gt;</span>
+    <span class="nt">&lt;isMultiple&gt;</span>true<span class="nt">&lt;/isMultiple&gt;</span>
+<span class="nt">&lt;/AttributeMapping&gt;</span>
+</pre></div>
+</div>
+<p>and in the <code class="docutils literal notranslate"><span class="pre">Measurement</span></code> feature type the link to the parent feature is defined with the following mapping:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;AttributeMapping&gt;</span>
+    <span class="nt">&lt;targetAttribute&gt;</span>FEATURE_LINK[1]<span class="nt">&lt;/targetAttribute&gt;</span>
+    <span class="nt">&lt;sourceExpression&gt;</span>
+        <span class="nt">&lt;OCQL&gt;</span>nestedCollectionLink()<span class="nt">&lt;/OCQL&gt;</span>
+    <span class="nt">&lt;/sourceExpression&gt;</span>
+<span class="nt">&lt;/AttributeMapping&gt;</span>
+</pre></div>
+</div>
+<p>With the two mapping above we tie the two features types together. When working with a MongoDB data store this mappings will always be petty much the same, only the nested collection path and the feature link index need to be updated. Note that the JSON path of the nested collections attributes are relative to the parent.</p>
+</div>
+</div>
+<div class="section" id="querying">
+<h2>Querying<a class="headerlink" href="#querying" title="Permalink to this headline">¶</a></h2>
+<p>To create an MongoDB app-schema layer in GeoServer, the app-schema extension and the mongo-complex extension needs to be installed.</p>
+<p>A workspace for each name space declared in the mappings file needs to be created, in this case the workspace <code class="docutils literal notranslate"><span class="pre">st</span></code> with URI <code class="docutils literal notranslate"><span class="pre">http://www.stations.org/1.0</span></code> needs to be created. No need to create a <code class="docutils literal notranslate"><span class="pre">gml</span></code> workspace.</p>
+<p>Creating a MongoDB app-schema layer is similar to any other app-schema layer, just create an app-schema store pointing to the correct mappings file and select the layer correspondent to the top entity, in this case <code class="docutils literal notranslate"><span class="pre">st:StationFeature</span></code>.</p>
+<p>Is possible to query with WFS complex features encoded in GML and GeoJson  using complex features filtering capabilities.
+For example, querying all the stations that have a measurement value with a time stamp superior to <code class="docutils literal notranslate"><span class="pre">1482146964</span></code>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wfs:Query</span> <span class="na">typeName=</span><span class="s">&quot;st:StationFeature&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ogc:Filter&gt;</span>
+        <span class="nt">&lt;ogc:Filter&gt;</span>
+            <span class="nt">&lt;ogc:PropertyIsGreaterThan&gt;</span>
+                    <span class="nt">&lt;ogc:PropertyName&gt;</span>
+                        st:StationFeature/st:measurement/st:values/st:timestamp
+                    <span class="nt">&lt;/ogc:PropertyName&gt;</span>
+                    <span class="nt">&lt;ogc:Literal&gt;</span>
+                        1482146964
+                    <span class="nt">&lt;/ogc:Literal&gt;</span>
+                <span class="nt">&lt;/ogc:PropertyIsGreaterThan&gt;</span>
+        <span class="nt">&lt;/ogc:Filter&gt;</span>
+    <span class="nt">&lt;/ogc:Filter&gt;</span>
+<span class="nt">&lt;/wfs:Query&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="tutorial.html" title="previous chapter">Tutorial</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="solr-tutorial.html" title="next chapter">Apache Solr Tutorial</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">MongoDB Tutorial</a><ul>
+<li><a class="reference internal" href="#use-case">Use Case</a></li>
+<li><a class="reference internal" href="#mappings">Mappings</a><ul>
+<li><a class="reference internal" href="#mongodb-store">MongoDB Store</a></li>
+<li><a class="reference internal" href="#nested-elements">Nested elements</a></li>
+<li><a class="reference internal" href="#mappings-file-example">Mappings file example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#querying">Querying</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="tutorial.html" title="previous chapter">Tutorial</a></li>
+            <li>Next: <a href="solr-tutorial.html" title="next chapter">Apache Solr Tutorial</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/mongo-tutorial.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

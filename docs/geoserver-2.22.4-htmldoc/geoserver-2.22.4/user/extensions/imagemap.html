@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imagemap &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Importer" href="importer/index.html" />
+    <link rel="prev" title="GRIB" href="grib/grib.html" /> 
+  </head><body class="extensions/imagemap">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Extensions</a> &raquo;</li>
+    <li>Imagemap</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="importer/index.html" title="Importer" accesskey="N">Next</a></li>
+  <li>
+    <a href="grib/grib.html" title="GRIB" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="imagemap">
+<span id="imagemap-extension"></span><h1>Imagemap<a class="headerlink" href="#imagemap" title="Permalink to this headline">¶</a></h1>
+<p>HTML ImageMaps have been used for a long time to create interactive images in a light way. Without using Flash, SVG or VML you can simply associate different links or tooltips to different regions of an image.
+Why can’t we use this technique to achieve the same result on a GeoServer map?
+The idea is to combine a raster map (png, gif, jpeg, …) with an HTML ImageMap overlay to add links, tooltips, or mouse events behavior to the map.</p>
+<p>An example of an ImageMap adding tooltips to a map:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;...&quot;</span> <span class="na">usemap=</span><span class="s">&quot;#mymap&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;map</span> <span class="na">name=</span><span class="s">&quot;mymap&quot;</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">&quot;poly&quot;</span> <span class="na">coords=</span><span class="s">&quot;536,100 535,100 534,101 533,101 532,102&quot;</span>  <span class="na">title=</span><span class="s">&quot;This is a tooltip&quot;</span><span class="nt">/&gt;</span>
+     <span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">&quot;poly&quot;</span> <span class="na">coords=</span><span class="s">&quot;518,113 517,114 516,115 515,114&quot;</span>  <span class="na">title=</span><span class="s">&quot;Another tooltip&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/map&gt;</span>
+</pre></div>
+</div>
+<p>An example of an ImageMap adding links to a map:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;...&quot;</span> <span class="na">usemap=</span><span class="s">&quot;#mymap&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;map</span> <span class="na">name=</span><span class="s">&quot;mymap&quot;</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">&quot;poly&quot;</span> <span class="na">coords=</span><span class="s">&quot;536,100 535,100 534,101 533,101 532,102&quot;</span>  <span class="na">href=</span><span class="s">&quot;http://www.mylink.com&quot;</span><span class="nt">/&gt;</span>
+     <span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">&quot;poly&quot;</span> <span class="na">coords=</span><span class="s">&quot;518,113 517,114 516,115 515,114&quot;</span>  <span class="na">href=</span><span class="s">&quot;http://www.mylink2.com&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/map&gt;</span>
+</pre></div>
+</div>
+<p>A more complex example adding interactive behaviour on mouse events:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;...&quot;</span> <span class="na">usemap=</span><span class="s">&quot;#mymap&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;map</span> <span class="na">name=</span><span class="s">&quot;mymap&quot;</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">&quot;poly&quot;</span> <span class="na">coords=</span><span class="s">&quot;536,100 535,100 534,101 533,101 532,102&quot;</span>  <span class="na">onmouseover=</span><span class="s">&quot;onOver(&#39;&lt;featureid&gt;&#39;)&quot;</span> <span class="na">onmouseout=</span><span class="s">&quot;onOut(&#39;&lt;featureid&gt;&#39;)&quot;</span><span class="nt">/&gt;</span>
+     <span class="nt">&lt;area</span> <span class="na">shape=</span><span class="s">&quot;poly&quot;</span> <span class="na">coords=</span><span class="s">&quot;518,113 517,114 516,115 515,114&quot;</span>   <span class="na">onmouseover=</span><span class="s">&quot;onOver(&#39;&lt;featureid&gt;&#39;)&quot;</span> <span class="na">onmouseout=</span><span class="s">&quot;onOut(&#39;&lt;featureid&gt;&#39;)&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/map&gt;</span>
+</pre></div>
+</div>
+<p>To realize this in GeoServer some great community contributors developed an HTMLImageMap GetMapProducer for GeoServer, able to render an HTMLImageMap in response to a WMS GetMap request.</p>
+<p>The GetMapProducer is associated to the text/html mime type. It produces, for each requested layer, a &lt;map&gt;…&lt;/map&gt; section containing the geometries of the layer as distinct &lt;area&gt; tags.
+Due to the limitations in the shape types supported by the &lt;area&gt; tag, a single geometry can be split into multiple ones. This way almost any complex geometry can be rendered transforming it into simpler ones.</p>
+<p>To add interactive attributes we use styling. In particular, an SLD Rule containing a TextSymbolizer with a Label definition can be used to define dynamic values for the &lt;area&gt; tags attributes. The Rule name will be used as the attribute name.</p>
+<p>As an example, to define a title attribute (associating a tooltip to the geometries of the layer) you can use a rule like the following one:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Rule&gt;</span>
+   <span class="nt">&lt;Name&gt;</span>title<span class="nt">&lt;/Name&gt;</span>
+   <span class="nt">&lt;TextSymbolizer&gt;</span>
+      <span class="nt">&lt;Label&gt;&lt;PropertyName&gt;</span>MYPROPERTY<span class="nt">&lt;/PropertyName&gt;&lt;/Label&gt;</span>
+   <span class="nt">&lt;/TextSymbolizer&gt;</span>
+<span class="nt">&lt;/Rule&gt;</span>
+</pre></div>
+</div>
+<p>To render multiple attributes, just define multiple rules, with different names (href, onmouseover, etc.)</p>
+<p>Styling support is not limited to TextSymbolizers, you can currently use other symbolizers to detail &lt;area&gt; rendering. For example you can:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>use a PointSymbolizer with a Size property to define point sizes.</p></li>
+<li><p>use LineSymbolizer with a stroke-width CssParameter to create thick lines.</p></li>
+</ul>
+</div></blockquote>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="grib/grib.html" title="previous chapter">GRIB</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="importer/index.html" title="next chapter">Importer</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="grib/grib.html" title="previous chapter">GRIB</a></li>
+            <li>Next: <a href="importer/index.html" title="next chapter">Importer</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/imagemap.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

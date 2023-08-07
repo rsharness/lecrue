@@ -1,0 +1,1018 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coordinate Operations &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Manually editing the EPSG database" href="manualepsg.html" />
+    <link rel="prev" title="Custom CRS Definitions" href="customcrs.html" /> 
+  </head><body class="configuration/crshandling/coordtransforms">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Server configuration</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Coordinate Reference System Handling</a> &raquo;</li>
+    <li>Coordinate Operations</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="manualepsg.html" title="Manually editing the EPSG database" accesskey="N">Next</a></li>
+  <li>
+    <a href="customcrs.html" title="Custom CRS Definitions" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <span class="target" id="crs-coordtransforms"></span><div class="section" id="coordinate-operations">
+<h1>Coordinate Operations<a class="headerlink" href="#coordinate-operations" title="Permalink to this headline">¶</a></h1>
+<p>Coordinate operations are used to convert coordinates from a <cite>source CRS</cite> to a <cite>target CRS</cite>.</p>
+<p>If source and target CRSs are referred to a different datum, a datum transform has to be applied. Datum transforms are not exact, they are determined empirically. For the same pair of CRS, there can be many datum transforms and versions, each one with its own domain of validity and an associated transform error. Given a CRS pair, GeoServer will automatically pick the most accurate datum transform from the EPSG database, unless a custom operation is declared.</p>
+<ul class="simple">
+<li><p>Coordinate operations can be queried and tested using the <a class="reference internal" href="#reprojection-console">Reprojection Console</a>.</p></li>
+<li><p>To enable higher accuracy Grid Shift transforms, see <a class="reference internal" href="#add-grid-shift-transform-files">Add Grid Shift Transform files</a>.</p></li>
+<li><p>See <a class="reference internal" href="#define-a-custom-coordinate-operation">Define a custom Coordinate Operation</a> to declare new operations. Custom operations will take precedence over the EPSG ones.</p></li>
+</ul>
+<div class="section" id="reprojection-console">
+<h2>Reprojection Console<a class="headerlink" href="#reprojection-console" title="Permalink to this headline">¶</a></h2>
+<p>The reprojection console (available in <a class="reference internal" href="../demos/index.html#demos"><span class="std std-ref">Demos</span></a>) lets you quickly test coordinate operations. Use it to convert a single coordinate or WKT geometry, and to see the operation details GeoServer is using. It is also useful to learn by example when you have to <a class="reference internal" href="#define-a-custom-coordinate-operation">Define a custom Coordinate Operation</a>.</p>
+<p>Read more about the <a class="reference internal" href="../demos/index.html#demos-reprojectionconsole"><span class="std std-ref">Reprojection console</span></a>.</p>
+</div>
+<div class="section" id="add-grid-shift-transform-files">
+<h2>Add Grid Shift Transform files<a class="headerlink" href="#add-grid-shift-transform-files" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer supports NTv2 and NADCON grid shift transforms. Grid files are not shipped out with GeoServer. They need to be downloaded, usually from your National Mapping Agency website.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Grid Shift files are only valid in the specific geographic domain for which they where made; trying to transform coordinates outside this domain will result in no trasformation at all. Make sure that the Grid Shift files are valid in the area you want to transform.</p>
+</div>
+<ol class="arabic simple">
+<li><p>Search for the <em>Grid File Name(s)</em> int the tables below, which are extracted from EPSG version 7.9.0. If you need to use a Grid Shift transform not declared in EPSG, you will need to <a class="reference internal" href="#define-a-custom-coordinate-operation">Define a custom Coordinate Operation</a>.</p></li>
+<li><p>Get the Grid File(s) from your National Mapping Agency (NTv2) or the <a class="reference external" href="http://www.ngs.noaa.gov/TOOLS/Nadcon/Nadcon.shtml">US National Geodetic Survey</a> (NADCON).</p></li>
+<li><p>Copy the Grid File(s) in the <code class="file docutils literal notranslate"><span class="pre">user_projections</span></code> directory inside your data directory.</p></li>
+<li><p>Use the <a class="reference internal" href="#reprojection-console">Reprojection Console</a> to test the new transform.</p></li>
+</ol>
+<div class="section" id="list-of-available-grid-shift-transforms">
+<h3>List of available Grid Shift transforms<a class="headerlink" href="#list-of-available-grid-shift-transforms" title="Permalink to this headline">¶</a></h3>
+<p>The list of Grid Shift transforms declared in EPSG version 7.9.0 is:</p>
+<div class="section" id="ntv2">
+<h4>NTv2<a class="headerlink" href="#ntv2" title="Permalink to this headline">¶</a></h4>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Source CRS</p></th>
+<th class="head"><p>Target CRS</p></th>
+<th class="head"><p>Grid File Name</p></th>
+<th class="head"><p>Source Info</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>4122</p></td>
+<td><p>4326</p></td>
+<td><p>NB7783v2.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4122</p></td>
+<td><p>4326</p></td>
+<td><p>NS778301.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4122</p></td>
+<td><p>4326</p></td>
+<td><p>PE7783V2.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4122</p></td>
+<td><p>4617</p></td>
+<td><p>NB7783v2.gsb</p></td>
+<td><p>New Brunswick Geographic Information Corporation land and water information standards manual.</p></td>
+</tr>
+<tr class="row-even"><td><p>4122</p></td>
+<td><p>4617</p></td>
+<td><p>NS778301.gsb</p></td>
+<td><p>Nova Scotia Geomatics Centre -  Contact <a class="reference external" href="mailto:aflemmin&#37;&#52;&#48;linux1&#46;nsgc&#46;gov&#46;ns&#46;ca">aflemmin<span>&#64;</span>linux1<span>&#46;</span>nsgc<span>&#46;</span>gov<span>&#46;</span>ns<span>&#46;</span>ca</a> or telephone 902-667-6409</p></td>
+</tr>
+<tr class="row-odd"><td><p>4122</p></td>
+<td><p>4617</p></td>
+<td><p>PE7783V2.gsb</p></td>
+<td><p>PEI Department of Transportation &amp; Public Works</p></td>
+</tr>
+<tr class="row-even"><td><p>4149</p></td>
+<td><p>4150</p></td>
+<td><p>CHENyx06a.gsb</p></td>
+<td><p>Bundesamt für Landestopografie swisstopo; www.swisstopo.ch</p></td>
+</tr>
+<tr class="row-odd"><td><p>4149</p></td>
+<td><p>4151</p></td>
+<td><p>CHENyx06_ETRS.gsb</p></td>
+<td><p>Bundesamt für Landestopografie swisstopo; www.swisstopo.ch</p></td>
+</tr>
+<tr class="row-even"><td><p>4149</p></td>
+<td><p>4258</p></td>
+<td><p>CHENyx06_ETRS.gsb</p></td>
+<td><p>Bundesamt für Landestopografie swisstopo; www.swisstopo.ch</p></td>
+</tr>
+<tr class="row-odd"><td><p>4149</p></td>
+<td><p>4326</p></td>
+<td><p>CHENyx06_ETRS.gsb</p></td>
+<td><p>IOGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4171</p></td>
+<td><p>4275</p></td>
+<td><p>rgf93_ntf.gsb</p></td>
+<td><p>ESRI</p></td>
+</tr>
+<tr class="row-odd"><td><p>4202</p></td>
+<td><p>4283</p></td>
+<td><p>A66 National (13.09.01).gsb</p></td>
+<td><p>GDA Technical Manual. <a class="reference external" href="http://www.icsm.gov.au/gda">http://www.icsm.gov.au/gda</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4202</p></td>
+<td><p>4283</p></td>
+<td><p>SEAust_21_06_00.gsb</p></td>
+<td><p>Office of Surveyor General Victoria; <a class="reference external" href="http://www.land.vic.gov.au/">http://www.land.vic.gov.au/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4202</p></td>
+<td><p>4283</p></td>
+<td><p>nt_0599.gsb</p></td>
+<td><p>GDA Technical Manual. <a class="reference external" href="http://www.icsm.gov.au/gda">http://www.icsm.gov.au/gda</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4202</p></td>
+<td><p>4283</p></td>
+<td><p>tas_1098.gsb</p></td>
+<td><p><a class="reference external" href="http://www.delm.tas.gov.au/osg/Geodetic_transform.htm">http://www.delm.tas.gov.au/osg/Geodetic_transform.htm</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4202</p></td>
+<td><p>4283</p></td>
+<td><p>vic_0799.gsb</p></td>
+<td><p>Office of Surveyor General Victoria; <a class="reference external" href="http://www.land.vic.gov.au/">http://www.land.vic.gov.au/</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4202</p></td>
+<td><p>4326</p></td>
+<td><p>A66 National (13.09.01).gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4203</p></td>
+<td><p>4283</p></td>
+<td><p>National 84 (02.07.01).gsb</p></td>
+<td><p>GDA Technical Manual. <a class="reference external" href="http://www.icsm.gov.au/gda">http://www.icsm.gov.au/gda</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4203</p></td>
+<td><p>4283</p></td>
+<td><p>wa_0700.gsb</p></td>
+<td><p>Department of Land Information, Government of Western Australia; <a class="reference external" href="http://www.dola.wa.gov.au/">http://www.dola.wa.gov.au/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4203</p></td>
+<td><p>4326</p></td>
+<td><p>National 84 (02.07.01).gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4207</p></td>
+<td><p>4258</p></td>
+<td><p>DLx_ETRS89_geo.gsb</p></td>
+<td><p>Instituto Geografico Portugues; <a class="reference external" href="http://www.igeo.pt">http://www.igeo.pt</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4225</p></td>
+<td><p>4326</p></td>
+<td><p>CA7072_003.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4225</p></td>
+<td><p>4674</p></td>
+<td><p>CA7072_003.gsb</p></td>
+<td><p>IBGE.</p></td>
+</tr>
+<tr class="row-odd"><td><p>4230</p></td>
+<td><p>4258</p></td>
+<td><p>100800401.gsb</p></td>
+<td><p>Geodesy Unit, Cartographic Institute of Catalonia (ICC);  <a class="reference external" href="http://www.icc.cat">http://www.icc.cat</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4230</p></td>
+<td><p>4258</p></td>
+<td><p>SPED2ETV2.gsb</p></td>
+<td><p>Instituto Geográfico Nacional, www.cnig.es</p></td>
+</tr>
+<tr class="row-odd"><td><p>4230</p></td>
+<td><p>4326</p></td>
+<td><p>SPED2ETV2.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4258</p></td>
+<td><p>4275</p></td>
+<td><p>rgf93_ntf.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4267</p></td>
+<td><p>4269</p></td>
+<td><p>NTv2_0.gsb</p></td>
+<td><p><a class="reference external" href="http://www.geod.nrcan.gc.ca/products/html-public/GSDapps/English/NTv2_Fact_Sheet.html">http://www.geod.nrcan.gc.ca/products/html-public/GSDapps/English/NTv2_Fact_Sheet.html</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4267</p></td>
+<td><p>4269</p></td>
+<td><p>QUE27-83.gsb</p></td>
+<td><p>Geodetic Service of Quebec. Contact <a class="reference external" href="mailto:alain&#46;bernard&#37;&#52;&#48;mrn&#46;gouv&#46;qc&#46;ca">alain<span>&#46;</span>bernard<span>&#64;</span>mrn<span>&#46;</span>gouv<span>&#46;</span>qc<span>&#46;</span>ca</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4267</p></td>
+<td><p>4326</p></td>
+<td><p>NTv2_0.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4267</p></td>
+<td><p>4326</p></td>
+<td><p>QUE27-98.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4267</p></td>
+<td><p>4326</p></td>
+<td><p>SK27-98.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4267</p></td>
+<td><p>4617</p></td>
+<td><p>NB2783v2.gsb</p></td>
+<td><p>“Generation of a NAD27-NAD83(CSRS) NTv2-type Grid Shift File for New Brunswick”, Marcelo C. Santos and Carlos A. Garcia, Department of Geodesy and Geomatics Engineering, University of New Brunswick, October, 2011 via Service New Brunswick.</p></td>
+</tr>
+<tr class="row-odd"><td><p>4267</p></td>
+<td><p>4617</p></td>
+<td><p>QUE27-98.gsb</p></td>
+<td><p>Geodetic Service of Quebec. Contact <a class="reference external" href="mailto:alain&#46;bernard&#37;&#52;&#48;mrn&#46;gouv&#46;qc&#46;ca">alain<span>&#46;</span>bernard<span>&#64;</span>mrn<span>&#46;</span>gouv<span>&#46;</span>qc<span>&#46;</span>ca</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4267</p></td>
+<td><p>4617</p></td>
+<td><p>SK27-98.gsb</p></td>
+<td><p>Dir Geodetic Surveys; SaskGeomatics Div.; Saskatchewan Property Management Company.</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4326</p></td>
+<td><p>AB_CSRS.DAC</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4326</p></td>
+<td><p>NAD83-98.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4326</p></td>
+<td><p>SK83-98.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4617</p></td>
+<td><p>AB_CSRS.DAC</p></td>
+<td><p>Geodetic Control Section; Land and Forest Svc; Alberta Environment; <a class="reference external" href="http://www3.gov.ab.ca/env/land/dos/">http://www3.gov.ab.ca/env/land/dos/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4617</p></td>
+<td><p>NAD83-98.gsb</p></td>
+<td><p>Geodetic Service of Quebec. Contact <a class="reference external" href="mailto:alain&#46;bernard&#37;&#52;&#48;mrn&#46;gouv&#46;qc&#46;ca">alain<span>&#46;</span>bernard<span>&#64;</span>mrn<span>&#46;</span>gouv<span>&#46;</span>qc<span>&#46;</span>ca</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4617</p></td>
+<td><p>SK83-98.gsb</p></td>
+<td><p>Dir Geodetic Surveys; SaskGeomatics Div.; Saskatchewan Property Management Company.</p></td>
+</tr>
+<tr class="row-odd"><td><p>4272</p></td>
+<td><p>4167</p></td>
+<td><p>nzgd2kgrid0005.gsb</p></td>
+<td><p>Land Information New Zealand: LINZS25000 Standard for New Zealand Geodetic Datum 2000; 16 November 2007.</p></td>
+</tr>
+<tr class="row-even"><td><p>4272</p></td>
+<td><p>4326</p></td>
+<td><p>nzgd2kgrid0005.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4274</p></td>
+<td><p>4258</p></td>
+<td><p>D73_ETRS89_geo.gsb</p></td>
+<td><p>Instituto Geografico Portugues; <a class="reference external" href="http://www.igeo.pt">http://www.igeo.pt</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4277</p></td>
+<td><p>4258</p></td>
+<td><p>OSTN02_NTv2.gsb</p></td>
+<td><p>Ordnance Survey of Great Britain, <a class="reference external" href="http://www.gps.gov.uk">http://www.gps.gov.uk</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4277</p></td>
+<td><p>4258</p></td>
+<td><p>OSTN15_NTv2_OSGBtoETRS.gsb</p></td>
+<td><p>Ordnance Survey of Great Britain.</p></td>
+</tr>
+<tr class="row-even"><td><p>4277</p></td>
+<td><p>4326</p></td>
+<td><p>OSTN02_NTv2.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4277</p></td>
+<td><p>4326</p></td>
+<td><p>OSTN15_NTv2_OSGBtoETRS.gsb</p></td>
+<td><p>IOGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4283</p></td>
+<td><p>7844</p></td>
+<td><p>COCOS_C_V1.gsb</p></td>
+<td><p>GDA2020 Technical Manual (<a class="reference external" href="http://www.icsm.gov.au">http://www.icsm.gov.au</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>4283</p></td>
+<td><p>7844</p></td>
+<td><p>GDA94_GDA2020_conformal.gsb</p></td>
+<td><p>GDA2020 Technical Manual and ICSM Datum Technical Fact Sheet TN1 (<a class="reference external" href="http://www.icsm.gov.au">http://www.icsm.gov.au</a>).</p></td>
+</tr>
+<tr class="row-even"><td><p>4283</p></td>
+<td><p>7844</p></td>
+<td><p>GDA94_GDA2020_conformal_and_distortion.gsb</p></td>
+<td><p>GDA2020 Technical Manual and ICSM Datum Technical Fact Sheet TN1 (<a class="reference external" href="http://www.icsm.gov.au">http://www.icsm.gov.au</a>).</p></td>
+</tr>
+<tr class="row-odd"><td><p>4283</p></td>
+<td><p>7844</p></td>
+<td><p>XMAS_C_V1.gsb</p></td>
+<td><p>GDA2020 Technical Manual (<a class="reference external" href="http://www.icsm.gov.au">http://www.icsm.gov.au</a>).</p></td>
+</tr>
+<tr class="row-even"><td><p>4289</p></td>
+<td><p>4258</p></td>
+<td><p>rdtrans2008.gsb</p></td>
+<td><p>Kadaster and Rijkswaterstaat CIV, working together under the name RDNAP.</p></td>
+</tr>
+<tr class="row-odd"><td><p>4300</p></td>
+<td><p>4258</p></td>
+<td><p>tm75_etrs89.gsb</p></td>
+<td><p>ESRI Ireland.</p></td>
+</tr>
+<tr class="row-even"><td><p>4300</p></td>
+<td><p>4326</p></td>
+<td><p>tm75_etrs89.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4301</p></td>
+<td><p>4612</p></td>
+<td><p>tky2jgd.gsb</p></td>
+<td><p>ESRI</p></td>
+</tr>
+<tr class="row-even"><td><p>4301</p></td>
+<td><p>6668</p></td>
+<td><p>tky2jgd.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4312</p></td>
+<td><p>4258</p></td>
+<td><p>AT_GIS_GRID.gsb</p></td>
+<td><p>Federal Office of Metrology and Surveying (BEV); <a class="reference external" href="http://www.bev.gv.at">http://www.bev.gv.at</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4313</p></td>
+<td><p>4258</p></td>
+<td><p>bd72lb72_etrs89lb08.gsb</p></td>
+<td><p>IGN Brussels www.ngi.be</p></td>
+</tr>
+<tr class="row-odd"><td><p>4314</p></td>
+<td><p>4258</p></td>
+<td><p>BETA2007.gsb</p></td>
+<td><p>BKG via EuroGeographics <a class="reference external" href="http://crs.bkg.bund.de/crs-eu/">http://crs.bkg.bund.de/crs-eu/</a></p></td>
+</tr>
+<tr class="row-even"><td><p>4314</p></td>
+<td><p>4326</p></td>
+<td><p>BETA2007.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4326</p></td>
+<td><p>4275</p></td>
+<td><p>rgf93_ntf.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4608</p></td>
+<td><p>4269</p></td>
+<td><p>May76v20.gsb</p></td>
+<td><p>Geodetic Survey of Canada  <a class="reference external" href="http://www.geod.nrcan.gc.ca/">http://www.geod.nrcan.gc.ca/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4608</p></td>
+<td><p>4326</p></td>
+<td><p>May76v20.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4609</p></td>
+<td><p>4269</p></td>
+<td><p>CGQ77-83.gsb</p></td>
+<td><p>Geodetic Service of Quebec. Contact <a class="reference external" href="mailto:alain&#46;bernard&#37;&#52;&#48;mrn&#46;gouv&#46;qc&#46;ca">alain<span>&#46;</span>bernard<span>&#64;</span>mrn<span>&#46;</span>gouv<span>&#46;</span>qc<span>&#46;</span>ca</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4609</p></td>
+<td><p>4326</p></td>
+<td><p>CGQ77-98.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4609</p></td>
+<td><p>4617</p></td>
+<td><p>CGQ77-98.gsb</p></td>
+<td><p>Geodetic Service of Quebec. Contact <a class="reference external" href="mailto:alain&#46;bernard&#37;&#52;&#48;mrn&#46;gouv&#46;qc&#46;ca">alain<span>&#46;</span>bernard<span>&#64;</span>mrn<span>&#46;</span>gouv<span>&#46;</span>qc<span>&#46;</span>ca</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4612</p></td>
+<td><p>6668</p></td>
+<td><p>touhokutaiheiyouoki2011.gsb</p></td>
+<td><p>ESRI</p></td>
+</tr>
+<tr class="row-even"><td><p>4618</p></td>
+<td><p>4326</p></td>
+<td><p>SAD69_003.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4618</p></td>
+<td><p>4674</p></td>
+<td><p>SAD69_003.gsb</p></td>
+<td><p>IBGE.</p></td>
+</tr>
+<tr class="row-even"><td><p>4745</p></td>
+<td><p>4258</p></td>
+<td><p>NTv2_SN.gsb</p></td>
+<td><p>Saxony State Spatial Data and Land Survey Corporation (GeoSN).</p></td>
+</tr>
+<tr class="row-odd"><td><p>4745</p></td>
+<td><p>4326</p></td>
+<td><p>BETA2007.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>4746</p></td>
+<td><p>4326</p></td>
+<td><p>BETA2007.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-odd"><td><p>4749</p></td>
+<td><p>4644</p></td>
+<td><p>RGNC1991_NEA74Noumea.gsb</p></td>
+<td><p>ESRI</p></td>
+</tr>
+<tr class="row-even"><td><p>4749</p></td>
+<td><p>4662</p></td>
+<td><p>RGNC1991_IGN72GrandeTerre.gsb</p></td>
+<td><p>ESRI</p></td>
+</tr>
+<tr class="row-odd"><td><p>5524</p></td>
+<td><p>4326</p></td>
+<td><p>CA61_003.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>5524</p></td>
+<td><p>4674</p></td>
+<td><p>CA61_003.gsb</p></td>
+<td><p>IBGE.</p></td>
+</tr>
+<tr class="row-odd"><td><p>5527</p></td>
+<td><p>4326</p></td>
+<td><p>SAD96_003.gsb</p></td>
+<td><p>OGP</p></td>
+</tr>
+<tr class="row-even"><td><p>5527</p></td>
+<td><p>4674</p></td>
+<td><p>SAD96_003.gsb</p></td>
+<td><p>IBGE.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="nadcon">
+<h4>NADCON<a class="headerlink" href="#nadcon" title="Permalink to this headline">¶</a></h4>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Source CRS</p></th>
+<th class="head"><p>Target CRS</p></th>
+<th class="head"><p>Version</p></th>
+<th class="head"><p>Latitude shift file</p></th>
+<th class="head"><p>Longitude shift file</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>4135</p></td>
+<td><p>4269</p></td>
+<td><p>NGS-Usa HI</p></td>
+<td><p>hawaii.las</p></td>
+<td><p>hawaii.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4136</p></td>
+<td><p>4269</p></td>
+<td><p>NGS-Usa AK StL</p></td>
+<td><p>stlrnc.las</p></td>
+<td><p>stlrnc.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4137</p></td>
+<td><p>4269</p></td>
+<td><p>NGS-Usa AK StP</p></td>
+<td><p>stpaul.las</p></td>
+<td><p>stpaul.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4138</p></td>
+<td><p>4269</p></td>
+<td><p>NGS-Usa AK StG</p></td>
+<td><p>stgeorge.las</p></td>
+<td><p>stgeorge.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4139</p></td>
+<td><p>4269</p></td>
+<td><p>NGS-PRVI</p></td>
+<td><p>prvi.las</p></td>
+<td><p>prvi.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4169</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Asm E</p></td>
+<td><p>eshpgn.las</p></td>
+<td><p>eshpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4169</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Asm W</p></td>
+<td><p>wshpgn.las</p></td>
+<td><p>wshpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4267</p></td>
+<td><p>4269</p></td>
+<td><p>NGS-Usa AK</p></td>
+<td><p>alaska.las</p></td>
+<td><p>alaska.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4267</p></td>
+<td><p>4269</p></td>
+<td><p>NGS-Usa Conus</p></td>
+<td><p>conus.las</p></td>
+<td><p>conus.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa AL</p></td>
+<td><p>alhpgn.las</p></td>
+<td><p>alhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa AR</p></td>
+<td><p>arhpgn.las</p></td>
+<td><p>arhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa AZ</p></td>
+<td><p>azhpgn.las</p></td>
+<td><p>azhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa CA n</p></td>
+<td><p>cnhpgn.las</p></td>
+<td><p>cnhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa CO</p></td>
+<td><p>cohpgn.las</p></td>
+<td><p>cohpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa CA s</p></td>
+<td><p>cshpgn.las</p></td>
+<td><p>cshpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa ID MT e</p></td>
+<td><p>emhpgn.las</p></td>
+<td><p>emhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa TX e</p></td>
+<td><p>ethpgn.las</p></td>
+<td><p>ethpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa FL</p></td>
+<td><p>flhpgn.las</p></td>
+<td><p>flhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa GA</p></td>
+<td><p>gahpgn.las</p></td>
+<td><p>gahpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa HI</p></td>
+<td><p>hihpgn.las</p></td>
+<td><p>hihpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa IA</p></td>
+<td><p>iahpgn.las</p></td>
+<td><p>iahpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa IL</p></td>
+<td><p>ilhpgn.las</p></td>
+<td><p>ilhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa IN</p></td>
+<td><p>inhpgn.las</p></td>
+<td><p>inhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa KS</p></td>
+<td><p>kshpgn.las</p></td>
+<td><p>kshpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa KY</p></td>
+<td><p>kyhpgn.las</p></td>
+<td><p>kyhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa LA</p></td>
+<td><p>lahpgn.las</p></td>
+<td><p>lahpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa DE MD</p></td>
+<td><p>mdhpgn.las</p></td>
+<td><p>mdhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa ME</p></td>
+<td><p>mehpgn.las</p></td>
+<td><p>mehpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa MI</p></td>
+<td><p>mihpgn.las</p></td>
+<td><p>mihpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa MN</p></td>
+<td><p>mnhpgn.las</p></td>
+<td><p>mnhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa MO</p></td>
+<td><p>mohpgn.las</p></td>
+<td><p>mohpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa MS</p></td>
+<td><p>mshpgn.las</p></td>
+<td><p>mshpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa NE</p></td>
+<td><p>nbhpgn.las</p></td>
+<td><p>nbhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa NC</p></td>
+<td><p>nchpgn.las</p></td>
+<td><p>nchpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa ND</p></td>
+<td><p>ndhpgn.las</p></td>
+<td><p>ndhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa NewEng</p></td>
+<td><p>nehpgn.las</p></td>
+<td><p>nehpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa NJ</p></td>
+<td><p>njhpgn.las</p></td>
+<td><p>njhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa NM</p></td>
+<td><p>nmhpgn.las</p></td>
+<td><p>nmhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa NV</p></td>
+<td><p>nvhpgn.las</p></td>
+<td><p>nvhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa NY</p></td>
+<td><p>nyhpgn.las</p></td>
+<td><p>nyhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa OH</p></td>
+<td><p>ohhpgn.las</p></td>
+<td><p>ohhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa OK</p></td>
+<td><p>okhpgn.las</p></td>
+<td><p>okhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa PA</p></td>
+<td><p>pahpgn.las</p></td>
+<td><p>pahpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-PRVI</p></td>
+<td><p>pvhpgn.las</p></td>
+<td><p>pvhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa SC</p></td>
+<td><p>schpgn.las</p></td>
+<td><p>schpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa SD</p></td>
+<td><p>sdhpgn.las</p></td>
+<td><p>sdhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa TN</p></td>
+<td><p>tnhpgn.las</p></td>
+<td><p>tnhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa UT</p></td>
+<td><p>uthpgn.las</p></td>
+<td><p>uthpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa VA</p></td>
+<td><p>vahpgn.las</p></td>
+<td><p>vahpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa WI</p></td>
+<td><p>wihpgn.las</p></td>
+<td><p>wihpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa ID MT w</p></td>
+<td><p>wmhpgn.las</p></td>
+<td><p>wmhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa OR WA</p></td>
+<td><p>wohpgn.las</p></td>
+<td><p>wohpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa TX w</p></td>
+<td><p>wthpgn.las</p></td>
+<td><p>wthpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa WV</p></td>
+<td><p>wvhpgn.las</p></td>
+<td><p>wvhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>4269</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Usa WY</p></td>
+<td><p>wyhpgn.las</p></td>
+<td><p>wyhpgn.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>4675</p></td>
+<td><p>4152</p></td>
+<td><p>NGS-Gum</p></td>
+<td><p>guhpgn.las</p></td>
+<td><p>guhpgn.los</p></td>
+</tr>
+<tr class="row-even"><td><p>8351</p></td>
+<td><p>4156</p></td>
+<td><p>UGKK-Svk</p></td>
+<td><p>Slovakia_JTSK03_to_JTSK.LAS.las</p></td>
+<td><p>Slovakia_JTSK03_to_JTSK.LAS.los</p></td>
+</tr>
+<tr class="row-odd"><td><p>8351</p></td>
+<td><p>4156</p></td>
+<td><p>UGKK-Svk</p></td>
+<td><p>Slovakia_JTSK03_to_JTSK.LOS.las</p></td>
+<td><p>Slovakia_JTSK03_to_JTSK.LOS.los</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="define-a-custom-coordinate-operation">
+<h2>Define a custom Coordinate Operation<a class="headerlink" href="#define-a-custom-coordinate-operation" title="Permalink to this headline">¶</a></h2>
+<p>Custom Coordinate Operations are defined in <code class="file docutils literal notranslate"><span class="pre">epsg_operations.properties</span></code> file. This file has to be placed into the <code class="file docutils literal notranslate"><span class="pre">user_projections</span></code> directory, inside your data directory (create it if it doesn’t exist).</p>
+<p>Each line in <code class="file docutils literal notranslate"><span class="pre">epsg_operations.properties</span></code> will describe a coordinate operation consisting of a <cite>source CRS</cite>, a <cite>target CRS</cite>, and a math transform with its parameter values. Use the following syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">source</span> <span class="n">crs</span> <span class="n">code</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">target</span> <span class="n">crs</span> <span class="n">code</span><span class="o">&gt;=&lt;</span><span class="n">WKT</span> <span class="n">math</span> <span class="n">transform</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Math transform is described in <a class="reference external" href="http://www.geoapi.org/3.0/javadoc/org/opengis/referencing/doc-files/WKT.html">Well-Known Text</a> syntax. Parameter names and value ranges are described in the <a class="reference external" href="http://www.epsg-registry.org/">EPSG Geodetic Parameter Registry</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use the <a class="reference internal" href="#reprojection-console">Reprojection Console</a> to learn from example and to test your custom definitions.</p>
+</div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>Custom NTv2 file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">4230</span><span class="p">,</span><span class="mi">4258</span><span class="o">=</span><span class="n">PARAM_MT</span><span class="p">[</span><span class="s2">&quot;NTv2&quot;</span><span class="p">,</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;Latitude and longitude difference file&quot;</span><span class="p">,</span> <span class="s2">&quot;100800401.gsb&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Geocentric transformation, preceded by an ellipsoid to geocentric conversion, and back geocentric to ellipsoid. The results is a concatenation of three math transforms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">4230</span><span class="p">,</span><span class="mi">4258</span><span class="o">=</span><span class="n">CONCAT_MT</span><span class="p">[</span> \
+  <span class="n">PARAM_MT</span><span class="p">[</span><span class="s2">&quot;Ellipsoid_To_Geocentric&quot;</span><span class="p">,</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dim&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;semi_major&quot;</span><span class="p">,</span> <span class="mf">6378388.0</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;semi_minor&quot;</span><span class="p">,</span> <span class="mf">6356911.9461279465</span><span class="p">]],</span> \
+  <span class="n">PARAM_MT</span><span class="p">[</span><span class="s2">&quot;Position Vector transformation (geog2D domain)&quot;</span><span class="p">,</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dx&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">116.641</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dy&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">56.931</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dz&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">110.559</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="mf">0.8925078166311858</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;ey&quot;</span><span class="p">,</span> <span class="mf">0.9207660950870382</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;ez&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9166407989620964</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;ppm&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5200000000346066</span><span class="p">]],</span> \
+  <span class="n">PARAM_MT</span><span class="p">[</span><span class="s2">&quot;Geocentric_To_Ellipsoid&quot;</span><span class="p">,</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dim&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;semi_major&quot;</span><span class="p">,</span> <span class="mf">6378137.0</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;semi_minor&quot;</span><span class="p">,</span> <span class="mf">6356752.314140356</span><span class="p">]]]</span>
+</pre></div>
+</div>
+<p>You can make use of existing grid shift files such as this explicit transformation from NAD27 to WGS84 made up of a NADCON transform from NAD27 to NAD83 followed by a Molodenski transform converting from the GRS80 Ellipsoid (used by NAD83) to the WGS84 Ellipsoid:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">4267</span><span class="p">,</span><span class="mi">4326</span><span class="o">=</span><span class="n">CONCAT_MT</span><span class="p">[</span> \
+  <span class="n">PARAM_MT</span><span class="p">[</span><span class="s2">&quot;NADCON&quot;</span><span class="p">,</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;Latitude difference file&quot;</span><span class="p">,</span> <span class="s2">&quot;conus.las&quot;</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;Longitude difference file&quot;</span><span class="p">,</span> <span class="s2">&quot;conus.los&quot;</span><span class="p">]],</span> \
+  <span class="n">PARAM_MT</span><span class="p">[</span><span class="s2">&quot;Molodenski&quot;</span><span class="p">,</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dim&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dx&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dy&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;dz&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;src_semi_major&quot;</span><span class="p">,</span> <span class="mf">6378137.0</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;src_semi_minor&quot;</span><span class="p">,</span> <span class="mf">6356752.314140356</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;tgt_semi_major&quot;</span><span class="p">,</span> <span class="mf">6378137.0</span><span class="p">],</span> \
+    <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;tgt_semi_minor&quot;</span><span class="p">,</span> <span class="mf">6356752.314245179</span><span class="p">]]]</span>
+</pre></div>
+</div>
+<p>Affine 2D transform operating directly in projected coordinates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">23031</span><span class="p">,</span><span class="mi">25831</span><span class="o">=</span><span class="n">PARAM_MT</span><span class="p">[</span><span class="s2">&quot;Affine&quot;</span><span class="p">,</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;num_row&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;num_col&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;elt_0_0&quot;</span><span class="p">,</span> <span class="mf">1.0000015503712145</span><span class="p">],</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;elt_0_1&quot;</span><span class="p">,</span> <span class="mf">0.00000758753979846734</span><span class="p">],</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;elt_0_2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">129.549</span><span class="p">],</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;elt_1_0&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00000758753979846734</span><span class="p">],</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;elt_1_1&quot;</span><span class="p">,</span> <span class="mf">1.0000015503712145</span><span class="p">],</span> \
+  <span class="n">PARAMETER</span><span class="p">[</span><span class="s2">&quot;elt_1_2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">208.185</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Each operation can be described in a single line, or can be split in several lines for readability, adding a backslash “&quot; at the end of each line, as in the former examples.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="customcrs.html" title="previous chapter">Custom CRS Definitions</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="manualepsg.html" title="next chapter">Manually editing the EPSG database</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Coordinate Operations</a><ul>
+<li><a class="reference internal" href="#reprojection-console">Reprojection Console</a></li>
+<li><a class="reference internal" href="#add-grid-shift-transform-files">Add Grid Shift Transform files</a><ul>
+<li><a class="reference internal" href="#list-of-available-grid-shift-transforms">List of available Grid Shift transforms</a><ul>
+<li><a class="reference internal" href="#ntv2">NTv2</a></li>
+<li><a class="reference internal" href="#nadcon">NADCON</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#define-a-custom-coordinate-operation">Define a custom Coordinate Operation</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="customcrs.html" title="previous chapter">Custom CRS Definitions</a></li>
+            <li>Next: <a href="manualepsg.html" title="next chapter">Manually editing the EPSG database</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/configuration/crshandling/coordtransforms.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

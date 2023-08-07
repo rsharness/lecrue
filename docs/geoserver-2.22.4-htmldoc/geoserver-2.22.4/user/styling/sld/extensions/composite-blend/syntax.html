@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Specifying compositing and blending in SLD &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Composite and blending modes" href="modes.html" />
+    <link rel="prev" title="Color compositing and color blending" href="index.html" /> 
+  </head><body class="styling/sld/extensions/composite-blend/syntax">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Extensions in GeoServer</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Color compositing and color blending</a> &raquo;</li>
+    <li>Specifying compositing and blending in SLD</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="modes.html" title="Composite and blending modes" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="Color compositing and color blending" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="specifying-compositing-and-blending-in-sld">
+<span id="sld-extensions-composite-blend-syntax"></span><h1>Specifying compositing and blending in SLD<a class="headerlink" href="#specifying-compositing-and-blending-in-sld" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="composites">
+<h2>Composites<a class="headerlink" href="#composites" title="Permalink to this headline">¶</a></h2>
+<p>Both compositing and blending can be specified in SLD by adding the following VendorOption to
+either the end of a Symbolizer or FeatureTypeStyle:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;composite&quot;</span><span class="nt">&gt;</span>multiply<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>In case a custom opacity is desired, it can be added after the operation name separated with a comma:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;composite&quot;</span><span class="nt">&gt;</span>multiply, 0.5<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See the <a class="reference internal" href="modes.html#sld-extensions-composite-blend-modes"><span class="std std-ref">full list of available modes</span></a>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Blending against symbolizers causes exceptions inside the JDK when using OpenJDK. The <a class="reference external" href="https://bugs.openjdk.java.net/browse/JDK-8048782">issue is known</a> and has been reportedly fixed, but only in OpenJDK 9.</p>
+<p>One way to get around this issue with OpenJDK 7/8 is to install the <a class="reference external" href="https://github.com/bourgesl/marlin-renderer">Marlin renderer</a>. This replaces the OpenJDK core renderer and does not suffer from the same issue.</p>
+<p>Oracle JDK 7 or 8 does not show this issue.</p>
+</div>
+</div>
+<div class="section" id="composite-bases">
+<h2>Composite bases<a class="headerlink" href="#composite-bases" title="Permalink to this headline">¶</a></h2>
+<p>For FeatureTypeStyles an additional vendor option can be added to control compositing groups:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;composite-base&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+</pre></div>
+</div>
+<p>This will tell the rendering engine to use that FeatureTypeStyle as the destination, and will compose all subsequent FeatureTypeStyle/Layers on top of it, until another base is found. Once the full set of layers against a base is composed, then the base itself will be composed against the next set of composed layers, using its own compositing operator, if present.</p>
+<p>Without this setting, the destination will be the full stack of all previous FeatureTypeStyles and layers drawn before the current one. This can be limiting for two reasons:</p>
+<ul class="simple">
+<li><p>It limits the usefulness of alpha-composite masking operations</p></li>
+<li><p>It breaks the WMS model, where the client can decide freely how to stack layers (the desired
+compositing effects will be achieved only when a certain stack of layers is used)</p></li>
+</ul>
+<p>Consider the following example:</p>
+<div class="figure align-default">
+<img alt="../../../../_images/stacking.png" src="../../../../_images/stacking.png" />
+</div>
+<p>In this example, the first two layers are drawn on top of each other, forming “Merge1”.</p>
+<p>The third layer is a composite base, as such it won’t be merged on top of the already drawn map immediately, but it will be drawn to an off-screen buffer, and layer 4 and 5 will be drawn/composited on top of it. Once that happens, “Merge2” is ready, and gets drawn on top of “Merge1”,</p>
+<p>The next layer is another base, so “Base2” will be again drawn to an off-screen buffer, and layer 7 and 8 will be drawn/composited on top of it, forming Merge3. Once Merge3 is ready, it will be drawn/composited on top of the already fused Merge1/Merge2, generating the final map.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">Color compositing and color blending</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="modes.html" title="next chapter">Composite and blending modes</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Specifying compositing and blending in SLD</a><ul>
+<li><a class="reference internal" href="#composites">Composites</a></li>
+<li><a class="reference internal" href="#composite-bases">Composite bases</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">Color compositing and color blending</a></li>
+            <li>Next: <a href="modes.html" title="next chapter">Composite and blending modes</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/extensions/composite-blend/syntax.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

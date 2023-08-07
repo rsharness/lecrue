@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Optimize rendering of complex polygons &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Geoserver Task Manager" href="../taskmanager/index.html" />
+    <link rel="prev" title="Loading spatial data into SOLR" href="load.html" /> 
+  </head><body class="community/solr/optimize">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SOLR data store</a> &raquo;</li>
+    <li>Optimize rendering of complex polygons</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../taskmanager/index.html" title="Geoserver Task Manager" accesskey="N">Next</a></li>
+  <li>
+    <a href="load.html" title="Loading spatial data into SOLR" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="optimize-rendering-of-complex-polygons">
+<span id="community-solr-optimize"></span><h1>Optimize rendering of complex polygons<a class="headerlink" href="#optimize-rendering-of-complex-polygons" title="Permalink to this headline">¶</a></h1>
+<p>Rendering large maps with complex polygons, to show the overall distribution of the data, can
+take a significant toll, especially if GeoServer cannot connect to the SOLR server via a high
+speed network.</p>
+<p>A common approach to handle this issue is to add a second geometry to the SOLR documents,
+representing the centroid of the polygon, and using that one to render the features when
+fairly zoomed out.</p>
+<p>Once the SOLR documents have been updated with a centroid column, and it has been populated,
+the column can be added as a secondary geometry. Make sure to keep the polygonal geometry
+as the default one:</p>
+<div class="figure align-center">
+<img alt="../../_images/optimize_ft1.png" src="../../_images/optimize_ft1.png" />
+</div>
+<p>… (other fields omitted)</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/optimize_ft2.png" src="../../_images/optimize_ft2.png" />
+<p class="caption"><span class="caption-text"><em>Configuring a layer with multiple geometries</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>With this setup the polygonal geometry will still be used for all spatial filters, and for
+rendering, unless the style otherwise specifical demands for the centroid.</p>
+<p>Then, a style with scale dependencies can be setup in order to fetch only then centroids
+when fairly zoomed out, like in the following CSS example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[@scale &gt; 50000] {
+  geometry: [centroid];
+  mark: symbol(square);
+}
+:mark {
+  fill: red;
+  size: 3;
+}​
+[@scale &lt;= 50000] {
+  fill: red;
+  stroke: black;
+}
+</pre></div>
+</div>
+<p>Using this style the <code class="docutils literal notranslate"><span class="pre">spatial</span></code> field will still be used to resolve the BBOX filter implicit
+in the WMS requests, but only the much smaller <code class="docutils literal notranslate"><span class="pre">centroid</span></code> one will be transferred to GeoServer
+for rendering.</p>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="load.html" title="previous chapter">Loading spatial data into SOLR</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../taskmanager/index.html" title="next chapter">Geoserver Task Manager</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="load.html" title="previous chapter">Loading spatial data into SOLR</a></li>
+            <li>Next: <a href="../taskmanager/index.html" title="next chapter">Geoserver Task Manager</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/solr/optimize.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

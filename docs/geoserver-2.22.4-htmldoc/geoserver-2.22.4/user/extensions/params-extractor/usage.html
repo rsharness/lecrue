@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using the Parameters Extractor module &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GWC S3 BlobStore plugin" href="../gwc-s3/index.html" />
+    <link rel="prev" title="Installing the Parameter Extractor extension" href="install.html" /> 
+  </head><body class="extensions/params-extractor/usage">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Parameters Extractor</a> &raquo;</li>
+    <li>Using the Parameters Extractor module</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../gwc-s3/index.html" title="GWC S3 BlobStore plugin" accesskey="N">Next</a></li>
+  <li>
+    <a href="install.html" title="Installing the Parameter Extractor extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="using-the-parameters-extractor-module">
+<span id="params-extractor-usage"></span><h1>Using the Parameters Extractor module<a class="headerlink" href="#using-the-parameters-extractor-module" title="Permalink to this headline">¶</a></h1>
+<p>This module allow us to entering specific request parameters as URL path fragments instead of using the query string.
+For example, we want to be able to apply a cql_filter using a URL in the following form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/&lt;workspace&gt;/&lt;layer&gt;/&lt;filter&gt;/ows?service=WMS&amp;version=1.3.0&amp;request=GetMap
+</pre></div>
+</div>
+<p>As a simple example of usage, if the &lt;filter&gt; is something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">K_140M</span>
+</pre></div>
+</div>
+<p>the URL would become:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/&lt;workspace&gt;/&lt;layer&gt;/K_140M/ows?service=WMS&amp;version=1.3.0&amp;request=GetMap
+</pre></div>
+</div>
+<p>and this module will translate the URL to this new one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/&lt;workspace&gt;/&lt;layer&gt;/ows?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;cql_filter=seq=&#39;K140M&#39;
+</pre></div>
+</div>
+<p>This module is configured by a set of rules that will be applied to the incoming URLs. Note that a get capabilities result will include the original URL maintaining the extra filter.</p>
+<p>This module also gives the possibility to echo existing URL parameters to the result of a get capabilities result. As an example, by default the following get capabilities request (note the existing cql_filter parameter):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/ows?service=wms&amp;version=1.3.0&amp;request=GetCapabilities&amp;cql_filter=CFCC=%27D68%27
+</pre></div>
+</div>
+<p>will return a get capabilities document were the URLs will be of the type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/ows?SERVICE=WMS&amp;
+</pre></div>
+</div>
+<p>if this module is configured to echo an existing cql_filter parameter the result would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/ows?SERVICE=WMS&amp;CQL_FILTER=CFCC%3D%27D68%27&amp;
+</pre></div>
+</div>
+<p>This module is configured using three types of rules: echo parameter rules, basic rules and advanced rules. All of them can be managed in this module UI which is integrated in GeoServer UI.</p>
+<div class="section" id="echo-parameter-rules">
+<h2>Echo Parameter Rules<a class="headerlink" href="#echo-parameter-rules" title="Permalink to this headline">¶</a></h2>
+<p>Echo parameter rules are very simple, they allow us to define that a certain existing URL parameter should be echoed to a get capabilities result. This type of rules only required one mandatory parameter which is the name of the existing URL parameter that should be echoed to a get capabilities result.</p>
+<p>Example of an echo parameter rule:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/echo_rule.png" src="../../_images/echo_rule.png" />
+<p class="caption"><span class="caption-text"><em>Example of a echo parameter rule defined in the UI</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>This rule will echo the cql_filter of this URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/ows?service=wms&amp;version=1.3.0&amp;request=GetCapabilities&amp;cql_filter=CFCC=%27D68%27
+</pre></div>
+</div>
+<p>to the get capabilities result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/ows?SERVICE=WMS&amp;CQL_FILTER=CFCC%3D%27D68%27&amp;
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-rules">
+<h2>Basic Rules<a class="headerlink" href="#basic-rules" title="Permalink to this headline">¶</a></h2>
+<p>Basic rules allow us to handle simple uses cases where we only want to extract a parameter from the URL.</p>
+<p>A basic rule is defined by three mandatory attributes:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Attribute</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Position</span></code></p></td>
+<td><p>The position of the URL base path element to be selected</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Parameter</span></code></p></td>
+<td><p>The name of the parameter produced by this rule</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Transform</span></code></p></td>
+<td><p>Expression that defines the value of the parameter, use {PARAMETER} as a placeholder for the selected path element</p></td>
+</tr>
+</tbody>
+</table>
+<p>For commodity is also possible when defining this type of rules to configure that an existing parameter in the URL should be echoed to a get capabilities result.</p>
+<p>Example of a basic rule:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/basic_rule.png" src="../../_images/basic_rule.png" />
+<p class="caption"><span class="caption-text"><em>Example of a basic rule defined in the UI</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>This rule will transform the URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/tiger/wms/H11?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap
+</pre></div>
+</div>
+<p>in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/tiger/wms?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;CQL_FILTER=CFCC%3D%27H11%27
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-rules">
+<h2>Advanced Rules<a class="headerlink" href="#advanced-rules" title="Permalink to this headline">¶</a></h2>
+<p>Advanced rules allow us to handle more complex uses cases where more flexibility is required.</p>
+<p>An advanced rule is defined by three mandatory attributes and four optional ones:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 80%" />
+<col style="width: 10%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Attribute</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Mandatory</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Match</span></code></p></td>
+<td><p>Regex match expression with groups, for example ^(?:/[^/]*){3}(/([^/]+)).*$ selects the URL base path third element</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Activation</span></code></p></td>
+<td><p>If defined this rule will only be applied to URLs that match this regex expression</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Parameter</span></code></p></td>
+<td><p>The name of the parameter produced by this rule</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Transform</span></code></p></td>
+<td><p>Expression that defines the value of the parameter, use $1 … $n as placeholders for groups defined in the match expression</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Remove</span></code></p></td>
+<td><p>The match expression group to be removed from URL, by default 1</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Combine</span></code></p></td>
+<td><p>Defines how to combine parameter existing value ($1 existing value, $2 new value), by default the value is overridden</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Repeat</span></code></p></td>
+<td><p>If defined, Combine is applied not only once, but for every layer included in the LAYERS parameter, this allows filling parameters that require a value for each layer (e.g. STYLES or CQL_FILTER)</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+<p>For commodity is also possible when defining this type of rules to configure that an existing parameter in the URL should be echoed to a get capabilities result.</p>
+<p>Example of an advanced rule:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/advanced_rule.png" src="../../_images/advanced_rule.png" />
+<p class="caption"><span class="caption-text"><em>Example of an advanced rule defined in the UI</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>This rule will transform the URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/tiger/wms/H11?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;CQL_FILTER=CFCC%3D%27D68%27
+</pre></div>
+</div>
+<p>in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/tiger/wms?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;CQL_FILTER=CFCC%3D%27D68%27+or+CFCC%3D%27H11%27
+</pre></div>
+</div>
+<p>No that this rule will also echo an existing cql_filter parameter to the get capabilities result.</p>
+<p>Example of an advanced rule with repeat:</p>
+<div class="figure align-center" id="id4">
+<img alt="../../_images/advanced_rule_repeat.png" src="../../_images/advanced_rule_repeat.png" />
+<p class="caption"><span class="caption-text"><em>Example of an advanced rule with repeat defined in the UI</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>This rule will transform the URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/wms/H11?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;LAYERS=tiger,other
+</pre></div>
+</div>
+<p>in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/geoserver/wms?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;LAYERS=tiger,otherCQL_FILTER=CFCC%3D%27D68%27%3BCFCC%3D%27H11%27
+</pre></div>
+</div>
+</div>
+<div class="section" id="rules-management">
+<h2>Rules Management<a class="headerlink" href="#rules-management" title="Permalink to this headline">¶</a></h2>
+<p>Rules can be managed and tested in the rules management UI. Besides the basic operations like add, remove and update is also possible to activate or deactivate rules. A deactivated rule will be ignored by this module.</p>
+<p>Follow a print screen of the rules management UI with all the rules previously defined:</p>
+<div class="figure align-center" id="id5">
+<img alt="../../_images/rules_management.png" src="../../_images/rules_management.png" />
+<p class="caption"><span class="caption-text"><em>Rules management UI</em></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>Note that the first rule (the advanced one) is not active.</p>
+</div>
+<div class="section" id="rest-api">
+<h2>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h2>
+<p>The rules and echo parameters can also be managed by means of a REST API found at
+<code class="docutils literal notranslate"><span class="pre">geoserver/rest/params-extractor</span></code>. Documentation for it is available in
+<a class="reference external" href="http://docs.geoserver.org/latest/en/api/#1.0.0/params-extractor.yaml">Swagger format</a></p>
+</div>
+<div class="section" id="intercepting-the-security-filters-chain">
+<h2>Intercepting the security filters chain<a class="headerlink" href="#intercepting-the-security-filters-chain" title="Permalink to this headline">¶</a></h2>
+<p>By default, the params-extractor module does not interact with the security authentication filters.
+This is because the params-extractor filter is called later in the GeoServer filters chain.</p>
+<p>If you want params-extractor to work before the security filter chain, you have to configure it as
+a standard servlet filter in the GeoServer WEB-INF/web.xml file.</p>
+<p>This can be done adding the following to your current web.xml (immediately after the <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Character</span> <span class="pre">Encoding</span></code> filter) and restarting GeoServer:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;</span>
+<span class="nt">&lt;web-app&gt;</span>
+    ...
+    <span class="nt">&lt;filter&gt;</span>
+     <span class="nt">&lt;filter-name&gt;</span>ExtractParams<span class="nt">&lt;/filter-name&gt;</span>
+     <span class="nt">&lt;filter-class&gt;</span>org.geoserver.params.extractor.Filter<span class="nt">&lt;/filter-class&gt;</span>
+    <span class="nt">&lt;/filter&gt;</span>
+    ...
+    <span class="nt">&lt;filter-mapping&gt;</span>
+      <span class="nt">&lt;filter-name&gt;</span>ExtractParams<span class="nt">&lt;/filter-name&gt;</span>
+      <span class="nt">&lt;url-pattern&gt;</span>/*<span class="nt">&lt;/url-pattern&gt;</span>
+    <span class="nt">&lt;/filter-mapping&gt;</span>
+    ...
+<span class="nt">&lt;/web-app&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install.html" title="previous chapter">Installing the Parameter Extractor extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../gwc-s3/index.html" title="next chapter">GWC S3 BlobStore plugin</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Using the Parameters Extractor module</a><ul>
+<li><a class="reference internal" href="#echo-parameter-rules">Echo Parameter Rules</a></li>
+<li><a class="reference internal" href="#basic-rules">Basic Rules</a></li>
+<li><a class="reference internal" href="#advanced-rules">Advanced Rules</a></li>
+<li><a class="reference internal" href="#rules-management">Rules Management</a></li>
+<li><a class="reference internal" href="#rest-api">REST API</a></li>
+<li><a class="reference internal" href="#intercepting-the-security-filters-chain">Intercepting the security filters chain</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install.html" title="previous chapter">Installing the Parameter Extractor extension</a></li>
+            <li>Next: <a href="../gwc-s3/index.html" title="next chapter">GWC S3 BlobStore plugin</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/params-extractor/usage.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,450 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rasters &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="MBStyle Styling" href="../../mbstyle/index.html" />
+    <link rel="prev" title="Polygons" href="polygons.html" /> 
+  </head><body class="styling/ysld/cookbook/rasters">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">YSLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">YSLD Cookbook</a> &raquo;</li>
+    <li>Rasters</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../../mbstyle/index.html" title="MBStyle Styling" accesskey="N">Next</a></li>
+  <li>
+    <a href="polygons.html" title="Polygons" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="rasters">
+<span id="ysld-cookbook-rasters"></span><h1>Rasters<a class="headerlink" href="#rasters" title="Permalink to this headline">¶</a></h1>
+<p>Rasters are geographic data displayed in a grid. They are similar to image files such as PNG files, except that instead of each point containing visual information, each point contains geographic information in numerical form. Rasters can be thought of as a georeferenced table of numerical values.</p>
+<p>One example of a raster is a Digital Elevation Model (DEM) layer, which has elevation data encoded numerically at each georeferenced data point.</p>
+<div class="section" id="example-raster">
+<h2>Example raster<a class="headerlink" href="#example-raster" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference download internal" download="" href="../../../_downloads/e2212a3c4814bc752f28d51c55cab375/ysld_cookbook_raster.zip"><code class="xref download docutils literal notranslate"><span class="pre">raster</span> <span class="pre">layer</span></code></a> that is used in the examples below contains elevation data for a fictional world. The data is stored in EPSG:4326 (longitude/latitude) and has a data range from 70 to 256. If rendered in grayscale, where minimum values are colored black and maximum values are colored white, the raster would look like this:</p>
+<div class="figure align-default" id="id13">
+<img alt="../../../_images/raster1.png" src="../../../_images/raster1.png" />
+<p class="caption"><span class="caption-text">Raster file as rendered in grayscale</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+<p><a class="reference download internal" download="" href="../../../_downloads/e2212a3c4814bc752f28d51c55cab375/ysld_cookbook_raster.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">raster</span> <span class="pre">shapefile</span></code></a></p>
+</div>
+<div class="section" id="two-color-gradient">
+<span id="ysld-cookbook-raster-twocolorgradient"></span><h2>Two-color gradient<a class="headerlink" href="#two-color-gradient" title="Permalink to this headline">¶</a></h2>
+<p>This example shows a two-color style with green at lower elevations and brown at higher elevations.</p>
+<div class="figure align-default" id="id14">
+<img alt="../../../_images/raster_twocolorgradient.png" src="../../../_images/raster_twocolorgradient.png" />
+<p class="caption"><span class="caption-text">Two-color gradient</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="code">
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/3424b36588461212dcf921b17d05a391/raster_twocolorgradient.ysld"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Two-color</span> <span class="pre">gradient&quot;</span> <span class="pre">YSLD</span></code></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">title</span><span class="p">:</span> <span class="s">&#39;YSLD</span><span class="nv"> </span><span class="s">Cook</span><span class="nv"> </span><span class="s">Book:</span><span class="nv"> </span><span class="s">Two</span><span class="nv"> </span><span class="s">color</span><span class="nv"> </span><span class="s">gradient&#39;</span>
+<span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+        <span class="nt">color-map</span><span class="p">:</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ramp</span>
+          <span class="nt">entries</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#008000&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">70</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#663333&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">256</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="details">
+<h3>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h3>
+<p>There is one rule in one feature style for this example, which is the simplest possible situation. All subsequent examples will share this characteristic. Styling of rasters is done via the raster symbolizer (<strong>lines 2-7</strong>).</p>
+<p>This example creates a smooth gradient between two colors corresponding to two elevation values. The gradient is created via the <code class="docutils literal notranslate"><span class="pre">color-map</span></code> on <strong>lines 8-12</strong>. Each entry in the <code class="docutils literal notranslate"><span class="pre">color-map</span></code> represents one entry or anchor in the gradient. <strong>Line 11</strong> sets the lower value of 70 and color to a dark green (<code class="docutils literal notranslate"><span class="pre">'#008000'</span></code>). <strong>Line 12</strong> sets the upper value of 256 and color to a dark brown (<code class="docutils literal notranslate"><span class="pre">'#663333'</span></code>). <strong>Line 9</strong> sets the type to <code class="docutils literal notranslate"><span class="pre">ramp</span></code>, which means that all data values in between these two quantities will be linearly interpolated:  a value of 163 (the midpoint between 70 and 256) will be colored as the midpoint between the two colors (in this case approximately <code class="docutils literal notranslate"><span class="pre">'#335717'</span></code>, a muddy green).</p>
+</div>
+</div>
+<div class="section" id="transparent-gradient">
+<h2>Transparent gradient<a class="headerlink" href="#transparent-gradient" title="Permalink to this headline">¶</a></h2>
+<p>This example creates the same two-color gradient as in the <a class="reference internal" href="#ysld-cookbook-raster-twocolorgradient"><span class="std std-ref">Two-color gradient</span></a> as in the example above but makes the entire layer mostly transparent by setting a 30% opacity.</p>
+<div class="figure align-default" id="id15">
+<img alt="../../../_images/raster_transparentgradient.png" src="../../../_images/raster_transparentgradient.png" />
+<p class="caption"><span class="caption-text">Transparent gradient</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id1">
+<h3>Code<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/329c480e595967879274aaf8e6f72c5b/raster_transparentgradient.ysld"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Transparent</span> <span class="pre">gradient&quot;</span> <span class="pre">YSLD</span></code></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">title</span><span class="p">:</span> <span class="s">&#39;YSLD</span><span class="nv"> </span><span class="s">Cook</span><span class="nv"> </span><span class="s">Book:</span><span class="nv"> </span><span class="s">Transparent</span><span class="nv"> </span><span class="s">gradient&#39;</span>
+<span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3</span>
+        <span class="nt">color-map</span><span class="p">:</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ramp</span>
+          <span class="nt">entries</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#008000&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">70</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#663333&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">256</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Details<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>This example is similar to the <a class="reference internal" href="#ysld-cookbook-raster-twocolorgradient"><span class="std std-ref">Two-color gradient</span></a> example save for the addition of <strong>line 7</strong>, which sets the opacity of the layer to 0.3 (or 30% opaque). An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is rendered as completely transparent. The value of 0.3 means that the raster partially takes on the color and style of whatever is drawn beneath it. Since the background is white in this example, the colors generated from the <code class="docutils literal notranslate"><span class="pre">color-map</span></code> look lighter, but were the raster imposed on a dark background the resulting colors would be darker.</p>
+</div>
+</div>
+<div class="section" id="brightness-and-contrast">
+<h2>Brightness and contrast<a class="headerlink" href="#brightness-and-contrast" title="Permalink to this headline">¶</a></h2>
+<p>This example normalizes the color output and then increases the brightness by a factor of 2.</p>
+<div class="figure align-default" id="id16">
+<img alt="../../../_images/raster_brightnessandcontrast.png" src="../../../_images/raster_brightnessandcontrast.png" />
+<p class="caption"><span class="caption-text">Brightness and contrast</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id3">
+<h3>Code<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/102a73675cebd9d9617fa126c562f2ce/raster_brightnessandcontrast.ysld"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Brightness</span> <span class="pre">and</span> <span class="pre">contrast&quot;</span> <span class="pre">YSLD</span></code></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">title</span><span class="p">:</span> <span class="s">&#39;YSLD</span><span class="nv"> </span><span class="s">Cook</span><span class="nv"> </span><span class="s">Book:</span><span class="nv"> </span><span class="s">Brightness</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">contrast&#39;</span>
+<span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+        <span class="nt">color-map</span><span class="p">:</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ramp</span>
+          <span class="nt">entries</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#008000&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">70</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#663333&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">256</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">contrast-enhancement</span><span class="p">:</span>
+          <span class="nt">mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">normalize</span>
+          <span class="nt">gamma</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>Details<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>This example is similar to the <a class="reference internal" href="#ysld-cookbook-raster-twocolorgradient"><span class="std std-ref">Two-color gradient</span></a>, save for the addition of the <code class="docutils literal notranslate"><span class="pre">contrast-enhancement</span></code> parameter on <strong>lines 13-15</strong>. <strong>Line 14</strong> normalizes the output by increasing the contrast to its maximum extent. <strong>Line 15</strong> then adjusts the brightness by a factor of 0.5. Since values less than 1 make the output brighter, a value of 0.5 makes the output twice as bright.</p>
+<p>As with previous examples, <strong>lines 8-12</strong> determine the <code class="docutils literal notranslate"><span class="pre">color-map</span></code>, with <strong>line 11</strong> setting the lower bound (70) to be colored dark green (<code class="docutils literal notranslate"><span class="pre">'#008000'</span></code>) and <strong>line 12</strong> setting the upper bound (256) to be colored dark brown (<code class="docutils literal notranslate"><span class="pre">'#663333'</span></code>).</p>
+</div>
+</div>
+<div class="section" id="three-color-gradient">
+<h2>Three-color gradient<a class="headerlink" href="#three-color-gradient" title="Permalink to this headline">¶</a></h2>
+<p>This example creates a three-color gradient in primary colors.</p>
+<div class="figure align-default" id="id17">
+<img alt="../../../_images/raster_threecolorgradient.png" src="../../../_images/raster_threecolorgradient.png" />
+<p class="caption"><span class="caption-text">Three-color gradient</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id5">
+<h3>Code<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/8b3514dc45b8475278e3c91c7b225e1b/raster_threecolorgradient.ysld"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Three-color</span> <span class="pre">gradient&quot;</span> <span class="pre">YSLD</span></code></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">title</span><span class="p">:</span> <span class="s">&#39;YSLD</span><span class="nv"> </span><span class="s">Cook</span><span class="nv"> </span><span class="s">Book:</span><span class="nv"> </span><span class="s">Three</span><span class="nv"> </span><span class="s">color</span><span class="nv"> </span><span class="s">gradient&#39;</span>
+<span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+        <span class="nt">color-map</span><span class="p">:</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ramp</span>
+          <span class="nt">entries</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#0000FF&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">150</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#FFFF00&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">200</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#FF0000&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">250</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>Details<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>This example creates a three-color gradient based on a <code class="docutils literal notranslate"><span class="pre">color-map</span></code> with three entries on <strong>lines 8-13</strong>: <strong>line 11</strong> specifies the lower bound (150) be styled in blue (<code class="docutils literal notranslate"><span class="pre">'#0000FF'</span></code>), <strong>line 12</strong> specifies an intermediate point (200) be styled in yellow (<code class="docutils literal notranslate"><span class="pre">'#FFFF00'</span></code>), and <strong>line 13</strong> specifies the upper bound (250) be styled in red (<code class="docutils literal notranslate"><span class="pre">'#FF0000'</span></code>).</p>
+<p>Since our data values run between 70 and 256, some data points are not accounted for in this style. Those values below the lowest entry in the color map (the range from 70 to 149)  are styled the same color as the lower bound, in this case blue. Values above the upper bound in the color map (the range from 251 to 256) are styled the same color as the upper bound, in this case red.</p>
+</div>
+</div>
+<div class="section" id="alpha-channel">
+<h2>Alpha channel<a class="headerlink" href="#alpha-channel" title="Permalink to this headline">¶</a></h2>
+<p>This example creates an “alpha channel” effect such that higher values are increasingly transparent.</p>
+<div class="figure align-default" id="id18">
+<img alt="../../../_images/raster_alphachannel.png" src="../../../_images/raster_alphachannel.png" />
+<p class="caption"><span class="caption-text">Alpha channel</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id7">
+<h3>Code<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/f95ca707bee753c8172ab335be588d44/raster_alphachannel.ysld"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Alpha</span> <span class="pre">channel&quot;</span> <span class="pre">YSLD</span></code></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">title</span><span class="p">:</span> <span class="s">&#39;YSLD</span><span class="nv"> </span><span class="s">Cook</span><span class="nv"> </span><span class="s">Book:</span><span class="nv"> </span><span class="s">Alpha</span><span class="nv"> </span><span class="s">channel&#39;</span>
+<span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+        <span class="nt">color-map</span><span class="p">:</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ramp</span>
+          <span class="nt">entries</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#008000&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">70</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#008000&#39;</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">256</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>Details<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>An alpha channel is another way of referring to variable transparency. Much like how a gradient maps values to colors, each entry in a <code class="docutils literal notranslate"><span class="pre">color-map</span></code> can have a value for opacity (with the default being 1.0 or completely opaque).</p>
+<p>In this example, there is a <code class="docutils literal notranslate"><span class="pre">color-map</span></code> with two entries: <strong>line 11</strong> specifies the lower bound of 70 be colored dark green (<code class="docutils literal notranslate"><span class="pre">'#008000'</span></code>), while <strong>line 13</strong> specifies the upper bound of 256 also be colored dark green but with an opacity value of 0. This means that values of 256 will be rendered at 0% opacity (entirely transparent). Just like the gradient color, the opacity is also linearly interpolated such that a value of 163 (the midpoint between 70 and 256) is rendered at 50% opacity.</p>
+</div>
+</div>
+<div class="section" id="discrete-colors">
+<h2>Discrete colors<a class="headerlink" href="#discrete-colors" title="Permalink to this headline">¶</a></h2>
+<p>This example shows a gradient that is not linearly interpolated but instead has values mapped precisely to one of three specific colors.</p>
+<div class="figure align-default" id="id19">
+<img alt="../../../_images/raster_discretecolors.png" src="../../../_images/raster_discretecolors.png" />
+<p class="caption"><span class="caption-text">Discrete colors</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id9">
+<h3>Code<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/45a49c51ab3855efc4488e9e98a0846c/raster_discretecolors.ysld"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Discrete</span> <span class="pre">colors&quot;</span> <span class="pre">YSLD</span></code></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">title</span><span class="p">:</span> <span class="s">&#39;YSLD</span><span class="nv"> </span><span class="s">Cook</span><span class="nv"> </span><span class="s">Book:</span><span class="nv"> </span><span class="s">Discrete</span><span class="nv"> </span><span class="s">colors&#39;</span>
+<span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+        <span class="nt">color-map</span><span class="p">:</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">intervals</span>
+          <span class="nt">entries</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#008000&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">150</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#663333&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">256</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h3>Details<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes color bands in discrete steps are more appropriate than a color gradient. The <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">intervals</span></code> parameter added to the <code class="docutils literal notranslate"><span class="pre">color-map</span></code> on <strong>line 9</strong> sets the display to output discrete colors instead of a gradient. The values in each entry correspond to the upper bound for the color band such that colors are mapped to values less than the value of one entry but greater than or equal to the next lower entry. For example, <strong>line 11</strong> colors all values less than 150 to dark green (<code class="docutils literal notranslate"><span class="pre">'#008000'</span></code>) and <strong>line 12</strong> colors all values less than 256 but greater than or equal to 150 to dark brown (<code class="docutils literal notranslate"><span class="pre">'#663333'</span></code>).</p>
+</div>
+</div>
+<div class="section" id="many-color-gradient">
+<h2>Many color gradient<a class="headerlink" href="#many-color-gradient" title="Permalink to this headline">¶</a></h2>
+<p>This example shows a gradient interpolated across eight different colors.</p>
+<div class="figure align-default" id="id20">
+<img alt="../../../_images/raster_manycolorgradient.png" src="../../../_images/raster_manycolorgradient.png" />
+<p class="caption"><span class="caption-text">Many color gradient</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="id11">
+<h3>Code<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference download internal" download="" href="../../../_downloads/67292d710fcc92e83b7643cc2d938c30/raster_manycolorgradient.ysld"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">&quot;Many</span> <span class="pre">color</span> <span class="pre">gradient&quot;</span> <span class="pre">YSLD</span></code></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">title</span><span class="p">:</span> <span class="s">&#39;YSLD</span><span class="nv"> </span><span class="s">Cook</span><span class="nv"> </span><span class="s">Book:</span><span class="nv"> </span><span class="s">Many</span><span class="nv"> </span><span class="s">color</span><span class="nv"> </span><span class="s">gradient&#39;</span>
+<span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+  <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">raster</span><span class="p">:</span>
+        <span class="nt">opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+        <span class="nt">color-map</span><span class="p">:</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ramp</span>
+          <span class="nt">entries</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#000000&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">95</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#0000FF&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">110</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#00FF00&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">135</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#FF0000&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">160</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#FF00FF&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">185</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#FFFF00&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">210</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#00FFFF&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">235</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;#FFFFFF&#39;</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">256</span><span class="p p-Indicator">,</span><span class="s">&#39;&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h3>Details<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p>A <code class="docutils literal notranslate"><span class="pre">color-map</span></code> can include up to 255 entries.
+This example has eight entries (<strong>lines 11-18</strong>):</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 25%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Entry number</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Color</p></th>
+<th class="head"><p>RGB code</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>95</p></td>
+<td><p>Black</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'#000000'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>110</p></td>
+<td><p>Blue</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'#0000FF'</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>135</p></td>
+<td><p>Green</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'#00FF00'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>160</p></td>
+<td><p>Red</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'#FF0000'</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>185</p></td>
+<td><p>Purple</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'#FF00FF'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>210</p></td>
+<td><p>Yellow</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'#FFFF00'</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>235</p></td>
+<td><p>Cyan</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'#00FFFF'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>256</p></td>
+<td><p>White</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'#FFFFFF'</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="polygons.html" title="previous chapter">Polygons</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../../mbstyle/index.html" title="next chapter">MBStyle Styling</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Rasters</a><ul>
+<li><a class="reference internal" href="#example-raster">Example raster</a></li>
+<li><a class="reference internal" href="#two-color-gradient">Two-color gradient</a><ul>
+<li><a class="reference internal" href="#code">Code</a></li>
+<li><a class="reference internal" href="#details">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transparent-gradient">Transparent gradient</a><ul>
+<li><a class="reference internal" href="#id1">Code</a></li>
+<li><a class="reference internal" href="#id2">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#brightness-and-contrast">Brightness and contrast</a><ul>
+<li><a class="reference internal" href="#id3">Code</a></li>
+<li><a class="reference internal" href="#id4">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#three-color-gradient">Three-color gradient</a><ul>
+<li><a class="reference internal" href="#id5">Code</a></li>
+<li><a class="reference internal" href="#id6">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#alpha-channel">Alpha channel</a><ul>
+<li><a class="reference internal" href="#id7">Code</a></li>
+<li><a class="reference internal" href="#id8">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#discrete-colors">Discrete colors</a><ul>
+<li><a class="reference internal" href="#id9">Code</a></li>
+<li><a class="reference internal" href="#id10">Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#many-color-gradient">Many color gradient</a><ul>
+<li><a class="reference internal" href="#id11">Code</a></li>
+<li><a class="reference internal" href="#id12">Details</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="polygons.html" title="previous chapter">Polygons</a></li>
+            <li>Next: <a href="../../mbstyle/index.html" title="next chapter">MBStyle Styling</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/ysld/cookbook/rasters.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

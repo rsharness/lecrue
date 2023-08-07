@@ -1,0 +1,637 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feature Chaining &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Polymorphism" href="polymorphism.html" />
+    <link rel="prev" title="Data Stores" href="data-stores.html" /> 
+  </head><body class="data/app-schema/feature-chaining">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Feature Chaining</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="polymorphism.html" title="Polymorphism" accesskey="N">Next</a></li>
+  <li>
+    <a href="data-stores.html" title="Data Stores" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="feature-chaining">
+<span id="app-schema-feature-chaining"></span><h1>Feature Chaining<a class="headerlink" href="#feature-chaining" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Permalink to this headline">¶</a></h2>
+<p>This page describes the use of “Feature Chaining” to compose complex features from simpler components, and in particular to address some requirements that have proven significant in practice.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Handling multiple cases of multi-valued properties within a single Feature Type</p></li>
+<li><p>Handing nesting of multi-valued properties within other multi-valued properties</p></li>
+<li><p>Linking related (through association) Feature Types, and in particular allowing re-use of the related features types (for example the O&amp;M pattern has relatedObservation from a samplingFeature, but Observation may be useful in its own right)</p></li>
+<li><p>Encoding the same referenced property object as links when it appears in multiple containing features</p></li>
+<li><p>Eliminating the need for large denormalized data store views of top level features and their related features. Denormalized views would still be needed for special cases, such as many-to-many relationships, but won’t be as large.</p></li>
+</ul>
+</div></blockquote>
+<p>For non-application schema configurations, please refer to <a class="reference internal" href="data-access-integration.html#app-schema-data-access-integration"><span class="std std-ref">Data Access Integration</span></a>.</p>
+</div>
+<div class="section" id="mapping-steps">
+<h2>Mapping steps<a class="headerlink" href="#mapping-steps" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="create-a-mapping-file-for-every-complex-type">
+<h3>Create a mapping file for every complex type<a class="headerlink" href="#create-a-mapping-file-for-every-complex-type" title="Permalink to this headline">¶</a></h3>
+<p>We need one mapping file per complex type that is going to be nested, including non features, e.g. gsml:CompositionPart.</p>
+<p>Non-feature types that cannot be individually accessed (eg. CompositionPart as a Data Type) can still be mapped separately for its reusability. For this case, the containing feature type has to include these types in its mapping file. The include tag should contain the nested mapping file path relative to the location of the containing type mapping file.
+In <a class="reference download internal" download="" href="../../_downloads/73b76015f2db42f406974f03ae3ef265/GeologicUnit_MappingFile.xml"><code class="xref download docutils literal notranslate"><span class="pre">GeologicUnit_MappingFile.xml</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">includedTypes</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">Include</span><span class="o">&gt;</span><span class="n">CGITermValue_MappingFile</span><span class="o">.</span><span class="n">xml</span><span class="o">&lt;/</span><span class="n">Include</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">Include</span><span class="o">&gt;</span><span class="n">CompositionPart_MappingFile</span><span class="o">.</span><span class="n">xml</span><span class="o">&lt;/</span><span class="n">Include</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">includedTypes</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Feature types that can be individually accessed don’t need to be explicitly included in the mapping file, as they would be configured for GeoServer to find.
+Such types would have their mapping file associated with a corresponding datastore.xml file, which means that it can be found from the data store registry.
+In other words, if the type is associated with a datastore.xml file, it doesn’t need to be explicitly included if referred from another mapping file.</p>
+<p><strong>Example</strong>:</p>
+<p>For this output: <a class="reference download internal" download="" href="../../_downloads/8eca0dfb21b74c866f8c4894105cbde1/MappedFeature_Output.xml"><code class="xref download docutils literal notranslate"><span class="pre">MappedFeature_Output.xml</span></code></a>, here are the mapping files:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../_downloads/cdbb2711a55975becf02bdabe136b4f3/MappedFeature_MappingFile.xml"><code class="xref download docutils literal notranslate"><span class="pre">MappedFeature_MappingFile.xml</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../_downloads/73b76015f2db42f406974f03ae3ef265/GeologicUnit_MappingFile.xml"><code class="xref download docutils literal notranslate"><span class="pre">GeologicUnit_MappingFile.xml</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../_downloads/f7aa346ab3bc6578a93fcde70cf899d8/CompositionPart_MappingFile.xml"><code class="xref download docutils literal notranslate"><span class="pre">CompositionPart_MappingFile.xml</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../_downloads/7c4fd7c45da249a71e93cb7cf19287e6/GeologicEvent_MappingFile.xml"><code class="xref download docutils literal notranslate"><span class="pre">GeologicEvent_MappingFile.xml</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../_downloads/dedb14a15d9f7b96a4b310726c0f36d2/CGITermValue_MappingFile.xml"><code class="xref download docutils literal notranslate"><span class="pre">CGITermValue_MappingFile.xml</span></code></a></p></li>
+</ul>
+</div></blockquote>
+<p><em>GeologicUnit type</em></p>
+<p>You can see within GeologicUnit features, both gml:composition (CompositionPart type) and gsml:geologicHistory (GeologicEvent type) are multi-valued properties.
+It shows how multiple cases of multi-valued properties can be configured within a single Feature Type.
+This also proves that you can “chain” non-feature type, as CompositionPart is a Data Type.</p>
+<p><em>GeologicEvent type</em></p>
+<p>Both gsml:eventEnvironment (CGI_TermValue type) and gsml:eventProcess (also of CGI_TermValue type) are multi-valued properties.
+This also shows that “chaining” can be done on many levels, as GeologicEvent is nested inside GeologicUnit.
+Note that gsml:eventAge properties are configured as inline attributes, as there can only be one event age per geologic event, thus eliminating the need for feature chaining.</p>
+</div>
+<div class="section" id="configure-nesting-on-the-nested-feature-type">
+<h3>Configure nesting on the nested feature type<a class="headerlink" href="#configure-nesting-on-the-nested-feature-type" title="Permalink to this headline">¶</a></h3>
+<p>In the nested feature type, make sure we have a field that can be referenced by the parent feature.
+If there isn’t any existing field that can be referred to, the system field <em>FEATURE_LINK</em> can be mapped to hold the foreign key value. This is a multi-valued field, so more than one instances can be mapped in the same feature type, for features that can be nested by different parent types. Since this field doesn’t exist in the schema, it wouldn’t appear in the output document.</p>
+<p>In the source expression tag:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>OCQL: the value of this should correspond to the OCQL part of the parent feature</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Example One</strong>: Using <em>FEATURE_LINK</em> in CGI TermValue type, which is referred by GeologicEvent as gsml:eventProcess and gsml:eventEnvironment.</p>
+<p>In GeologicEvent (the container feature) mapping:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">eventEnvironment</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="nb">id</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">FEATURE_LINK</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">eventProcess</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="nb">id</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">FEATURE_LINK</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In CGI_TermValue (the nested feature) mapping:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;AttributeMapping&gt;
+  &lt;!-- FEATURE_LINK[1] is referred by geologic event as environment --&gt;
+  &lt;targetAttribute&gt;FEATURE_LINK[1]&lt;/targetAttribute&gt;
+  &lt;sourceExpression&gt;
+      &lt;OCQL&gt;ENVIRONMENT_OWNER&lt;/OCQL&gt;
+  &lt;/sourceExpression&gt;
+&lt;/AttributeMapping&gt;
+&lt;AttributeMapping&gt;
+  &lt;!-- FEATURE_LINK[2] is referred by geologic event as process --&gt;
+  &lt;targetAttribute&gt;FEATURE_LINK[2]&lt;/targetAttribute&gt;
+  &lt;sourceExpression&gt;&lt;
+      &lt;OCQL&gt;PROCESS_OWNER&lt;/OCQL&gt;
+  &lt;/sourceExpression&gt;
+&lt;/AttributeMapping&gt;
+</pre></div>
+</div>
+<p>The ENVIRONMENT_OWNER column in CGI_TermValue view corresponds to the ID column in GeologicEvent view.</p>
+<p><strong>Geologic Event property file:</strong></p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 45%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>id</strong></p></td>
+<td><p><strong>GEOLOGIC_UNIT_ID:String</strong></p></td>
+<td><p><strong>ghminage:String</strong></p></td>
+<td><p><strong>ghmaxage:String</strong></p></td>
+<td><p><strong>ghage_cdspace:String</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>ge.26931120</p></td>
+<td><p>gu.25699</p></td>
+<td><p>Oligocene</p></td>
+<td><p>Paleocene</p></td>
+<td><p><a class="reference external" href="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifierScheme:ICS:StratChart:2008</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>ge.26930473</p></td>
+<td><p>gu.25678</p></td>
+<td><p>Holocene</p></td>
+<td><p>Pleistocene</p></td>
+<td><p><a class="reference external" href="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifierScheme:ICS:StratChart:2008</a></p></td>
+</tr>
+<tr class="row-even"><td><p>ge.26930960</p></td>
+<td><p>gu.25678</p></td>
+<td><p>Pliocene</p></td>
+<td><p>Miocene</p></td>
+<td><p><a class="reference external" href="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifierScheme:ICS:StratChart:2008</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>ge.26932959</p></td>
+<td><p>gu.25678</p></td>
+<td><p>LowerOrdovician</p></td>
+<td><p>LowerOrdovician</p></td>
+<td><p><a class="reference external" href="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifierScheme:ICS:StratChart:2008</a></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>CGI Term Value property file:</strong></p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>id</strong></p></td>
+<td><p><strong>VALUE:String</strong></p></td>
+<td><p><strong>PROCESS_OWNER:String</strong></p></td>
+<td><p><strong>ENVIRONMENT_OWNER:String</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>fluvial</p></td>
+<td><p>NULL</p></td>
+<td><p>ge.26931120</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>swamp/marsh/bog</p></td>
+<td><p>NULL</p></td>
+<td><p>ge.26930473</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>marine</p></td>
+<td><p>NULL</p></td>
+<td><p>ge.26930960</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>submarine fan</p></td>
+<td><p>NULL</p></td>
+<td><p>ge.26932959</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>hemipelagic</p></td>
+<td><p>NULL</p></td>
+<td><p>ge.26932959</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>detrital deposition still water</p></td>
+<td><p>ge.26930473</p></td>
+<td><p>NULL</p></td>
+</tr>
+<tr class="row-even"><td><p>9</p></td>
+<td><p>water [process]</p></td>
+<td><p>ge.26932959</p></td>
+<td><p>NULL</p></td>
+</tr>
+<tr class="row-odd"><td><p>10</p></td>
+<td><p>channelled stream flow</p></td>
+<td><p>ge.26931120</p></td>
+<td><p>NULL</p></td>
+</tr>
+<tr class="row-even"><td><p>11</p></td>
+<td><p>turbidity current</p></td>
+<td><p>ge.26932959</p></td>
+<td><p>NULL</p></td>
+</tr>
+</tbody>
+</table>
+<p>The system field <em>FEATURE_LINK</em> doesn’t get encoded in the output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">GeologicEvent</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span> <span class="n">codeSpace</span><span class="o">=</span><span class="s2">&quot;urn:cgi:classifierScheme:GSV:GeologicalUnitId&quot;</span><span class="o">&gt;</span><span class="n">gu</span><span class="o">.</span><span class="mi">25699</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">eventAge</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermRange</span><span class="o">&gt;</span>
+       <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">lower</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span> <span class="n">codeSpace</span><span class="o">=</span><span class="s2">&quot;urn:cgi:classifierScheme:ICS:StratChart:2008&quot;</span><span class="o">&gt;</span><span class="n">Oligocene</span><span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span><span class="o">&gt;</span>
+          <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&gt;</span>
+       <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">lower</span><span class="o">&gt;</span>
+       <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">upper</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span> <span class="n">codeSpace</span><span class="o">=</span><span class="s2">&quot;urn:cgi:classifierScheme:ICS:StratChart:2008&quot;</span><span class="o">&gt;</span><span class="n">Paleocene</span><span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span><span class="o">&gt;</span>
+          <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&gt;</span>
+       <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">upper</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermRange</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">eventAge</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">eventEnvironment</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&gt;</span>
+       <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span><span class="o">&gt;</span><span class="n">fluvial</span><span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">eventEnvironment</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">eventProcess</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&gt;</span>
+       <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span><span class="o">&gt;</span><span class="n">channelled</span> <span class="n">stream</span> <span class="n">flow</span><span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">value</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">gsml</span><span class="p">:</span><span class="n">eventProcess</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example Two</strong>:
+Using existing field (gml:name) to hold the foreign key, see <a class="reference download internal" download="" href="../../_downloads/cdbb2711a55975becf02bdabe136b4f3/MappedFeature_MappingFile.xml"><code class="xref download docutils literal notranslate"><span class="pre">MappedFeature_MappingFile.xml</span></code></a>:</p>
+<p>gsml:specification links to gml:name in GeologicUnit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">specification</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">GEOLOGIC_UNIT_ID</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">GeologicUnit</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In <a class="reference download internal" download="" href="../../_downloads/73b76015f2db42f406974f03ae3ef265/GeologicUnit_MappingFile.xml"><code class="xref download docutils literal notranslate"><span class="pre">GeologicUnit_MappingFile.xml</span></code></a>:</p>
+<p>GeologicUnit has 3 gml:name properties in the mapping file, so each has a code space to clarify them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">ABBREVIATION</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">codeSpace</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;urn:cgi:classifierScheme:GSV:GeologicalUnitCode&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">codeSpace</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;urn:cgi:classifierScheme:GSV:GeologicalUnitName&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="nb">id</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">codeSpace</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;urn:cgi:classifierScheme:GSV:MappedFeatureReference&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The output with multiple gml:name properties and their code spaces:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">specification</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">GeologicUnit</span> <span class="n">gml</span><span class="p">:</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;gu.25678&quot;</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">description</span><span class="o">&gt;</span><span class="n">Olivine</span> <span class="n">basalt</span><span class="p">,</span> <span class="n">tuff</span><span class="p">,</span> <span class="n">microgabbro</span><span class="p">,</span> <span class="n">minor</span> <span class="n">sedimentary</span> <span class="n">rocks</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">description</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span> <span class="n">codeSpace</span><span class="o">=</span><span class="s2">&quot;urn:cgi:classifierScheme:GSV:GeologicalUnitCode&quot;</span><span class="o">&gt;-</span><span class="n">Py</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span> <span class="n">codeSpace</span><span class="o">=</span><span class="s2">&quot;urn:cgi:classifierScheme:GSV:GeologicalUnitName&quot;</span><span class="o">&gt;</span><span class="n">Yaugher</span> <span class="n">Volcanic</span> <span class="n">Group</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span> <span class="n">codeSpace</span><span class="o">=</span><span class="s2">&quot;urn:cgi:classifierScheme:GSV:MappedFeatureReference&quot;</span><span class="o">&gt;</span><span class="n">gu</span><span class="o">.</span><span class="mi">25678</span><span class="o">&lt;/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>If this is the “one” side of a one-to-many or many-to-one database relationship, we can use the feature id as the source expression field, as you can see in above examples.
+See <a class="reference download internal" download="" href="../../_downloads/ccee222db067121469d67c9afe237f43/one_to_many_relationship.JPG"><code class="xref download docutils literal notranslate"><span class="pre">one_to_many_relationship.JPG</span></code></a> as an illustration.</p>
+<p>If we have a many-to-many relationship, we have to use one denormalized view for either side of the nesting. This means we can either use the feature id as the referenced field, or assign a column to serve this purpose. See <a class="reference download internal" download="" href="../../_downloads/96c91d964f29207f5412a61af3e17641/many_to_many_relationship.JPG"><code class="xref download docutils literal notranslate"><span class="pre">many_to_many_relationship.JPG</span></code></a> as an illustration.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>For many-to-many relationships, we can’t use the same denormalized view for both sides of the nesting.</p></li>
+</ul>
+</div>
+<p>Test this configuration by running a getFeature request for the nested feature type on its own.</p>
+</div>
+<div class="section" id="configure-nesting-on-the-containing-feature-type">
+<h3>Configure nesting on the “containing” feature type<a class="headerlink" href="#configure-nesting-on-the-containing-feature-type" title="Permalink to this headline">¶</a></h3>
+<p>When nesting another complex type, you need to specify in your source expression:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>OCQL</strong>: OGC’s Common Query Language expression of the data store column</p></li>
+<li><dl class="simple">
+<dt><strong>linkElement</strong>:</dt><dd><ul>
+<li><p>the nested element name, which is normally the targetElement or mappingName of the corresponding type.</p></li>
+<li><p>on some cases, it has to be an OCQL function (see <a class="reference internal" href="polymorphism.html#app-schema-polymorphism"><span class="std std-ref">Polymorphism</span></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>linkField</strong>: the indexed XPath attribute on the nested element that OCQL corresponds to</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Example:</strong> Nesting composition part in geologic unit feature.</p>
+<p>In Geologic Unit mapping file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">composition</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="nb">id</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CompositionPart</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">FEATURE_LINK</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><em>OCQL</em>: id is the geologic unit id</p></li>
+<li><p><em>linkElement</em>: links to gsml:CompositionPart type</p></li>
+<li><p><em>linkField</em>: FEATURE_LINK, the linking field mapped in gsml:CompositionPart type that also stores the geologic unit id. If there are more than one of these attributes in the nested feature type, make sure the index is included, e.g. FEATURE_LINK[2].</p></li>
+</ul>
+<p><strong>Geologic Unit property file:</strong></p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 5%" />
+<col style="width: 20%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>id</strong></p></td>
+<td><p><strong>ABBREVIATAION:String</strong></p></td>
+<td><p><strong>NAME:String</strong></p></td>
+<td><p><strong>TEXTDESCRIPTION:String</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>gu.25699</p></td>
+<td><p>-Py</p></td>
+<td><p>Yaugher Volcanic Group</p></td>
+<td><p>Olivine basalt, tuff, microgabbro, minor sedimentary rocks</p></td>
+</tr>
+<tr class="row-odd"><td><p>gu.25678</p></td>
+<td><p>-Py</p></td>
+<td><p>Yaugher Volcanic Group</p></td>
+<td><p>Olivine basalt, tuff, microgabbro, minor sedimentary rocks</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Composition Part property file:</strong></p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>id</strong></p></td>
+<td><p><strong>COMPONENT_ROLE:String</strong></p></td>
+<td><p><strong>PROPORTION:String</strong></p></td>
+<td><p><strong>GEOLOGIC_UNIT_ID:String</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>cp.167775491936278812</p></td>
+<td><p>interbedded component</p></td>
+<td><p>significant</p></td>
+<td><p>gu.25699</p></td>
+</tr>
+<tr class="row-odd"><td><p>cp.167775491936278856</p></td>
+<td><p>interbedded component</p></td>
+<td><p>minor</p></td>
+<td><p>gu.25678</p></td>
+</tr>
+<tr class="row-even"><td><p>cp.167775491936278844</p></td>
+<td><p>sole component</p></td>
+<td><p>major</p></td>
+<td><p>gu.25678</p></td>
+</tr>
+</tbody>
+</table>
+<p>Run the getFeature request to test this configuration. Check that the nested features returned in Step 2 are appropriately lined inside the containing features.
+If they are not there, or exceptions are thrown, scroll down and read the “Trouble Shooting” section.</p>
+</div>
+</div>
+<div class="section" id="multiple-mappings-of-the-same-type">
+<h2>Multiple mappings of the same type<a class="headerlink" href="#multiple-mappings-of-the-same-type" title="Permalink to this headline">¶</a></h2>
+<p>At times, you may find the need to have different FeatureTypeMapping instances for the same type.
+You may have two different attributes of the same type that need to be nested.
+For example, in gsml:GeologicUnit, you have gsml:exposureColor and gsml:outcropCharacter that are both of gsml:CGI_TermValue type.</p>
+<p>This is when the optional mappingName tag mentioned in <a class="reference internal" href="mapping-file.html#app-schema-mapping-file"><span class="std std-ref">Mapping File</span></a> comes in.
+Instead of passing in the nested feature type’s targetElement in the containing type’s linkElement, specify the corresponding mappingName.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The mappingName is namespace aware and case sensitive.</p></li>
+<li><p>When the referred mappingName contains special characters such as ‘-‘, it must be enclosed with single quotes in the linkElement. E.g. &lt;linkElement&gt;’observation-method’&lt;/linkElement&gt;.</p></li>
+<li><p>Each mappingName must be unique against other mappingName and targetElement tags across the application.</p></li>
+<li><p>The mappingName is only to be used to identify the chained type from the nesting type. It is not a solution for multiple FeatureTypeMapping instances where &gt; 1 of them can be queried as top level features.</p></li>
+<li><p>When queried as a top level feature, the normal targetElement is to be used. Filters involving the nested type should still use the targetElement in the PropertyName part of the query.</p></li>
+<li><p>You can’t have more than 1 FeatureTypeMapping of the same type in the same mapping file if one of them is a top level feature. This is because featuretype.xml would look for the targetElement and wouldn’t know which one to get.</p></li>
+</ul>
+</div>
+<p>The solution for the last point above is to break them up into separate files and locations with only 1 featuretype.xml in the intended top level feature location.
+E.g.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>You can have 2 FeatureTypeMapping instances in the same file for gsml:CGI_TermValue type since it’s not a feature type.</p></li>
+<li><p>You can have 2 FeatureTypeMapping instances for gsml:MappedFeature, but they have to be broken up into separate files. The one that can be queried as top level feature type would have featuretype.xml in its location.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="nesting-simple-properties">
+<h2>Nesting simple properties<a class="headerlink" href="#nesting-simple-properties" title="Permalink to this headline">¶</a></h2>
+<p>You don’t need to chain multi-valued simple properties and map them separately.
+The original configuration would still work.</p>
+</div>
+<div class="section" id="filtering-nested-attributes-on-chained-features">
+<span id="app-schema-filtering-nested"></span><h2>Filtering nested attributes on chained features<a class="headerlink" href="#filtering-nested-attributes-on-chained-features" title="Permalink to this headline">¶</a></h2>
+<p>Filters would work as usual. You can supply the full XPath of the attribute, and the code would handle this.
+E.g. You can run the following filter on gsml:MappedFeatureUseCase2A:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Filter</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyIsEqualTo</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;contains_text&quot;</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyName</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">specification</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">GeologicUnit</span><span class="o">/</span><span class="n">gml</span><span class="p">:</span><span class="n">description</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyName</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">Olivine</span> <span class="n">basalt</span><span class="p">,</span> <span class="n">tuff</span><span class="p">,</span> <span class="n">microgabbro</span><span class="p">,</span> <span class="n">minor</span> <span class="n">sedimentary</span> <span class="n">rocks</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+          <span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyIsEqualTo</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Filter</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multi-valued-properties-by-reference-xlink-href">
+<span id="app-schema-feature-chaining-by-reference"></span><h2>Multi-valued properties by reference (<em>xlink:href</em>)<a class="headerlink" href="#multi-valued-properties-by-reference-xlink-href" title="Permalink to this headline">¶</a></h2>
+<p>You may want to use feature chaining to set multi-valued properties by reference.
+This is particularly handy to avoid endless loop in circular relationships.
+For example, you may have a circular relationship between gsml:MappedFeature and gsml:GeologicUnit.
+E.g.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>gsml:MappedFeature has gsml:GeologicUnit as gsml:specification</p></li>
+<li><p>gsml:GeologicUnit has gsml:MappedFeature as gsml:occurrence</p></li>
+</ul>
+</div></blockquote>
+<p>Obviously you can only encode one side of the relationship, or you’ll end up with an endless loop.
+You would need to pick one side to “chain” and use xlink:href for the other side of the relationship.</p>
+<p>For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml:specification.</p>
+<blockquote>
+<div><ul>
+<li><p>Set up nesting on the container feature type mapping as usual:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">specification</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">GEOLOGIC_UNIT_ID</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">GeologicUnit</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Set up xlink:href as client property on the other mapping file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">occurrence</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="nb">id</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">specification</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+         <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+         <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">strConcat</span><span class="p">(</span><span class="s1">&#39;urn:cgi:feature:MappedFeature:&#39;</span><span class="p">,</span> <span class="n">ID</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>As we are getting the client property value from a nested feature, we have to set it as if we are chaining the feature; but we also add the client property containing <em>xlink:href</em> in the attribute mapping. The code will detect the <em>xlink:href</em> setting, and will not proceed to build the nested feature’s attributes, and we will end up with empty attributes with <em>xlink:href</em> client properties.</p>
+<p>This would be the encoded result for gsml:GeologicUnit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">GeologicUnit</span> <span class="n">gml</span><span class="p">:</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;gu.25678&quot;</span><span class="o">&gt;</span>
+         <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">occurrence</span> <span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;urn:cgi:feature:MappedFeature:mf2&quot;</span><span class="o">/&gt;</span>
+         <span class="o">&lt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">occurrence</span> <span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;urn:cgi:feature:MappedFeature:mf3&quot;</span><span class="o">/&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Don’t forget to add <em>XLink</em> in your mapping file namespaces section, or you could end up with a StackOverflowException as the <em>xlink:href</em> client property won’t be recognized and the mappings would chain endlessly.</p></li>
+<li><p><a class="reference internal" href="wfs-2.0-support.html#app-schema-resolve"><span class="std std-ref">Resolving</span></a> may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="data-stores.html" title="previous chapter">Data Stores</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="polymorphism.html" title="next chapter">Polymorphism</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Feature Chaining</a><ul>
+<li><a class="reference internal" href="#scope">Scope</a></li>
+<li><a class="reference internal" href="#mapping-steps">Mapping steps</a><ul>
+<li><a class="reference internal" href="#create-a-mapping-file-for-every-complex-type">Create a mapping file for every complex type</a></li>
+<li><a class="reference internal" href="#configure-nesting-on-the-nested-feature-type">Configure nesting on the nested feature type</a></li>
+<li><a class="reference internal" href="#configure-nesting-on-the-containing-feature-type">Configure nesting on the “containing” feature type</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multiple-mappings-of-the-same-type">Multiple mappings of the same type</a></li>
+<li><a class="reference internal" href="#nesting-simple-properties">Nesting simple properties</a></li>
+<li><a class="reference internal" href="#filtering-nested-attributes-on-chained-features">Filtering nested attributes on chained features</a></li>
+<li><a class="reference internal" href="#multi-valued-properties-by-reference-xlink-href">Multi-valued properties by reference (<em>xlink:href</em>)</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="data-stores.html" title="previous chapter">Data Stores</a></li>
+            <li>Next: <a href="polymorphism.html" title="next chapter">Polymorphism</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/feature-chaining.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

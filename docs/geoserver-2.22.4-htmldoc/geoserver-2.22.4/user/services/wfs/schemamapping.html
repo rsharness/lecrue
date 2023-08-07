@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WFS schema mapping &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Axis ordering" href="axis_order.html" />
+    <link rel="prev" title="WFS vendor parameters" href="vendor.html" /> 
+  </head><body class="services/wfs/schemamapping">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Feature Service (WFS)</a> &raquo;</li>
+    <li>WFS schema mapping</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="axis_order.html" title="Axis ordering" accesskey="N">Next</a></li>
+  <li>
+    <a href="vendor.html" title="WFS vendor parameters" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wfs-schema-mapping">
+<span id="id1"></span><h1>WFS schema mapping<a class="headerlink" href="#wfs-schema-mapping" title="Permalink to this headline">¶</a></h1>
+<p>One of the functions of the GeoServer WFS is to automatically map the internal schema of a dataset to a feature type schema. This mapping is performed according to the following rules:</p>
+<ul class="simple">
+<li><p>The name of the feature element maps to the name of the dataset.</p></li>
+<li><p>The name of the feature type maps to the name of the dataset with the string “Type” appended to it.</p></li>
+<li><p>The name of each attribute of the dataset maps to the name of an element particle contained in the feature type.</p></li>
+<li><p>The type of each attribute of the dataset maps to the appropriate XML schema type (<code class="docutils literal notranslate"><span class="pre">xsd:int</span></code>, <code class="docutils literal notranslate"><span class="pre">xsd:double</span></code>, and so on).</p></li>
+</ul>
+<p>For example, a dataset has the following schema:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">myDataset</span><span class="p">(</span><span class="n">intProperty</span><span class="p">:</span><span class="n">Integer</span><span class="p">,</span> <span class="n">stringProperty</span><span class="p">:</span><span class="n">String</span><span class="p">,</span> <span class="n">floatProperty</span><span class="p">:</span><span class="n">Float</span><span class="p">,</span> <span class="n">geometry</span><span class="p">:</span><span class="n">Point</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This schema would be mapped to the following XML schema, available via
+a <code class="docutils literal notranslate"><span class="pre">DescribeFeatureType</span></code> request for the <code class="docutils literal notranslate"><span class="pre">topp:myDataset</span></code> type:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xsd:schema</span> <span class="na">xmlns:xsd=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+ <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+ <span class="na">xmlns:topp=</span><span class="s">&quot;http://www.openplans.org/topp&quot;</span>
+ <span class="na">targetNamespace=</span><span class="s">&quot;http://www.openplans.org/topp&quot;</span>
+ <span class="na">elementFormDefault=</span><span class="s">&quot;qualified&quot;</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;xsd:import</span> <span class="na">namespace=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+   <span class="na">schemaLocation=</span><span class="s">&quot;http://localhost:8080/geoserver/schemas/gml/3.1.1/base/gml.xsd&quot;</span><span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;xsd:complexType</span> <span class="na">name=</span><span class="s">&quot;myDatasetType&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;xsd:complexContent&gt;</span>
+      <span class="nt">&lt;xsd:extension</span> <span class="na">base=</span><span class="s">&quot;gml:AbstractFeatureType&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;xsd:sequence&gt;</span>
+          <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;intProperty&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;xsd:int&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;stringProperty&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;xsd:string&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;floatProperty&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;xsd:double&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;geometry&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;gml:PointPropertyType&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/xsd:sequence&gt;</span>
+      <span class="nt">&lt;/xsd:extension&gt;</span>
+    <span class="nt">&lt;/xsd:complexContent&gt;</span>
+  <span class="nt">&lt;/xsd:complexType&gt;</span>
+
+  <span class="nt">&lt;xsd:element</span> <span class="na">name=</span><span class="s">&quot;myDataset&quot;</span> <span class="na">substitutionGroup=</span><span class="s">&quot;gml:_Feature&quot;</span> <span class="na">type=</span><span class="s">&quot;topp:myDatasetType&quot;</span><span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/xsd:schema&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="schema-customization">
+<h2>Schema customization<a class="headerlink" href="#schema-customization" title="Permalink to this headline">¶</a></h2>
+<p>The GeoServer WFS supports a limited amount of schema output customization. A custom schema may be useful for the following:</p>
+<ul class="simple">
+<li><p>Limiting the attributes which are exposed in the feature type schema</p></li>
+<li><p><a class="reference internal" href="#wfs-schema-type-changing"><span class="std std-ref">Changing</span></a> the types of attributes in the schema</p></li>
+<li><p>Changing the structure of the schema (for example, changing the base feature type)</p></li>
+</ul>
+<p>For example, it may be useful to limit the exposed attributes in the example dataset described above. Start by retrieving the default output as a benchmark of the complete schema. With the feature type schema listed above, the <code class="docutils literal notranslate"><span class="pre">GetFeature</span></code> request would be as follows:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;topp:myDataset</span> <span class="na">gml:id=</span><span class="s">&quot;myDataset.1&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;topp:intProperty&gt;</span>1<span class="nt">&lt;/topp:intProperty&gt;</span>
+  <span class="nt">&lt;topp:stringProperty&gt;</span>one<span class="nt">&lt;/topp:stringProperty&gt;</span>
+  <span class="nt">&lt;topp:floatProperty&gt;</span>1.1<span class="nt">&lt;/topp:floatProperty&gt;</span>
+  <span class="nt">&lt;topp:geometry&gt;</span>
+    <span class="nt">&lt;gml:Point</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:pos&gt;</span>1.0 1.0<span class="nt">&lt;/gml:pos&gt;</span>
+    <span class="nt">&lt;/gml:Point&gt;</span>
+  <span class="nt">&lt;/topp:geometry&gt;</span>
+<span class="nt">&lt;/topp:myDataset&gt;</span>
+</pre></div>
+</div>
+<p>To remove <code class="docutils literal notranslate"><span class="pre">floatProperty</span></code> from the list of attributes, the following steps would be required:</p>
+<ol class="arabic">
+<li><p>The original schema is modified to remove the <code class="docutils literal notranslate"><span class="pre">floatProperty</span></code>, resulting in the following type definition:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xsd:complexType</span> <span class="na">name=</span><span class="s">&quot;myDatasetType&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;xsd:complexContent&gt;</span>
+    <span class="nt">&lt;xsd:extension</span> <span class="na">base=</span><span class="s">&quot;gml:AbstractFeatureType&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;xsd:sequence&gt;</span>
+        <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;intProperty&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;xsd:int&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;stringProperty&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;xsd:string&quot;</span><span class="nt">/&gt;</span>
+        <span class="c">&lt;!-- remove the floatProperty element</span>
+<span class="c">        &lt;xsd:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;floatProperty&quot; nillable=&quot;true&quot; type=&quot;xsd:double&quot;/&gt;</span>
+<span class="c">        --&gt;</span>
+        <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;geometry&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;gml:PointPropertyType&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/xsd:sequence&gt;</span>
+    <span class="nt">&lt;/xsd:extension&gt;</span>
+    <span class="nt">&lt;/xsd:complexContent&gt;</span>
+<span class="nt">&lt;/xsd:complexType&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>The modification is saved in a file named <code class="docutils literal notranslate"><span class="pre">schema.xsd</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">schema.xsd</span></code> file is copied into the feature type directory for the
+<code class="docutils literal notranslate"><span class="pre">topp:myDataset</span></code> which is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$GEOSERVER_DATA_DIR/workspaces/&lt;workspace&gt;/&lt;datastore&gt;/myDataset/
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">&lt;workspace&gt;</span></code> is the name of the workspace containing your data store and  <code class="docutils literal notranslate"><span class="pre">&lt;datastore&gt;</span></code> is the name of the data store which contains <code class="docutils literal notranslate"><span class="pre">myDataset</span></code></p>
+</li>
+</ol>
+<p>The modified schema will only be available to GeoServer when the configuration is reloaded or GeoServer is restarted.</p>
+<p>A subsequent <code class="docutils literal notranslate"><span class="pre">DescribeFeatureType</span></code> request for <code class="docutils literal notranslate"><span class="pre">topp:myDataset</span></code> confirms the <code class="docutils literal notranslate"><span class="pre">floatProperty</span></code> element is absent:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xsd:schema</span> <span class="na">xmlns:xsd=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+ <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+ <span class="na">xmlns:topp=</span><span class="s">&quot;http://www.openplans.org/topp&quot;</span>
+ <span class="na">targetNamespace=</span><span class="s">&quot;http://www.openplans.org/topp&quot;</span>
+ <span class="na">elementFormDefault=</span><span class="s">&quot;qualified&quot;</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;xsd:import</span> <span class="na">namespace=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+   <span class="na">schemaLocation=</span><span class="s">&quot;http://localhost:8080/geoserver/schemas/gml/3.1.1/base/gml.xsd&quot;</span><span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;xsd:complexType</span> <span class="na">name=</span><span class="s">&quot;myDatasetType&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;xsd:complexContent&gt;</span>
+      <span class="nt">&lt;xsd:extension</span> <span class="na">base=</span><span class="s">&quot;gml:AbstractFeatureType&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;xsd:sequence&gt;</span>
+          <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;intProperty&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;xsd:int&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;stringProperty&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;xsd:string&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;geometry&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;gml:PointPropertyType&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/xsd:sequence&gt;</span>
+      <span class="nt">&lt;/xsd:extension&gt;</span>
+    <span class="nt">&lt;/xsd:complexContent&gt;</span>
+  <span class="nt">&lt;/xsd:complexType&gt;</span>
+
+  <span class="nt">&lt;xsd:element</span> <span class="na">name=</span><span class="s">&quot;myDataset&quot;</span> <span class="na">substitutionGroup=</span><span class="s">&quot;gml:_Feature&quot;</span> <span class="na">type=</span><span class="s">&quot;topp:myDatasetType&quot;</span><span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/xsd:schema&gt;</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">GetFeature</span></code> request will now return features that don’t include the <code class="docutils literal notranslate"><span class="pre">floatProperty</span></code> attribute:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;topp:myDataset</span> <span class="na">gml:id=</span><span class="s">&quot;myDataset.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;topp:intProperty&gt;</span>1<span class="nt">&lt;/topp:intProperty&gt;</span>
+  <span class="nt">&lt;topp:stringProperty&gt;</span>one<span class="nt">&lt;/topp:stringProperty&gt;</span>
+  <span class="nt">&lt;topp:geometry&gt;</span>
+    <span class="nt">&lt;gml:Point</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:pos&gt;</span>1.0 1.0<span class="nt">&lt;/gml:pos&gt;</span>
+    <span class="nt">&lt;/gml:Point&gt;</span>
+  <span class="nt">&lt;/topp:geometry&gt;</span>
+<span class="nt">&lt;/topp:myDataset&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="type-changing">
+<span id="wfs-schema-type-changing"></span><h2>Type changing<a class="headerlink" href="#type-changing" title="Permalink to this headline">¶</a></h2>
+<p>Schema customization may be used to perform some <strong>type changing</strong>, although this is limited by the fact that a changed type must be in the same <em>domain</em> as the original type. For example, integer types must be changed to integer types, temporal types to temporal types, and so on.</p>
+<p>The most common change type requirement is for geometry attributes. In many cases the underlying data set does not have the necessary metadata to report the specific geometry type of a geometry attribute. The automatic schema mapping would result in an element definition similar to the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;geometry&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;gml:GeometryPropertyType&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>However if the specific type of the geometry is known, the element definition above could be altered. For point geometry, the element definition could be altered to :</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xsd:element</span> <span class="na">maxOccurs=</span><span class="s">&quot;1&quot;</span> <span class="na">minOccurs=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;geometry&quot;</span> <span class="na">nillable=</span><span class="s">&quot;true&quot;</span> <span class="na">type=</span><span class="s">&quot;gml:PointPropertyType&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="vendor.html" title="previous chapter">WFS vendor parameters</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="axis_order.html" title="next chapter">Axis ordering</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WFS schema mapping</a><ul>
+<li><a class="reference internal" href="#schema-customization">Schema customization</a></li>
+<li><a class="reference internal" href="#type-changing">Type changing</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="vendor.html" title="previous chapter">WFS vendor parameters</a></li>
+            <li>Next: <a href="axis_order.html" title="next chapter">Axis ordering</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wfs/schemamapping.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

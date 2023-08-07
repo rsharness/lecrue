@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raster GetFeatureInfo Response Customization &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Paletted Images" href="../palettedimage/palettedimage.html" />
+    <link rel="prev" title="GeoJSON output format" href="geojson.html" /> 
+  </head><body class="tutorials/GetFeatureInfo/raster">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">GetFeatureInfo Templates</a> &raquo;</li>
+    <li>Raster GetFeatureInfo Response Customization</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../palettedimage/palettedimage.html" title="Paletted Images" accesskey="N">Next</a></li>
+  <li>
+    <a href="geojson.html" title="GeoJSON output format" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="raster-getfeatureinfo-response-customization">
+<span id="tutorials-getfeatureinfo-raster"></span><h1>Raster GetFeatureInfo Response Customization<a class="headerlink" href="#raster-getfeatureinfo-response-customization" title="Permalink to this headline">¶</a></h1>
+<p>The default output for a <code class="docutils literal notranslate"><span class="pre">GetFeatureInfo</span></code> request on a raster layer contains just the value of the selected pixel, one for each band of the image.
+For instance, in case of an <code class="docutils literal notranslate"><span class="pre">application/json</span></code> output format:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span> <span class="p">{</span>
+ <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
+   <span class="p">{</span>
+     <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+     <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+       <span class="nt">&quot;GRAY_INDEX&quot;</span><span class="p">:</span> <span class="mi">124</span><span class="p">,</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+ <span class="p">],</span>
+ <span class="nt">&quot;totalFeatures&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;numberReturned&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+ <span class="nt">&quot;timeStamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-03-19T11:33:52.587Z&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;crs&quot;</span><span class="p">:</span> <span class="kc">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the raster layer is associated with a Style based on a <code class="docutils literal notranslate"><span class="pre">ColorMap</span></code>, GeoServer allows to include in the output the labels of each <code class="docutils literal notranslate"><span class="pre">ColorMapEntry</span></code> matching the pixel. This is controlled by a <code class="docutils literal notranslate"><span class="pre">VendorOption</span></code>, that needs to be added inside the <code class="docutils literal notranslate"><span class="pre">RasterSymbolizer</span></code> holding the <code class="docutils literal notranslate"><span class="pre">ColorMap</span></code>.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;sld:RasterSymbolizer&gt;</span>
+   <span class="nt">&lt;sld:ColorMap&gt;</span>
+       <span class="nt">&lt;sld:ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#0000FF&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1.0&quot;</span> <span class="na">label=</span><span class="s">&quot;low&quot;</span><span class="nt">/&gt;</span>
+       <span class="nt">&lt;sld:ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FFFF00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;124.81173566700335&quot;</span> <span class="na">label=</span><span class="s">&quot;mid&quot;</span><span class="nt">/&gt;</span>
+       <span class="nt">&lt;sld:ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FF7F00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;559.2041949413946&quot;</span> <span class="na">label=</span><span class="s">&quot;high&quot;</span><span class="nt">/&gt;</span>
+       <span class="nt">&lt;sld:ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FF0000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;55537.0&quot;</span> <span class="na">label=</span><span class="s">&quot;veryhigh&quot;</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;/sld:ColorMap&gt;</span>
+   <span class="nt">&lt;sld:ContrastEnhancement/&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;labelInFeatureInfo&quot;</span><span class="nt">&gt;</span>add<span class="nt">&lt;/VendorOption&gt;</span>
+<span class="nt">&lt;/sld:RasterSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>The output produced by the above <code class="docutils literal notranslate"><span class="pre">RasterSymbolizer</span></code> looks as follows:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span> <span class="p">{</span>
+ <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
+   <span class="p">{</span>
+     <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+     <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+       <span class="nt">&quot;GRAY_INDEX&quot;</span><span class="p">:</span> <span class="mi">124</span><span class="p">,</span>
+       <span class="nt">&quot;Label_GRAY_INDEX&quot;</span><span class="p">:</span> <span class="s2">&quot;mid&quot;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+ <span class="p">],</span>
+ <span class="nt">&quot;totalFeatures&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;numberReturned&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+ <span class="nt">&quot;timeStamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-03-19T11:33:52.587Z&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;crs&quot;</span><span class="p">:</span> <span class="kc">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As it’s possible to see, the label’s value has been added to the output with attribute name <code class="docutils literal notranslate"><span class="pre">Label_GRAY_INDEX</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">VendorOption</span> <span class="pre">labelInFeatureInfo</span></code> supports the following values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">add</span></code> the label value is added to the normal GetFeatureInfo output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">replace</span></code> the label value replaces the pixel value in the output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">none</span></code> no label is added to the output. We obtain a normal <code class="docutils literal notranslate"><span class="pre">GetFeatureInfo</span></code> response.</p></li>
+</ul>
+<p>Additionally, it is possible to customize the attribute name of the label value, by means of a second <code class="docutils literal notranslate"><span class="pre">VendorOption</span></code>:
+<code class="docutils literal notranslate"><span class="pre">&lt;VendorOption</span> <span class="pre">name=&quot;labelAttributeName&quot;&gt;your</span> <span class="pre">custom</span> <span class="pre">name&lt;/VendorOption&gt;</span></code>.</p>
+<p>Assuming to have a <code class="docutils literal notranslate"><span class="pre">RasterSymbolizer</span></code> like this</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;sld:RasterSymbolizer&gt;</span>
+   <span class="nt">&lt;sld:ColorMap&gt;</span>
+       <span class="nt">&lt;sld:ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#0000FF&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1.0&quot;</span> <span class="na">label=</span><span class="s">&quot;low&quot;</span><span class="nt">/&gt;</span>
+       <span class="nt">&lt;sld:ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FFFF00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;124.81173566700335&quot;</span> <span class="na">label=</span><span class="s">&quot;mid&quot;</span><span class="nt">/&gt;</span>
+       <span class="nt">&lt;sld:ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FF7F00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;559.2041949413946&quot;</span> <span class="na">label=</span><span class="s">&quot;high&quot;</span><span class="nt">/&gt;</span>
+       <span class="nt">&lt;sld:ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FF0000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;55537.0&quot;</span> <span class="na">label=</span><span class="s">&quot;very high&quot;</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;/sld:ColorMap&gt;</span>
+   <span class="nt">&lt;sld:ContrastEnhancement/&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;labelInFeatureInfo&quot;</span><span class="nt">&gt;</span>add<span class="nt">&lt;/VendorOption&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;labelAttributeName&quot;</span><span class="nt">&gt;</span>custom name<span class="nt">&lt;/VendorOption&gt;</span>
+<span class="nt">&lt;/sld:RasterSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>we would obtain the following output, where the attribute name of the label value has been replaced by the one specified in the labelAttributeName <code class="docutils literal notranslate"><span class="pre">VendorOption</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
+   <span class="p">{</span>
+     <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+     <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+       <span class="nt">&quot;GRAY_INDEX&quot;</span><span class="p">:</span> <span class="mi">159</span><span class="p">,</span>
+       <span class="nt">&quot;custom name&quot;</span><span class="p">:</span> <span class="s2">&quot;mid&quot;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+ <span class="p">],</span>
+ <span class="nt">&quot;totalFeatures&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;numberReturned&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+ <span class="nt">&quot;timeStamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-03-19T11:50:32.433Z&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;crs&quot;</span><span class="p">:</span> <span class="kc">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We have been using the <code class="docutils literal notranslate"><span class="pre">JSON</span></code> output format for the example above, but the two <code class="docutils literal notranslate"><span class="pre">VendorOptions</span></code> work for all other GetFeatureInfo output formats.</p>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="geojson.html" title="previous chapter">GeoJSON output format</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../palettedimage/palettedimage.html" title="next chapter">Paletted Images</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="geojson.html" title="previous chapter">GeoJSON output format</a></li>
+            <li>Next: <a href="../palettedimage/palettedimage.html" title="next chapter">Paletted Images</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/GetFeatureInfo/raster.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

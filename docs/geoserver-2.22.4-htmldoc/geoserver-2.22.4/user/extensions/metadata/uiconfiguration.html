@@ -1,0 +1,645 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fields configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Advanced Configuration" href="advanced.html" />
+    <link rel="prev" title="Getting Started" href="configuration.html" /> 
+  </head><body class="extensions/metadata/uiconfiguration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Metadata</a> &raquo;</li>
+    <li>Fields configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="advanced.html" title="Advanced Configuration" accesskey="N">Next</a></li>
+  <li>
+    <a href="configuration.html" title="Getting Started" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="fields-configuration">
+<span id="community-metadata-uiconfiguration"></span><h1>Fields configuration<a class="headerlink" href="#fields-configuration" title="Permalink to this headline">¶</a></h1>
+<p>The ui for the metadata tab is made from a list of field components.
+The type of the field component and how they behave can be configured in the yaml file.
+All fields should be configured as a list which has the parent key <code class="docutils literal notranslate"><span class="pre">attributes</span></code>.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#field-options" id="id7">Field options</a></p></li>
+<li><p><a class="reference internal" href="#field-types" id="id8">Field Types</a></p></li>
+<li><p><a class="reference internal" href="#feature-catalog-generation" id="id9">Feature Catalog Generation</a></p></li>
+<li><p><a class="reference internal" href="#internationalization-support" id="id10">Internationalization support</a></p></li>
+<li><p><a class="reference internal" href="#hidden-fields" id="id11">Hidden Fields</a></p></li>
+</ul>
+</div>
+<div class="section" id="field-options">
+<h2><a class="toc-backref" href="#id7">Field options</a><a class="headerlink" href="#field-options" title="Permalink to this headline">¶</a></h2>
+<p>A field is defined in the yaml following key-value pairs:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#key">key</a></p></li>
+<li><p><a class="reference internal" href="#fieldtype">fieldType</a></p></li>
+<li><p><a class="reference internal" href="#label">label</a></p></li>
+<li><p><a class="reference internal" href="#occurrence">occurrence</a></p></li>
+<li><p><a class="reference internal" href="#condition">condition</a></p></li>
+<li><p><a class="reference internal" href="#values">values</a>  (specific field types)</p></li>
+<li><p><a class="reference internal" href="#derivedfrom">derivedFrom</a>  (specific field types)</p></li>
+<li><p><a class="reference internal" href="#typename">typename</a>  (specific field types)</p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="key">
+<h3>key<a class="headerlink" href="#key" title="Permalink to this headline">¶</a></h3>
+<p>The key is the identifier for the field and should therefore be unique.
+Other configurations can refer the field by using this identifier. E.g the geonetwork mapping, internationalization.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 15%" />
+<col style="width: 54%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>key</p></td>
+<td><p>yes</p></td>
+<td><p>a unique string</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="fieldtype">
+<h3>fieldType<a class="headerlink" href="#fieldtype" title="Permalink to this headline">¶</a></h3>
+<p>Chooses the type of input widget for the field.
+A detailed description for each type can be found in the <a class="reference internal" href="#field-types">Field Types</a> section.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 15%" />
+<col style="width: 54%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>fieldType</p></td>
+<td><p>yes</p></td>
+<td><ul class="simple">
+<li><p>COMPLEX</p></li>
+<li><p>TEXT</p></li>
+<li><p>NUMBER</p></li>
+<li><p>TEXT_AREA</p></li>
+<li><p>DATE</p></li>
+<li><p>DATETIME</p></li>
+<li><p>BOOLEAN</p></li>
+<li><p>UUID</p></li>
+<li><p>DROPDOWN</p></li>
+<li><p>SUGGESTBOX</p></li>
+<li><p>REQUIREBOX</p></li>
+<li><p>DERIVED</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="label">
+<h3>label<a class="headerlink" href="#label" title="Permalink to this headline">¶</a></h3>
+<p>If present this value will be used as the label for the field.
+When the label is not present in the yaml configuration the key will be used as label.
+Note: when the key is present in the internationalization (i18n) file see <a class="reference internal" href="#internationalization-support">Internationalization support</a>  than the value from that file will be used as the label.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 15%" />
+<col style="width: 54%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>label</p></td>
+<td><p>no</p></td>
+<td><p>any string</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="occurrence">
+<h3>occurrence<a class="headerlink" href="#occurrence" title="Permalink to this headline">¶</a></h3>
+<p>The value for <code class="docutils literal notranslate"><span class="pre">occurrence</span></code> determines whether or not the field should displayed as a table or as a single input field.
+<code class="docutils literal notranslate"><span class="pre">SINGLE</span></code> will result in one input field.</p>
+<blockquote>
+<div><div class="figure align-default" id="id1">
+<img alt="../../_images/single-value.png" src="../../_images/single-value.png" />
+<p class="caption"><span class="caption-text">e.g. single value input field of fieldType <code class="docutils literal notranslate"><span class="pre">TEXT</span></code>.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div></blockquote>
+<p>Choosing <code class="docutils literal notranslate"><span class="pre">REPEAT</span></code> will render the field in a table allowing the user to input multiple values.</p>
+<blockquote>
+<div><div class="figure align-default" id="id2">
+<img alt="../../_images/repeat.png" src="../../_images/repeat.png" />
+<p class="caption"><span class="caption-text">e.g. field of fieldType <code class="docutils literal notranslate"><span class="pre">TEXT</span></code> rendered as a table.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div></blockquote>
+<p>The data in table can be sorted using the green arrow buttons.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 15%" />
+<col style="width: 54%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>occurrence</p></td>
+<td><p>no</p></td>
+<td><ul class="simple">
+<li><p>SINGLE (Default)</p></li>
+<li><p>REPEAT</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="condition">
+<h3>condition<a class="headerlink" href="#condition" title="Permalink to this headline">¶</a></h3>
+<p>Conditional attributes are attributes that are only visible for some layers. A typical example are attributes only present for raster or vector layers.
+The condition is specified in <a class="reference external" href="cql_tutorial">CQL</a> which is evaluated against the layer’s <a class="reference external" href="csw_features">ResourceInfo</a> object.</p>
+<p>For example:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">condition</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">equalTo(typeOf(&quot;.&quot;), &#39;FeatureTypeInfo&#39;)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="values">
+<h3>values<a class="headerlink" href="#values" title="Permalink to this headline">¶</a></h3>
+<p>The choices in a <a class="reference internal" href="#dropdown">DROPDOWN</a>, <a class="reference internal" href="#suggestbox">SUGGESTBOX</a> or <a class="reference internal" href="#requirebox">REQUIREBOX</a> can be set using the <code class="docutils literal notranslate"><span class="pre">values</span></code>  attribute in the yaml.
+This is useful for small list, for larger list it can be better to list the choices in a separate .csv file.</p>
+</div>
+<div class="section" id="derivedfrom">
+<h3>derivedFrom<a class="headerlink" href="#derivedfrom" title="Permalink to this headline">¶</a></h3>
+<p>Only used in the <a class="reference internal" href="#derived">DERIVED</a> field. The attribute <code class="docutils literal notranslate"><span class="pre">derivedFrom</span></code> contains the key for the parent on which the <a class="reference internal" href="#derived">DERIVED</a> field depends.
+Follow the link for more information on the <a class="reference internal" href="#derived">DERIVED</a> field.</p>
+</div>
+<div class="section" id="typename">
+<h3>typename<a class="headerlink" href="#typename" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">typename</span></code> is a required attribute for <a class="reference internal" href="#complex">COMPLEX</a> fields. It contains the key pointing to the definition of the <a class="reference internal" href="#complex">COMPLEX</a> field.
+A special <code class="docutils literal notranslate"><span class="pre">typename</span></code> <cite>featureAttribute</cite> is reserved for the <a class="reference internal" href="#feature-catalog-generation">Feature Catalog Generation</a>  and should not be used.</p>
+</div>
+</div>
+<div class="section" id="field-types">
+<h2><a class="toc-backref" href="#id8">Field Types</a><a class="headerlink" href="#field-types" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#text">TEXT</a></p></li>
+<li><p><a class="reference internal" href="#text-area">TEXT_AREA</a></p></li>
+<li><p><a class="reference internal" href="#uuid">UUID</a></p></li>
+<li><p><a class="reference internal" href="#number">NUMBER</a></p></li>
+<li><p><a class="reference internal" href="#boolean">BOOLEAN</a></p></li>
+<li><p><a class="reference internal" href="#date">DATE</a></p></li>
+<li><p><a class="reference internal" href="#datetime">DATETIME</a></p></li>
+<li><p><a class="reference internal" href="#dropdown">DROPDOWN</a></p></li>
+<li><p><a class="reference internal" href="#suggestbox">SUGGESTBOX</a></p></li>
+<li><p><a class="reference internal" href="#requirebox">REQUIREBOX</a></p></li>
+<li><p><a class="reference internal" href="#derived">DERIVED</a></p></li>
+<li><p><a class="reference internal" href="#complex">COMPLEX</a></p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="text">
+<h3>TEXT<a class="headerlink" href="#text" title="Permalink to this headline">¶</a></h3>
+<p>Input field that allows any text.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/fieldtext.png" src="../../_images/fieldtext.png" />
+</div>
+</div></blockquote>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">text-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TEXT</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="text-area">
+<h3>TEXT_AREA<a class="headerlink" href="#text-area" title="Permalink to this headline">¶</a></h3>
+<p>A multiline input.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/fieldtextarea.png" src="../../_images/fieldtextarea.png" />
+</div>
+</div></blockquote>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">text-area-field</span>
+      <span class="l l-Scalar l-Scalar-Plain">fieldType</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">TEXT_AREA</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="uuid">
+<h3>UUID<a class="headerlink" href="#uuid" title="Permalink to this headline">¶</a></h3>
+<p>Input field for a UUID, it allows any text input or the user can generate a UUID.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/fielduuid.png" src="../../_images/fielduuid.png" />
+</div>
+</div></blockquote>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">uuid-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">UUID</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="number">
+<h3>NUMBER<a class="headerlink" href="#number" title="Permalink to this headline">¶</a></h3>
+<p>Only numbers are accepted as valid input.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/fieldnumber.png" src="../../_images/fieldnumber.png" />
+</div>
+</div></blockquote>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NUMBER</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="boolean">
+<h3>BOOLEAN<a class="headerlink" href="#boolean" title="Permalink to this headline">¶</a></h3>
+<p>Input field with checkbox.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/fieldboolean.png" src="../../_images/fieldboolean.png" />
+</div>
+</div></blockquote>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">boolean-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">BOOLEAN</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="date">
+<h3>DATE<a class="headerlink" href="#date" title="Permalink to this headline">¶</a></h3>
+<p>Date selection without time information.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/fielddate.png" src="../../_images/fielddate.png" />
+</div>
+</div></blockquote>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DATE</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="datetime">
+<h3>DATETIME<a class="headerlink" href="#datetime" title="Permalink to this headline">¶</a></h3>
+<p>Selection date with time information.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/fielddatetime.png" src="../../_images/fielddatetime.png" />
+</div>
+</div></blockquote>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">datetime-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DATETIME</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dropdown">
+<h3>DROPDOWN<a class="headerlink" href="#dropdown" title="Permalink to this headline">¶</a></h3>
+<p>A field for selecting a value from a dropdown.
+The values can be configured with the <code class="docutils literal notranslate"><span class="pre">values</span></code> attribute in the yaml or they can be configured in an other .csv file which is used for dropdowns with a lot of choices.</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/fielddropdown.png" src="../../_images/fielddropdown.png" />
+</div>
+</div></blockquote>
+<p>Configuration in the yaml file.</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dropdown-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DROPDOWN</span>
+    <span class="nt">values</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">first</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">second</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">third</span>
+</pre></div>
+</div>
+<p>To configure the values in a separate file add a yaml key <code class="docutils literal notranslate"><span class="pre">csvImports</span></code> on the same level as <code class="docutils literal notranslate"><span class="pre">attributes</span></code> and add the list of CSV files under this key.
+The first line in each CSV file should contain the key of the dropdown field for which you want to add the choices.</p>
+<p><code class="docutils literal notranslate"><span class="pre">metadata-ui.yaml</span></code></p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dropdown-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DROPDOWN</span>
+<span class=" -Error"> </span><span class="nt">csvImports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dropdowncontent.csv</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dropdowncontent.csv</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dropdown</span><span class="o">-</span><span class="n">field</span>
+<span class="n">first</span>
+<span class="n">second</span>
+<span class="n">third</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="suggestbox">
+<h3>SUGGESTBOX<a class="headerlink" href="#suggestbox" title="Permalink to this headline">¶</a></h3>
+<p>A field for selecting a value from a suggestbox. Suggestions will be given for the values where the input matches the beginning of the possible values.
+The values can be put in a separate CSV file in the same way as for the DROPDOWN field.</p>
+<div class="figure align-default">
+<img alt="../../_images/fieldsuggest.png" src="../../_images/fieldsuggest.png" />
+</div>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">suggestbox-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SUGGESTBOX</span>
+    <span class="nt">values</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">first</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">second</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">third</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="requirebox">
+<h3>REQUIREBOX<a class="headerlink" href="#requirebox" title="Permalink to this headline">¶</a></h3>
+<p>This type is identical to suggestbox, except that the user is not allowed to fill in a custom value but enforced to choose a suggested value.
+This can be handy when an field value must be an element from a list, but this list is too long for a dropdown to be practical.</p>
+</div>
+<div class="section" id="derived">
+<h3>DERIVED<a class="headerlink" href="#derived" title="Permalink to this headline">¶</a></h3>
+<p>A derived field is a hidden field whose value depends on an other field. The yaml key <code class="docutils literal notranslate"><span class="pre">derivedFrom</span></code> should contain the key of the field it depends on.
+When a value is selected in the parent field a matching value for the derived field is searched in csv file or the value with the same index is picked from the values list.</p>
+<p>The CSV file should have at least two columns and start with the key of the parent field in the first column followed by the values for the parent field, the other columns should contain the key(s) of the derived field(s) in the first row followed by the matching values.</p>
+<p>Example derived field with config in a CSV file:</p>
+<div class="figure align-default">
+<img alt="../../_images/fielddireved.png" src="../../_images/fielddireved.png" />
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">metadata-ui.yaml</span></code></p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">derived-parent-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DROPDOWN</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hidden-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DERIVED</span>
+    <span class="nt">derivedFrom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">derived-parent-field</span>
+<span class="nt">csvImports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">derived-mapping.csv</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">derivedmapping.csv</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">derived</span><span class="o">-</span><span class="n">parent</span><span class="o">-</span><span class="n">field</span><span class="p">;</span><span class="n">hidden</span><span class="o">-</span><span class="n">field</span>
+<span class="n">parent</span><span class="o">-</span><span class="n">value01</span><span class="p">;</span><span class="n">hidden</span><span class="o">-</span><span class="n">value01</span>
+<span class="n">parent</span><span class="o">-</span><span class="n">value02</span><span class="p">;</span><span class="n">hidden</span><span class="o">-</span><span class="n">value02</span>
+<span class="n">parent</span><span class="o">-</span><span class="n">value03</span><span class="p">;</span><span class="n">hidden</span><span class="o">-</span><span class="n">value03</span>
+</pre></div>
+</div>
+<p>Example derived field with values lists:</p>
+<p><code class="docutils literal notranslate"><span class="pre">metadata-ui.yaml</span></code></p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">derived-parent-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DROPDOWN</span>
+    <span class="nt">values</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">parent-value01</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">parent-value02</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">parent-value03</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hidden-field</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DERIVED</span>
+    <span class="nt">derivedFrom</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">derived-parent-field</span>
+    <span class="nt">values</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">hidden-value01</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">hidden-value02</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">hidden-value03</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="complex">
+<h3>COMPLEX<a class="headerlink" href="#complex" title="Permalink to this headline">¶</a></h3>
+<p>A complex field is composed of multiple other fields.  The yaml key <code class="docutils literal notranslate"><span class="pre">typename</span></code> is added to the field configuration.
+On the root level the yaml key <code class="docutils literal notranslate"><span class="pre">types</span></code> indicates the beginning of all complex type definition.
+A type definition should contain the <code class="docutils literal notranslate"><span class="pre">typename</span></code> followed by the key <code class="docutils literal notranslate"><span class="pre">attributes</span></code> which contains the configuration for the subfields.</p>
+<div class="figure align-default">
+<img alt="../../_images/fieldcomplex.png" src="../../_images/fieldcomplex.png" />
+</div>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">attributes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">complex-type</span>
+    <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">COMPLEX</span>
+    <span class="nt">typename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">complex-field</span>
+
+<span class="nt">types</span><span class="p">:</span>
+   <span class="p p-Indicator">-</span> <span class="nt">typename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">complex-field</span>
+     <span class="nt">attributes</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">object-text</span>
+            <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TEXT</span>
+          <span class="p p-Indicator">-</span> <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">object-numer</span>
+            <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NUMBER</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="feature-catalog-generation">
+<h2><a class="toc-backref" href="#id9">Feature Catalog Generation</a><a class="headerlink" href="#feature-catalog-generation" title="Permalink to this headline">¶</a></h2>
+<p>To create a feature catalog for a vector layer, a complex structure is needed to describe all the attributes. A lot of this information is already present in the GeoServer feature type or the database.
+Metadata supports automatically generating a new structure in the metadata from the information at hands that can be customised afterwards.
+To create support for this feature in your configuration, define a repeatable <a class="reference internal" href="#complex">COMPLEX</a> field with built-in <code class="docutils literal notranslate"><span class="pre">fieldType</span></code>  <cite>featureAttribute</cite> .</p>
+<p>In the example the featureCatalog object has two attributes. A unique identifier of the type <a class="reference internal" href="#uuid">UUID</a> and the feature attribute field.</p>
+<div class="figure align-default" id="id3">
+<img alt="../../_images/fa01.png" src="../../_images/fa01.png" />
+<p class="caption"><span class="caption-text">e.g. Empty Feature attribute field</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">typename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">featureCatalog</span>
+  <span class="nt">attributes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Unique identifier</span>
+        <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">feature-catalog-identifier</span>
+        <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">UUID</span>
+      <span class="p p-Indicator">-</span> <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Feature attribute</span>
+        <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">feature-attribute</span>
+        <span class="nt">fieldType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">COMPLEX</span>
+        <span class="nt">typename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">featureAttribute</span>
+        <span class="nt">occurrence</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">REPEAT</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Generate</span></code> action will check the database metadata for that layer and generate a feature attribute for each column in the table.</p>
+<div class="figure align-default" id="id4">
+<img alt="../../_images/fa02.png" src="../../_images/fa02.png" />
+<p class="caption"><span class="caption-text">e.g. Feature attribute with generate feature types</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>Whitin each feature attribute there is another <code class="docutils literal notranslate"><span class="pre">Generate</span></code> action that will generate the domain.</p>
+<div class="figure align-default" id="id5">
+<img alt="../../_images/generate_domain.png" src="../../_images/generate_domain.png" />
+<p class="caption"><span class="caption-text">e.g. Generate domain dialog</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<dl class="simple">
+<dt>There are two options to do this:</dt><dd><ul class="simple">
+<li><p>Using the existing data in the database for this attribute.</p></li>
+<li><p>Using data from a look-up table in the same database. In this case you must specify the table, an attribute from which to take values and an attribute from which to take definitions.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="figure align-default" id="id6">
+<img alt="../../_images/fa03.png" src="../../_images/fa03.png" />
+<p class="caption"><span class="caption-text">e.g. Feature attribute with generate domain</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="internationalization-support">
+<h2><a class="toc-backref" href="#id10">Internationalization support</a><a class="headerlink" href="#internationalization-support" title="Permalink to this headline">¶</a></h2>
+<p>All metadata field labels that appear in the <span class="guilabel">Metadata fields</span> can be internationalized.
+This is performed by creating an internationalization (i18n) file named metadata.properties.
+Create an entry for each key in the gui configuration following this pattern:  <cite>PREFIX.attribute-key</cite></p>
+<p>e.g.</p>
+<p><code class="docutils literal notranslate"><span class="pre">metadata.properties</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span><span class="o">.</span><span class="n">generated</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">metadata</span><span class="o">-</span><span class="n">identifier</span><span class="o">=</span><span class="n">Unique</span> <span class="n">identifier</span> <span class="k">for</span> <span class="n">the</span> <span class="n">metadata</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">metadata_nl.properties</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span><span class="o">.</span><span class="n">generated</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">metadata</span><span class="o">-</span><span class="n">identifier</span><span class="o">=</span><span class="n">Metadata</span> <span class="n">identificator</span>
+</pre></div>
+</div>
+<p>Drop-down labels can be translated too, in the same properties file, using the key <code class="docutils literal notranslate"><span class="pre">metadata.generated.form.[attributeKey].[value]=[label]</span></code>.
+The value that will be internally stored for this field stays the same.</p>
+</div>
+<div class="section" id="hidden-fields">
+<span id="community-metadata-uiconfiguration-hidden-fields"></span><h2><a class="toc-backref" href="#id11">Hidden Fields</a><a class="headerlink" href="#hidden-fields" title="Permalink to this headline">¶</a></h2>
+<p>Hidden fields are not visible in the GUI and do not need to be configured. They are updated automatically.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_timestamp</span></code>: date and time of the last metadata update.</p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="configuration.html" title="previous chapter">Getting Started</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="advanced.html" title="next chapter">Advanced Configuration</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Fields configuration</a><ul>
+<li><a class="reference internal" href="#field-options">Field options</a><ul>
+<li><a class="reference internal" href="#key">key</a></li>
+<li><a class="reference internal" href="#fieldtype">fieldType</a></li>
+<li><a class="reference internal" href="#label">label</a></li>
+<li><a class="reference internal" href="#occurrence">occurrence</a></li>
+<li><a class="reference internal" href="#condition">condition</a></li>
+<li><a class="reference internal" href="#values">values</a></li>
+<li><a class="reference internal" href="#derivedfrom">derivedFrom</a></li>
+<li><a class="reference internal" href="#typename">typename</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#field-types">Field Types</a><ul>
+<li><a class="reference internal" href="#text">TEXT</a></li>
+<li><a class="reference internal" href="#text-area">TEXT_AREA</a></li>
+<li><a class="reference internal" href="#uuid">UUID</a></li>
+<li><a class="reference internal" href="#number">NUMBER</a></li>
+<li><a class="reference internal" href="#boolean">BOOLEAN</a></li>
+<li><a class="reference internal" href="#date">DATE</a></li>
+<li><a class="reference internal" href="#datetime">DATETIME</a></li>
+<li><a class="reference internal" href="#dropdown">DROPDOWN</a></li>
+<li><a class="reference internal" href="#suggestbox">SUGGESTBOX</a></li>
+<li><a class="reference internal" href="#requirebox">REQUIREBOX</a></li>
+<li><a class="reference internal" href="#derived">DERIVED</a></li>
+<li><a class="reference internal" href="#complex">COMPLEX</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#feature-catalog-generation">Feature Catalog Generation</a></li>
+<li><a class="reference internal" href="#internationalization-support">Internationalization support</a></li>
+<li><a class="reference internal" href="#hidden-fields">Hidden Fields</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="configuration.html" title="previous chapter">Getting Started</a></li>
+            <li>Next: <a href="advanced.html" title="next chapter">Advanced Configuration</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/metadata/uiconfiguration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rendered map/animation download processes &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WPS JDBC" href="../wps-jdbc/index.html" />
+    <link rel="prev" title="Raw data download processes" href="rawDownload.html" /> 
+  </head><body class="extensions/wps-download/mapAnimationDownload">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WPS Download plugin</a> &raquo;</li>
+    <li>Rendered map/animation download processes</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../wps-jdbc/index.html" title="WPS JDBC" accesskey="N">Next</a></li>
+  <li>
+    <a href="rawDownload.html" title="Raw data download processes" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="rendered-map-animation-download-processes">
+<span id="community-wpsrendereddownload"></span><h1>Rendered map/animation download processes<a class="headerlink" href="#rendered-map-animation-download-processes" title="Permalink to this headline">¶</a></h1>
+<p>These processes allow download large maps and animations.</p>
+<div class="section" id="the-rendered-download-processes">
+<h2>The rendered download processes<a class="headerlink" href="#the-rendered-download-processes" title="Permalink to this headline">¶</a></h2>
+<p>The map and animation downloads work off a set of common parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bbox</span></code> : a geo-referenced bounding box, controlling both output area and desired projection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decoration</span></code> : the name of a decoration layout to be added on top of the map</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decorationEnvironment</span></code> : a valid value for the <code class="docutils literal notranslate"><span class="pre">env</span></code> parameter used when painting the decoration. Used for <a class="reference internal" href="../../services/wms/decoration.html#wms-dynamic-decorations"><span class="std std-ref">dynamic decoration layouts</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code> : a WMS <code class="docutils literal notranslate"><span class="pre">time</span></code> specification used to drive the selection of times across the layers in the map, and to control the frame generation in the animation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">width</span></code> and <code class="docutils literal notranslate"><span class="pre">height</span></code> : size of the output map/animation (and in combination with bounding box, also controls the output map scale)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layer</span></code>: a list of layer specifications, from a client side point of view (thus, a layer can be composed of multiple server side layers). When dwn:DecorationName layer option is used, it allows to define a specific layout that will be used when decorations are applied to the layer. It allows to render more than one Legend on the resulting image, when having more than one Layer declared.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headerheight</span></code> : height size of a header space allocated at top of rendered map. It’s an optional parameter, that forces to shrink the maps view height in order to avoid overlapping header over the maps. In combination with the use of layer specification options allows to group decorators at the top of resulting image.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="the-layer-specification">
+<h2>The layer specification<a class="headerlink" href="#the-layer-specification" title="Permalink to this headline">¶</a></h2>
+<p>A layer specification is a XML structure made of three parts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Name: a comma separated list of layer names (eventually just one)</p></li>
+<li><p>Capabilities: link to a capabilities document (optional, used when targetting remote WMS layers)</p></li>
+<li><p>Parameter (key, value): an extra parameter to be added in the WMS request represented by this layer (e.g., <code class="docutils literal notranslate"><span class="pre">elevation</span></code>, <code class="docutils literal notranslate"><span class="pre">CQL_FILTER</span></code>, <code class="docutils literal notranslate"><span class="pre">env</span></code>)</p></li>
+</ul>
+</div></blockquote>
+<p>For example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:ComplexData</span> <span class="na">xmlns:dwn=</span><span class="s">&quot;http://geoserver.org/wps/download&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;dwn:Layer&gt;</span>
+    <span class="nt">&lt;dwn:Capabilities&gt;</span>http://demo.geo-solutions.it/geoserver/ows?service=wms<span class="ni">&amp;amp;</span>version=1.1.1<span class="ni">&amp;amp;</span>request=GetCapabilities<span class="nt">&lt;/dwn:Name&gt;</span>
+    <span class="nt">&lt;dwn:Name&gt;</span>topp:states<span class="nt">&lt;/dwn:Name&gt;</span>
+    <span class="nt">&lt;dwn:Parameter</span> <span class="na">key=</span><span class="s">&quot;CQL_FILTER&quot;</span><span class="nt">&gt;</span><span class="cp">&lt;![CDATA[PERSONS &gt; 1000000]]&gt;</span><span class="nt">&lt;/dwn:Parameter&gt;</span>
+  <span class="nt">&lt;/dwn:Layer&gt;</span>
+<span class="nt">&lt;/wps:ComplexData&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="decoration-layout">
+<h2>Decoration Layout<a class="headerlink" href="#decoration-layout" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">decoration</span></code> parameter specifies the file name (without extension) of the layout to be used to decorate the map.
+The layout is a list of decorators that should draw on top of the requested image.
+The decorators draw on the image one after the other, so the order of the decorators in the layout file is important: the first decorator output will appear under the others.</p>
+<p>Decorators are described in detail in the <a class="reference internal" href="../../services/wms/decoration.html#wms-decorations"><span class="std std-ref">WMS Decorations</span></a> section.
+It is also possible to use <a class="reference internal" href="../../services/wms/decoration.html#wms-dynamic-decorations"><span class="std std-ref">dynamic decoration layouts</span></a>, in this
+case the environment parameters for the decoration will be provided using <code class="docutils literal notranslate"><span class="pre">dwn:Parameter</span></code>, e.g.:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dwn:Layer&gt;</span>
+  <span class="nt">&lt;dwn:Name&gt;</span>theLayer<span class="nt">&lt;/dwn:Name&gt;</span>
+  <span class="nt">&lt;dwn:DecorationName&gt;</span>theDynamicDecoration<span class="nt">&lt;/dwn:DecorationName&gt;</span>
+  <span class="nt">&lt;dwn:Parameter</span> <span class="na">key=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>sla:top,right;bg:#FF0000<span class="nt">&lt;/dwn:Parameter&gt;</span>
+<span class="nt">&lt;/dwn:Layer&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="map-download-process">
+<h2>Map Download Process<a class="headerlink" href="#map-download-process" title="Permalink to this headline">¶</a></h2>
+<p>In addition to the common parameters, the MapDownloadProcess sports an
+extra boolean parameter, <code class="docutils literal notranslate"><span class="pre">transparent</span></code>, which can be either true or false, determining if
+the output map has a transparent or a solid background (animation lacks this parameter, as videos
+need solid background). The <code class="docutils literal notranslate"><span class="pre">transparent</span></code> parameter defaults to <code class="docutils literal notranslate"><span class="pre">false</span></code> <a class="footnote-reference brackets" href="#f1" id="id1">1</a>.</p>
+<p>Also, unlike animation, in the map download process the <code class="docutils literal notranslate"><span class="pre">time</span></code> parameter is optional.</p>
+<p>The map download process uses the WMS machinery to produce the output, but it’s not subject to the WMS service
+limits (width and height in this process can be limited using the WPS process security).</p>
+<div class="section" id="sample-downloadmap-requests">
+<h3>Sample DownloadMap requests<a class="headerlink" href="#sample-downloadmap-requests" title="Permalink to this headline">¶</a></h3>
+<p>A download map issued against a set of local layers can look as follows:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span>
+             <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span>
+             <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span>
+             <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+             <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span>
+             <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+             <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>gs:DownloadMap<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>bbox<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:BoundingBoxData</span> <span class="na">crs=</span><span class="s">&quot;EPSG:4326&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;ows:LowerCorner&gt;</span>0.237 40.562<span class="nt">&lt;/ows:LowerCorner&gt;</span>
+          <span class="nt">&lt;ows:UpperCorner&gt;</span>14.593 44.55<span class="nt">&lt;/ows:UpperCorner&gt;</span>
+        <span class="nt">&lt;/wps:BoundingBoxData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>time<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>2008-10-31T00:00:00.000Z<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>width<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>200<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>height<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>80<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>layer<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:ComplexData</span> <span class="na">xmlns:dwn=</span><span class="s">&quot;http://geoserver.org/wps/download&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;dwn:Layer&gt;</span>
+            <span class="nt">&lt;dwn:Name&gt;</span>giantPolygon<span class="nt">&lt;/dwn:Name&gt;</span>
+            <span class="nt">&lt;dwn:Parameter</span> <span class="na">key=</span><span class="s">&quot;featureId&quot;</span><span class="nt">&gt;</span>giantPolygon.0<span class="nt">&lt;/dwn:Parameter&gt;</span>
+          <span class="nt">&lt;/dwn:Layer&gt;</span>
+        <span class="nt">&lt;/wps:ComplexData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>layer<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:ComplexData</span> <span class="na">xmlns:dwn=</span><span class="s">&quot;http://geoserver.org/wps/download&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;dwn:Layer&gt;</span>
+            <span class="nt">&lt;dwn:Name&gt;</span>watertemp<span class="nt">&lt;/dwn:Name&gt;</span>
+          <span class="nt">&lt;/dwn:Layer&gt;</span>
+        <span class="nt">&lt;/wps:ComplexData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;image/png&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>For this example the layers could have been a single one, with a “Name” equal to “giantPolygon,watertermp”.</p>
+</div>
+<div class="section" id="secondary-output-map-metadata">
+<h3>Secondary output: map metadata<a class="headerlink" href="#secondary-output-map-metadata" title="Permalink to this headline">¶</a></h3>
+<p>The process offers also a secondary output, called <code class="docutils literal notranslate"><span class="pre">metadata</span></code>, which can be used to determine
+if there were any issue related to the requested times. The warnings are issued when the layer
+has a “nearest match” behavior activated, with an eventual search range.</p>
+<p>In case the requested time could not be matched exactly, a warning will be issued that might contain:</p>
+<ul class="simple">
+<li><p>An indication that a nearby time has been used, and which time that is.</p></li>
+<li><p>An indication that no time was found, that was sufficiently close to the requested one, according
+to the search range specification in the layer “nearest match” configuration.</p></li>
+</ul>
+<p>In order to get both outputs, the following response form is recommended, which requires
+a reference (a link) for the map, while the warnings are included inline:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span>
+             <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span>
+             <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span>
+             <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+             <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span>
+             <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+             <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>gs:DownloadMap<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="c">&lt;!-- Inputs section removed for brevity --&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:ResponseDocument&gt;</span>
+      <span class="nt">&lt;wps:Output</span> <span class="na">asReference=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;/wps:Output&gt;</span>
+      <span class="nt">&lt;wps:Output&gt;</span>
+        <span class="nt">&lt;ows:Identifier&gt;</span>metadata<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;/wps:Output&gt;</span>
+    <span class="nt">&lt;/wps:ResponseDocument&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>A sample response, reporting warnings, follows:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;wps:ExecuteResponse</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">serviceInstance=</span><span class="s">&quot;http://localhost:8080/geoserver/ows?&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wps:Process</span> <span class="na">wps:processVersion=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>gs:DownloadMap<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;ows:Title&gt;</span>Map Download Process<span class="nt">&lt;/ows:Title&gt;</span>
+    <span class="nt">&lt;ows:Abstract&gt;</span>Builds a large map given a set of layer definitions, area of interest, size and eventual target time.<span class="nt">&lt;/ows:Abstract&gt;</span>
+  <span class="nt">&lt;/wps:Process&gt;</span>
+  <span class="nt">&lt;wps:Status</span> <span class="na">creationTime=</span><span class="s">&quot;2021-06-07T16:50:47.391Z&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wps:ProcessSucceeded&gt;</span>Process succeeded.<span class="nt">&lt;/wps:ProcessSucceeded&gt;</span>
+  <span class="nt">&lt;/wps:Status&gt;</span>
+  <span class="nt">&lt;wps:ProcessOutputs&gt;</span>
+    <span class="nt">&lt;wps:Output&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;ows:Title&gt;</span>The output map<span class="nt">&lt;/ows:Title&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/ows?service=WPS&amp;amp;version=1.0.0&amp;amp;request=GetExecutionResult&amp;amp;executionId=5db686ed-8591-4756-8651-4bd26281bf37&amp;amp;outputId=result.png&amp;amp;mimetype=image%2Fpng&quot;</span> <span class="na">mimeType=</span><span class="s">&quot;image/png&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/wps:Output&gt;</span>
+    <span class="nt">&lt;wps:Output&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>metadata<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;ows:Title&gt;</span>map metadata, including dimension match warnings<span class="nt">&lt;/ows:Title&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:ComplexData</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;DownloadMetadata&gt;</span>
+            <span class="nt">&lt;Warnings&gt;</span>
+              <span class="nt">&lt;DimensionWarning&gt;</span>
+                <span class="nt">&lt;LayerName&gt;</span>sf:bmtime<span class="nt">&lt;/LayerName&gt;</span>
+                <span class="nt">&lt;DimensionName&gt;</span>time<span class="nt">&lt;/DimensionName&gt;</span>
+                <span class="nt">&lt;Value</span> <span class="na">class=</span><span class="s">&quot;Date&quot;</span><span class="nt">&gt;</span>2004-02-01T00:00:00.000Z<span class="nt">&lt;/Value&gt;</span>
+                <span class="nt">&lt;WarningType&gt;</span>Nearest<span class="nt">&lt;/WarningType&gt;</span>
+              <span class="nt">&lt;/DimensionWarning&gt;</span>
+            <span class="nt">&lt;/Warnings&gt;</span>
+            <span class="nt">&lt;WarningsFound&gt;</span>true<span class="nt">&lt;/WarningsFound&gt;</span>
+          <span class="nt">&lt;/DownloadMetadata&gt;</span>
+        <span class="nt">&lt;/wps:ComplexData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Output&gt;</span>
+  <span class="nt">&lt;/wps:ProcessOutputs&gt;</span>
+<span class="nt">&lt;/wps:ExecuteResponse&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="animation-download-process">
+<h2>Animation Download Process<a class="headerlink" href="#animation-download-process" title="Permalink to this headline">¶</a></h2>
+<p>The download animation has all the basic parameters with the following variants/additions:</p>
+<ul class="simple">
+<li><p>time: The time parameter is required and can be provided either as range with periodicity, <code class="docutils literal notranslate"><span class="pre">start/stop/period</span></code>, or
+as a comma separated list of times,``t1,t2,…,tn``</p></li>
+<li><p>fps: Frame per seconds (defaults to one)</p></li>
+</ul>
+<div class="section" id="sample-downloadanimation-request">
+<h3>Sample DownloadAnimation request<a class="headerlink" href="#sample-downloadanimation-request" title="Permalink to this headline">¶</a></h3>
+<p>A sample animation request can look as follows:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span>
+             <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span>
+             <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span>
+             <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+             <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span>
+             <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+             <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>gs:DownloadAnimation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>bbox<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:BoundingBoxData</span> <span class="na">crs=</span><span class="s">&quot;EPSG:4326&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;ows:LowerCorner&gt;</span>-180 -90<span class="nt">&lt;/ows:LowerCorner&gt;</span>
+          <span class="nt">&lt;ows:UpperCorner&gt;</span>180 90<span class="nt">&lt;/ows:UpperCorner&gt;</span>
+        <span class="nt">&lt;/wps:BoundingBoxData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>decoration<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>formattedTimestamper<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>time<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>2004-02-01,2004-03-01,2004-04-01,2004-05-01<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>width<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>271<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>height<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>136<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>fps<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>0.5<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>layer<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:ComplexData</span> <span class="na">xmlns:dwn=</span><span class="s">&quot;http://geoserver.org/wps/download&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;dwn:Layer&gt;</span>
+            <span class="nt">&lt;dwn:Name&gt;</span>sf:bmtime<span class="nt">&lt;/dwn:Name&gt;</span>
+          <span class="nt">&lt;/dwn:Layer&gt;</span>
+        <span class="nt">&lt;/wps:ComplexData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;video/mp4&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">formattedTimestamper</span></code> decoration ensures the frame time is included in the output animation, and looks as follows:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;layout&gt;</span>
+  <span class="nt">&lt;decoration</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">affinity=</span><span class="s">&quot;bottom,right&quot;</span> <span class="na">offset=</span><span class="s">&quot;6,6&quot;</span> <span class="na">size=</span><span class="s">&quot;auto&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;option</span> <span class="na">name=</span><span class="s">&quot;message&quot;</span><span class="nt">&gt;</span><span class="cp">&lt;![CDATA[</span>
+<span class="cp">&lt;#setting datetime_format=&quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSX&quot;&gt;</span>
+<span class="cp">&lt;#setting locale=&quot;en_US&quot;&gt;</span>
+<span class="cp">&lt;#if time??&gt;</span>
+<span class="cp">${time?datetime?string[&quot;dd-MM-yyyy&quot;]}</span>
+<span class="cp">&lt;/#if&gt;]]&gt;</span><span class="nt">&lt;/option&gt;</span>
+    <span class="nt">&lt;option</span> <span class="na">name=</span><span class="s">&quot;font-family&quot;</span> <span class="na">value=</span><span class="s">&quot;Bitstream Vera Sans&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;option</span> <span class="na">name=</span><span class="s">&quot;font-size&quot;</span> <span class="na">value=</span><span class="s">&quot;12&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;option</span> <span class="na">name=</span><span class="s">&quot;halo-radius&quot;</span> <span class="na">value=</span><span class="s">&quot;2&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/decoration&gt;</span>
+<span class="nt">&lt;/layout&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="secondary-output-animation-metadata">
+<h3>Secondary output: animation metadata<a class="headerlink" href="#secondary-output-animation-metadata" title="Permalink to this headline">¶</a></h3>
+<p>The process offers also a secondary output, called <code class="docutils literal notranslate"><span class="pre">metadata</span></code>, which can be used to determine
+if there were any issue related to the requested times. The warnings are issued when the layer
+has a “nearest match” behavior activated, with an eventual search range.</p>
+<p>In case the requested time could not be matched exactly, a warning will be issued that might contain:</p>
+<ul class="simple">
+<li><p>An indication that a nearby time has been used, and which time that is.</p></li>
+<li><p>An indication that no time was found, that was sufficiently close to the requested one, according
+to the search range specification in the layer “nearest match” configuration.</p></li>
+</ul>
+<p>In order to get both outputs, the following response form is recommended, which requires
+a reference (a link) for the animation, while the warnings are included inline:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span>
+             <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span>
+             <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span>
+             <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+             <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span>
+             <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+             <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>gs:DownloadAnimation<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="c">&lt;!-- Inputs section removed for brevity --&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:ResponseDocument&gt;</span>
+      <span class="nt">&lt;wps:Output</span> <span class="na">asReference=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;/wps:Output&gt;</span>
+      <span class="nt">&lt;wps:Output&gt;</span>
+        <span class="nt">&lt;ows:Identifier&gt;</span>metadata<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;/wps:Output&gt;</span>
+    <span class="nt">&lt;/wps:ResponseDocument&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>A sample response, reporting warnings and the frame count where they happened, follows:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;wps:ExecuteResponse</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">serviceInstance=</span><span class="s">&quot;http://localhost:8080/geoserver/ows?&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wps:Process</span> <span class="na">wps:processVersion=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>gs:DownloadAnimation<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;ows:Title&gt;</span>Animation Download Process<span class="nt">&lt;/ows:Title&gt;</span>
+    <span class="nt">&lt;ows:Abstract&gt;</span>Builds an animation given a set of layer definitions, area of interest, size and a series of times for animation frames.<span class="nt">&lt;/ows:Abstract&gt;</span>
+  <span class="nt">&lt;/wps:Process&gt;</span>
+  <span class="nt">&lt;wps:Status</span> <span class="na">creationTime=</span><span class="s">&quot;2021-06-07T16:50:47.391Z&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wps:ProcessSucceeded&gt;</span>Process succeeded.<span class="nt">&lt;/wps:ProcessSucceeded&gt;</span>
+  <span class="nt">&lt;/wps:Status&gt;</span>
+  <span class="nt">&lt;wps:ProcessOutputs&gt;</span>
+    <span class="nt">&lt;wps:Output&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;ows:Title&gt;</span>The animation<span class="nt">&lt;/ows:Title&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/ows?service=WPS&amp;amp;version=1.0.0&amp;amp;request=GetExecutionResult&amp;amp;executionId=b98eded5-8122-442b-a6c7-87a872779153&amp;amp;outputId=result.mp4&amp;amp;mimetype=video%2Fmp4&quot;</span> <span class="na">mimeType=</span><span class="s">&quot;video/mp4&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/wps:Output&gt;</span>
+    <span class="nt">&lt;wps:Output&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>metadata<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;ows:Title&gt;</span>Animation metadata, including dimension match warnings<span class="nt">&lt;/ows:Title&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:ComplexData</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;AnimationMetadata&gt;</span>
+            <span class="nt">&lt;Warnings&gt;</span>
+              <span class="nt">&lt;FrameWarning&gt;</span>
+                <span class="nt">&lt;LayerName&gt;</span>sf:bmtime<span class="nt">&lt;/LayerName&gt;</span>
+                <span class="nt">&lt;DimensionName&gt;</span>time<span class="nt">&lt;/DimensionName&gt;</span>
+                <span class="nt">&lt;Value</span> <span class="na">class=</span><span class="s">&quot;Date&quot;</span><span class="nt">&gt;</span>2004-02-01T00:00:00.000Z<span class="nt">&lt;/Value&gt;</span>
+                <span class="nt">&lt;WarningType&gt;</span>Nearest<span class="nt">&lt;/WarningType&gt;</span>
+                <span class="nt">&lt;Frame&gt;</span>0<span class="nt">&lt;/Frame&gt;</span>
+              <span class="nt">&lt;/FrameWarning&gt;</span>
+              <span class="nt">&lt;FrameWarning&gt;</span>
+                <span class="nt">&lt;LayerName&gt;</span>sf:bmtime<span class="nt">&lt;/LayerName&gt;</span>
+                <span class="nt">&lt;DimensionName&gt;</span>time<span class="nt">&lt;/DimensionName&gt;</span>
+                <span class="nt">&lt;WarningType&gt;</span>FailedNearest<span class="nt">&lt;/WarningType&gt;</span>
+                <span class="nt">&lt;Frame&gt;</span>1<span class="nt">&lt;/Frame&gt;</span>
+              <span class="nt">&lt;/FrameWarning&gt;</span>
+              <span class="nt">&lt;FrameWarning&gt;</span>
+                <span class="nt">&lt;LayerName&gt;</span>sf:bmtime<span class="nt">&lt;/LayerName&gt;</span>
+                <span class="nt">&lt;DimensionName&gt;</span>time<span class="nt">&lt;/DimensionName&gt;</span>
+                <span class="nt">&lt;Value</span> <span class="na">class=</span><span class="s">&quot;Date&quot;</span><span class="nt">&gt;</span>2004-04-01T00:00:00.000Z<span class="nt">&lt;/Value&gt;</span>
+                <span class="nt">&lt;WarningType&gt;</span>Nearest<span class="nt">&lt;/WarningType&gt;</span>
+                <span class="nt">&lt;Frame&gt;</span>2<span class="nt">&lt;/Frame&gt;</span>
+              <span class="nt">&lt;/FrameWarning&gt;</span>
+              <span class="nt">&lt;FrameWarning&gt;</span>
+                <span class="nt">&lt;LayerName&gt;</span>sf:bmtime<span class="nt">&lt;/LayerName&gt;</span>
+                <span class="nt">&lt;DimensionName&gt;</span>time<span class="nt">&lt;/DimensionName&gt;</span>
+                <span class="nt">&lt;Value</span> <span class="na">class=</span><span class="s">&quot;Date&quot;</span><span class="nt">&gt;</span>2004-05-01T00:00:00.000Z<span class="nt">&lt;/Value&gt;</span>
+                <span class="nt">&lt;WarningType&gt;</span>Nearest<span class="nt">&lt;/WarningType&gt;</span>
+                <span class="nt">&lt;Frame&gt;</span>3<span class="nt">&lt;/Frame&gt;</span>
+              <span class="nt">&lt;/FrameWarning&gt;</span>
+            <span class="nt">&lt;/Warnings&gt;</span>
+            <span class="nt">&lt;WarningsFound&gt;</span>true<span class="nt">&lt;/WarningsFound&gt;</span>
+          <span class="nt">&lt;/AnimationMetadata&gt;</span>
+        <span class="nt">&lt;/wps:ComplexData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Output&gt;</span>
+  <span class="nt">&lt;/wps:ProcessOutputs&gt;</span>
+<span class="nt">&lt;/wps:ExecuteResponse&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In the above output, frames 0, 2 and 3 were nearest matched to an available time, being specified
+in the <code class="docutils literal notranslate"><span class="pre">Value</span></code> field, while the time requested for frame number 1 was too far away from any
+available time, resulting in a <code class="docutils literal notranslate"><span class="pre">NearestFail</span></code>. The frame is still present in the animation, but
+will likely be blank.
+In case multiple time based layers are requested in the animation, there might be multiple warnings
+for each frame.</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="f1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>The default value of <code class="docutils literal notranslate"><span class="pre">transparent</span></code> can be flipped using a system variable, e.g. <code class="docutils literal notranslate"><span class="pre">-DDOWNLOAD_MAP_TRANSPARENT=true</span></code></p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="rawDownload.html" title="previous chapter">Raw data download processes</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../wps-jdbc/index.html" title="next chapter">WPS JDBC</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Rendered map/animation download processes</a><ul>
+<li><a class="reference internal" href="#the-rendered-download-processes">The rendered download processes</a></li>
+<li><a class="reference internal" href="#the-layer-specification">The layer specification</a></li>
+<li><a class="reference internal" href="#decoration-layout">Decoration Layout</a></li>
+<li><a class="reference internal" href="#map-download-process">Map Download Process</a><ul>
+<li><a class="reference internal" href="#sample-downloadmap-requests">Sample DownloadMap requests</a></li>
+<li><a class="reference internal" href="#secondary-output-map-metadata">Secondary output: map metadata</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#animation-download-process">Animation Download Process</a><ul>
+<li><a class="reference internal" href="#sample-downloadanimation-request">Sample DownloadAnimation request</a></li>
+<li><a class="reference internal" href="#secondary-output-animation-metadata">Secondary output: animation metadata</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="rawDownload.html" title="previous chapter">Raw data download processes</a></li>
+            <li>Next: <a href="../wps-jdbc/index.html" title="next chapter">WPS JDBC</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/wps-download/mapAnimationDownload.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

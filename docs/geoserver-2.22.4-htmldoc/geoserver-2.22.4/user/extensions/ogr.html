@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OGR based WFS Output Format &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GeoServer Printing Module" href="printing/index.html" />
+    <link rel="prev" title="NetCDF Output Format" href="netcdf-out/index.html" /> 
+  </head><body class="extensions/ogr">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Extensions</a> &raquo;</li>
+    <li>OGR based WFS Output Format</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="printing/index.html" title="GeoServer Printing Module" accesskey="N">Next</a></li>
+  <li>
+    <a href="netcdf-out/index.html" title="NetCDF Output Format" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="ogr-based-wfs-output-format">
+<span id="ogr-extension"></span><h1>OGR based WFS Output Format<a class="headerlink" href="#ogr-based-wfs-output-format" title="Permalink to this headline">¶</a></h1>
+<p>The ogr2ogr based output format leverages the availability of the ogr2ogr command to allow the generation of more output formats than GeoServer can natively produce.
+The basics idea is to dump to the file system a file that ogr2ogr can translate, invoke it, zip and return the output of the translation.</p>
+<div class="section" id="out-of-the-box-behaviour">
+<h2>Out of the box behaviour<a class="headerlink" href="#out-of-the-box-behaviour" title="Permalink to this headline">¶</a></h2>
+<p>Out of the box the plugin assumes the following:</p>
+<ul class="simple">
+<li><p>ogr2ogr is available in the path</p></li>
+<li><p>the GDAL_DATA variable is pointing to the GDAL data directory (which stores the spatial reference information for GDAL)</p></li>
+</ul>
+<p>In the default configuration the following formats are supported:</p>
+<ul class="simple">
+<li><p>MapInfo in TAB format</p></li>
+<li><p>MapInfo in MIF format</p></li>
+<li><p>Un-styled KML</p></li>
+<li><p>CSV (without geometry data dumps)</p></li>
+</ul>
+<p>The list might be shorter if ogr2ogr has not been built with support for the above formats.</p>
+<p>Once installed in GeoServer four new GetFeature output formats will be available, in particular, <code class="docutils literal notranslate"><span class="pre">OGR-TAB</span></code>, <code class="docutils literal notranslate"><span class="pre">OGR-MIF</span></code>, <code class="docutils literal notranslate"><span class="pre">OGR-KML</span></code>, <code class="docutils literal notranslate"><span class="pre">OGR-CSV</span></code>.</p>
+</div>
+<div class="section" id="ogr2ogr-conversion-abilities">
+<h2>ogr2ogr conversion abilities<a class="headerlink" href="#ogr2ogr-conversion-abilities" title="Permalink to this headline">¶</a></h2>
+<p>The ogr2ogr utility is usually able to convert more formats than the default setup of this output format allows for, but the exact list depends on how the utility was built from sources. To get a full list of the formats available by your ogr2ogr build just run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ogr2ogr</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>and you’ll get the full set of options usable by the program, along with the supported formats. For example, the above produces the following output using the FWTools 2.2.8 distribution (which includes ogr2ogr among other useful information and conversion tools):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">ogr2ogr</span> <span class="p">[</span><span class="o">--</span><span class="n">help</span><span class="o">-</span><span class="n">general</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">skipfailures</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">append</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">gt</span> <span class="n">n</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">select</span> <span class="n">field_list</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">where</span> <span class="n">restricted_where</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">sql</span> <span class="o">&lt;</span><span class="n">sql</span> <span class="n">statement</span><span class="o">&gt;</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">spat</span> <span class="n">xmin</span> <span class="n">ymin</span> <span class="n">xmax</span> <span class="n">ymax</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">preserve_fid</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">fid</span> <span class="n">FID</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">a_srs</span> <span class="n">srs_def</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t_srs</span> <span class="n">srs_def</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s_srs</span> <span class="n">srs_def</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">format_name</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">overwrite</span><span class="p">]</span> <span class="p">[[</span><span class="o">-</span><span class="n">dsco</span> <span class="n">NAME</span><span class="o">=</span><span class="n">VALUE</span><span class="p">]</span> <span class="o">...</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">segmentize</span> <span class="n">max_dist</span><span class="p">]</span>
+            <span class="n">dst_datasource_name</span> <span class="n">src_datasource_name</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">lco</span> <span class="n">NAME</span><span class="o">=</span><span class="n">VALUE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">nln</span> <span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">nlt</span> <span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="n">layer</span> <span class="p">[</span><span class="n">layer</span> <span class="o">...</span><span class="p">]]</span>
+
+<span class="o">-</span><span class="n">f</span> <span class="n">format_name</span><span class="p">:</span> <span class="n">output</span> <span class="n">file</span> <span class="nb">format</span> <span class="n">name</span><span class="p">,</span> <span class="n">possible</span> <span class="n">values</span> <span class="n">are</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;ESRI Shapefile&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;MapInfo File&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;TIGER&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;S57&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;DGN&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;Memory&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;BNA&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;CSV&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;GML&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;GPX&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;KML&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;GeoJSON&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;Interlis 1&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;Interlis 2&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;GMT&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;SQLite&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;ODBC&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;PostgreSQL&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;MySQL&quot;</span>
+  <span class="o">-</span><span class="n">f</span> <span class="s2">&quot;Geoconcept&quot;</span>
+<span class="o">-</span><span class="n">append</span><span class="p">:</span> <span class="n">Append</span> <span class="n">to</span> <span class="n">existing</span> <span class="n">layer</span> <span class="n">instead</span> <span class="n">of</span> <span class="n">creating</span> <span class="n">new</span> <span class="k">if</span> <span class="n">it</span> <span class="n">exists</span>
+<span class="o">-</span><span class="n">overwrite</span><span class="p">:</span> <span class="n">delete</span> <span class="n">the</span> <span class="n">output</span> <span class="n">layer</span> <span class="ow">and</span> <span class="n">recreate</span> <span class="n">it</span> <span class="n">empty</span>
+<span class="o">-</span><span class="n">update</span><span class="p">:</span> <span class="n">Open</span> <span class="n">existing</span> <span class="n">output</span> <span class="n">datasource</span> <span class="ow">in</span> <span class="n">update</span> <span class="n">mode</span>
+<span class="o">-</span><span class="n">select</span> <span class="n">field_list</span><span class="p">:</span> <span class="n">Comma</span><span class="o">-</span><span class="n">delimited</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">fields</span> <span class="kn">from</span> <span class="nn">input</span> <span class="n">layer</span> <span class="n">to</span>
+                    <span class="n">copy</span> <span class="n">to</span> <span class="n">the</span> <span class="n">new</span> <span class="n">layer</span> <span class="p">(</span><span class="n">defaults</span> <span class="n">to</span> <span class="nb">all</span><span class="p">)</span>
+<span class="o">-</span><span class="n">where</span> <span class="n">restricted_where</span><span class="p">:</span> <span class="n">Attribute</span> <span class="n">query</span> <span class="p">(</span><span class="n">like</span> <span class="n">SQL</span> <span class="n">WHERE</span><span class="p">)</span>
+<span class="o">-</span><span class="n">sql</span> <span class="n">statement</span><span class="p">:</span> <span class="n">Execute</span> <span class="n">given</span> <span class="n">SQL</span> <span class="n">statement</span> <span class="ow">and</span> <span class="n">save</span> <span class="n">result</span><span class="o">.</span>
+<span class="o">-</span><span class="n">skipfailures</span><span class="p">:</span> <span class="n">skip</span> <span class="n">features</span> <span class="ow">or</span> <span class="n">layers</span> <span class="n">that</span> <span class="n">fail</span> <span class="n">to</span> <span class="n">convert</span>
+<span class="o">-</span><span class="n">gt</span> <span class="n">n</span><span class="p">:</span> <span class="n">group</span> <span class="n">n</span> <span class="n">features</span> <span class="n">per</span> <span class="n">transaction</span> <span class="p">(</span><span class="n">default</span> <span class="mi">200</span><span class="p">)</span>
+<span class="o">-</span><span class="n">spat</span> <span class="n">xmin</span> <span class="n">ymin</span> <span class="n">xmax</span> <span class="n">ymax</span><span class="p">:</span> <span class="n">spatial</span> <span class="n">query</span> <span class="n">extents</span>
+<span class="o">-</span><span class="n">segmentize</span> <span class="n">max_dist</span><span class="p">:</span> <span class="n">maximum</span> <span class="n">distance</span> <span class="n">between</span> <span class="mi">2</span> <span class="n">nodes</span><span class="o">.</span>
+                      <span class="n">Used</span> <span class="n">to</span> <span class="n">create</span> <span class="n">intermediate</span> <span class="n">points</span>
+<span class="o">-</span><span class="n">dsco</span> <span class="n">NAME</span><span class="o">=</span><span class="n">VALUE</span><span class="p">:</span> <span class="n">Dataset</span> <span class="n">creation</span> <span class="n">option</span> <span class="p">(</span><span class="nb">format</span> <span class="n">specific</span><span class="p">)</span>
+<span class="o">-</span><span class="n">lco</span>  <span class="n">NAME</span><span class="o">=</span><span class="n">VALUE</span><span class="p">:</span> <span class="n">Layer</span> <span class="n">creation</span> <span class="n">option</span> <span class="p">(</span><span class="nb">format</span> <span class="n">specific</span><span class="p">)</span>
+<span class="o">-</span><span class="n">nln</span> <span class="n">name</span><span class="p">:</span> <span class="n">Assign</span> <span class="n">an</span> <span class="n">alternate</span> <span class="n">name</span> <span class="n">to</span> <span class="n">the</span> <span class="n">new</span> <span class="n">layer</span>
+<span class="o">-</span><span class="n">nlt</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Force</span> <span class="n">a</span> <span class="n">geometry</span> <span class="nb">type</span> <span class="k">for</span> <span class="n">new</span> <span class="n">layer</span><span class="o">.</span>  <span class="n">One</span> <span class="n">of</span> <span class="n">NONE</span><span class="p">,</span> <span class="n">GEOMETRY</span><span class="p">,</span>
+     <span class="n">POINT</span><span class="p">,</span> <span class="n">LINESTRING</span><span class="p">,</span> <span class="n">POLYGON</span><span class="p">,</span> <span class="n">GEOMETRYCOLLECTION</span><span class="p">,</span> <span class="n">MULTIPOINT</span><span class="p">,</span>
+     <span class="n">MULTIPOLYGON</span><span class="p">,</span> <span class="ow">or</span> <span class="n">MULTILINESTRING</span><span class="o">.</span>  <span class="n">Add</span> <span class="s2">&quot;25D&quot;</span> <span class="k">for</span> <span class="mi">3</span><span class="n">D</span> <span class="n">layers</span><span class="o">.</span>
+     <span class="n">Default</span> <span class="ow">is</span> <span class="nb">type</span> <span class="n">of</span> <span class="n">source</span> <span class="n">layer</span><span class="o">.</span>
+<span class="o">-</span><span class="n">a_srs</span> <span class="n">srs_def</span><span class="p">:</span> <span class="n">Assign</span> <span class="n">an</span> <span class="n">output</span> <span class="n">SRS</span>
+<span class="o">-</span><span class="n">t_srs</span> <span class="n">srs_def</span><span class="p">:</span> <span class="n">Reproject</span><span class="o">/</span><span class="n">transform</span> <span class="n">to</span> <span class="n">this</span> <span class="n">SRS</span> <span class="n">on</span> <span class="n">output</span>
+<span class="o">-</span><span class="n">s_srs</span> <span class="n">srs_def</span><span class="p">:</span> <span class="n">Override</span> <span class="n">source</span> <span class="n">SRS</span>
+
+<span class="n">Srs_def</span> <span class="n">can</span> <span class="n">be</span> <span class="n">a</span> <span class="n">full</span> <span class="n">WKT</span> <span class="n">definition</span> <span class="p">(</span><span class="n">hard</span> <span class="n">to</span> <span class="n">escape</span> <span class="n">properly</span><span class="p">),</span>
+<span class="ow">or</span> <span class="n">a</span> <span class="n">well</span> <span class="n">known</span> <span class="n">definition</span> <span class="p">(</span><span class="n">ie</span><span class="o">.</span> <span class="n">EPSG</span><span class="p">:</span><span class="mi">4326</span><span class="p">)</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">file</span> <span class="k">with</span> <span class="n">a</span> <span class="n">WKT</span>
+<span class="n">definition</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The full list of formats that ogr2ogr is able to support is available on the <a class="reference external" href="http://www.gdal.org/ogr2ogr.html">OGR site</a>. Mind that this output format can handle only outputs that are file based and that do support creation. So, for example, you won’t be able to use the Postgres output (since it’s database based) or the ArcInfo binary coverage (creation not supported).</p>
+</div>
+<div class="section" id="customisation">
+<h2>Customisation<a class="headerlink" href="#customisation" title="Permalink to this headline">¶</a></h2>
+<p>If ogr2ogr is not available in the default path, the GDAL_DATA is not set, or if the output formats needs tweaking, a <code class="docutils literal notranslate"><span class="pre">ogr2ogr.xml</span></code> file can be put in the root of the GeoServer data directory to customize the output format.</p>
+<p>The default GeoServer configuration is equivalent to the following xml file:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;OgrConfiguration&gt;</span>
+  <span class="nt">&lt;ogr2ogrLocation&gt;</span>ogr2ogr<span class="nt">&lt;/ogr2ogrLocation&gt;</span>
+  <span class="c">&lt;!-- &lt;gdalData&gt;...&lt;/gdalData&gt; --&gt;</span>
+  <span class="nt">&lt;formats&gt;</span>
+    <span class="nt">&lt;Format&gt;</span>
+      <span class="nt">&lt;ogrFormat&gt;</span>MapInfo File<span class="nt">&lt;/ogrFormat&gt;</span>
+      <span class="nt">&lt;formatName&gt;</span>OGR-TAB<span class="nt">&lt;/formatName&gt;</span>
+      <span class="nt">&lt;fileExtension&gt;</span>.tab<span class="nt">&lt;/fileExtension&gt;</span>
+    <span class="nt">&lt;/Format&gt;</span>
+    <span class="nt">&lt;Format&gt;</span>
+      <span class="nt">&lt;ogrFormat&gt;</span>MapInfo File<span class="nt">&lt;/ogrFormat&gt;</span>
+      <span class="nt">&lt;formatName&gt;</span>OGR-MIF<span class="nt">&lt;/formatName&gt;</span>
+      <span class="nt">&lt;fileExtension&gt;</span>.mif<span class="nt">&lt;/fileExtension&gt;</span>
+      <span class="nt">&lt;option&gt;</span>-dsco<span class="nt">&lt;/option&gt;</span>
+      <span class="nt">&lt;option&gt;</span>FORMAT=MIF<span class="nt">&lt;/option&gt;</span>
+    <span class="nt">&lt;/Format&gt;</span>
+    <span class="nt">&lt;Format&gt;</span>
+      <span class="nt">&lt;ogrFormat&gt;</span>CSV<span class="nt">&lt;/ogrFormat&gt;</span>
+      <span class="nt">&lt;formatName&gt;</span>OGR-CSV<span class="nt">&lt;/formatName&gt;</span>
+      <span class="nt">&lt;fileExtension&gt;</span>.csv<span class="nt">&lt;/fileExtension&gt;</span>
+      <span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+      <span class="nt">&lt;mimeType&gt;</span>text/csv<span class="nt">&lt;/mimeType&gt;</span>
+    <span class="nt">&lt;/Format&gt;</span>
+    <span class="nt">&lt;Format&gt;</span>
+      <span class="nt">&lt;ogrFormat&gt;</span>KML<span class="nt">&lt;/ogrFormat&gt;</span>
+      <span class="nt">&lt;formatName&gt;</span>OGR-KML<span class="nt">&lt;/formatName&gt;</span>
+      <span class="nt">&lt;fileExtension&gt;</span>.kml<span class="nt">&lt;/fileExtension&gt;</span>
+      <span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+      <span class="nt">&lt;mimeType&gt;</span>application/vnd.google-earth.kml<span class="nt">&lt;/mimeType&gt;</span>
+    <span class="nt">&lt;/Format&gt;</span>
+  <span class="nt">&lt;/formats&gt;</span>
+<span class="nt">&lt;/OgrConfiguration&gt;</span>
+</pre></div>
+</div>
+<p>The file showcases all possible usage of the configuration elements:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">ogr2ogrLocation</span></code> can be just ogr2ogr if the command is in the path, otherwise it should be the    full path to the executable. For example, on a Windows box with FWTools installed it might be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ogr2ogrLocation</span><span class="o">&gt;</span><span class="n">c</span><span class="p">:</span>\<span class="n">Programmi</span>\<span class="n">FWTools2</span><span class="o">.</span><span class="mf">2.8</span>\<span class="nb">bin</span>\<span class="n">ogr2ogr</span><span class="o">.</span><span class="n">exe</span><span class="o">&lt;/</span><span class="n">ogr2ogrLocation</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gdalData</span></code> must point to the GDAL data directory. For example, on a Windows box with FWTools installed it might be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gdalData</span><span class="o">&gt;</span><span class="n">c</span><span class="p">:</span>\<span class="n">Programmi</span>\<span class="n">FWTools2</span><span class="o">.</span><span class="mf">2.8</span>\<span class="n">data</span><span class="o">&lt;/</span><span class="n">gdalData</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Format</span></code> defines a single format, which is defined by the following tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ogrFormat</span></code>: the name of the format to be passed to ogr2ogr with the -f option (it’s case sensitive).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">formatName</span></code>: is the name of the output format as advertised by GeoServer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fileExtension</span></code>: is the extension of the file generated after the translation, if any (can be omitted)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">option</span></code>: can be used to add one or more options to the ogr2ogr command line. As you can see by the MIF example, each item must be contained in its own tag. You can get a full list of options by running ogr2ogr –help or by visiting the ogr2ogr web page. Also consider that each format supports specific creation options, listed in the description page for each format (for example, here is the MapInfo one).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">singleFile</span></code> (since 2.0.3): if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mimeType</span></code> (since 2.0.3): the mime type of the file returned when using <code class="docutils literal notranslate"><span class="pre">singleFile</span></code>. If not specified <code class="docutils literal notranslate"><span class="pre">application/octet-stream</span></code> will be used as a default.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="ogr-based-wps-output-format">
+<h1>OGR based WPS Output Format<a class="headerlink" href="#ogr-based-wps-output-format" title="Permalink to this headline">¶</a></h1>
+<p>The OGR based WPS output format provides the ability to turn feature collection (vector layer) output types into formats supported by OGR,
+using the same configuration and same machinery provided by the OGR WFS output format (which should also be installed for the WPS portion to work).</p>
+<p>Unlike the WFS case the WPS output formats are receiving different treatment in WPS responses depending on whether they are binary, text, or xml, when the Execute response
+style chosen by the client is “document”:</p>
+<ul class="simple">
+<li><p>Binary types need to be base64 encoded for XML embedding</p></li>
+<li><p>Text types need to be included inside a CDATA section</p></li>
+<li><p>XML types can be integrated in the response as-is</p></li>
+</ul>
+<p>In order to understand the nature of the output format a new optional configuration element, <code class="docutils literal notranslate"><span class="pre">&lt;type&gt;</span></code>, can
+be added to the <code class="docutils literal notranslate"><span class="pre">ogr2ogr.xml</span></code> configuration file in order to specify the output nature.
+The possible values are <code class="docutils literal notranslate"><span class="pre">binary</span></code>, <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">xml</span></code>, in case the value is missing, <code class="docutils literal notranslate"><span class="pre">binary</span></code> is assumed.
+Here is an example showing all possible combinations:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;OgrConfiguration&gt;</span>
+    <span class="nt">&lt;ogr2ogrLocation&gt;</span>ogr2ogr<span class="nt">&lt;/ogr2ogrLocation&gt;</span>
+    <span class="c">&lt;!-- &lt;gdalData&gt;...&lt;/gdalData&gt; --&gt;</span>
+    <span class="nt">&lt;formats&gt;</span>
+        <span class="nt">&lt;Format&gt;</span>
+            <span class="nt">&lt;ogrFormat&gt;</span>MapInfo File<span class="nt">&lt;/ogrFormat&gt;</span>
+            <span class="nt">&lt;formatName&gt;</span>OGR-TAB<span class="nt">&lt;/formatName&gt;</span>
+            <span class="nt">&lt;fileExtension&gt;</span>.tab<span class="nt">&lt;/fileExtension&gt;</span>
+            <span class="nt">&lt;type&gt;</span>binary<span class="nt">&lt;/type&gt;</span> <span class="c">&lt;!-- not really required, it’s the default --&gt;</span>
+        <span class="nt">&lt;/Format&gt;</span>
+        <span class="nt">&lt;Format&gt;</span>
+            <span class="nt">&lt;ogrFormat&gt;</span>MapInfo File<span class="nt">&lt;/ogrFormat&gt;</span>
+            <span class="nt">&lt;formatName&gt;</span>OGR-MIF<span class="nt">&lt;/formatName&gt;</span>
+            <span class="nt">&lt;fileExtension&gt;</span>.mif<span class="nt">&lt;/fileExtension&gt;</span>
+            <span class="nt">&lt;option&gt;</span>-dsco<span class="nt">&lt;/option&gt;</span>
+            <span class="nt">&lt;option&gt;</span>FORMAT=MIF<span class="nt">&lt;/option&gt;</span>
+        <span class="nt">&lt;/Format&gt;</span>
+        <span class="nt">&lt;Format&gt;</span>
+            <span class="nt">&lt;ogrFormat&gt;</span>CSV<span class="nt">&lt;/ogrFormat&gt;</span>
+            <span class="nt">&lt;formatName&gt;</span>OGR-CSV<span class="nt">&lt;/formatName&gt;</span>
+            <span class="nt">&lt;fileExtension&gt;</span>.csv<span class="nt">&lt;/fileExtension&gt;</span>
+            <span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+            <span class="nt">&lt;mimeType&gt;</span>text/csv<span class="nt">&lt;/mimeType&gt;</span>
+            <span class="nt">&lt;option&gt;</span>-lco<span class="nt">&lt;/option&gt;</span>
+            <span class="nt">&lt;option&gt;</span>GEOMETRY=AS_WKT<span class="nt">&lt;/option&gt;</span>
+            <span class="nt">&lt;type&gt;</span>text<span class="nt">&lt;/type&gt;</span>
+        <span class="nt">&lt;/Format&gt;</span>
+        <span class="nt">&lt;Format&gt;</span>
+            <span class="nt">&lt;ogrFormat&gt;</span>KML<span class="nt">&lt;/ogrFormat&gt;</span>
+            <span class="nt">&lt;formatName&gt;</span>OGR-KML<span class="nt">&lt;/formatName&gt;</span>
+            <span class="nt">&lt;fileExtension&gt;</span>.kml<span class="nt">&lt;/fileExtension&gt;</span>
+            <span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
+            <span class="nt">&lt;mimeType&gt;</span>application/vnd.google-earth.kml<span class="nt">&lt;/mimeType&gt;</span>
+            <span class="nt">&lt;type&gt;</span>xml<span class="nt">&lt;/type&gt;</span>
+        <span class="nt">&lt;/Format&gt;</span>
+    <span class="nt">&lt;/formats&gt;</span>
+<span class="nt">&lt;/OgrConfiguration&gt;</span>
+</pre></div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="netcdf-out/index.html" title="previous chapter">NetCDF Output Format</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="printing/index.html" title="next chapter">GeoServer Printing Module</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">OGR based WFS Output Format</a><ul>
+<li><a class="reference internal" href="#out-of-the-box-behaviour">Out of the box behaviour</a></li>
+<li><a class="reference internal" href="#ogr2ogr-conversion-abilities">ogr2ogr conversion abilities</a></li>
+<li><a class="reference internal" href="#customisation">Customisation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ogr-based-wps-output-format">OGR based WPS Output Format</a></li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="netcdf-out/index.html" title="previous chapter">NetCDF Output Format</a></li>
+            <li>Next: <a href="printing/index.html" title="next chapter">GeoServer Printing Module</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/ogr.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

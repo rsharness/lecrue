@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WCS configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WCS Request Builder" href="requestbuilder.html" />
+    <link rel="prev" title="WCS Vendor Parameters" href="vendor.html" /> 
+  </head><body class="services/wcs/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Coverage Service (WCS)</a> &raquo;</li>
+    <li>WCS configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="requestbuilder.html" title="WCS Request Builder" accesskey="N">Next</a></li>
+  <li>
+    <a href="vendor.html" title="WCS Vendor Parameters" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wcs-configuration">
+<span id="id1"></span><h1>WCS configuration<a class="headerlink" href="#wcs-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="coverage-processing">
+<h2>Coverage processing<a class="headerlink" href="#coverage-processing" title="Permalink to this headline">¶</a></h2>
+<p>The WCS processing chain can be tuned in respect of how raster overviews and read subsampling are used.</p>
+<p>The overview policy has four possible values:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 80%" />
+<col style="width: 10%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Version</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Lower resolution overview</strong></p></td>
+<td><p>Looks up the two overviews with a resolution closest to the one requested and chooses the one at the lower resolution.</p></td>
+<td><p>2.0.3</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Don’t use overviews</strong></p></td>
+<td><p>Overviews will be ignored, the data at its native resolution will be used instead. This is the default value.</p></td>
+<td><p>2.0.3</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Higher resolution overview</strong></p></td>
+<td><p>Looks up the two overviews with a resolution closest to the one requested and chooses the one at the higher resolution.</p></td>
+<td><p>2.0.3</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Closest overview</strong></p></td>
+<td><p>Looks up the overview closest to the one requested</p></td>
+<td><p>2.0.3</p></td>
+</tr>
+</tbody>
+</table>
+<p>While reading coverage data at a resolution lower than the one available on persistent storage its common to use subsampling, that is, read one every N pixels as a way to reduce the resolution of the data read in memory. <strong>Use subsampling</strong> controls whether subsampling is enabled or not.</p>
+</div>
+<div class="section" id="resource-consumption-limits">
+<h2>Resource consumption limits<a class="headerlink" href="#resource-consumption-limits" title="Permalink to this headline">¶</a></h2>
+<p>The request limit options allow the administrator to limit the resources consumed by each WCS <code class="docutils literal notranslate"><span class="pre">GetCoverage</span></code> request.</p>
+<p>The request limits limit the size of the image read from the source and the size of the image returned to the client. Both of these limits are to be considered a worst case scenario and are setup to make sure the server never gets asked to deal with too much data.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 80%" />
+<col style="width: 10%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Version</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Maximum input memory</strong></p></td>
+<td><p>Sets the maximum amount of memory, in kilobytes, a GetCovearge request might use, at most, to read a coverage from the data source. The memory is computed as <code class="docutils literal notranslate"><span class="pre">rw</span> <span class="pre">*</span> <span class="pre">rh</span> <span class="pre">*</span> <span class="pre">pixelsize</span></code>, where <code class="docutils literal notranslate"><span class="pre">rw</span></code> and <code class="docutils literal notranslate"><span class="pre">rh</span></code> are the size of the raster to be read and <code class="docutils literal notranslate"><span class="pre">pixelsize</span></code> is the dimension or a pixel (e.g., a RGBA image will have 32bit pixels, a batimetry might have 16bit signed int ones)</p></td>
+<td><p>2.0.3</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Maximum output memory</strong></p></td>
+<td><p>Sets the maximum amount of memory, in kilobytes, a GetCoverage request might use, at most, to host the resulting raster. The memory is computed as <code class="docutils literal notranslate"><span class="pre">ow</span> <span class="pre">*</span> <span class="pre">oh</span> <span class="pre">*</span> <span class="pre">pixelsize</span></code>, where <code class="docutils literal notranslate"><span class="pre">ow</span></code> and <code class="docutils literal notranslate"><span class="pre">oh</span></code> are the size of the raster to be generated in output.</p></td>
+<td><p>2.0.3</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Max number of dimension values</strong></p></td>
+<td><p>Sets the maximum number of dimension (time, at least for now) values that a client can request in a GetCoverage request (the work to be done is usually proportional to said number of times, and the list of values is kept in memory during the processing)</p></td>
+<td><p>2.14.0</p></td>
+</tr>
+</tbody>
+</table>
+<p>To understand the limits let’s consider a very simplified example in which no tiles and overviews enter the game:</p>
+<ul class="simple">
+<li><p>The request hits a certain area of the original raster. Reading it at full resolution requires grabbing a raster of size <code class="docutils literal notranslate"><span class="pre">rw</span> <span class="pre">*</span> <span class="pre">rh</span></code>, which has a certain number of bands, each with a certain size. The amount of memory used for the read will be <code class="docutils literal notranslate"><span class="pre">rw</span> <span class="pre">*</span> <span class="pre">rh</span> <span class="pre">*</span> <span class="pre">pixelsize</span></code>. This is the value measured by the input memory limit</p></li>
+<li><p>The WCS performs the necessary processing: band selection, resolution change (downsampling or upsampling), reprojection</p></li>
+<li><p>The resulting raster will have size <code class="docutils literal notranslate"><span class="pre">ow</span> <span class="pre">*</span> <span class="pre">oh</span></code> and will have a certain number of bands, possibly less than the input data, each with a certain size. The amount of memory used for the final raster will be <code class="docutils literal notranslate"><span class="pre">ow</span> <span class="pre">*</span> <span class="pre">oh</span> <span class="pre">*</span> <span class="pre">pixelsize</span></code>. This is the value measured by the output memory limit.</p></li>
+<li><p>Finally the resulting raster will be encoded in the output format. Depending on the output format structure the size of the result might be higher than the in memory size (ArcGrid case) or smaller (for example in the case of GeoTIFF output, which is normally LZW compressed)</p></li>
+</ul>
+<p>In fact reality is a bit more complicated:</p>
+<ul class="simple">
+<li><p>The input source might be tiled, which means there is no need to fully read in memory the region, but it is sufficient to do so one tile at a time. The input limits won’t consider inner tiling when computing the limits, but if all the input coverages are tiled the input limits should be designed considering the amount of data to be read from the persistent storage as opposed to the amount of data to be stored in memory</p></li>
+<li><p>The reader might be using overviews or performing subsampling during the read to avoid actually reading all the data at the native resolution should the output be subsampled</p></li>
+<li><p>The output format might be tile aware as well (GeoTIFF is), meaning it might be able to write out one tile at a time. In this case not even the output raster will be stored in memory fully at any given time.</p></li>
+</ul>
+<p>Only a few input formats are so badly structure that they force the reader to read the whole input data in one shot, and should be avoided. Examples are:
+* JPEG or PNG images with world file
+* Single tiled and JPEG compressed GeoTIFF files</p>
+</div>
+<div class="section" id="limited-srs-list">
+<h2>Limited SRS list<a class="headerlink" href="#limited-srs-list" title="Permalink to this headline">¶</a></h2>
+<p>Some clients may have problems processing a GetCapabilities document listing the complete list of SRS (projections) that GeoServer supports by default. You may also find some projections are not appropriate for your data products.</p>
+<p>Use this setting to limit the default list of supported SRS (projections) for the service. This list will be used by default, individual coverages define their own list of SRS (projections).</p>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/wcs_limited_srs_list.png" src="../../_images/wcs_limited_srs_list.png" />
+<p class="caption"><span class="caption-text">Limited SRS list</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>To limit the service to only the required projections use the <span class="guilabel">Limited SRS List</span> text box to list the desired EPSG codes separated by commas, e.g. <cite>4326,27700</cite> .</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="vendor.html" title="previous chapter">WCS Vendor Parameters</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="requestbuilder.html" title="next chapter">WCS Request Builder</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WCS configuration</a><ul>
+<li><a class="reference internal" href="#coverage-processing">Coverage processing</a></li>
+<li><a class="reference internal" href="#resource-consumption-limits">Resource consumption limits</a></li>
+<li><a class="reference internal" href="#limited-srs-list">Limited SRS list</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="vendor.html" title="previous chapter">WCS Vendor Parameters</a></li>
+            <li>Next: <a href="requestbuilder.html" title="next chapter">WCS Request Builder</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wcs/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

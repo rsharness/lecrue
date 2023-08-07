@@ -1,0 +1,1536 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template Directives &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Template Configuration" href="configuration.html" />
+    <link rel="prev" title="Installing the GeoServer FEATURES-TEMPLATING extension" href="installing.html" /> 
+  </head><body class="community/features-templating/directives">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features-Templating Extension</a> &raquo;</li>
+    <li>Template Directives</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="configuration.html" title="Template Configuration" accesskey="N">Next</a></li>
+  <li>
+    <a href="installing.html" title="Installing the GeoServer FEATURES-TEMPLATING extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="template-directives">
+<span id="id1"></span><h1>Template Directives<a class="headerlink" href="#template-directives" title="Permalink to this headline">¶</a></h1>
+<p>This part of the documentation is an introduction explaining the different template directives.
+Examples will be provided for both Simple Features and Complex Features.
+The syntax of the directives varies slightly between XML based templates and JSON based templates.</p>
+<p>The examples will be provided mainly for GeoJSON and GML. However the syntax defined for GeoJSON output, unless otherwise specified, is valid for JSON-LD templates</p>
+<div class="section" id="template-directive-summary">
+<h2>Template directive summary<a class="headerlink" href="#template-directive-summary" title="Permalink to this headline">¶</a></h2>
+<p>The following constitutes a summary of all the template directives and it is meant to be used for quick reference. Each directive is explained in detail in the sections below.</p>
+<div class="section" id="json-based-templates">
+<h3>JSON based templates<a class="headerlink" href="#json-based-templates" title="Permalink to this headline">¶</a></h3>
+<p>The following are the directives available in JSON based templates.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 10%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Usage</strong></p></td>
+<td><p><strong>Syntax</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>property interpolation</p></td>
+<td><p>${property}</p></td>
+<td><p>specify it as an attribute value (<code class="code docutils literal notranslate"><span class="pre">&quot;json_attribute&quot;:&quot;${property}&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>cql evaluation</p></td>
+<td><p>$${cql}</p></td>
+<td><p>specify it as an element value (<code class="code docutils literal notranslate"><span class="pre">&quot;json_attribute&quot;:&quot;$${cql}&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>setting the evaluation context for child attributes.</p></td>
+<td><p>${source}.</p></td>
+<td><p>specify it as the first nested object in arrays (<code class="code docutils literal notranslate"><span class="pre">{&quot;$source&quot;:&quot;property&quot;}</span></code>) or as an attribute in objects (<code class="code docutils literal notranslate"><span class="pre">&quot;$source&quot;:&quot;property&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>filter the array, object, attribute</p></td>
+<td><p>$filter</p></td>
+<td><p>specify it inside the first nested object in arrays (<code class="code docutils literal notranslate"><span class="pre">{&quot;$filter&quot;:&quot;condition&quot;}</span></code>) or as an attribute in objects (<code class="code docutils literal notranslate"><span class="pre">&quot;$filter&quot;:&quot;condition&quot;</span></code>) or in an attribute next to the attribute value separated by a <code class="code docutils literal notranslate"><span class="pre">,</span></code> (<code class="code docutils literal notranslate"><span class="pre">&quot;attribute&quot;:&quot;$filter{condition},</span> <span class="pre">${property}&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>defines options to customize the output outside of a feature scope</p></td>
+<td><p>$options</p></td>
+<td><p>specify it at the top of the JSON template as a JSON object (GeoJSON options: <code class="code docutils literal notranslate"><span class="pre">&quot;$options&quot;:{&quot;flat_output&quot;:true,</span> <span class="pre">&quot;separator&quot;:&quot;.&quot;}</span></code>; JSON-LD options: <code class="code docutils literal notranslate"><span class="pre">&quot;$options&quot;:{&quot;&#64;context&quot;:</span> <span class="pre">&quot;the</span> <span class="pre">context</span> <span class="pre">json&quot;,</span> <span class="pre">&quot;encode_as_string&quot;:</span> <span class="pre">true,</span> <span class="pre">&quot;&#64;type&quot;:&quot;schema:SpecialAnnouncement&quot;,</span> <span class="pre">&quot;collection_name&quot;:&quot;customCollectionName&quot;}</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p>allows including a template into another</p></td>
+<td><p>$include, $includeFlat</p></td>
+<td><p>specify the <code class="code docutils literal notranslate"><span class="pre">$include</span></code> option as an attribute value (<code class="code docutils literal notranslate"><span class="pre">&quot;attribute&quot;:&quot;$include{subProperty.json}&quot;</span></code>) and the <code class="code docutils literal notranslate"><span class="pre">$includeFlat</span></code> as an attribute name with the included template path as a value (<code class="code docutils literal notranslate"><span class="pre">&quot;$includeFlat&quot;:&quot;included.json&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>allows a template to extend another template</p></td>
+<td><p>$merge</p></td>
+<td><p>specify the <code class="code docutils literal notranslate"><span class="pre">$merge</span></code> directive as an attribute name containing the path to the extended template (:code: <cite>“$merged”:”base_template.json”</cite>).</p></td>
+</tr>
+<tr class="row-odd"><td><p>allows null values to be encoded. default is not encoded.</p></td>
+<td><p>${property}! or $${expression}!</p></td>
+<td><p>! at the end of a property interpolation or cql directive (<code class="code docutils literal notranslate"><span class="pre">&quot;attribute&quot;:&quot;${property}!&quot;</span></code> or <code class="code docutils literal notranslate"><span class="pre">&quot;attribute&quot;:&quot;$${expression}!&quot;</span></code>).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="xml-based-templates">
+<h3>XML based templates<a class="headerlink" href="#xml-based-templates" title="Permalink to this headline">¶</a></h3>
+<p>The following are the directives available in XML based templates.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 10%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Usage</strong></p></td>
+<td><p><strong>Syntax</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>property interpolation</p></td>
+<td><p>${property}</p></td>
+<td><p>specify it either as an element value (<code class="code docutils literal notranslate"><span class="pre">&lt;element&gt;${property}&lt;/element&gt;</span></code>) or as an xml attribute value (<code class="code docutils literal notranslate"><span class="pre">&lt;element</span> <span class="pre">attribute:&quot;${property}&quot;/&gt;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>cql evaluation</p></td>
+<td><p>$${cql}</p></td>
+<td><p>specify them either as an element value (<code class="code docutils literal notranslate"><span class="pre">&lt;element&gt;$${cql}&lt;/element&gt;</span></code>) or as an xml attribute value (<code class="code docutils literal notranslate"><span class="pre">&lt;element</span> <span class="pre">attribute:&quot;$${cql}&quot;/&gt;</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>setting the evaluation context for property interpolation and cql evaluation in child elements.</p></td>
+<td><p>gft:source</p></td>
+<td><p>specify it as an xml attribute (<code class="code docutils literal notranslate"><span class="pre">&lt;element</span> <span class="pre">gft:source:&quot;property&quot;&gt;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>filter the element to which is applied based on the defined condition</p></td>
+<td><p>gft:filter</p></td>
+<td><p>specify it as an XML attribute on the element to be filtered (<code class="code docutils literal notranslate"><span class="pre">&lt;element</span> <span class="pre">gft:filter:&quot;condition&quot;&gt;</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>marks the beginning of an XML template.</p></td>
+<td><p>gft:Template</p></td>
+<td><p>It has to be the root element of an XML template (<code class="code docutils literal notranslate"><span class="pre">&lt;gft:Template&gt;</span> <span class="pre">Template</span> <span class="pre">content&lt;/gft:Template&gt;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>defines options to customize the output outside of a feature scope</p></td>
+<td><p>gft:Options</p></td>
+<td><p>specify it as an element at the beginning of the xml document after the <code class="code docutils literal notranslate"><span class="pre">&lt;gft:Template&gt;</span></code> one (<code class="code docutils literal notranslate"><span class="pre">&lt;gft:Options&gt;&lt;/gft:Options&gt;</span></code>). GML options: <code class="code docutils literal notranslate"><span class="pre">&lt;gtf:Namespaces&gt;</span></code>,:code:<cite>&lt;gtf:SchemaLocation&gt;</cite>. HTML options: <code class="code docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code>, :code: <cite>&lt;script type=”application/ld+json”/&gt;</cite>, <code class="code docutils literal notranslate"><span class="pre">&lt;style&gt;</span></code>, :code: <cite>&lt;link&gt;</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p>allows including a template into another</p></td>
+<td><p>$include, gft:includeFlat</p></td>
+<td><p>specify the <code class="code docutils literal notranslate"><span class="pre">$include</span></code> option as an element value (<code class="code docutils literal notranslate"><span class="pre">&lt;element&gt;$include{included.xml}&lt;/element&gt;</span></code>) and the <code class="code docutils literal notranslate"><span class="pre">gft:includeFlat</span></code> as an element having the included template as text content (<code class="code docutils literal notranslate"><span class="pre">&lt;gft:includeFlat&gt;included.xml&lt;/gft:includeFlat&gt;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>allows null values to be encoded. default is not encoded.</p></td>
+<td><p>${property}!</p></td>
+<td><p>specify it either as an element value (<code class="code docutils literal notranslate"><span class="pre">&lt;element&gt;${property}!&lt;/element&gt;</span></code>) or as an xml attribute value (<code class="code docutils literal notranslate"><span class="pre">&lt;element</span> <span class="pre">attribute:&quot;${property}!&quot;/&gt;</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="a-step-by-step-introduction-to-features-templating-syntax">
+<h2>A step by step introduction to features-templating syntax<a class="headerlink" href="#a-step-by-step-introduction-to-features-templating-syntax" title="Permalink to this headline">¶</a></h2>
+<p>This introduction is meant to illustrate the different directives that can be used in a template.
+For clarity the documentation will start with a <code class="docutils literal notranslate"><span class="pre">Simple</span> <span class="pre">Feature</span></code> example and then progress through a <code class="docutils literal notranslate"><span class="pre">Complex</span> <span class="pre">Feature</span></code> example. However all the directives that will be shown are available for both Simple and Complex Features. <code class="docutils literal notranslate"><span class="pre">GeoJSON</span></code> and <code class="docutils literal notranslate"><span class="pre">GML</span></code> examples will be used mostly. For <code class="docutils literal notranslate"><span class="pre">JSON-LD</span></code> output format the rules to define a template are the same as the <code class="docutils literal notranslate"><span class="pre">GeoJSON</span></code> template with two exceptions:</p>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> needs to be specified (see the <code class="docutils literal notranslate"><span class="pre">options</span></code> section below).</p></li>
+<li><p>The standard mandates that attributes’ values are all strings.</p></li>
+</ul>
+<div class="section" id="property-and-cql-directive-simple-feature-example">
+<h3>${property} and $${cql} directive (Simple Feature example)<a class="headerlink" href="#property-and-cql-directive-simple-feature-example" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="geojson">
+<h4>GeoJSON<a class="headerlink" href="#geojson" title="Permalink to this headline">¶</a></h4>
+<p>Assume that we want to change the default geojson output of the <code class="code docutils literal notranslate"><span class="pre">topp:states</span></code> layer. A single feature in the default output is like the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;states.1&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nt">&quot;geometry_name&quot;</span><span class="p">:</span> <span class="s2">&quot;the_geom&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nt">&quot;STATE_NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;Illinois&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;STATE_FIPS&quot;</span><span class="p">:</span> <span class="s2">&quot;17&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;SUB_REGION&quot;</span><span class="p">:</span> <span class="s2">&quot;E N Cen&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;STATE_ABBR&quot;</span><span class="p">:</span> <span class="s2">&quot;IL&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;LAND_KM&quot;</span><span class="p">:</span> <span class="mf">143986.61</span><span class="p">,</span>
+  <span class="nt">&quot;WATER_KM&quot;</span><span class="p">:</span> <span class="mf">1993.335</span><span class="p">,</span>
+  <span class="nt">&quot;PERSONS&quot;</span><span class="p">:</span> <span class="mi">11430602</span><span class="p">,</span>
+  <span class="nt">&quot;FAMILIES&quot;</span><span class="p">:</span> <span class="mi">2924880</span><span class="p">,</span>
+  <span class="nt">&quot;HOUSHOLD&quot;</span><span class="p">:</span> <span class="mi">4202240</span><span class="p">,</span>
+  <span class="nt">&quot;MALE&quot;</span><span class="p">:</span> <span class="mi">5552233</span><span class="p">,</span>
+  <span class="nt">&quot;FEMALE&quot;</span><span class="p">:</span> <span class="mi">5878369</span><span class="p">,</span>
+  <span class="nt">&quot;WORKERS&quot;</span><span class="p">:</span> <span class="mi">4199206</span><span class="p">,</span>
+  <span class="nt">&quot;DRVALONE&quot;</span><span class="p">:</span> <span class="mi">3741715</span><span class="p">,</span>
+  <span class="nt">&quot;CARPOOL&quot;</span><span class="p">:</span> <span class="mi">652603</span><span class="p">,</span>
+  <span class="nt">&quot;PUBTRANS&quot;</span><span class="p">:</span> <span class="mi">538071</span><span class="p">,</span>
+  <span class="nt">&quot;EMPLOYED&quot;</span><span class="p">:</span> <span class="mi">5417967</span><span class="p">,</span>
+  <span class="nt">&quot;UNEMPLOY&quot;</span><span class="p">:</span> <span class="mi">385040</span><span class="p">,</span>
+  <span class="nt">&quot;SERVICE&quot;</span><span class="p">:</span> <span class="mi">1360159</span><span class="p">,</span>
+  <span class="nt">&quot;MANUAL&quot;</span><span class="p">:</span> <span class="mi">828906</span><span class="p">,</span>
+  <span class="nt">&quot;P_MALE&quot;</span><span class="p">:</span> <span class="mf">0.486</span><span class="p">,</span>
+  <span class="nt">&quot;P_FEMALE&quot;</span><span class="p">:</span> <span class="mf">0.514</span><span class="p">,</span>
+  <span class="nt">&quot;SAMP_POP&quot;</span><span class="p">:</span> <span class="mi">1747776</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In particular we want to include in the final output only certain properties (e.g. the geometry, the state name, the code, values about population, male, female and workers). We want also to change some attribute names and to have them lower cased. Finally we want to have a string field having a wkt representation of the geometry. The desired output is like the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;states.1&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
+     <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiPolygon&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="s2">&quot;[....]&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+     <span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Illinois&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="s2">&quot;E N Cen&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="s2">&quot;IL&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;population_data&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="mi">114306027</span><span class="p">,</span>
+        <span class="nt">&quot;males&quot;</span><span class="p">:</span><span class="mf">5552233.0</span><span class="p">,</span>
+        <span class="nt">&quot;females&quot;</span><span class="p">:</span><span class="mf">5878369.0</span><span class="p">,</span>
+        <span class="nt">&quot;active_population&quot;</span><span class="p">:</span><span class="mf">4199206.0</span>
+     <span class="p">},</span>
+     <span class="nt">&quot;wkt_geom&quot;</span><span class="p">:</span><span class="s2">&quot;MULTIPOLYGON (((37.51099000000001 -88.071564, [...])))&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A template like this will allows us to produce the above output:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span> <span class="p">{</span>
+ <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;${@id}&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;geometry&quot;</span><span class="p">:</span> <span class="s2">&quot;${the_geom}&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;${STATE_NAME}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;region&quot;</span><span class="p">:</span> <span class="s2">&quot;${SUB_REGION}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;${STATE_ABBR}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;population_data&quot;</span><span class="p">:{</span>
+         <span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;${PERSONS}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;males&quot;</span><span class="p">:</span> <span class="s2">&quot;${MALE}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;females&quot;</span><span class="p">:</span> <span class="s2">&quot;${FEMALE}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;active_population&quot;</span><span class="p">:</span> <span class="s2">&quot;${WORKERS}&quot;</span>
+     <span class="p">},</span>
+     <span class="nt">&quot;wkt_geom&quot;</span><span class="p">:</span><span class="s2">&quot;$${toWKT(the_geom)}&quot;</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As it is possible to see the new output has the attribute names defined in the template. Moreover the <code class="code docutils literal notranslate"><span class="pre">population</span></code> related attributes have been placed inside a nested json object. Finally a wkt_geom attribute with the WKT geometry representation has been added.</p>
+</div>
+<div class="section" id="gml">
+<h4>GML<a class="headerlink" href="#gml" title="Permalink to this headline">¶</a></h4>
+<p>The same template mechanism can be applied to a GML output format. This is an example GML template, again for the <code class="code docutils literal notranslate"><span class="pre">topp:states</span></code> layer</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="nt">&lt;gft:Template&gt;</span>
+  <span class="nt">&lt;gft:Options&gt;</span>
+    <span class="nt">&lt;gft:Namespaces</span> <span class="na">xmlns:topp=</span><span class="s">&quot;http://www.openplans.org/topp&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;gft:SchemaLocation</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/gft:Options&gt;</span>
+  <span class="nt">&lt;topp:states</span> <span class="na">gml:id=</span><span class="s">&quot;${@id}&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;topp:name</span> <span class="na">code=</span><span class="s">&quot;${STATE_ABBR}&quot;</span><span class="nt">&gt;</span>${STATE_NAME}<span class="nt">&lt;/topp:name&gt;</span>
+    <span class="nt">&lt;topp:region&gt;</span>${SUB_REGION}<span class="nt">&lt;/topp:region&gt;</span>
+    <span class="nt">&lt;topp:population&gt;</span>${PERSONS}<span class="nt">&lt;/topp:population&gt;</span>
+    <span class="nt">&lt;topp:males&gt;</span>${MALE}<span class="nt">&lt;/topp:males&gt;</span>
+    <span class="nt">&lt;topp:females&gt;</span>${FEMALE}<span class="nt">&lt;/topp:females&gt;</span>
+    <span class="nt">&lt;topp:active_population&gt;</span>${WORKERS}<span class="nt">&lt;/topp:active_population&gt;</span>
+    <span class="nt">&lt;topp:wkt_geom&gt;</span>$${toWKT(the_geom)}<span class="nt">&lt;/topp:wkt_geom&gt;</span>
+  <span class="nt">&lt;/topp:states&gt;</span>
+<span class="nt">&lt;/gft:Template&gt;</span>
+</pre></div>
+</div>
+<p>And this is how a feature will appear:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;topp:states</span> <span class="na">gml:id=</span><span class="s">&quot;states.10&quot;</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;topp:name</span> <span class="na">code=</span><span class="s">&quot;MO&quot;</span><span class="nt">&gt;</span>Missouri<span class="nt">&lt;/topp:name&gt;</span>
+   <span class="nt">&lt;topp:region&gt;</span>W N Cen<span class="nt">&lt;/topp:region&gt;</span>
+   <span class="nt">&lt;topp:population&gt;</span>5117073.0<span class="nt">&lt;/topp:population&gt;</span>
+   <span class="nt">&lt;topp:males&gt;</span>2464315.0<span class="nt">&lt;/topp:males&gt;</span>
+   <span class="nt">&lt;topp:females&gt;</span>2652758.0<span class="nt">&lt;/topp:females&gt;</span>
+   <span class="nt">&lt;topp:active_population&gt;</span>1861192.0<span class="nt">&lt;/topp:active_population&gt;</span>
+   <span class="nt">&lt;topp:wkt_geom&gt;</span>MULTIPOLYGON (([....])))<span class="nt">&lt;/topp:wkt_geom&gt;</span>
+ <span class="nt">&lt;/topp:states&gt;</span>
+</pre></div>
+</div>
+<p>As it is possible to see the geometry is being encoded only as a wkt, moreover the STATE_ATTR value is now present as an xml attribute of the element <code class="code docutils literal notranslate"><span class="pre">topp:states</span></code>. Finally elements that were not defined in the template did not show up.</p>
+<p>Looking at these examples it is possible to see additional directives that can customize the output:</p>
+<ul class="simple">
+<li><p>Property interpolation can be invoked using the directive <code class="code docutils literal notranslate"><span class="pre">${property_name}</span></code>.</p></li>
+<li><p>In case complex operation are needed a CQL expression can be used thought a <code class="code docutils literal notranslate"><span class="pre">$${cql}</span></code> syntax (all CQL functions are supported).</p></li>
+<li><p>Simple text values are reproduced in the final output as they are.</p></li>
+<li><p>Finally the GML template needs the actual template content to be wrapped into a <code class="code docutils literal notranslate"><span class="pre">gft:Template</span></code> element. The <code class="code docutils literal notranslate"><span class="pre">gft</span></code> doesn’t needs to be bound to a namespace. It is used just as marker of a features-templating related element and will not be present in the final output.</p></li>
+<li><p>There is also another element, the <code class="code docutils literal notranslate"><span class="pre">gft:Options</span></code>, with two more elements inside. It will be explained in a later dedicated section.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="source-and-filter-complex-feature-example">
+<h3>Source and filter (Complex Feature example)<a class="headerlink" href="#source-and-filter-complex-feature-example" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h4>GeoJSON<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>Let’s assume now that an AppSchema layer has been configured and customization of the complex features output is needed.
+The Meteo Stations use case will be used as an example. For a description of the use case check the documentation at <a class="reference internal" href="../smart-data-loader/index.html#community-smart-data-loader"><span class="std std-ref">Smart Data Loader Extension</span></a>.
+This is the domain model of the use case:</p>
+<div class="figure align-default">
+<img alt="../../_images/meteos-stations-er-diagram.png" src="../../_images/meteos-stations-er-diagram.png" />
+</div>
+<p>The default GeoJSON output format produces features like the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;MeteoStationsFeature.7&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
+
+  <span class="p">},</span>
+  <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+     <span class="nt">&quot;@featureType&quot;</span><span class="p">:</span><span class="s2">&quot;MeteoStations&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+     <span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="s2">&quot;BOL&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;common_name&quot;</span><span class="p">:</span><span class="s2">&quot;Bologna&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;meteoObservations&quot;</span><span class="p">:[</span>
+        <span class="p">{</span>
+           <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+           <span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:28:31Z&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span>
+           <span class="nt">&quot;meteoParameters&quot;</span><span class="p">:[</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="nt">&quot;param_name&quot;</span><span class="p">:</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;param_unit&quot;</span><span class="p">:</span><span class="s2">&quot;C&quot;</span>
+              <span class="p">}</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+           <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
+           <span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:28:55Z&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span>
+           <span class="nt">&quot;meteoParameters&quot;</span><span class="p">:[</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="nt">&quot;param_name&quot;</span><span class="p">:</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;param_unit&quot;</span><span class="p">:</span><span class="s2">&quot;C&quot;</span>
+              <span class="p">}</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+           <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span>
+           <span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:29:24Z&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span>
+           <span class="nt">&quot;meteoParameters&quot;</span><span class="p">:[</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="nt">&quot;param_name&quot;</span><span class="p">:</span><span class="s2">&quot;wind speed&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;param_unit&quot;</span><span class="p">:</span><span class="s2">&quot;Km/h&quot;</span>
+              <span class="p">}</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+           <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span>
+           <span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:30:26Z&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="mi">1019</span><span class="p">,</span>
+           <span class="nt">&quot;meteoParameters&quot;</span><span class="p">:[</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+                 <span class="nt">&quot;param_name&quot;</span><span class="p">:</span><span class="s2">&quot;pressure&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;param_unit&quot;</span><span class="p">:</span><span class="s2">&quot;hPa&quot;</span>
+              <span class="p">}</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+           <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+           <span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:30:51Z&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="mi">1015</span><span class="p">,</span>
+           <span class="nt">&quot;meteoParameters&quot;</span><span class="p">:[</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+                 <span class="nt">&quot;param_name&quot;</span><span class="p">:</span><span class="s2">&quot;pressure&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;param_unit&quot;</span><span class="p">:</span><span class="s2">&quot;hPa&quot;</span>
+              <span class="p">}</span>
+           <span class="p">]</span>
+        <span class="p">}</span>
+     <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The above JSON has a data structure where:</p>
+<ul class="simple">
+<li><p>Station object has a nested array of Observations.</p></li>
+<li><p>Each Observation has a an array of parameter that describe the type of Observation.</p></li>
+</ul>
+<p>Now let’s assume that a different output needs to be produced where instead of having a generic array of observation nested into the root object, arrays are provided separately for each type of parameter e.g. Temperatures, Pressures and Winds_speed observations. In other words instead of having the Observation type defined inside a nested Parameter object that information should be provided directly in the attribute name.
+The desired output looks like the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span> <span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;features&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;Identifier&quot;</span><span class="p">:</span><span class="s2">&quot;MeteoStationsFeature.7&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+              <span class="mf">44.5</span><span class="p">,</span>
+              <span class="mf">11.34</span>
+           <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="s2">&quot;Bologna&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;Code&quot;</span><span class="p">:</span><span class="s2">&quot;STATION-BOL&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;Location&quot;</span><span class="p">:</span><span class="s2">&quot;POINT (44.5 11.34)&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;Temperatures&quot;</span><span class="p">:[</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:28:31.000+00:00&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="mf">35.0</span>
+              <span class="p">},</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:28:55.000+00:00&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="mf">25.0</span>
+              <span class="p">}</span>
+           <span class="p">],</span>
+           <span class="nt">&quot;Pressures&quot;</span><span class="p">:[</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:30:26.000+00:00&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="mf">1019.0</span>
+              <span class="p">},</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:30:51.000+00:00&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="mf">1015.0</span>
+              <span class="p">}</span>
+           <span class="p">],</span>
+           <span class="nt">&quot;Winds_speed&quot;</span><span class="p">:[</span>
+              <span class="p">{</span>
+                 <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:29:24.000+00:00&quot;</span><span class="p">,</span>
+                 <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="mf">80.0</span>
+              <span class="p">}</span>
+           <span class="p">]</span>
+        <span class="p">}</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;totalFeatures&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+  <span class="nt">&quot;numberMatched&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+  <span class="nt">&quot;numberReturned&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+  <span class="nt">&quot;timeStamp&quot;</span><span class="p">:</span><span class="s2">&quot;2021-07-13T14:00:19.457Z&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;crs&quot;</span><span class="p">:{</span>
+     <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span>
+     <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A template like this will allow to produce such an output:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+     <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:MeteoStationsFeature&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;Identifier&quot;</span><span class="p">:</span><span class="s2">&quot;${@id}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="s2">&quot;${st:position}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+     <span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="s2">&quot;${st:common_name}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;Code&quot;</span><span class="p">:</span><span class="s2">&quot;$${strConcat(&#39;STATION-&#39;, xpath(&#39;st:code&#39;))}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;Location&quot;</span><span class="p">:</span><span class="s2">&quot;$${toWKT(xpath(&#39;st:position&#39;))}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;Temperatures&quot;</span><span class="p">:[</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;temperature&#39;&quot;</span>
+       <span class="p">},</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:value}&quot;</span>
+       <span class="p">}</span>
+     <span class="p">],</span>
+     <span class="nt">&quot;Pressures&quot;</span><span class="p">:[</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;pressure&#39;&quot;</span>
+       <span class="p">},</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:value}&quot;</span>
+       <span class="p">}</span>
+     <span class="p">],</span>
+     <span class="nt">&quot;Winds_speed&quot;</span><span class="p">:[</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;wind speed&#39;&quot;</span>
+       <span class="p">},</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:value}&quot;</span>
+       <span class="p">}</span>
+     <span class="p">]</span>
+   <span class="p">}</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>In addition to the <code class="code docutils literal notranslate"><span class="pre">${property}</span></code> and <code class="code docutils literal notranslate"><span class="pre">$${cql}</span></code> directives seen before, there are two more:</p>
+<ul class="simple">
+<li><p>In the example above the <code class="code docutils literal notranslate"><span class="pre">xpath('xpath')</span></code> function is used to reference property. When dealing with Complex Features it must be used when referencing properties inside a <code class="code docutils literal notranslate"><span class="pre">$filter</span></code> or a <code class="code docutils literal notranslate"><span class="pre">$${cql}</span></code> directive.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">$source</span></code> which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the <code class="code docutils literal notranslate"><span class="pre">&quot;$source&quot;:&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span></code> provides the context for the nested attributes angainst which the directives will be evaluated. When defining a <code class="code docutils literal notranslate"><span class="pre">$source</span></code> for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the <code class="code docutils literal notranslate"><span class="pre">$source</span></code> for a JSONObject it can be simply added as an object attribute (see below examples).</p></li>
+<li><p>When using <code class="code docutils literal notranslate"><span class="pre">${property}</span></code> directive or an <code class="code docutils literal notranslate"><span class="pre">xpath('xpath')</span></code> function it is possible to reference a property bounded to an upper <code class="code docutils literal notranslate"><span class="pre">$source</span></code> using a <code class="docutils literal notranslate"><span class="pre">../</span></code> notation eg. <code class="docutils literal notranslate"><span class="pre">${../previousContextValue}</span></code>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">$filter</span></code> provides the possibility to filter the value that will be included in the element to which is applied, in this case a json array. For instance the filter <code class="code docutils literal notranslate"><span class="pre">$filter&quot;:&quot;xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name')</span> <span class="pre">=</span> <span class="pre">'wind</span> <span class="pre">speed'</span></code> in the <code class="code docutils literal notranslate"><span class="pre">Winds_speed</span></code> array allows filtering the element that will be included in this array according to the <code class="code docutils literal notranslate"><span class="pre">param_name</span> <span class="pre">value</span></code>.</p></li>
+</ul>
+<p>One note aboute the Source. It is strictly needed only when referencing a nested feature. This means that in the GeoJSON template example the <code class="code docutils literal notranslate"><span class="pre">&quot;$source&quot;:&quot;st:MeteoStationsFeature&quot;</span></code> could have been omitted. This not apply for nested elements definition where the <code class="code docutils literal notranslate"><span class="pre">&quot;$source&quot;:&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span></code> is mandatory.</p>
+<p>Follows a list of JSON template bits showing  <code class="code docutils literal notranslate"><span class="pre">filters</span></code> definition in context different from a JSON array, as well as <code class="code docutils literal notranslate"><span class="pre">$source</span></code> definition for a JSONObject.</p>
+<ul class="simple">
+<li><p>Object (encode the JSON object only if the st:value is greater than 75.3).</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;Observation&quot;</span><span class="p">:</span>
+        <span class="p">{</span>
+          <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;st:value &gt; 75.3 &quot;</span><span class="p">,</span>
+          <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${st:value}&quot;</span>
+       <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Attribute (encode the Timestamp attribute only if the st:value is greater than 75.3).</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;Observation&quot;</span><span class="p">:</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;$filter{st:value &gt; 75.3}, ${st:time}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${st:value}&quot;</span>
+      <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Static attribute  (encode the Static_value attribute only if the st:value is greater than 75.3).</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span> <span class="p">{</span>
+<span class="nt">&quot;Observation&quot;</span><span class="p">:</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Static_value&quot;</span><span class="p">:</span><span class="s2">&quot;$filter{st:value &gt; 75.3}, this Observation has a value &gt; 75.3&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${st:value}&quot;</span>
+      <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As it is possible to see from the previous example in the array and object cases the filter syntax expected a <code class="code docutils literal notranslate"><span class="pre">&quot;$filter&quot;</span></code> key followed by an attribute with the filter to evaluate. In the attribute case, instead, the filter is being specified inside the value as <code class="code docutils literal notranslate"><span class="pre">&quot;$filter{...}&quot;</span></code>, followed by  the CQL expression, or by the static content, with a comma separating the two.</p>
+</div>
+<div class="section" id="id3">
+<h4>GML<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p><code class="code docutils literal notranslate"><span class="pre">filter</span></code> and <code class="code docutils literal notranslate"><span class="pre">source</span></code> are available as well in GML templates. Assuming that the desired output is the corresponding GML equivalent of the GeoJSON output above e.g.:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>  <span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+  <span class="nt">&lt;wfs:FeatureCollection</span> <span class="na">xmlns:st=</span><span class="s">&quot;http://www.stations.org/1.0&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs/2.0&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span> <span class="na">numberMatched=</span><span class="s">&quot;3&quot;</span> <span class="na">numberReturned=</span><span class="s">&quot;0&quot;</span> <span class="na">timeStamp=</span><span class="s">&quot;2021-07-13T15:09:28.620Z&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;wfs:member&gt;</span>
+   <span class="nt">&lt;st:MeteoStations</span> <span class="na">gml:id=</span><span class="s">&quot;MeteoStationsFeature.7&quot;</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;st:code&gt;</span>Station_BOL<span class="nt">&lt;/st:code&gt;</span>
+     <span class="nt">&lt;st:name&gt;</span>Bologna<span class="nt">&lt;/st:name&gt;</span>
+     <span class="nt">&lt;st:geometry&gt;</span>
+       <span class="nt">&lt;gml:Point</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;smdl-stations.1.geom&quot;</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;gml:pos&gt;</span>11.34 44.5<span class="nt">&lt;/gml:pos&gt;</span>
+       <span class="nt">&lt;/gml:Point&gt;</span>
+     <span class="nt">&lt;/st:geometry&gt;</span>
+     <span class="nt">&lt;st:temperature&gt;</span>
+       <span class="nt">&lt;st:temperature&gt;</span>
+         <span class="nt">&lt;st:Temperature&gt;</span>
+           <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:28:31.000Z<span class="nt">&lt;/st:time&gt;</span>
+           <span class="nt">&lt;st:value&gt;</span>35.0<span class="nt">&lt;/st:value&gt;</span>
+         <span class="nt">&lt;/st:Temperature&gt;</span>
+       <span class="nt">&lt;/st:temperature&gt;</span>
+       <span class="nt">&lt;st:temperature&gt;</span>
+         <span class="nt">&lt;st:Temperature&gt;</span>
+           <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:28:55.000Z<span class="nt">&lt;/st:time&gt;</span>
+           <span class="nt">&lt;st:value&gt;</span>25.0<span class="nt">&lt;/st:value&gt;</span>
+         <span class="nt">&lt;/st:Temperature&gt;</span>
+       <span class="nt">&lt;/st:temperature&gt;</span>
+     <span class="nt">&lt;/st:temperature&gt;</span>
+     <span class="nt">&lt;st:pressure&gt;</span>
+       <span class="nt">&lt;st:pressure&gt;</span>
+         <span class="nt">&lt;st:Pressure&gt;</span>
+           <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:30:26.000Z<span class="nt">&lt;/st:time&gt;</span>
+           <span class="nt">&lt;st:value&gt;</span>1019.0<span class="nt">&lt;/st:value&gt;</span>
+         <span class="nt">&lt;/st:Pressure&gt;</span>
+       <span class="nt">&lt;/st:pressure&gt;</span>
+       <span class="nt">&lt;st:pressure&gt;</span>
+         <span class="nt">&lt;st:Pressure&gt;</span>
+           <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:30:51.000Z<span class="nt">&lt;/st:time&gt;</span>
+           <span class="nt">&lt;st:value&gt;</span>1015.0<span class="nt">&lt;/st:value&gt;</span>
+         <span class="nt">&lt;/st:Pressure&gt;</span>
+       <span class="nt">&lt;/st:pressure&gt;</span>
+     <span class="nt">&lt;/st:pressure&gt;</span>
+     <span class="nt">&lt;st:wind_speed&gt;</span>
+       <span class="nt">&lt;st:wind_speed&gt;</span>
+         <span class="nt">&lt;st:Wind_speed&gt;</span>
+           <span class="nt">&lt;st:time&gt;</span>2016-12-19T11:29:24.000Z<span class="nt">&lt;/st:time&gt;</span>
+           <span class="nt">&lt;st:value&gt;</span>80.0<span class="nt">&lt;/st:value&gt;</span>
+         <span class="nt">&lt;/st:Wind_speed&gt;</span>
+       <span class="nt">&lt;/st:wind_speed&gt;</span>
+     <span class="nt">&lt;/st:wind_speed&gt;</span>
+   <span class="nt">&lt;/st:MeteoStations&gt;</span>
+ <span class="nt">&lt;/wfs:member&gt;</span>
+<span class="nt">&lt;/wfs:FeatureCollection&gt;</span>
+</pre></div>
+</div>
+<p>The following GML template will produce the above output:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span> <span class="nt">&lt;gft:Template&gt;</span>
+ <span class="nt">&lt;gft:Options&gt;</span>
+   <span class="nt">&lt;gft:Namespaces</span> <span class="na">xmlns:st=</span><span class="s">&quot;http://www.stations.org/1.0&quot;</span><span class="nt">/&gt;</span>
+ <span class="nt">&lt;/gft:Options&gt;</span>
+ <span class="nt">&lt;st:MeteoStations</span> <span class="na">gml:id=</span><span class="s">&quot;${@id}&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;st:code&gt;</span>$${strConcat(&#39;Station_&#39;,st:code)}<span class="nt">&lt;/st:code&gt;</span>
+ <span class="nt">&lt;st:name&gt;</span>${st:common_name}<span class="nt">&lt;/st:name&gt;</span>
+ <span class="nt">&lt;st:geometry&gt;</span>${st:position}<span class="nt">&lt;/st:geometry&gt;</span>
+ <span class="nt">&lt;st:temperature</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span> <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;temperature&#39;&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;st:Temperature&gt;</span>
+   <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+   <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+ <span class="nt">&lt;/st:Temperature&gt;</span>
+ <span class="nt">&lt;/st:temperature&gt;</span>
+ <span class="nt">&lt;st:pressure</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span>  <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;pressure&#39;&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;st:Pressure&gt;</span>
+   <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+   <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+ <span class="nt">&lt;/st:Pressure&gt;</span>
+ <span class="nt">&lt;/st:pressure&gt;</span>
+ <span class="nt">&lt;st:wind_speed</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span>  <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;wind speed&#39;&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;st:Wind_speed&gt;</span>
+   <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+   <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+ <span class="nt">&lt;/st:Wind_speed&gt;</span>
+ <span class="nt">&lt;/st:wind_speed&gt;</span>
+ <span class="nt">&lt;/st:MeteoStations&gt;</span>
+<span class="nt">&lt;/gft:Template&gt;</span>
+</pre></div>
+</div>
+<p>In the GML case <code class="code docutils literal notranslate"><span class="pre">filter</span></code> and <code class="code docutils literal notranslate"><span class="pre">source</span></code> directives are defined in a slightly different manner from the JSON usecase.</p>
+<ul class="simple">
+<li><p>The filter needs to be defined as an attribute <code class="code docutils literal notranslate"><span class="pre">gft:filter</span></code> in the element that is meant to be filtered.</p></li>
+<li><p>The source needs to be defined as an attribute <code class="code docutils literal notranslate"><span class="pre">gft:source</span></code> in the element that will set the source for its child elements.</p></li>
+<li><p>The attribute <code class="code docutils literal notranslate"><span class="pre">gft:isCollection=&quot;true&quot;</span></code> defines a directive meant to be used in GML templates to mark collection elements: this directive is needed since XML doesn’t have the array concept and the template mechanism needs to be informed if an element should be repeated because it represent a collection element.</p></li>
+</ul>
+<p>As for the GeoJSON case the source is not needed for the top level feature. In this case we indeed omitted it for the st:MeteoStations element. Instead, as stated above, it is mandatory for nested elements like <code class="code docutils literal notranslate"><span class="pre">Temperature</span></code>, <code class="code docutils literal notranslate"><span class="pre">Pressure</span></code> and <code class="code docutils literal notranslate"><span class="pre">Winds_speed</span></code>. All of them show indeed a <code class="code docutils literal notranslate"><span class="pre">gft:source=&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span></code>.</p>
+</div>
+<div class="section" id="more-on-xpath-function">
+<h4>More on XPath Function<a class="headerlink" href="#more-on-xpath-function" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="code docutils literal notranslate"><span class="pre">xpath('xpath')</span></code> function is meant to provide the possibility to reference a Feature’s properties no matter how nested, in a template, providing also the possibility to reference the previous context value through <code class="code docutils literal notranslate"><span class="pre">../</span></code>.</p>
+<p>Check the following template from the GeoJSON Stations use case.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:MeteoStationsFeature&quot;</span><span class="p">,</span>
+<span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+   <span class="nt">&quot;Code&quot;</span><span class="p">:</span><span class="s2">&quot;$${strConcat(&#39;STATION-&#39;, xpath(&#39;st:code&#39;))}&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;Location&quot;</span><span class="p">:</span><span class="s2">&quot;$${toWKT(xpath(&#39;st:position&#39;))}&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;Temperatures&quot;</span><span class="p">:[</span>
+    <span class="p">{</span>
+       <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+       <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;temperature&#39;&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:value}&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;StillCode&quot;</span><span class="p">:</span><span class="s2">&quot;$${strConcat(&#39;STATION-&#39;, xpath(&#39;../st:code&#39;))}&quot;</span>
+     <span class="p">}</span>
+ <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In the <code class="code docutils literal notranslate"><span class="pre">Temperatures</span></code> array a <code class="code docutils literal notranslate"><span class="pre">StillCode</span></code> attribute has been defined that through <code class="code docutils literal notranslate"><span class="pre">../</span></code> references not the <code class="code docutils literal notranslate"><span class="pre">&quot;$source&quot;:&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span></code>, but the previous one <code class="code docutils literal notranslate"><span class="pre">&quot;$source&quot;:&quot;st:MeteoStationsFeature&quot;</span></code>.</p>
+<p>The same can be achieved with the property interpolation directive if a cql function evaluation is not needed: <code class="code docutils literal notranslate"><span class="pre">&quot;StillCode&quot;:&quot;$${strConcat('STATION-',</span> <span class="pre">xpath('../st:code'))}&quot;</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>the <code class="code docutils literal notranslate"><span class="pre">xpath('some</span> <span class="pre">xpath)</span></code> cql function is meant to be used in the scope of this plugin. For general usage please refer to the <a class="reference external" href="https://docs.geotools.org/latest/userguide/library/main/function_list.html#property-propertyname-returns-propertyvalue">property function</a>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="template-options">
+<h3>Template Options<a class="headerlink" href="#template-options" title="Permalink to this headline">¶</a></h3>
+<p>The directives seen so far allow control of the output in the scope of a Feature element.
+The <code class="code docutils literal notranslate"><span class="pre">options</span></code> directive, instead, allows customizing the output for part of the output outside the Feature scope or to define general modifications to the overall output. The available options vary according to the output format.</p>
+<div class="section" id="id4">
+<h4>GeoJSON<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>In the context of a GeoJSON template two options are available: <code class="code docutils literal notranslate"><span class="pre">flat_output</span></code> and <code class="code docutils literal notranslate"><span class="pre">separator</span></code>. These options are meant to provide a GeoJSON output encoded following INSPIRE rule for <a class="reference external" href="https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md">alternative feature GeoJSON encoding</a> (<a class="reference external" href="https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/efs/simple-environmental-monitoring-facilities.md">see also</a>).
+To use the functionality an <code class="code docutils literal notranslate"><span class="pre">&quot;$options&quot;</span></code> JSON object can be added on top of a JSON template, like in the following example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+     <span class="nt">&quot;$options&quot;</span><span class="p">:{</span>
+       <span class="nt">&quot;flat_output&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
+       <span class="nt">&quot;separator&quot;</span><span class="p">:</span> <span class="s2">&quot;.&quot;</span>
+     <span class="p">},</span>
+     <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:MeteoStationsFeature&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;Identifier&quot;</span><span class="p">:</span><span class="s2">&quot;${@id}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="s2">&quot;${st:position}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
+     <span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="s2">&quot;${st:common_name}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;Code&quot;</span><span class="p">:</span><span class="s2">&quot;$${strConcat(&#39;STATION-&#39;, xpath(&#39;st:code&#39;))}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;Location&quot;</span><span class="p">:</span><span class="s2">&quot;$${toWKT(xpath(&#39;st:position&#39;))}&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;Temperatures&quot;</span><span class="p">:[</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;temperature&#39;&quot;</span>
+       <span class="p">},</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:value}&quot;</span>
+       <span class="p">}</span>
+     <span class="p">],</span>
+     <span class="nt">&quot;Pressures&quot;</span><span class="p">:[</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;pressure&#39;&quot;</span>
+       <span class="p">},</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:value}&quot;</span>
+       <span class="p">}</span>
+     <span class="p">],</span>
+     <span class="nt">&quot;Winds_speed&quot;</span><span class="p">:[</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;wind speed&#39;&quot;</span>
+       <span class="p">},</span>
+       <span class="p">{</span>
+         <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="s2">&quot;${st:value}&quot;</span>
+       <span class="p">}</span>
+     <span class="p">]</span>
+   <span class="p">}</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="code docutils literal notranslate"><span class="pre">flat_output</span></code> will act in the following way:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The encoding of nested arrays and objects will be skipped, by encoding only their attributes.</p></li>
+<li><p>Object attribute names will be concatenated with the names of their json attributes.</p></li>
+<li><p>Arrays’ attribute names will be concatenated as well with the one of the json attributes of their inner object. In addition an index value will be added after the array’s attribute name for each nested object.</p></li>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">separator</span></code> specifies the separator of the attributes’ names. Default is <code class="code docutils literal notranslate"><span class="pre">_</span></code>.</p></li>
+<li><p>The final output will have a flat list of attributes with names produced by the concatenation, like the following.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="json-ld">
+<h4>JSON-LD<a class="headerlink" href="#json-ld" title="Permalink to this headline">¶</a></h4>
+<p>A JSON-LD template can be defined as a GeoJSON template since it is a JSON based output as well. However it needs to have a <code class="code docutils literal notranslate"><span class="pre">&#64;context</span></code> attribute, object or array at the beginning of it in order to conform to the standard. Moreover each JSON Object must have an <code class="code docutils literal notranslate"><span class="pre">&#64;type</span></code> defining a type through a vocabulary term.
+To accomplish these requirements it is possible to specify several <code class="code docutils literal notranslate"><span class="pre">$options</span></code> on the template:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">&#64;context</span></code> providing a full JSON-LD <code class="code docutils literal notranslate"><span class="pre">&#64;context</span></code>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">&#64;type</span></code> providing a type term for the root JSON object in the final output (by default the value is <code class="code docutils literal notranslate"><span class="pre">FeatureCollection</span></code>).</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">collection_name</span></code> providing an alternative name for the features array in the final output (by default <code class="code docutils literal notranslate"><span class="pre">features</span></code> is used). The option is useful in case the user wants to use a features attribute name equals to a specific term defined in a vocabulary.</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span> <span class="p">{</span>
+  <span class="nt">&quot;$options&quot;</span><span class="p">:{</span>
+     <span class="nt">&quot;encode_as_string&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+     <span class="nt">&quot;collection_name&quot;</span><span class="p">:</span><span class="s2">&quot;stations&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="s2">&quot;schema:Thing&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;@context&quot;</span><span class="p">:[</span>
+        <span class="s2">&quot;https://opengeospatial.github.io/ELFIE/contexts/elfie-2/elf-index.jsonld&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;https://opengeospatial.github.io/ELFIE/contexts/elfie-2/gwml2.jsonld&quot;</span><span class="p">,</span>
+        <span class="p">{</span>
+           <span class="nt">&quot;gsp&quot;</span><span class="p">:</span><span class="s2">&quot;http://www.opengis.net/ont/geosparql#&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;sf&quot;</span><span class="p">:</span><span class="s2">&quot;http://www.opengis.net/ont/sf#&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="s2">&quot;https://schema.org/&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;st&quot;</span><span class="p">:</span><span class="s2">&quot;http://www.stations.org/1.0&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;wkt&quot;</span><span class="p">:</span><span class="s2">&quot;gsp:asWKT&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;Feature&quot;</span><span class="p">:</span><span class="s2">&quot;gsp:Feature&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="s2">&quot;gsp:hasGeometry&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;point&quot;</span><span class="p">:</span><span class="s2">&quot;sf:point&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;features&quot;</span><span class="p">:{</span>
+              <span class="nt">&quot;@container&quot;</span><span class="p">:</span><span class="s2">&quot;@set&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="s2">&quot;schema:hasPart&quot;</span>
+           <span class="p">}</span>
+        <span class="p">}</span>
+     <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:MeteoStationsFeature&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Identifier&quot;</span><span class="p">:</span><span class="s2">&quot;${@id}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="s2">&quot;${st:common_name}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Code&quot;</span><span class="p">:</span><span class="s2">&quot;$${strConcat(&#39;STATION-&#39;, xpath(&#39;st:code&#39;))}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Location&quot;</span><span class="p">:</span><span class="s2">&quot;$${toWKT(st:position)}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Temperatures&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;temperature&#39; AND &#39;yes&#39; = env(&#39;showTemperatures&#39;,&#39;yes&#39;)&quot;</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${st:value}&quot;</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;Pressures&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;pressure&#39; AND &#39;yes&#39; = env(&#39;showPressures&#39;,&#39;yes&#39;)&quot;</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${st:value}&quot;</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;Winds speed&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;wind speed&#39; AND &#39;yes&#39; = env(&#39;showWinds&#39;,&#39;yes&#39;)&quot;</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;${st:time}&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${st:value}&quot;</span>
+     <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="code docutils literal notranslate"><span class="pre">&#64;context</span></code> will show up at the beginning of the JSON-LD output:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;@context&quot;</span><span class="p">:[</span>
+     <span class="s2">&quot;https://opengeospatial.github.io/ELFIE/contexts/elfie-2/elf-index.jsonld&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;https://opengeospatial.github.io/ELFIE/contexts/elfie-2/gwml2.jsonld&quot;</span><span class="p">,</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;gsp&quot;</span><span class="p">:</span><span class="s2">&quot;http://www.opengis.net/ont/geosparql#&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;sf&quot;</span><span class="p">:</span><span class="s2">&quot;http://www.opengis.net/ont/sf#&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="s2">&quot;https://schema.org/&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;st&quot;</span><span class="p">:</span><span class="s2">&quot;http://www.stations.org/1.0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;wkt&quot;</span><span class="p">:</span><span class="s2">&quot;gsp:asWKT&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Feature&quot;</span><span class="p">:</span><span class="s2">&quot;gsp:Feature&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="s2">&quot;gsp:hasGeometry&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;point&quot;</span><span class="p">:</span><span class="s2">&quot;sf:point&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;features&quot;</span><span class="p">:{</span>
+           <span class="nt">&quot;@container&quot;</span><span class="p">:</span><span class="s2">&quot;@set&quot;</span><span class="p">,</span>
+           <span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="s2">&quot;schema:hasPart&quot;</span>
+        <span class="p">}</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="s2">&quot;schema:Thing&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;stations&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;Identifier&quot;</span><span class="p">:</span><span class="s2">&quot;MeteoStationsFeature.7&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="s2">&quot;Bologna&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Code&quot;</span><span class="p">:</span><span class="s2">&quot;STATION-BOL&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Location&quot;</span><span class="p">:</span><span class="s2">&quot;POINT (44.5 11.34)&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Temperatures&quot;</span><span class="p">:[</span>
+           <span class="p">{</span>
+              <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:28:31.000+00:00&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;35.0&quot;</span>
+           <span class="p">},</span>
+           <span class="p">{</span>
+              <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:28:55.000+00:00&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;25.0&quot;</span>
+           <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;Pressures&quot;</span><span class="p">:[</span>
+           <span class="p">{</span>
+              <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:30:26.000+00:00&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;1019.0&quot;</span>
+           <span class="p">},</span>
+           <span class="p">{</span>
+              <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:30:51.000+00:00&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;1015.0&quot;</span>
+           <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;Winds speed&quot;</span><span class="p">:[</span>
+           <span class="p">{</span>
+              <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;2016-12-19T11:29:24.000+00:00&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;80.0&quot;</span>
+           <span class="p">}</span>
+        <span class="p">]</span>
+     <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The above template defines, along with the <code class="code docutils literal notranslate"><span class="pre">&#64;context</span></code>, also the <code class="code docutils literal notranslate"><span class="pre">option</span></code> <code class="code docutils literal notranslate"><span class="pre">encode_as_string</span></code>. The option is used to request a JSON-LD output where all the attributes are encoded as text. By default attributes are instead encoded as in <code class="code docutils literal notranslate"><span class="pre">GeoJSON</span></code> output format.</p>
+<p>When dealing with a GetFeatureInfo request over a LayerGroup asking for a JSON-LD output the plug-in will perform a union of the JSON-LD <code class="code docutils literal notranslate"><span class="pre">&#64;context</span></code> (when different) defined in the template of each contained layer. This means that in case of conflicting attributes name the attributes name will override each other according to the processing order of the layers.
+The user can prevent this behaviour by taking advantage of the  <code class="code docutils literal notranslate"><span class="pre">include</span></code> directive, explained below, defining a single <code class="code docutils literal notranslate"><span class="pre">&#64;context</span></code> included in the template of each contained layer. In this way all the layer will share the same context definition.</p>
+</div>
+<div class="section" id="id5">
+<h4>GML<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>GML output has two <code class="code docutils literal notranslate"><span class="pre">options</span></code>: Namespaces and SchemaLocation, that define the namespaces and the SchemaLocation attribute that will be included in the FeatureCollection element in the resulting output. These options needs to be specified inside a <code class="code docutils literal notranslate"><span class="pre">gft:Options</span></code> element at the beginning of the template right after the <code class="code docutils literal notranslate"><span class="pre">gft:Template</span></code> element, e.g.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gft:Template&gt;</span>
+ <span class="nt">&lt;gft:Options&gt;</span>
+   <span class="nt">&lt;gft:Namespaces</span> <span class="na">xmlns:st=</span><span class="s">&quot;http://www.stations.org/1.0&quot;</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;gft:SchemaLocation</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.stations.org/1.0 http://www.stations.org/stations/1.0/xsd/stations.xsd&quot;</span><span class="nt">/&gt;</span>
+ <span class="nt">&lt;/gft:Options&gt;</span>
+ <span class="nt">&lt;st:MeteoStations</span> <span class="na">gml:id=</span><span class="s">&quot;${@id}&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;st:code&gt;</span>$${strConcat(&#39;Station_&#39;,st:code)}<span class="nt">&lt;/st:code&gt;</span>
+<span class="nt">&lt;st:name&gt;</span>${st:common_name}<span class="nt">&lt;/st:name&gt;</span>
+<span class="nt">&lt;st:geometry&gt;</span>${st:position}<span class="nt">&lt;/st:geometry&gt;</span>
+<span class="nt">&lt;st:temperature</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span> <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;temperature&#39;&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;st:Temperature&gt;</span>
+  <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+  <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+<span class="nt">&lt;/st:Temperature&gt;</span>
+<span class="nt">&lt;/st:temperature&gt;</span>
+<span class="nt">&lt;st:pressure</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span>  <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;pressure&#39;&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;st:Pressure&gt;</span>
+  <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+  <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+<span class="nt">&lt;/st:Pressure&gt;</span>
+<span class="nt">&lt;/st:pressure&gt;</span>
+<span class="nt">&lt;st:wind_speed</span> <span class="na">gft:isCollection=</span><span class="s">&quot;true&quot;</span> <span class="na">gft:source=</span><span class="s">&quot;st:meteoObservations/st:MeteoObservationsFeature&quot;</span>  <span class="na">gft:filter=</span><span class="s">&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;wind speed&#39;&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;st:Wind_speed&gt;</span>
+  <span class="nt">&lt;st:time&gt;</span>${st:time}<span class="nt">&lt;/st:time&gt;</span>
+  <span class="nt">&lt;st:value&gt;</span>${st:value}<span class="nt">&lt;/st:value&gt;</span>
+<span class="nt">&lt;/st:Wind_speed&gt;</span>
+<span class="nt">&lt;/st:wind_speed&gt;</span>
+<span class="nt">&lt;/st:MeteoStations&gt;</span>
+<span class="nt">&lt;/gft:Template&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="html">
+<h4>HTML<a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h4>
+<p>HTML templates can use several <code class="code docutils literal notranslate"><span class="pre">options</span></code>:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> allows defining whatever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.</p></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">code</dt>
+<dd class="field-odd"><p><cite>&lt;script type=”application/ld+json”/&gt;</cite> allows to inject the JSON-LD representation of the features being templated in the <cite>&lt;head&gt;</cite>. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error message.</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;style&gt;</span></code> allows defining css content.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;link&gt;</span></code> allows linking to external resources.</p></li>
+</ul>
+<p>The content of <code class="code docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> and <code class="code docutils literal notranslate"><span class="pre">&lt;style&gt;</span></code> needs to be provided as <code class="code docutils literal notranslate"><span class="pre">&lt;![CDATA[</span></code>.</p>
+<p>The following is an example of a HTML template that will output the Stations features as a tree view. Also in this example we are using the same filter on <code class="code docutils literal notranslate"><span class="pre">st:meteoObservations</span></code> as in the other template examples.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;gft:Template&gt;
+  &lt;gft:Options&gt;
+     &lt;style&gt;
+     &lt;![CDATA[ul, #myUL {
+     list-style-type: none;
+     }
+     #myUL {
+     margin: 0;
+     padding: 0;
+     }
+     .caret {
+     cursor: pointer;
+     -webkit-user-select: none; /* Safari 3.1+ */
+     -moz-user-select: none; /* Firefox 2+ */
+     -ms-user-select: none; /* IE 10+ */
+     user-select: none;
+     }
+     .caret::before {
+     content: &quot;\25B6&quot;;
+     color: black;
+     display: inline-block;
+     margin-right: 6px;
+     }
+     .caret-down::before {
+     -ms-transform: rotate(90deg); /* IE 9 */
+     -webkit-transform: rotate(90deg); /* Safari */&#39;
+     transform: rotate(90deg);
+     }
+     .nested {
+     display: none;
+     }
+     .active {
+     display: block;
+     }]]&gt;&lt;/style&gt;
+     &lt;script&gt;&lt;![CDATA[window.onload = function() {
+     var toggler = document.getElementsByClassName(&quot;caret&quot;);
+     for (let item of toggler){
+     item.addEventListener(&quot;click&quot;, function() {
+     this.parentElement.querySelector(&quot;.nested&quot;).classList.toggle(&quot;active&quot;);
+     this.classList.toggle(&quot;caret-down&quot;);
+     });
+     }
+     }]]&gt;&lt;/script&gt;
+     &lt;script type=&quot;application/ld+json&quot;/&gt;
+     &lt;/gft:Options&gt;
+     &lt;ul id=&quot;myUL&quot;&gt;
+      &lt;li&gt;
+        &lt;span class=&quot;caret&quot;&gt;MeteoStations&lt;/span&gt;
+        &lt;ul class=&quot;nested&quot;&gt;
+           &lt;li&gt;
+              &lt;span class=&quot;caret&quot;&gt;Code&lt;/span&gt;
+              &lt;ul class=&quot;nested&quot;&gt;
+                 &lt;li&gt;$${strConcat(&#39;Station_&#39;,st:code)}&lt;/li&gt;
+              &lt;/ul&gt;
+           &lt;/li&gt;
+           &lt;li&gt;
+              &lt;span class=&quot;caret&quot;&gt;Name&lt;/span&gt;
+              &lt;ul class=&quot;nested&quot;&gt;
+                 &lt;li&gt;${st:common_name}&lt;/li&gt;
+              &lt;/ul&gt;
+           &lt;/li&gt;
+           &lt;li&gt;
+              &lt;span class=&quot;caret&quot;&gt;Geometry&lt;/span&gt;
+              &lt;ul class=&quot;nested&quot;&gt;
+                 &lt;li&gt;${st:position}&lt;/li&gt;
+              &lt;/ul&gt;
+           &lt;/li&gt;
+           &lt;li gft:isCollection=&quot;true&quot; gft:source=&quot;st:meteoObservations/st:MeteoObservationsFeature&quot; gft:filter=&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;temperature&#39;&quot;&gt;
+              &lt;span class=&quot;caret&quot;&gt;Temperature&lt;/span&gt;
+              &lt;ul class=&quot;nested&quot;&gt;
+                 &lt;li&gt;
+                    &lt;span class=&quot;caret&quot;&gt;Time&lt;/span&gt;
+                    &lt;ul class=&quot;nested&quot;&gt;
+                       &lt;li&gt;${st:time}&lt;/li&gt;
+                    &lt;/ul&gt;
+                 &lt;/li&gt;
+                 &lt;li&gt;
+                    &lt;span class=&quot;caret&quot;&gt;Value&lt;/span&gt;
+                    &lt;ul class=&quot;nested&quot;&gt;
+                       &lt;li&gt;${st:time}&lt;/li&gt;
+                    &lt;/ul&gt;
+                 &lt;/li&gt;
+              &lt;/ul&gt;
+           &lt;/li&gt;
+           &lt;li gft:isCollection=&quot;true&quot; gft:source=&quot;st:meteoObservations/st:MeteoObservationsFeature&quot; gft:filter=&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;pressure&#39;&quot;&gt;
+              &lt;span class=&quot;caret&quot;&gt;Pressure&lt;/span&gt;
+              &lt;ul class=&quot;nested&quot;&gt;
+                 &lt;li&gt;
+                    &lt;span class=&quot;caret&quot;&gt;Time&lt;/span&gt;
+                    &lt;ul class=&quot;nested&quot;&gt;
+                       &lt;li&gt;${st:time}&lt;/li&gt;
+                    &lt;/ul&gt;
+                 &lt;/li&gt;
+                 &lt;li&gt;
+                    &lt;span class=&quot;caret&quot;&gt;Value&lt;/span&gt;
+                    &lt;ul class=&quot;nested&quot;&gt;
+                       &lt;li&gt;${st:time}&lt;/li&gt;
+                    &lt;/ul&gt;
+                 &lt;/li&gt;
+              &lt;/ul&gt;
+           &lt;/li&gt;
+           &lt;li gft:isCollection=&quot;true&quot; gft:source=&quot;st:meteoObservations/st:MeteoObservationsFeature&quot; gft:filter=&quot;xpath(&#39;st:meteoParameters/st:MeteoParametersFeature/st:param_name&#39;) = &#39;wind speed&#39;&quot;&gt;
+              &lt;span class=&quot;caret&quot;&gt;Wind Speed&lt;/span&gt;
+              &lt;ul class=&quot;nested&quot;&gt;
+                 &lt;li&gt;
+                    &lt;span class=&quot;caret&quot;&gt;Time&lt;/span&gt;
+                    &lt;ul class=&quot;nested&quot;&gt;
+                       &lt;li&gt;${st:time}&lt;/li&gt;
+                    &lt;/ul&gt;
+                 &lt;/li&gt;
+                 &lt;li&gt;
+                    &lt;span class=&quot;caret&quot;&gt;Value&lt;/span&gt;
+                    &lt;ul class=&quot;nested&quot;&gt;
+                       &lt;li&gt;${st:time}&lt;/li&gt;
+                    &lt;/ul&gt;
+                 &lt;/li&gt;
+              &lt;/ul&gt;
+           &lt;/li&gt;
+        &lt;/ul&gt;
+     &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/gft:Template&gt;
+</pre></div>
+</div>
+<p>The output of the template will be the following:</p>
+<div class="figure align-default">
+<img alt="../../_images/html-template-result.png" src="../../_images/html-template-result.png" />
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="including-other-templates">
+<h2>Including other templates<a class="headerlink" href="#including-other-templates" title="Permalink to this headline">¶</a></h2>
+<p>While developing a group of templates, it’s possible to notice sections that repeat across
+different template instances. Template inclusion allows sharing the common parts, extracting them
+in a re-usable building block.</p>
+<p>Inclusion can be performed using two directives:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">include</span></code> allows including a separate template as is.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">includeFlat</span></code> allows including a separate template, stripping the top-most container.</p></li>
+</ul>
+<p>As for other directives the syntax varies slightly between JSON based template and XML based ones.</p>
+<p>The two directives need to specify a path to the template to be included.
+Template names can be plain, as in this example, refer to sub-directories, or be absolute.
+Examples of valid template references are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">subProperty.json</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./subProperty.json</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./blocks/aBlock.json</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/templates/test/aBlock.json</span></code></p></li>
+</ul>
+<p>However it’s currently not possible to climb up the directory hierarchy using relative references,
+so a reference like <code class="docutils literal notranslate"><span class="pre">../myParentBlock.json</span></code> will be rejected.</p>
+<div class="section" id="json-based-templates-geojson-json-ld">
+<h3>JSON based templates (GeoJSON, JSON-LD)<a class="headerlink" href="#json-based-templates-geojson-json-ld" title="Permalink to this headline">¶</a></h3>
+<p>In this context the two directives can be defined as:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">$include</span></code>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">$includeFlat</span></code>.</p></li>
+</ul>
+<p>Regarding the <code class="code docutils literal notranslate"><span class="pre">$includeFlat</span></code> option is worth mentioning that in a JSON context:</p>
+<ul class="simple">
+<li><p>If a JSON object is included, then its properties are directly included in-place, which makes sense only within another object.</p></li>
+<li><p>If instead a JSON array is included, then its values are directly included in-place, which makes sense only within another array.</p></li>
+</ul>
+<p>The following JSON snippet shows the four possible syntax options for template inclusion:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="p">{</span>
+<span class="lineno">2 </span>    <span class="nt">&quot;aProperty&quot;</span><span class="p">:</span> <span class="s2">&quot;$include{subProperty.json}&quot;</span><span class="p">,</span>
+<span class="lineno">3 </span>    <span class="nt">&quot;$includeFlat&quot;</span><span class="p">:</span> <span class="s2">&quot;propsInAnObject.json&quot;</span><span class="p">,</span>
+<span class="lineno">4 </span>    <span class="nt">&quot;anArray&quot;</span> <span class="p">:</span> <span class="p">[</span>
+<span class="lineno">5 </span>       <span class="s2">&quot;$include{arrayElement.json}&quot;</span><span class="p">,</span>
+<span class="lineno">6 </span>       <span class="s2">&quot;$includeFlat{subArray.json}&quot;</span>
+<span class="lineno">7 </span>    <span class="p">],</span>
+<span class="lineno">8 </span>   <span class="nt">&quot;$includeFlat&quot;</span><span class="p">:</span> <span class="s2">&quot;${property}&quot;</span>
+<span class="lineno">9 </span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>Notes:</p>
+<ol class="arabic simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">subProperty.json</span></code> template (line 2) can be both an object or an array, it will be used as the new value of <code class="docutils literal notranslate"><span class="pre">aProperty</span></code></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">propsInAnObject.json</span></code> template (line 3) is required to be a JSON object, its properties will be
+directly included in-place where the <code class="docutils literal notranslate"><span class="pre">$includeFlat</span></code> directive is</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">arrayElement.json</span></code> template (line 5) can be both an object or an array, the value will be replaced
+directly as the new element in <code class="docutils literal notranslate"><span class="pre">anArray</span></code>. This allows creation of a JSON object as the array
+element, or the creation of a nested array.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">subArray.json</span></code> template (line 6) must be an array itself, the container array will be stripped and
+its values directly integrated inside <code class="docutils literal notranslate"><span class="pre">anArray</span></code>.</p></li>
+</ol>
+<p>In case an includeFlat directive is specified and it’s attribute value is a property interpolation directive, if the property name evaluates to a json it gets included flat in the final output e.g</p>
+<p>including json:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="p">{</span>
+<span class="lineno">2 </span>    <span class="nt">&quot;property&quot;</span><span class="p">:</span><span class="s2">&quot;${property}&quot;</span><span class="p">,</span>
+<span class="lineno">3 </span>    <span class="nt">&quot;bProperty&quot;</span><span class="p">:</span><span class="s2">&quot;15&quot;</span><span class="p">,</span>
+<span class="lineno">4 </span>    <span class="nt">&quot;cProperty&quot;</span><span class="p">:</span><span class="s2">&quot;30&quot;</span>
+<span class="lineno">5 </span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>${property} value:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="p">{</span>
+<span class="lineno">2 </span>    <span class="nt">&quot;aProperty&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span>
+<span class="lineno">3 </span>    <span class="nt">&quot;bProperty&quot;</span><span class="p">:</span> <span class="s2">&quot;20&quot;</span>
+<span class="lineno">4 </span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>result:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="p">{</span>
+<span class="lineno">2 </span>    <span class="nt">&quot;aProperty&quot;</span><span class="p">:</span><span class="s2">&quot;10&quot;</span><span class="p">,</span>
+<span class="lineno">3 </span>    <span class="nt">&quot;bProperty&quot;</span><span class="p">:</span><span class="s2">&quot;20&quot;</span><span class="p">,</span>
+<span class="lineno">4 </span>    <span class="nt">&quot;cProperty&quot;</span><span class="p">:</span><span class="s2">&quot;30&quot;</span>
+<span class="lineno">5 </span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">${property}</span></code> directive evaluates to a JSON that will be merged with the including one. In case the including JSON as an attribute with the name equal to one of the attributes in the included JSON, the included will override the property with the same name in the including one.</p>
+<p>In case an includeFlat directive is specified inside a JSON Array with a Feature property and the property evaluate to a JSON Array, the container array will be stripped and its values included directly inside the container Array:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="p">[</span>
+<span class="lineno">2 </span>    <span class="s2">&quot;value1&quot;</span><span class="p">,</span>
+<span class="lineno">3 </span>    <span class="s2">&quot;value2&quot;</span><span class="p">,</span>
+<span class="lineno">4 </span>    <span class="s2">&quot;value3&quot;</span><span class="p">,</span>
+<span class="lineno">5 </span>    <span class="s2">&quot;$includeFlat{${property}}&quot;</span>
+<span class="lineno">6 </span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>${property} value:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="p">[</span>
+<span class="lineno">2 </span>    <span class="s2">&quot;value4&quot;</span><span class="p">,</span>
+<span class="lineno">3 </span>    <span class="s2">&quot;value5&quot;</span>
+<span class="lineno">4 </span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>result:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span> <span class="p">[</span>
+<span class="lineno">2 </span>    <span class="s2">&quot;value1&quot;</span><span class="p">,</span>
+<span class="lineno">3 </span>    <span class="s2">&quot;value2&quot;</span><span class="p">,</span>
+<span class="lineno">4 </span>    <span class="s2">&quot;value3&quot;</span><span class="p">,</span>
+<span class="lineno">5 </span>    <span class="s2">&quot;value4&quot;</span><span class="p">,</span>
+<span class="lineno">6 </span>    <span class="s2">&quot;value5&quot;</span>
+<span class="lineno">7 </span> <span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="xml-based-templates-gml">
+<h3>XML based templates (GML)<a class="headerlink" href="#xml-based-templates-gml" title="Permalink to this headline">¶</a></h3>
+<p>In an XML context the two directives needs to be defined in the following way:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;gft:includeFlat&gt;path/to/included.xml&lt;/gft:includeFlat&gt;</span></code>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;gsml:specification</span> <span class="pre">gft:source=&quot;gsml:specification&quot;&gt;$include{includedTemplate.xml}&lt;/gsml:specification&gt;</span></code>.</p></li>
+</ul>
+<p>In the first case the included template will replace the <code class="code docutils literal notranslate"><span class="pre">&lt;gft:includeFlat&gt;</span></code> element. In the second one the included template will be placed inside the <code class="code docutils literal notranslate"><span class="pre">&lt;gsml:specification&gt;</span></code> element.</p>
+</div>
+</div>
+<div class="section" id="extending-other-templates-via-merge-json-based-templates-only">
+<h2>Extending other templates via merge (JSON based templates only)<a class="headerlink" href="#extending-other-templates-via-merge-json-based-templates-only" title="Permalink to this headline">¶</a></h2>
+<p>Templates inclusion, described above, allows importing a block into another template, as is.
+The <code class="docutils literal notranslate"><span class="pre">$merge</span></code> directive instead allows getting an object and use it as a base, that will be
+overridden by the properties of the object it is merged into.</p>
+<p>For example, let’s assume this is a base JSON template:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;a&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+  <span class="nt">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;${attribute1}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;c&quot;</span><span class="p">:</span> <span class="s2">&quot;${attribute2}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;array&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>and this is a template extending it:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;$merge&quot;</span><span class="p">:</span> <span class="s2">&quot;base.json&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;a1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;a2&quot;</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;b&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nt">&quot;d&quot;</span><span class="p">:</span> <span class="s2">&quot;${customAttribute}&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The template actually being processed would look as follows:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;a1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;a2&quot;</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;c&quot;</span><span class="p">:</span> <span class="s2">&quot;${attribute2}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;array&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+  <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s2">&quot;${customAttribute}&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The general rules for object merging are:</p>
+<ul class="simple">
+<li><p>Overridden simple properties are replaced.</p></li>
+<li><p>Properties set to null are removed.</p></li>
+<li><p>Nested objects available in both trees are drilled down, being recursively merged.</p></li>
+<li><p>Arrays are replaced as-is, with no merging. The eventual top level <code class="docutils literal notranslate"><span class="pre">features</span></code> array is the only
+exception to this rule.</p></li>
+<li><p>While order of the keys is not important in JSON, the merge is processed so that the base
+property names are included first in the merged result, and the new ones included in the override
+are added after them.</p></li>
+<li><p>If in the overalay JSON template, are present attributes with a property interpolation directive or an expression that in turn returns a JSON, the JSON attribute tree will be merged too with the corresponding one in the base JSON tree.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">$merge</span></code> directive can be used in any object, making it the root for the merge operation.
+This could be used as an alternative to inclusion when local customizations are needed.</p>
+</div>
+<div class="section" id="environment-parametrization">
+<h2>Environment parametrization<a class="headerlink" href="#environment-parametrization" title="Permalink to this headline">¶</a></h2>
+<p>A template configuration can also be manipulated on the fly, replacing existing attributes, attributes’ names and sources using the <code class="code docutils literal notranslate"><span class="pre">env</span></code> parameter.
+To achieve this the attribute name, the attribute, or the source should be replaced by the env function in the following way <code class="code docutils literal notranslate"><span class="pre">$${env('nameOfTheEnvParameter','defaultValue')}</span></code>.
+If in the request it is specified an env query parameter <code class="code docutils literal notranslate"><span class="pre">env='nameOfTheEnvParameter':'newValue'</span></code>, the default value will be replaced in the final output with the one specified in the request.</p>
+<p>The functionality allows also to manipulate dynamically filters and expression. For example it is possible to change Filter arguments: <code class="code docutils literal notranslate"><span class="pre">&quot;$filter&quot;:&quot;xpath('gsml:name')</span> <span class="pre">=</span> <span class="pre">env('nameOfTheEnvParameter','defaultValue')</span></code>.</p>
+<p>Xpaths can be manipulated as well to be totally or partially replaced: <code class="code docutils literal notranslate"><span class="pre">$${xpath(env('xpath','gsml:ControlledConcept/gsml:name')}</span></code> or <code class="code docutils literal notranslate"><span class="pre">$${xpath(strConcat('env('gsml:ControlledConcept',xpath','/gsml:name')))}</span></code>.</p>
+</div>
+<div class="section" id="dynamic-keys">
+<h2>Dynamic keys<a class="headerlink" href="#dynamic-keys" title="Permalink to this headline">¶</a></h2>
+<p>Keys in JSON output can also be fully dependent on feature attributes, for example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;${attributeA}&quot;</span> <span class="p">:</span> <span class="s2">&quot;${attributeB}&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;$${strSubstring(attributeC, 0, 3)}&quot;</span><span class="p">:</span> <span class="s2">&quot;$${att1 * att2}&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Using a key depending on feature attributes has however drawbacks: it won’t be possible to use it
+for filtering in WFS and for queriables generation in OGC APIs, as it does not have a stable value.</p>
+</div>
+<div class="section" id="json-based-properties">
+<h2>JSON based properties<a class="headerlink" href="#json-based-properties" title="Permalink to this headline">¶</a></h2>
+<p>Certain databases have native support for JSON fields. For example, PostgreSQL has both a JSON
+and a JSONB type. The JSON templating machinery can recognize these fields and export them
+as JSON blocks, for direct substitution in the output.</p>
+<p>It is also possible to pick a JSON attribute and use the <code class="docutils literal notranslate"><span class="pre">jsonPointer</span></code> function to extract either
+a property or a whole JSON subtree from it. See the <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc6901">JSON Pointer RFC</a>
+for more details about valid expressions.</p>
+<p>Here is an example of using JSON properties:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="p">{</span>
+<span class="lineno"> 2 </span>   <span class="nt">&quot;assets&quot;</span><span class="p">:</span> <span class="s2">&quot;${assets}&quot;</span><span class="p">,</span>
+<span class="lineno"> 3 </span>   <span class="nt">&quot;links&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="lineno"> 4 </span>     <span class="s2">&quot;$${jsonPointer(others, &#39;/fullLink&#39;)}&quot;</span><span class="p">,</span>
+<span class="lineno"> 5 </span>     <span class="p">{</span>
+<span class="lineno"> 6 </span>       <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;$${jsonPointer(others, &#39;/otherLink/href&#39;)}&quot;</span><span class="p">,</span>
+<span class="lineno"> 7 </span>       <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span>
+<span class="lineno"> 8 </span>       <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;$${jsonPointer(others, &#39;/otherLink/title&#39;)}&quot;</span><span class="p">,</span>
+<span class="lineno"> 9 </span>       <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/xml&quot;</span>
+<span class="lineno">10 </span>     <span class="p">}</span>
+<span class="lineno">11 </span>   <span class="p">]</span>
+<span class="lineno">12 </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Some references:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Line</span> <span class="pre">1</span></code> uses <code class="docutils literal notranslate"><span class="pre">assets</span></code>, a property that can contain a JSON tree of any shape, which will be
+expanded in place.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Line</span> <span class="pre">4</span></code> inserts a full JSON object in the array. The object is a sub-tree of the <code class="docutils literal notranslate"><span class="pre">others</span></code> property,
+which is a complex JSON document with several extra properties (could be a generic containers for
+properties not fitting the fixed database schema).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Line</span> <span class="pre">6</span></code> and <code class="docutils literal notranslate"><span class="pre">Line</span> <span class="pre">8</span></code> extract from the <code class="docutils literal notranslate"><span class="pre">others</span></code> property specific string values.</p></li>
+</ul>
+</div>
+<div class="section" id="array-based-properties-json-based-templates-only">
+<h2>Array based properties (JSON based templates only)<a class="headerlink" href="#array-based-properties-json-based-templates-only" title="Permalink to this headline">¶</a></h2>
+<p>Along JSON properties, it’s not rare to find support for array based attributes in modern databases.
+E.g. <code class="docutils literal notranslate"><span class="pre">varchar[]</span></code> is a attributes containing an array of strings.</p>
+<p>The array properties can be used as-is, and they will be expanded into a JSON array.
+Let’s assume the <code class="docutils literal notranslate"><span class="pre">keywords</span></code> database column contains a list of strings, then the following template:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="p">{</span>
+<span class="lineno">2 </span>   <span class="nt">&quot;keywords&quot;</span><span class="p">:</span> <span class="s2">&quot;${keywords}&quot;</span>
+<span class="lineno">3 </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>May expand into:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="p">{</span>
+<span class="lineno">2 </span>   <span class="nt">&quot;keywords&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">,</span> <span class="s2">&quot;templating&quot;</span><span class="p">]</span>
+<span class="lineno">3 </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>It is also possible to use an array as the source of iteration, referencing the current
+array item using the <code class="docutils literal notranslate"><span class="pre">${.}</span></code> XPath. For example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="p">{</span>
+<span class="lineno"> 2 </span>   <span class="nt">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="lineno"> 3 </span>      <span class="p">{</span>
+<span class="lineno"> 4 </span>         <span class="nt">&quot;$source&quot;</span><span class="p">:</span> <span class="s2">&quot;keywords&quot;</span>
+<span class="lineno"> 5 </span>      <span class="p">},</span>
+<span class="lineno"> 6 </span>      <span class="p">{</span>
+<span class="lineno"> 7 </span>         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;keyword&quot;</span><span class="p">,</span>
+<span class="lineno"> 8 </span>         <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;${.}&quot;</span>
+<span class="lineno"> 9 </span>      <span class="p">}</span>
+<span class="lineno">10 </span>   <span class="p">]</span>
+<span class="lineno">11 </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The above may expand into:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="p">{</span>
+<span class="lineno"> 2 </span>   <span class="nt">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="lineno"> 3 </span>      <span class="p">{</span>
+<span class="lineno"> 4 </span>         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;keyword&quot;</span><span class="p">,</span>
+<span class="lineno"> 5 </span>         <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;features&quot;</span>
+<span class="lineno"> 6 </span>      <span class="p">},</span>
+<span class="lineno"> 7 </span>      <span class="p">{</span>
+<span class="lineno"> 8 </span>         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;keyword&quot;</span><span class="p">,</span>
+<span class="lineno"> 9 </span>         <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;templating&quot;</span>
+<span class="lineno">10 </span>      <span class="p">}</span>
+<span class="lineno">11 </span>   <span class="p">]</span>
+<span class="lineno">12 </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>In case a specific item of an array needs to be retrieved, the <code class="docutils literal notranslate"><span class="pre">item</span></code> function can be used,
+for example, the following template extracts the second item in an array (would fail if not
+present):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="p">{</span>
+<span class="lineno">2 </span>   <span class="nt">&quot;second&quot;</span><span class="p">:</span> <span class="s2">&quot;$${item(keywords, 1)}&quot;</span>
+<span class="lineno">3 </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>There is currently no explicit support for array based columns in GML templates.</p>
+</div>
+<div class="section" id="simplified-property-access">
+<h2>Simplified Property Access<a class="headerlink" href="#simplified-property-access" title="Permalink to this headline">¶</a></h2>
+<p>The features-templating plug-in provides the possibility to directly reference domain name when dealing with Complex Features and using property interpolation in a template.
+As an example let’s use again the meteo stations use case. This is the ER diagram of the Database table involved.</p>
+<div class="figure align-default">
+<img alt="../../_images/meteos-stations-er-diagram.png" src="../../_images/meteos-stations-er-diagram.png" />
+</div>
+<p>The following is a GeoJSON template that directly reference table names and column name, instead of referencing the target Xpath in the AppSchema mappings.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;meteo_stations&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Identifier&quot;</span><span class="p">:</span><span class="s2">&quot;${id}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="s2">&quot;${common_name}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Code&quot;</span><span class="p">:</span><span class="s2">&quot;$${strConcat(&#39;STATION-&#39;, xpath(&#39;code&#39;))}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Location&quot;</span><span class="p">:</span><span class="s2">&quot;$${toWKT(position)}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Temperatures&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;meteo_observations&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;propertyPath(&#39;-&gt;meteo_parameters.param_name&#39;) = &#39;temperature&#39; AND &#39;yes&#39; = env(&#39;showTemperatures&#39;,&#39;yes&#39;)&quot;</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;${time}&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${value}&quot;</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;Pressures&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;meteo_observations&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;propertyPath(&#39;-&gt;meteo_parameters.param_name&#39;) = &#39;pressure&#39; AND &#39;yes&#39; = env(&#39;showPressures&#39;,&#39;yes&#39;)&quot;</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;${time}&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${value}&quot;</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;Winds speed&quot;</span><span class="p">:[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;$source&quot;</span><span class="p">:</span><span class="s2">&quot;meteo_observations&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;$filter&quot;</span><span class="p">:</span><span class="s2">&quot;propertyPath(&#39;-&gt;meteo_parameters.param_name&#39;) = &#39;wind speed&#39; AND &#39;yes&#39; = env(&#39;showWinds&#39;,&#39;yes&#39;)&quot;</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;Timestamp&quot;</span><span class="p">:</span><span class="s2">&quot;${time}&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="s2">&quot;${value}&quot;</span>
+     <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As it is possible to see this template has some differences comparing to the one seen above:</p>
+<ul class="simple">
+<li><p>Property interpolation  (<code class="docutils literal notranslate"><span class="pre">${property}</span></code>) and cql evaluation (<code class="docutils literal notranslate"><span class="pre">$${cql}</span></code>) directives are referencing the column name of the attribute that is meant to be included in the final output. The names match the ones of the columns and no namespaces prefix is being used.</p></li>
+<li><p>Inside the $${cql} directive instead of using an <code class="docutils literal notranslate"><span class="pre">xpath</span></code> function  the <code class="docutils literal notranslate"><span class="pre">propertyPath</span></code> function is being use. It must be used when the property references domain names inside a <code class="docutils literal notranslate"><span class="pre">$${cql}</span></code> directive. Paths in this case are no more separated by a <code class="docutils literal notranslate"><span class="pre">/</span></code> but by a <code class="docutils literal notranslate"><span class="pre">.</span></code> dot.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">$source</span></code> directive references the table names.</p></li>
+<li><p>When a <code class="docutils literal notranslate"><span class="pre">column/property</span></code> in a <code class="docutils literal notranslate"><span class="pre">table/source</span></code> is referenced from the context of the upper <code class="docutils literal notranslate"><span class="pre">table/source</span></code>, as in all the filters in the template, the table name needs to be prefixed with a <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code> symbol, and column name can come next separated by a <code class="docutils literal notranslate"><span class="pre">.</span></code> dot. Putting it in another way: the <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code>  signals that the next path part is a table joined to the last source defined.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>the <code class="code docutils literal notranslate"><span class="pre">propertyPath('propertyPath')</span></code> cql function is meant to be used only in the scope of this plugin. It is not currently possible to reference domain property outside the context of a template file.</p>
+</div>
+<p>This functionality is particularly useful when defining templates on top of Smart Data Loader based Complex Features.</p>
+</div>
+<div class="section" id="controlling-attributes-with-n-cardinality">
+<h2>Controlling Attributes With N Cardinality<a class="headerlink" href="#controlling-attributes-with-n-cardinality" title="Permalink to this headline">¶</a></h2>
+<p>When a property interpolation targets an attribute with multiple cardinality in a Complex Feature, feature templating will output the result as an array. This default behaviour can be controlled and modified with the usage of a set of CQL functions that are available in the plug-in, which allow to control how the list should be encoded in the template.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">aggregate</span></code>: takes as arguments an expression (a property name or a function) that returns a list of values and a literal with the aggregation type eg. <code class="docutils literal notranslate"><span class="pre">aggregate(my.property.name,'MIN')</span></code>. The supported aggregation type are the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MIN</span></code> will return the minimum value from a list of numeric values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAX</span></code> will return the max value from a list of numeric values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AVG</span></code> will return the average value from a list of numeric values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UNIQUE</span></code> will remove duplicates values from a list of values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JOIN</span></code> will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: <code class="docutils literal notranslate"><span class="pre">aggregate(my.property.name,'JOIN(,)')</span></code> .</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stream</span></code>: takes an undefined number of expressions as parameters and chain them so that each expression evaluate on top of the output of the previous expression: eg. <code class="docutils literal notranslate"><span class="pre">stream(aPropertyName,aFunction,anotherPropertyName)</span></code> while evaluate the <code class="docutils literal notranslate"><span class="pre">aFunction</span></code> on the output of <code class="docutils literal notranslate"><span class="pre">aPropertyName</span></code> evaluation and finally <code class="docutils literal notranslate"><span class="pre">anotherPropertyName</span></code> will evaluate on top of the result of <code class="docutils literal notranslate"><span class="pre">aFunction</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code>: takes a literal cql filter as a parameter and evaluates it. Every string literal value in the cql filter must be between double quotes escaped: eg. <code class="docutils literal notranslate"><span class="pre">filter('aProperty</span> <span class="pre">=</span> <span class="pre">\&quot;someValue\&quot;')</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort</span></code>: sort the list of values in ascending or descending order. It accepts as a parameter the sort order (<code class="docutils literal notranslate"><span class="pre">ASC</span></code>,``DESC``) and optionally a property name to target the property on which the sorting should be executed. If no property name is defined the sorting will be applied on the current node on which the function evaluates: <code class="docutils literal notranslate"><span class="pre">sort('DESC',nested.property)</span></code>, <code class="docutils literal notranslate"><span class="pre">sort('ASC')</span></code>.</p></li>
+</ul>
+<p>The above functions can be combined allowing fine grained control over the encoding of list values in a template. Assuming to write a template for the <a class="reference external" href="#source-and-filter-complex-feature-example">meteo stations use case</a>, these are some example of the usage of the functions (simplified property access is used in the example below):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">aggregate(stream(-&gt;meteo_observations,filter('value</span> <span class="pre">&gt;</span> <span class="pre">35')),AVG)</span></code> will compute and return the average value of all the Observation nested feature value attribute.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aggregate(stream(-&gt;meteo_observations.-&gt;meteo_parameters,sort(&quot;ASC&quot;,param_name),param_unit),JOIN(,))</span></code> will pick up the <code class="docutils literal notranslate"><span class="pre">meteo_parameter</span></code> nested features for each station feature, will sort them in ascending order based on the value of the <code class="docutils literal notranslate"><span class="pre">param_name</span></code> and will concatenate the <code class="docutils literal notranslate"><span class="pre">param_unit</span></code> values in a single string, comma separated.</p></li>
+</ul>
+</div>
+<div class="section" id="template-validation">
+<h2>Template Validation<a class="headerlink" href="#template-validation" title="Permalink to this headline">¶</a></h2>
+<p>There are two kind of validation available. The first one is done automatically every time a template is requested for the first time or after modifications occurred. It is done automatically by GeoServer and validates that all the property names being used in the template applies to the Feature Type.
+The second type of validation can be issued from the UI (see the configuration section) in case a JSON-LD or a GML output are request. The GML validation will validate the output against the provided <code class="docutils literal notranslate"><span class="pre">SchemaLocation</span></code> values. The <code class="docutils literal notranslate"><span class="pre">JSON-LD</span></code> validation is detailed below.</p>
+<div class="section" id="json-ld-validation">
+<h3>JSON-LD Validation<a class="headerlink" href="#json-ld-validation" title="Permalink to this headline">¶</a></h3>
+<p>The plugin provides a validation for the json-ld output against the <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> defined in the template. It is possible to require it by specifying a new query parameter in the request: <code class="docutils literal notranslate"><span class="pre">validation=true</span></code>.
+The validation takes advantage form the json-ld api and performs the following steps:</p>
+<ul class="simple">
+<li><p>the <a class="reference external" href="https://www.w3.org/TR/json-ld11-api/#expansion-algorithm">expansion algorithm</a> is executed against the json-ld output, expanding each features’ attribute name to IRIs, removing those with no reference in the <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> and the <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> itself;</p></li>
+<li><p>the <a class="reference external" href="https://www.w3.org/TR/json-ld11-api/#compaction-algorithm">compaction algorithm</a> is then executed on the expansion result, putting back the <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> and shortens to the terms the expanded attribute names as in the original output;</p></li>
+<li><p>finally the result of the compaction process is compared to the original json-ld and if some attributes are missing it means that they were not referenced in the <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code>. An exception is thrown with a message pointing to the missing attributes.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="installing.html" title="previous chapter">Installing the GeoServer FEATURES-TEMPLATING extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="configuration.html" title="next chapter">Template Configuration</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Template Directives</a><ul>
+<li><a class="reference internal" href="#template-directive-summary">Template directive summary</a><ul>
+<li><a class="reference internal" href="#json-based-templates">JSON based templates</a></li>
+<li><a class="reference internal" href="#xml-based-templates">XML based templates</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#a-step-by-step-introduction-to-features-templating-syntax">A step by step introduction to features-templating syntax</a><ul>
+<li><a class="reference internal" href="#property-and-cql-directive-simple-feature-example">${property} and $${cql} directive (Simple Feature example)</a><ul>
+<li><a class="reference internal" href="#geojson">GeoJSON</a></li>
+<li><a class="reference internal" href="#gml">GML</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#source-and-filter-complex-feature-example">Source and filter (Complex Feature example)</a><ul>
+<li><a class="reference internal" href="#id2">GeoJSON</a></li>
+<li><a class="reference internal" href="#id3">GML</a></li>
+<li><a class="reference internal" href="#more-on-xpath-function">More on XPath Function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#template-options">Template Options</a><ul>
+<li><a class="reference internal" href="#id4">GeoJSON</a></li>
+<li><a class="reference internal" href="#json-ld">JSON-LD</a></li>
+<li><a class="reference internal" href="#id5">GML</a></li>
+<li><a class="reference internal" href="#html">HTML</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#including-other-templates">Including other templates</a><ul>
+<li><a class="reference internal" href="#json-based-templates-geojson-json-ld">JSON based templates (GeoJSON, JSON-LD)</a></li>
+<li><a class="reference internal" href="#xml-based-templates-gml">XML based templates (GML)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extending-other-templates-via-merge-json-based-templates-only">Extending other templates via merge (JSON based templates only)</a></li>
+<li><a class="reference internal" href="#environment-parametrization">Environment parametrization</a></li>
+<li><a class="reference internal" href="#dynamic-keys">Dynamic keys</a></li>
+<li><a class="reference internal" href="#json-based-properties">JSON based properties</a></li>
+<li><a class="reference internal" href="#array-based-properties-json-based-templates-only">Array based properties (JSON based templates only)</a></li>
+<li><a class="reference internal" href="#simplified-property-access">Simplified Property Access</a></li>
+<li><a class="reference internal" href="#controlling-attributes-with-n-cardinality">Controlling Attributes With N Cardinality</a></li>
+<li><a class="reference internal" href="#template-validation">Template Validation</a><ul>
+<li><a class="reference internal" href="#json-ld-validation">JSON-LD Validation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="installing.html" title="previous chapter">Installing the GeoServer FEATURES-TEMPLATING extension</a></li>
+            <li>Next: <a href="configuration.html" title="next chapter">Template Configuration</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/features-templating/directives.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

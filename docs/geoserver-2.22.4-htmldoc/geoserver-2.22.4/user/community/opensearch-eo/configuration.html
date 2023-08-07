@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuring the OpenSearch module &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="The JDBC store database structure" href="database.html" />
+    <link rel="prev" title="Installing the OpenSearch for EO module" href="installation.html" /> 
+  </head><body class="community/opensearch-eo/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">OpenSearch for EO</a> &raquo;</li>
+    <li>Configuring the OpenSearch module</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="database.html" title="The JDBC store database structure" accesskey="N">Next</a></li>
+  <li>
+    <a href="installation.html" title="Installing the OpenSearch for EO module" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="configuring-the-opensearch-module">
+<span id="opensearch-eo-configuration"></span><h1>Configuring the OpenSearch module<a class="headerlink" href="#configuring-the-opensearch-module" title="Permalink to this headline">¶</a></h1>
+<p>The OpenSearch module needs to know upon which database perform the searches.</p>
+<p>Follow these steps:</p>
+<ul>
+<li><p>Setup a standard PostGIS database pointing to the database and schema created above
+from the SQL file. Note down the full name of the store (e.g. <code class="docutils literal notranslate"><span class="pre">test:metadata</span></code> where <code class="docutils literal notranslate"><span class="pre">test</span></code>
+is the workspace and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> is the store name).
+Besides filling the connection parameters, remember to set “expose primary keys” to true.</p></li>
+<li><p>Create a new store of type “JDBC based OpenSearch store” and configure the fully qualified name
+of the basic PostGIS store in its “store” parameter.</p>
+<div class="figure align-center">
+<img alt="../../_images/store.png" src="../../_images/store.png" />
+</div>
+</li>
+<li><p>Go into the “OS-EO” service configuration page and configure the “OpenSearch” store</p>
+<div class="figure align-default">
+<img alt="../../_images/service.png" src="../../_images/service.png" />
+</div>
+</li>
+<li><p>Global Queryables (applicable to the STAC API to define queryable fields for all Collections) can be configured
+using a comma delimited list in the text box under OpenSearch specific metadata</p>
+<div class="figure align-default">
+<img alt="../../_images/queryables.png" src="../../_images/queryables.png" />
+</div>
+</li>
+</ul>
+<div class="section" id="advanced-adding-product-classes">
+<h2>Advanced: adding product classes<a class="headerlink" href="#advanced-adding-product-classes" title="Permalink to this headline">¶</a></h2>
+<p>The design of the OpenSearch module is “data driven”, meaning that one can materialize new
+search properties by just adding new columns to the product and collection tables.</p>
+<p>In particular, both tables have a “prefix based” convention linking the properties to their
+respective product types, and the engine will advertise for a particular product only
+the properties relevant to it. For example, in an optical product, the properties starting
+with “opt” will be listed, but not those starting with “sar”.</p>
+<p>Here is a table of the product classes known out of the box:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 20%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Prefix</p></th>
+<th class="head"><p>Namespace</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>eop_generic</p></td>
+<td><p>eop</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/eop/2.1">http://www.opengis.net/eop/2.1</a></p></td>
+<td><p>Base properties shared among all EO products. Never remove this class.</p></td>
+</tr>
+<tr class="row-odd"><td><p>optical</p></td>
+<td><p>opt</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/opt/2.1">http://www.opengis.net/opt/2.1</a></p></td>
+<td><p>Optical products properties</p></td>
+</tr>
+<tr class="row-even"><td><p>radar</p></td>
+<td><p>sar</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/sar/2.1">http://www.opengis.net/sar/2.1</a></p></td>
+<td><p>Radar products properties</p></td>
+</tr>
+<tr class="row-odd"><td><p>Altimetric</p></td>
+<td><p>alt</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/alt/2.1">http://www.opengis.net/alt/2.1</a></p></td>
+<td><p>Altimetric products properties</p></td>
+</tr>
+<tr class="row-even"><td><p>Atmospheric</p></td>
+<td><p>atm</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/atm/2.1">http://www.opengis.net/atm/2.1</a></p></td>
+<td><p>Atmospheric products properties</p></td>
+</tr>
+<tr class="row-odd"><td><p>Limb</p></td>
+<td><p>lmb</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/lmb/2.1">http://www.opengis.net/lmb/2.1</a></p></td>
+<td><p>Limb products properties</p></td>
+</tr>
+<tr class="row-even"><td><p>ssp</p></td>
+<td><p>ssp</p></td>
+<td><p><a class="reference external" href="http://www.opengis.net/ssp/2.1">http://www.opengis.net/ssp/2.1</a></p></td>
+<td><p>SSP products properties</p></td>
+</tr>
+</tbody>
+</table>
+<p>The various properties have different usages:</p>
+<ul class="simple">
+<li><p>The <em>name</em> is used in the collection to define the type of sensor (eoSensorType column)</p></li>
+<li><p>The <em>prefix</em> is used in the product table as a prefix to column name in order to associate
+them to a particular product type, shows up as-is in the JSON representations of the REST API,
+as well as the prefix in XML outputs</p></li>
+<li><p>The <em>namespace</em> is used in XML output, along with the prefix (e.g., <code class="docutils literal notranslate"><span class="pre">xmlns:opt=&quot;http://www.opengis.net/opt/2.1&quot;</span></code>)</p></li>
+</ul>
+<p>It is possible to add new product classes as well as changing the built-in ones, but care should
+be taken to keep product classes and database aligned. After any change to the database structure
+remember to “reset” the GeoServer configuration to make it re-scan the table structures.</p>
+</div>
+<div class="section" id="html-templates">
+<span id="oseo-html-templates"></span><h2>HTML templates<a class="headerlink" href="#html-templates" title="Permalink to this headline">¶</a></h2>
+<p>The Freemarker templates for collections and products can be found in <code class="docutils literal notranslate"><span class="pre">$GEOSERVER_DATA_DIRECTORY/templates/os-eo</span></code>:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/">generic-header.ftl</a> receives SearchResults, Query, organization, title, updated(date), builder and encodes a generic header Atom HTML description for it.</p></li>
+<li><p><a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/">generic-footer.ftl</a> exists simple for having a &lt;/feed&gt; closing tag.</p></li>
+<li><p><a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/product.ftl">product.ftl</a> receives an OpenSearch product, updated(date), dcDate(date), offerings and encodes the Atom HTML description for it.</p></li>
+<li><p><a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.ftl">collection.ftl</a> receives an OpenSearch collection, updated(date), dcDate(date), offerings and encodes the Atom HTML description for it.</p></li>
+</ul>
+<p>The default templates, linked above, report the time range for the product/collection, and link
+to other pertinent OpenSearch resources (metadata, self link, quicklooks).</p>
+<p>Collection specific templates can be set up in the data directory, appending the collection
+identifier to the file name, e.g. <code class="docutils literal notranslate"><span class="pre">collection-SENTINEL2.ftl</span></code> or <code class="docutils literal notranslate"><span class="pre">product-SENTINEL2.ftl</span></code>.</p>
+<p>The templates can use a <code class="docutils literal notranslate"><span class="pre">oseoLink</span></code> function to build links pointing back to the OpenSearch service.
+The function receives the following parameters:</p>
+<ul class="simple">
+<li><p>The first argument is a <code class="docutils literal notranslate"><span class="pre">path</span></code> segment under the <code class="docutils literal notranslate"><span class="pre">oseo</span></code> service path.</p></li>
+<li><p>The other arguments, optional, are couple of keys and values, used to encode the link’s query string.</p></li>
+</ul>
+</div>
+<div class="section" id="metadata-templates">
+<span id="oseo-metadata-templates"></span><h2>Metadata templates<a class="headerlink" href="#metadata-templates" title="Permalink to this headline">¶</a></h2>
+<p>The Freemarker metadata templates for collections and products can be found in <code class="docutils literal notranslate"><span class="pre">$GEOSERVER_DATA_DIRECTORY/templates/os-eo</span></code>:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/product-metadata.ftl">product-metadata.ftl</a> receives an OpenSearch product and encodes the Atom HTML description for it.</p></li>
+<li><p><a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection-metadata.ftl">collection-metadata.ftl</a> receives an OpenSearch collection and encodes the Atom HTML description for it.</p></li>
+</ul>
+<p>The default templates, linked above, generate respectively a ISO metadata sheet for collections, and a
+EO O&amp;M product metadata sheet for products.</p>
+<p>The templates can use a <code class="docutils literal notranslate"><span class="pre">oseoLink</span></code> function to build links pointing back to the OpenSearch service.
+The function receives the following parameters:</p>
+<ul class="simple">
+<li><p>The first argument is a <code class="docutils literal notranslate"><span class="pre">path</span></code> segment under the <code class="docutils literal notranslate"><span class="pre">oseo</span></code> service path.</p></li>
+<li><p>The other arguments, optional, are couple of keys and values, used to encode the link’s query string.</p></li>
+</ul>
+<p>The templates can also use a <code class="docutils literal notranslate"><span class="pre">gml</span></code> function that generates a GML 3.2 representation of a
+geometry (mind, the output must be forced not to be escaped, using <code class="docutils literal notranslate"><span class="pre">?no_esc</span></code>, as well
+as <code class="docutils literal notranslate"><span class="pre">minx</span></code>, <code class="docutils literal notranslate"><span class="pre">miny</span></code>, <code class="docutils literal notranslate"><span class="pre">maxx</span></code>, <code class="docutils literal notranslate"><span class="pre">maxy</span></code> that can be used to extract the bounding box
+corner values. All these function expect a geometry as input.</p>
+<p>Finally templates can use a <code class="docutils literal notranslate"><span class="pre">loadJSON</span></code> function to read a JSON from a file inside the GeoServer data directory.
+The path to the JSON file can be absolute eg. <code class="code docutils literal notranslate"><span class="pre">&quot;${loadJSON('/path/to/read.json')}&quot;</span></code>, or a plain file name, in case the JSON file is present in the GeoServer root directory eg. <code class="code docutils literal notranslate"><span class="pre">&quot;${loadJSON('read.json')}&quot;</span></code>.</p>
+<p>The function returns a string JSON that can be parsed using the  <code class="code docutils literal notranslate"><span class="pre">?eval_json</span></code> free marker built-in function:
+<code class="code docutils literal notranslate"><span class="pre">&lt;#assign</span> <span class="pre">loadedJSON</span> <span class="pre">=</span> <span class="pre">&quot;${loadJSON('readAndEval.json')}&quot;&gt;</span></code>
+<code class="code docutils literal notranslate"><span class="pre">&lt;#assign</span> <span class="pre">evalJSON</span> <span class="pre">=</span> <span class="pre">loadedJSON?eval_json&gt;</span></code></p>
+<p>More information about writing templates can be found in the <a class="reference internal" href="templates.html#oseotemplates"><span class="std std-ref">templates guide</span></a>.</p>
+</div>
+<div class="section" id="geojson-output-templates">
+<h2>GeoJSON output templates<a class="headerlink" href="#geojson-output-templates" title="Permalink to this headline">¶</a></h2>
+<p>The module supports GeoJSON encoding of collections and products according to the
+&lt;OGC OpenSearch-EO GeoJSON(-LD) Response Encoding Standard`https://docs.opengeospatial.org/is/17-047r1/17-047r1.html`&gt;_.</p>
+<p>Give the structure required in output, it’s not possible to use the simple features GeoJSON encoders.
+The module is instead using two dedicated <a class="reference internal" href="../features-templating/index.html#community-wfstemplating"><span class="std std-ref">features templates</span></a>,
+that the user can customize to match the database structure.</p>
+<p>The default templates are part of the GeoServer distribution, and are automatically copied to the
+data directory on startup, to allow for customization:</p>
+<ul class="simple">
+<li><p><cite>$GEOSERVER_DATA_DIR/templates/os-eo/products.json</cite> is the <a class="reference external" href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/products.json">products template</a></p></li>
+<li><p><cite>$GEOSERVER_DATA_DIR/templates/os-eo/collections.json</cite> is the <a class="reference external" href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/collections.json">collections template</a></p></li>
+</ul>
+<p>The default templates work against the <a class="reference external" href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql">default PostGIS database structure</a> and
+can be customized to include new properties to follow eventual database modifications.</p>
+<p>Collection specific templates can also be provided, which would contain directives and mappings unique to that collection.
+A collection specific template can be placed in the same templates directory as above, called
+either <code class="docutils literal notranslate"><span class="pre">collections-&lt;COLLECTION_ID&gt;.json</span></code> or <code class="docutils literal notranslate"><span class="pre">products-&lt;COLLECTION_ID&gt;.json</span></code>
+where <code class="docutils literal notranslate"><span class="pre">&lt;COLLECTION_ID&gt;</span></code> is the collection identifier.
+For example, if the collection is named <code class="docutils literal notranslate"><span class="pre">SENTINEL2</span></code> a products template specific for it will
+be named <code class="docutils literal notranslate"><span class="pre">products-SENTINEL2.json</span></code>, while the collection template will be named <code class="docutils literal notranslate"><span class="pre">collections-SENTINEL2.json</span></code>.</p>
+<p>More information about writing templates can be found in the <a class="reference internal" href="templates.html#oseotemplates"><span class="std std-ref">templates guide</span></a>.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="installation.html" title="previous chapter">Installing the OpenSearch for EO module</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="database.html" title="next chapter">The JDBC store database structure</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Configuring the OpenSearch module</a><ul>
+<li><a class="reference internal" href="#advanced-adding-product-classes">Advanced: adding product classes</a></li>
+<li><a class="reference internal" href="#html-templates">HTML templates</a></li>
+<li><a class="reference internal" href="#metadata-templates">Metadata templates</a></li>
+<li><a class="reference internal" href="#geojson-output-templates">GeoJSON output templates</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="installation.html" title="previous chapter">Installing the OpenSearch for EO module</a></li>
+            <li>Next: <a href="database.html" title="next chapter">The JDBC store database structure</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/opensearch-eo/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

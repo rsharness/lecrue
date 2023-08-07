@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CQL and ECQL &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Using the ImageMosaic plugin for raster time-series data" href="../imagemosaic_timeseries/imagemosaic_timeseries.html" />
+    <link rel="prev" title="WMS Reflector" href="../wmsreflector.html" /> 
+  </head><body class="tutorials/cql/cql_tutorial">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>CQL and ECQL</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../imagemosaic_timeseries/imagemosaic_timeseries.html" title="Using the ImageMosaic plugin for raster time-series data" accesskey="N">Next</a></li>
+  <li>
+    <a href="../wmsreflector.html" title="WMS Reflector" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="cql-and-ecql">
+<span id="cql-tutorial"></span><h1>CQL and ECQL<a class="headerlink" href="#cql-and-ecql" title="Permalink to this headline">¶</a></h1>
+<p>CQL (Common Query Language) is a query language created by the OGC for the <a class="reference external" href="http://www.opengeospatial.org/standards/cat">Catalogue Web Services specification</a>.
+Unlike the XML-based Filter Encoding language, CQL is written using a familiar text-based syntax.
+It is thus more readable and better-suited for manual authoring.</p>
+<p>However, CQL has some limitations.  For example it cannot encode id filters, and it requires an attribute to be on the left side of any comparison operator.
+For this reason, GeoServer provides an extended version of CQL called ECQL.
+ECQL removes the limitations of CQL, providing a more flexible language with stronger similarities with SQL.</p>
+<p>GeoServer supports the use of both CQL and ECQL in WMS and WFS requests, as well as in GeoServer’s SLD <a class="reference internal" href="../../styling/sld/extensions/pointsymbols.html#pointsymbols"><span class="std std-ref">dynamic symbolizers</span></a>.
+Whenever the documentation refers to CQL, ECQL syntax can be used as well (and if not, please report that as a bug!).</p>
+<p>This tutorial introduces the CQL/ECQL language by example.
+For a full reference, refer to the <a class="reference internal" href="../../filter/ecql_reference.html#filter-ecql-reference"><span class="std std-ref">ECQL Reference</span></a>.</p>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>The following examples use the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> sample layer shipped with GeoServer.
+They demonstrate how CQL filters work by using the WMS <a class="reference internal" href="../../services/wms/vendor.html#wms-vendor-parameters"><span class="std std-ref">CQL_FILTER vendor parameter</span></a> to alter the data displayed by WMS requests.
+The easiest way to follow the tutorial is to open the GeoServer Map Preview for the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> layer.
+Click on the <em>Options</em> button at the top of the map preview to open the advanced options toolbar.
+The example filters can be entered in the <em>Filter: CQL</em> box.</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/gettingStarted1.png" src="../../_images/gettingStarted1.png" />
+<p class="caption"><span class="caption-text"><em>topp:states preview with advanced toolbar open.</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The attributes used in the filter examples are those included in the layer.
+For example, the following are the attribute names and values for the Colorado feature:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Attribute</strong></p></td>
+<td><p><strong>states.6</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>STATE_NAME</p></td>
+<td><p>Colorado</p></td>
+</tr>
+<tr class="row-odd"><td><p>STATE_FIPS</p></td>
+<td><p>08</p></td>
+</tr>
+<tr class="row-even"><td><p>SUB_REGION</p></td>
+<td><p>Mtn</p></td>
+</tr>
+<tr class="row-odd"><td><p>STATE_ABBR</p></td>
+<td><p>CO</p></td>
+</tr>
+<tr class="row-even"><td><p>LAND_KM</p></td>
+<td><p>268659.501</p></td>
+</tr>
+<tr class="row-odd"><td><p>WATER_KM</p></td>
+<td><p>960.364</p></td>
+</tr>
+<tr class="row-even"><td><p>PERSONS</p></td>
+<td><p>3294394.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>FAMILIES</p></td>
+<td><p>854214.0</p></td>
+</tr>
+<tr class="row-even"><td><p>HOUSHOLD</p></td>
+<td><p>1282489.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>MALE</p></td>
+<td><p>1631295.0</p></td>
+</tr>
+<tr class="row-even"><td><p>FEMALE</p></td>
+<td><p>1663099.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>WORKERS</p></td>
+<td><p>1233023.0</p></td>
+</tr>
+<tr class="row-even"><td><p>DRVALONE</p></td>
+<td><p>1216639.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>CARPOOL</p></td>
+<td><p>210274.0</p></td>
+</tr>
+<tr class="row-even"><td><p>PUBTRANS</p></td>
+<td><p>46983.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>EMPLOYED</p></td>
+<td><p>1633281.0</p></td>
+</tr>
+<tr class="row-even"><td><p>UNEMPLOY</p></td>
+<td><p>99438.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>SERVICE</p></td>
+<td><p>421079.0</p></td>
+</tr>
+<tr class="row-even"><td><p>MANUAL</p></td>
+<td><p>181760.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>P_MALE</p></td>
+<td><p>0.495</p></td>
+</tr>
+<tr class="row-even"><td><p>P_FEMALE</p></td>
+<td><p>0.505</p></td>
+</tr>
+<tr class="row-odd"><td><p>SAMP_POP</p></td>
+<td><p>512677.0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="simple-comparisons">
+<h2>Simple comparisons<a class="headerlink" href="#simple-comparisons" title="Permalink to this headline">¶</a></h2>
+<p>Let’s get started with a simple example. In CQL arithmetic and comparisons
+are expressed using plain text. The filter <code class="docutils literal notranslate"><span class="pre">PERSONS</span> <span class="pre">&gt;</span> <span class="pre">15000000</span></code> will select states that
+have more than 15 million inhabitants:</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/more15M.png" src="../../_images/more15M.png" />
+<p class="caption"><span class="caption-text"><em>PERSONS &gt; 15000000</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The full list of comparison operators is: <code class="docutils literal notranslate"><span class="pre">=</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>,  <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>.</p>
+<p>To select a range of values the BETWEEN operator can be used: <code class="docutils literal notranslate"><span class="pre">PERSONS</span> <span class="pre">BETWEEN</span> <span class="pre">1000000</span> <span class="pre">AND</span> <span class="pre">3000000</span></code>:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/between.png" src="../../_images/between.png" />
+<p class="caption"><span class="caption-text"><em>PERSONS BETWEEN 1000000 AND 3000000</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>Comparison operators also support text values. For instance, to select only the state of California, the filter is
+<code class="docutils literal notranslate"><span class="pre">STATE_NAME</span> <span class="pre">=</span> <span class="pre">'California'</span></code>.
+More general text comparisons can be made using the <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> operator. <code class="docutils literal notranslate"><span class="pre">STATE_NAME</span> <span class="pre">LIKE</span> <span class="pre">'N%'</span></code> will extract all states starting with an “N”:</p>
+<div class="figure align-center" id="id4">
+<img alt="../../_images/startn.png" src="../../_images/startn.png" />
+<p class="caption"><span class="caption-text"><em>STATE_NAME LIKE ‘N%’</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>It is also possible to compare two attributes with each other. <code class="docutils literal notranslate"><span class="pre">MALE</span> <span class="pre">&gt;</span> <span class="pre">FEMALE</span></code> selects the
+states in which the male population surpasses the female one (a rare occurrence):</p>
+<div class="figure align-center" id="id5">
+<img alt="../../_images/malefemale.png" src="../../_images/malefemale.png" />
+<p class="caption"><span class="caption-text"><em>MALE &gt; FEMALE</em></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>Arithmetic expressions can be computed using the <code class="docutils literal notranslate"><span class="pre">+,</span> <span class="pre">-,</span> <span class="pre">*,</span> <span class="pre">/</span></code> operators.
+The filter <code class="docutils literal notranslate"><span class="pre">UNEMPLOY</span> <span class="pre">/</span> <span class="pre">(EMPLOYED</span> <span class="pre">+</span> <span class="pre">UNEMPLOY)</span> <span class="pre">&gt;</span> <span class="pre">0.07</span></code> selects all states whose unemployment ratio is above 7% (remember the sample data is very old, so don’t draw any conclusion from the results!)</p>
+<div class="figure align-center" id="id6">
+<img alt="../../_images/employ.png" src="../../_images/employ.png" />
+<p class="caption"><span class="caption-text"><em>UNEMPLOY / (EMPLOYED + UNEMPLOY) &gt; 0.07</em></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="id-and-list-comparisons">
+<h2>Id and list comparisons<a class="headerlink" href="#id-and-list-comparisons" title="Permalink to this headline">¶</a></h2>
+<p>If we want to extract only the states with specific feature ids we can use the <code class="docutils literal notranslate"><span class="pre">IN</span></code> operator without specifying any attribute, as in <code class="docutils literal notranslate"><span class="pre">IN</span> <span class="pre">('states.1',</span> <span class="pre">'states.12')</span></code>:</p>
+<div class="figure align-center" id="id7">
+<img alt="../../_images/idfilter.png" src="../../_images/idfilter.png" />
+<p class="caption"><span class="caption-text"><em>IN (‘states.1’, ‘states.12’)</em></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>If instead we want to extract the states whose name is in a given list we can use the <code class="docutils literal notranslate"><span class="pre">IN</span></code> operator specifying an attribute name, as in <code class="docutils literal notranslate"><span class="pre">STATE_NAME</span> <span class="pre">IN</span> <span class="pre">('New</span> <span class="pre">York',</span> <span class="pre">'California',</span> <span class="pre">'Montana',</span> <span class="pre">'Texas')</span></code>:</p>
+<div class="figure align-center" id="id8">
+<img alt="../../_images/statenames.png" src="../../_images/statenames.png" />
+<p class="caption"><span class="caption-text"><em>STATE_NAME IN (‘New York’, ‘California’, ‘Montana’, ‘Texas’)</em></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="filter-functions">
+<h2>Filter functions<a class="headerlink" href="#filter-functions" title="Permalink to this headline">¶</a></h2>
+<p>CQL/ECQL can use any of the <a class="reference internal" href="../../filter/function_reference.html#filter-function-reference"><span class="std std-ref">filter functions</span></a> available in GeoServer.
+This greatly increases the power of CQL expressions.</p>
+<p>For example, suppose we want to find all states whose name contains an “m”, regardless of letter case. We can use the <code class="docutils literal notranslate"><span class="pre">strToLowerCase</span></code> to turn all the state names to lowercase and then use a like comparison: <code class="docutils literal notranslate"><span class="pre">strToLowerCase(STATE_NAME)</span> <span class="pre">like</span> <span class="pre">'%m%'</span></code>:</p>
+<div class="figure align-center" id="id9">
+<img alt="../../_images/mstates.png" src="../../_images/mstates.png" />
+<p class="caption"><span class="caption-text"><em>strToLowerCase(STATE_NAME) like ‘%m%’</em></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="geometric-filters">
+<h2>Geometric filters<a class="headerlink" href="#geometric-filters" title="Permalink to this headline">¶</a></h2>
+<p>CQL provides a full set of geometric filter capabilities. Say, for example, you want to display only the states that intersect the (-90,40,-60,45) bounding box.
+The filter will be <code class="docutils literal notranslate"><span class="pre">BBOX(the_geom,</span> <span class="pre">-90,</span> <span class="pre">40,</span> <span class="pre">-60,</span> <span class="pre">45)</span></code></p>
+<div class="figure align-center" id="id10">
+<img alt="../../_images/bbox.png" src="../../_images/bbox.png" />
+<p class="caption"><span class="caption-text"><em>BBOX(the_geom, -90, 40, -60, 45)</em></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+<p>Conversely, you can select the states that do <em>not</em> intersect the bounding box with the filter: <code class="docutils literal notranslate"><span class="pre">DISJOINT(the_geom,</span> <span class="pre">POLYGON((-90</span> <span class="pre">40,</span> <span class="pre">-90</span> <span class="pre">45,</span> <span class="pre">-60</span> <span class="pre">45,</span> <span class="pre">-60</span> <span class="pre">40,</span> <span class="pre">-90</span> <span class="pre">40)))</span></code>:</p>
+<div class="figure align-center" id="id11">
+<img alt="../../_images/disjoint.png" src="../../_images/disjoint.png" />
+<p class="caption"><span class="caption-text"><em>DISJOINT(the_geom, POLYGON((-90 40, -90 45, -60 45, -60 40, -90 40)))</em></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+<p>The full list of geometric predicates is: <code class="docutils literal notranslate"><span class="pre">EQUALS</span></code>, <code class="docutils literal notranslate"><span class="pre">DISJOINT</span></code>, <code class="docutils literal notranslate"><span class="pre">INTERSECTS</span></code>, <code class="docutils literal notranslate"><span class="pre">TOUCHES</span></code>, <code class="docutils literal notranslate"><span class="pre">CROSSES</span></code>, <code class="docutils literal notranslate"><span class="pre">WITHIN</span></code>, <code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code>, <code class="docutils literal notranslate"><span class="pre">OVERLAPS</span></code>, <code class="docutils literal notranslate"><span class="pre">RELATE</span></code>, <code class="docutils literal notranslate"><span class="pre">DWITHIN</span></code>, <code class="docutils literal notranslate"><span class="pre">BEYOND</span></code>.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../wmsreflector.html" title="previous chapter">WMS Reflector</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../imagemosaic_timeseries/imagemosaic_timeseries.html" title="next chapter">Using the ImageMosaic plugin for raster time-series data</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">CQL and ECQL</a><ul>
+<li><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li><a class="reference internal" href="#simple-comparisons">Simple comparisons</a></li>
+<li><a class="reference internal" href="#id-and-list-comparisons">Id and list comparisons</a></li>
+<li><a class="reference internal" href="#filter-functions">Filter functions</a></li>
+<li><a class="reference internal" href="#geometric-filters">Geometric filters</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../wmsreflector.html" title="previous chapter">WMS Reflector</a></li>
+            <li>Next: <a href="../imagemosaic_timeseries/imagemosaic_timeseries.html" title="next chapter">Using the ImageMosaic plugin for raster time-series data</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/cql/cql_tutorial.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

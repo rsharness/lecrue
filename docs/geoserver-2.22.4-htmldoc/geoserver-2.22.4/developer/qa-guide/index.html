@@ -1,0 +1,699 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Automatic Quality Assurance checks &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Programming Guide" href="../programming-guide/index.html" />
+    <link rel="prev" title="Eclipse Guide" href="../eclipse-guide/index.html" /> 
+  </head><body class="qa-guide/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+    <li>Automatic Quality Assurance checks</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../programming-guide/index.html" title="Programming Guide" accesskey="N">Next</a></li>
+  <li>
+    <a href="../eclipse-guide/index.html" title="Eclipse Guide" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="automatic-quality-assurance-checks">
+<h1>Automatic Quality Assurance checks<a class="headerlink" href="#automatic-quality-assurance-checks" title="Permalink to this headline">¶</a></h1>
+<p>The GeoServer builds on Github Actions and <a class="reference external" href="https://build.geoserver.org/">https://build.geoserver.org/</a> apply
+<a class="reference external" href="https://pmd.github.io/">PMD</a> and <a class="reference external" href="https://errorprone.info/">Error Prone</a> checks on the code base
+and will fail the build in case of rule violation.</p>
+<p>In case you want to just run the build with the full checks locally, use the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn clean install -Dqa
+</pre></div>
+</div>
+<p>Add extra parameters as you see fit, like <code class="docutils literal notranslate"><span class="pre">-T1C</span> <span class="pre">-nsu</span></code> to speed up the build:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn install -Prelease -Dqa -T1C -nsu -fae
+</pre></div>
+</div>
+<p>Flags documented below can be used to shut off individual QA checks when trouble shooting.</p>
+<div class="section" id="pmd-checks">
+<h2>PMD checks<a class="headerlink" href="#pmd-checks" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://pmd.github.io/">PMD</a> checks are based on source code analysis for common errors, we have configured <strong class="command">PMD</strong> to check for common mistakes and bad practices such as accidentally including debug <code class="docutils literal notranslate"><span class="pre">System.out.println()</span></code> statements in your commit.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;artifactId&gt;</span>maven-pmd-plugin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;version&gt;</span>3.14.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;executions&gt;</span>
+  <span class="nt">&lt;execution&gt;</span>
+    <span class="nt">&lt;goals&gt;</span>
+      <span class="nt">&lt;goal&gt;</span>check<span class="nt">&lt;/goal&gt;</span>
+    <span class="nt">&lt;/goals&gt;</span>
+  <span class="nt">&lt;/execution&gt;</span>
+<span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;dependencies&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>net.sourceforge.pmd<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>pmd-core<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>${pmd.version}<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>net.sourceforge.pmd<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>pmd-java<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>${pmd.version}<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>net.sourceforge.pmd<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>pmd-javascript<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>${pmd.version}<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>net.sourceforge.pmd<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>pmd-jsp<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>${pmd.version}<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;rulesets&gt;</span>
+    <span class="nt">&lt;ruleset&gt;</span>${geoserverBaseDir}/../build/qa/pmd-ruleset.xml<span class="nt">&lt;/ruleset&gt;</span>
+    <span class="nt">&lt;ruleset&gt;</span>${geoserverBaseDir}/../build/qa/pmd-junit-ruleset.xml<span class="nt">&lt;/ruleset&gt;</span>
+  <span class="nt">&lt;/rulesets&gt;</span>
+  <span class="nt">&lt;failurePriority&gt;</span>3<span class="nt">&lt;/failurePriority&gt;</span>
+  <span class="nt">&lt;minimumPriority&gt;</span>3<span class="nt">&lt;/minimumPriority&gt;</span>
+  <span class="nt">&lt;verbose&gt;</span>true<span class="nt">&lt;/verbose&gt;</span>
+  <span class="nt">&lt;printFailingErrors&gt;</span>true<span class="nt">&lt;/printFailingErrors&gt;</span>
+  <span class="nt">&lt;includeTests&gt;</span>true<span class="nt">&lt;/includeTests&gt;</span>
+  <span class="nt">&lt;sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/sourceEncoding&gt;</span>
+  <span class="nt">&lt;outputEncoding&gt;</span>UTF-8<span class="nt">&lt;/outputEncoding&gt;</span>
+  <span class="nt">&lt;excludeRoots&gt;</span>
+    <span class="nt">&lt;excludeRoot&gt;</span>target/generated-sources<span class="nt">&lt;/excludeRoot&gt;</span>
+  <span class="nt">&lt;/excludeRoots&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</pre></div>
+</div>
+<p>Rules are configured in our build <a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml">build/qa/pmd-ruleset.xml</a>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/AvoidUsingHardCodedIP&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/CheckResultSet&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/UnusedLocalVariable&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/UnusedPrivateField&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/UnusedPrivateMethod&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/SystemPrintln&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/ForLoopCanBeForeach&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/UseTryWithResources&quot;</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;description&gt;</span>
+        Use try-with-resources to avoid memory / resources leaks.
+    <span class="nt">&lt;/description&gt;</span>
+    <span class="nt">&lt;properties&gt;</span>
+      <span class="c">&lt;!-- The rule reports false positives for closeable arguments that are used             --&gt;</span>
+      <span class="c">&lt;!-- closed within the method body. This suppression tries to avoid false positives for --&gt;</span>
+      <span class="c">&lt;!-- this case, until we can switch to Java 9 and just use try(variable) {...} without  --&gt;</span>
+      <span class="c">&lt;!-- the need to instatiate the variable in the try                                     --&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;violationSuppressXPath&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;value&gt;</span>
+          <span class="cp">&lt;![CDATA[</span>
+<span class="cp">              ./FinallyStatement//Name[</span>
+<span class="cp">                substring-after(@Image, &#39;.&#39;) = &#39;close&#39; or</span>
+<span class="cp">                substring-after(@Image, &#39;.&#39;) = &#39;closeQuietly&#39;</span>
+<span class="cp">              ]</span>
+<span class="cp">              [ pmd-java:typeIs(&#39;java.lang.AutoCloseable&#39;) and</span>
+<span class="cp">                fn:substring-before(@Image, &#39;.&#39;) = ancestor::MethodDeclaration/MethodDeclarator//VariableDeclaratorId/@Name</span>
+<span class="cp">              ]&quot;/&gt;</span>
+<span class="cp">            ]]&gt;</span>
+        <span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+  <span class="nt">&lt;/rule&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/ReplaceHashtableWithMap&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/ReplaceVectorWithList&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/AvoidPrintStackTrace&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/MissingOverride&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/UseStandardCharsets&quot;</span> <span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/performance.xml/UseArrayListInsteadOfVector&quot;</span> <span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/ExtendsObject&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/ForLoopShouldBeWhileLoop&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/UnnecessaryFullyQualifiedName&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/UseDiamondOperator&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/UnnecessaryReturn&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/UselessParentheses&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/UselessQualifiedThis&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/UnnecessaryCast&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/IdenticalCatchBranches&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/UseShortArrayInitializer&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/codestyle.xml/UnnecessaryImport&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/AvoidMultipleUnaryOperators&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/AvoidUsingOctalValues&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/BrokenNullCheck&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/CheckSkipResult&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/ClassCastExceptionWithToArray&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/DontUseFloatTypeForLoopIndices&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptyFinallyBlock&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptyIfStmt&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptyInitializer&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptyStatementBlock&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptyStatementNotInLoop&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptySwitchStatements&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptySynchronizedBlock&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptyTryBlock&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/EmptyWhileStmt&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/JumbledIncrementer&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/MisplacedNullCheck&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/OverrideBothEqualsAndHashcode&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/ReturnFromFinallyBlock&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/UnconditionalIfStatement&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/UnnecessaryConversionTemporary&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/UnusedNullCheckInEquals&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/UselessOperationOnImmutable&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/CloseResource&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;properties&gt;</span>
+        <span class="c">&lt;!-- When calling the store to close, PMD wants the full prefix before the call to --&gt;</span>
+        <span class="c">&lt;!-- the method to match, so let&#39;s try to use common var names for store ...       --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;closeTargets&quot;</span> <span class="na">value=</span><span class="s">&quot;releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;allowedResourceTypes&quot;</span> <span class="na">value=</span><span class="s">&quot;java.io.ByteArrayOutputStream|java.io.ByteArrayInputStream|java.io.StringWriter|java.io.CharArrayWriter|java.util.stream.Stream|java.util.stream.IntStream|java.util.stream.LongStream|java.util.stream.DoubleStream|java.io.StringReader&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+  <span class="nt">&lt;/rule&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/multithreading.xml/AvoidThreadGroup&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/multithreading.xml/DontCallThreadRun&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/multithreading.xml/DoubleCheckedLocking&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/performance.xml/BigIntegerInstantiation&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/PrimitiveWrapperInstantiation&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/performance.xml/StringInstantiation&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">name=</span><span class="s">&quot;wildcards&quot;</span> <span class="na">language=</span><span class="s">&quot;java&quot;</span> <span class="na">message=</span><span class="s">&quot;No Wildcard Imports&quot;</span> <span class="na">class=</span><span class="s">&quot;net.sourceforge.pmd.lang.rule.XPathRule&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;description&gt;</span>
+      Don&#39;t use wildcard imports
+    <span class="nt">&lt;/description&gt;</span>
+    <span class="nt">&lt;priority&gt;</span>3<span class="nt">&lt;/priority&gt;</span>
+    <span class="nt">&lt;properties&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;version&quot;</span> <span class="na">value=</span><span class="s">&quot;2.0&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;xpath&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[</span>
+<span class="cp">          //ImportDeclaration[@ImportedName=@PackageName]</span>
+<span class="cp">          ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+  <span class="nt">&lt;/rule&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/bestpractices.xml/UseCollectionIsEmpty&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/design.xml/CognitiveComplexity&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;properties&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;reportLevel&quot;</span> <span class="na">value=</span><span class="s">&quot;130&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+  <span class="nt">&lt;/rule&gt;</span>  	  
+</pre></div>
+</div>
+<p>In order to activate the <strong class="command">PMD</strong> checks, use the <code class="docutils literal notranslate"><span class="pre">-Ppmd</span></code> profile:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn verify -Ppmd
+</pre></div>
+</div>
+<p>Or run <cite>pmd:check</cite> (requires use of <code class="docutils literal notranslate"><span class="pre">initialize</span></code> to locate <cite>geoserverBaseDir/build/qa/pmd-ruleset.xml</cite>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn initialize pmd:check -Ppmd
+</pre></div>
+</div>
+<p><strong class="command">PMD</strong> will fail the build in case of violation, reporting the specific errors before the build
+error message, and a reference to a XML file with the same information after it (example taken from GeoTools):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">7322</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="o">---</span> <span class="n">maven</span><span class="o">-</span><span class="n">pmd</span><span class="o">-</span><span class="n">plugin</span><span class="p">:</span><span class="mf">3.11</span><span class="o">.</span><span class="mi">0</span><span class="p">:</span><span class="n">check</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="o">@</span> <span class="n">gt</span><span class="o">-</span><span class="n">main</span> <span class="o">---</span>
+<span class="mi">17336</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">PMD</span> <span class="n">Failure</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataStoreAdaptor</span><span class="p">:</span><span class="mi">98</span> <span class="n">Rule</span><span class="p">:</span><span class="n">SystemPrintln</span> <span class="n">Priority</span><span class="p">:</span><span class="mi">2</span> <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span> <span class="ow">is</span> <span class="n">used</span><span class="o">.</span>
+<span class="mi">17336</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">PMD</span> <span class="n">Failure</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataStoreAdaptor</span><span class="p">:</span><span class="mi">98</span> <span class="n">Rule</span><span class="p">:</span><span class="n">SystemPrintln</span> <span class="n">Priority</span><span class="p">:</span><span class="mi">2</span> <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span> <span class="ow">is</span> <span class="n">used</span><span class="o">.</span>
+<span class="mi">17337</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="o">------------------------------------------------------------------------</span>
+<span class="mi">17337</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">BUILD</span> <span class="n">FAILURE</span>
+<span class="mi">17337</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="o">------------------------------------------------------------------------</span>
+<span class="mi">17338</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Total</span> <span class="n">time</span><span class="p">:</span>  <span class="mf">16.727</span> <span class="n">s</span>
+<span class="mi">17338</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Finished</span> <span class="n">at</span><span class="p">:</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">29</span><span class="n">T11</span><span class="p">:</span><span class="mi">34</span><span class="p">:</span><span class="mi">33</span><span class="o">+</span><span class="mi">01</span><span class="p">:</span><span class="mi">00</span>
+<span class="mi">17338</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="o">------------------------------------------------------------------------</span>
+<span class="mi">17340</span> <span class="p">[</span><span class="n">ERROR</span><span class="p">]</span> <span class="n">Failed</span> <span class="n">to</span> <span class="n">execute</span> <span class="n">goal</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">maven</span><span class="o">.</span><span class="n">plugins</span><span class="p">:</span><span class="n">maven</span><span class="o">-</span><span class="n">pmd</span><span class="o">-</span><span class="n">plugin</span><span class="p">:</span><span class="mf">3.11</span><span class="o">.</span><span class="mi">0</span><span class="p">:</span><span class="n">check</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="n">on</span> <span class="n">project</span> <span class="n">gt</span><span class="o">-</span><span class="n">main</span><span class="p">:</span> <span class="n">You</span> <span class="n">have</span> <span class="mi">1</span> <span class="n">PMD</span> <span class="n">violation</span><span class="o">.</span> <span class="n">For</span> <span class="n">more</span> <span class="n">details</span> <span class="n">see</span><span class="p">:</span>       <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">yourUser</span><span class="o">/</span><span class="n">devel</span><span class="o">/</span><span class="n">git</span><span class="o">-</span><span class="n">gt</span><span class="o">/</span><span class="n">modules</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">pmd</span><span class="o">.</span><span class="n">xml</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">Help</span> <span class="mi">1</span><span class="p">]</span>
+<span class="mi">17340</span> <span class="p">[</span><span class="n">ERROR</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In case of parallel build, the specific error messages will be in the body of the build output, while the XML file reference will be at the end, search for <code class="docutils literal notranslate"><span class="pre">PMD</span> <span class="pre">Failure</span></code> in the build logs to find the specific code issues.</p>
+<p>If you do have a <strong class="command">PMD</strong> failure it is worth checking the pmd website which offers quite clear suggestions:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pmd.github.io/latest/pmd_rules_java_bestpractices.html">Java Rules</a></p></li>
+</ul>
+<div class="section" id="pmd-false-positive-suppression">
+<h3>PMD false positive suppression<a class="headerlink" href="#pmd-false-positive-suppression" title="Permalink to this headline">¶</a></h3>
+<p>Occasionally PMD will report a false positive failure, for those it’s possible to annotate the method
+or the class in question with a SuppressWarnings using <code class="docutils literal notranslate"><span class="pre">PMD.&lt;RuleName</span></code>, e.g. if the above error
+was actually a legit use of <code class="docutils literal notranslate"><span class="pre">System.out.println</span></code> it could have been annotated with:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&quot;PMD.SystemPrintln&quot;</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">methodDoingPrintln</span><span class="p">(...)</span> <span class="p">{</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pmd-closeresource-checks">
+<h3>PMD CloseResource checks<a class="headerlink" href="#pmd-closeresource-checks" title="Permalink to this headline">¶</a></h3>
+<p>PMD can check for Closeable that are not getting property closed by the code, and report about it.
+PMD by default only checks for SQL related closeables, like “Connection,ResultSet,Statement”, but it
+can be instructed to check for more by configuration (do check the PMD configuration in
+<code class="docutils literal notranslate"><span class="pre">build/qa/pmd-ruleset.xml</span></code>.</p>
+<p>The check is a bit fragile, in that there are multiple ways to close an object between direct calls,
+utilities and delegate methods. The configuration lists the type of methods, and the eventual
+prefix, that will be used to perform the close, for example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;rule</span> <span class="na">ref=</span><span class="s">&quot;category/java/errorprone.xml/CloseResource&quot;</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;properties&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;closeTargets&quot;</span> <span class="na">value=</span><span class="s">&quot;releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+<span class="nt">&lt;/rule&gt;</span>
+</pre></div>
+</div>
+<p>For closing delegates that use an instance object instead of a class static method, the variable
+name is included in the prefix, so some uninformity in variable names is required.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Error Prone<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://errorprone.info/">Error Prone</a> checker runs a compiler plugin, requiring at least a
+JDK 9 to run (hence the suggestion to use JDK 11, as the supported JDKs are currently only JDK 8 and JDK 11).
+Mind, running the profile with a JDK8 will result in a generic compile error!</p>
+<p>In order to activate the Error Prone checks, use the “-Perrorprone” for JDK 11 builds.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;id&gt;</span>errorprone<span class="nt">&lt;/id&gt;</span>
+<span class="nt">&lt;activation&gt;</span>
+  <span class="nt">&lt;jdk&gt;</span>(1.8,)<span class="nt">&lt;/jdk&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>qa<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/activation&gt;</span>
+<span class="nt">&lt;build&gt;</span>
+  <span class="nt">&lt;plugins&gt;</span>
+    <span class="nt">&lt;plugin&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;fork&gt;</span>false<span class="nt">&lt;/fork&gt;</span>
+        <span class="nt">&lt;compilerArgs&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-XDcompilePolicy=simple<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-Xplugin:ErrorProne -XepExcludedPaths:\Q${project.build.directory}\E.* ${errorProneFlags}<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-Xlint:${lint}<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-Werror<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-Xmaxwarns<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>1000<span class="nt">&lt;/arg&gt;</span>
+        <span class="nt">&lt;/compilerArgs&gt;</span>
+        <span class="nt">&lt;annotationProcessorPaths&gt;</span>
+          <span class="nt">&lt;path&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>com.google.errorprone<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>error_prone_core<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${errorProne.version}<span class="nt">&lt;/version&gt;</span>
+          <span class="nt">&lt;/path&gt;</span>
+        <span class="nt">&lt;/annotationProcessorPaths&gt;</span>
+      <span class="nt">&lt;/configuration&gt;</span>
+    <span class="nt">&lt;/plugin&gt;</span>
+  <span class="nt">&lt;/plugins&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+</pre></div>
+</div>
+<p>Or “-Perrorprone8” for JDK 8 builds.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;id&gt;</span>errorprone8<span class="nt">&lt;/id&gt;</span>
+<span class="nt">&lt;activation&gt;</span>
+  <span class="nt">&lt;jdk&gt;</span>1.8<span class="nt">&lt;/jdk&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>qa<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/activation&gt;</span>
+<span class="nt">&lt;build&gt;</span>
+  <span class="nt">&lt;plugins&gt;</span>
+    <span class="nt">&lt;plugin&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;fork&gt;</span>true<span class="nt">&lt;/fork&gt;</span>
+        <span class="nt">&lt;compilerArgs</span> <span class="na">combine.children=</span><span class="s">&quot;append&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-XDcompilePolicy=simple<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-Xlint:${lint}<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-Werror<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>-Xmaxwarns<span class="nt">&lt;/arg&gt;</span>
+          <span class="nt">&lt;arg&gt;</span>1000<span class="nt">&lt;/arg&gt;</span>
+        <span class="nt">&lt;/compilerArgs&gt;</span>
+        <span class="nt">&lt;annotationProcessorPaths&gt;</span>
+          <span class="nt">&lt;path&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>com.google.errorprone<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>error_prone_core<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${errorProne.version}<span class="nt">&lt;/version&gt;</span>
+          <span class="nt">&lt;/path&gt;</span>
+        <span class="nt">&lt;/annotationProcessorPaths&gt;</span>
+      <span class="nt">&lt;/configuration&gt;</span>
+    <span class="nt">&lt;/plugin&gt;</span>
+  <span class="nt">&lt;/plugins&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+</pre></div>
+</div>
+<p>Any failure to comply with the “Error Prone” rules will show up as a compile error in the build output, e.g. (example taken from GeoTools):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>9476 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile (default-compile) on project gt-coverage: Compilation failure
+9476 [ERROR] /home/user/devel/git-gt/modules/library/coverage/src/main/java/org/geotools/image/ImageWorker.java:[380,39] error: [IdentityBinaryExpression] A binary expression where both operands are the same is usually incorrect; the value of this expression is equivalent to `255`.
+9477 [ERROR]     (see https://errorprone.info/bugpattern/IdentityBinaryExpression)
+9477 [ERROR]
+9477 [ERROR] -&gt; [Help 1]
+org.apache.maven.lifecycle.LifecycleExecutionException: Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile (default-compile) on project gt-coverage: Compilation failure
+/home/user/devel/git-gt/modules/library/coverage/src/main/java/org/geotools/image/ImageWorker.java:[380,39] error: [IdentityBinaryExpression] A binary expression where both operands are the same is usually incorrect; the value of this expression is equivalent to `255`.
+(see https://errorprone.info/bugpattern/IdentityBinaryExpression)
+</pre></div>
+</div>
+<p>In case Error Prone is reporting an invalid error, the method or class in question can be annotated
+with SuppressWarnings with the name of the rule, e.g., to get rid of the above the following annotation could be used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s2">&quot;IdentityBinaryExpression&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="spotbugs">
+<h2>Spotbugs<a class="headerlink" href="#spotbugs" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://spotbugs.github.io/">Spotbugs</a> checker runs as a post-compile bytecode analyzer.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;groupId&gt;</span>com.github.spotbugs<span class="nt">&lt;/groupId&gt;</span>
+<span class="nt">&lt;artifactId&gt;</span>spotbugs-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;version&gt;</span>3.1.10<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;executions&gt;</span>
+  <span class="nt">&lt;execution&gt;</span>
+    <span class="nt">&lt;goals&gt;</span>
+      <span class="nt">&lt;goal&gt;</span>check<span class="nt">&lt;/goal&gt;</span>
+    <span class="nt">&lt;/goals&gt;</span>
+  <span class="nt">&lt;/execution&gt;</span>
+<span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;effort&gt;</span>More<span class="nt">&lt;/effort&gt;</span>
+  <span class="c">&lt;!--threshold&gt;High&lt;/threshold--&gt;</span>
+  <span class="nt">&lt;xmlOutput&gt;</span>true<span class="nt">&lt;/xmlOutput&gt;</span>
+  <span class="nt">&lt;maxRank&gt;</span>15<span class="nt">&lt;/maxRank&gt;</span>
+  <span class="nt">&lt;excludeFilterFile&gt;</span>${geoserverBaseDir}/../build/qa/spotbugs-exclude.xml<span class="nt">&lt;/excludeFilterFile&gt;</span>
+  <span class="nt">&lt;jvmArgs&gt;</span>-XX:+TieredCompilation -XX:TieredStopAtLevel=1<span class="nt">&lt;/jvmArgs&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</pre></div>
+</div>
+<p>Any failure to comply with the rules will show up as a compile error, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">33630</span> <span class="p">[</span><span class="n">ERROR</span><span class="p">]</span> <span class="n">page</span> <span class="n">could</span> <span class="n">be</span> <span class="n">null</span> <span class="ow">and</span> <span class="ow">is</span> <span class="n">guaranteed</span> <span class="n">to</span> <span class="n">be</span> <span class="n">dereferenced</span> <span class="ow">in</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">swing</span><span class="o">.</span><span class="n">wizard</span><span class="o">.</span><span class="n">JWizard</span><span class="o">.</span><span class="n">setCurrentPanel</span><span class="p">(</span><span class="n">String</span><span class="p">)</span> <span class="p">[</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">swing</span><span class="o">.</span><span class="n">wizard</span><span class="o">.</span><span class="n">JWizard</span><span class="p">,</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">swing</span><span class="o">.</span><span class="n">wizard</span><span class="o">.</span><span class="n">JWizard</span><span class="p">,</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">swing</span><span class="o">.</span><span class="n">wizard</span><span class="o">.</span><span class="n">JWizard</span><span class="p">,</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">swing</span><span class="o">.</span><span class="n">wizard</span><span class="o">.</span><span class="n">JWizard</span><span class="p">]</span> <span class="n">Dereferenced</span> <span class="n">at</span> <span class="n">JWizard</span><span class="o">.</span><span class="n">java</span><span class="p">:[</span><span class="n">line</span> <span class="mi">278</span><span class="p">]</span><span class="n">Dereferenced</span> <span class="n">at</span> <span class="n">JWizard</span><span class="o">.</span><span class="n">java</span><span class="p">:[</span><span class="n">line</span> <span class="mi">269</span><span class="p">]</span><span class="n">Null</span> <span class="n">value</span> <span class="n">at</span> <span class="n">JWizard</span><span class="o">.</span><span class="n">java</span><span class="p">:[</span><span class="n">line</span> <span class="mi">254</span><span class="p">]</span><span class="n">Known</span> <span class="n">null</span> <span class="n">at</span> <span class="n">JWizard</span><span class="o">.</span><span class="n">java</span><span class="p">:[</span><span class="n">line</span> <span class="mi">255</span><span class="p">]</span> <span class="n">NP_GUARANTEED_DEREF</span>
+</pre></div>
+</div>
+<p>It is also possible to run the spotbugs:gui goal to have a Swing based issue explorer, e.g.:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn spotbugs:gui -Pspotbugs -f wms
+</pre></div>
+</div>
+<p>In case an invalid report is given, an annotation on the class/method/variable can be added to ignore it:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@SuppressFBWarnings</span><span class="p">(</span><span class="s">&quot;NP_GUARANTEED_DEREF&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or if it’s a general one that should be ignored, the <a class="reference external" href="https://github.com/geoserver/geoserver/blob/main/build/qa/spotbugs-exclude.xml">build/qa/spotbugs-exclude.xml</a> file can be modified.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="c">&lt;!-- This file specifies a spotbugs filter for excluding reports that</span>
+<span class="c">     should not be considered errors.</span>
+
+<span class="c">     The format of this file is documented at:</span>
+
+<span class="c">       https://spotbugs.readthedocs.io/en/latest/filter.html</span>
+
+<span class="c">     When possible, please specify the full names of the bug codes,</span>
+<span class="c">     using the pattern attribute, to make it clearer what reports are</span>
+<span class="c">     being suppressed.  You can find a listing of codes at:</span>
+
+<span class="c">       https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html</span>
+<span class="c">  --&gt;</span>
+<span class="nt">&lt;FindBugsFilter&gt;</span>
+    <span class="c">&lt;!-- Won&#39;t use prepared statements, very bad performance for geospatial use cases --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+        <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+        <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- Returns moslty false positives --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+        <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;FE_FLOATING_POINT_EQUALITY&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- Too many cases where we have a semi-legit usage of same name --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+        <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;NM_SAME_SIMPLE_NAME_AS_SUPERCLASS&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- False positives, might want to revisit later --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+       <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;EC_UNRELATED_TYPES_USING_POINTER_EQUALITY&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- Annoying but not actually a bug per se, might want to revisit later --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+       <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;MF_CLASS_MASKS_FIELD&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- False positives --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+      <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;UWF_UNWRITTEN_FIELD&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- Too many false positives --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+      <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- Too many false positives --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+      <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- Too many false positives --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+      <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;NP_BOOLEAN_RETURN_NULL&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+    <span class="c">&lt;!-- False positives under Java 11, see https://github.com/spotbugs/spotbugs/issues/878 </span>
+<span class="c">         and https://github.com/spotbugs/spotbugs/issues/756 --&gt;</span>
+    <span class="nt">&lt;Match&gt;</span>
+      <span class="nt">&lt;Bug</span> <span class="na">pattern=</span><span class="s">&quot;RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Match&gt;</span>
+<span class="nt">&lt;/FindBugsFilter&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="spotless">
+<h2>Spotless<a class="headerlink" href="#spotless" title="Permalink to this headline">¶</a></h2>
+<p>Spotless is used as a fast way to check that the google-java-format is being applied to the codebase.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;groupId&gt;</span>com.diffplug.spotless<span class="nt">&lt;/groupId&gt;</span>
+<span class="nt">&lt;artifactId&gt;</span>spotless-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;version&gt;</span>2.22.1<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;executions&gt;</span>
+  <span class="nt">&lt;execution&gt;</span>
+    <span class="nt">&lt;phase&gt;</span>validate<span class="nt">&lt;/phase&gt;</span>
+    <span class="nt">&lt;goals&gt;</span>
+      <span class="nt">&lt;goal&gt;</span>${spotless.action}<span class="nt">&lt;/goal&gt;</span>
+    <span class="nt">&lt;/goals&gt;</span>
+  <span class="nt">&lt;/execution&gt;</span>
+<span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;java&gt;</span>
+    <span class="nt">&lt;googleJavaFormat&gt;</span>
+      <span class="nt">&lt;version&gt;</span>1.7<span class="nt">&lt;/version&gt;</span>
+      <span class="nt">&lt;style&gt;</span>AOSP<span class="nt">&lt;/style&gt;</span>
+    <span class="nt">&lt;/googleJavaFormat&gt;</span>
+  <span class="nt">&lt;/java&gt;</span>
+  <span class="nt">&lt;upToDateChecking&gt;</span>
+    <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+    <span class="nt">&lt;indexFile&gt;</span>${project.basedir}/.spotless-index<span class="nt">&lt;/indexFile&gt;</span>
+  <span class="nt">&lt;/upToDateChecking&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</pre></div>
+</div>
+<p>This has been setup for incremental checking, with hidden <code class="file docutils literal notranslate"><span class="pre">.spotless-index</span></code> files used determine
+when files were last checked.</p>
+<p>To run the plugin directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn spotless:apply
+</pre></div>
+</div>
+<p>When using <code class="docutils literal notranslate"><span class="pre">check</span></code> any failure to comply with the rules will show up as a compiler error in the build output.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn spotless:check
+</pre></div>
+</div>
+<p>When verifying <code class="docutils literal notranslate"><span class="pre">spotless.action</span></code> is used to choose <code class="docutils literal notranslate"><span class="pre">apply</span></code> or <code class="docutils literal notranslate"><span class="pre">check</span></code> (defaults to <code class="docutils literal notranslate"><span class="pre">apply</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn verify -Dqa -Dspotless.action<span class="o">=</span>check
+</pre></div>
+</div>
+<p>Property <code class="docutils literal notranslate"><span class="pre">spotless.apply.skip</span></code> is used to skip spotless plugin when running <code class="docutils literal notranslate"><span class="pre">qa</span></code> build:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn clean install -Dqa -Dspotless.apply.skip<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sortpom">
+<h2>Sortpom<a class="headerlink" href="#sortpom" title="Permalink to this headline">¶</a></h2>
+<p>Sortpom is used to keep the <code class="file docutils literal notranslate"><span class="pre">pom.xml</span></code> files formatting consistent:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;groupId&gt;</span>com.github.ekryd.sortpom<span class="nt">&lt;/groupId&gt;</span>
+<span class="nt">&lt;artifactId&gt;</span>sortpom-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;version&gt;</span>2.15.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;executions&gt;</span>
+  <span class="nt">&lt;execution&gt;</span>
+    <span class="nt">&lt;phase&gt;</span>verify<span class="nt">&lt;/phase&gt;</span>
+    <span class="nt">&lt;goals&gt;</span>
+      <span class="nt">&lt;goal&gt;</span>${pom.fmt.action}<span class="nt">&lt;/goal&gt;</span>
+    <span class="nt">&lt;/goals&gt;</span>
+  <span class="nt">&lt;/execution&gt;</span>
+<span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;skip&gt;</span>${pom.fmt.skip}<span class="nt">&lt;/skip&gt;</span>
+  <span class="nt">&lt;keepBlankLines&gt;</span>true<span class="nt">&lt;/keepBlankLines&gt;</span>
+  <span class="nt">&lt;spaceBeforeCloseEmptyElement&gt;</span>false<span class="nt">&lt;/spaceBeforeCloseEmptyElement&gt;</span>
+  <span class="nt">&lt;createBackupFile&gt;</span>false<span class="nt">&lt;/createBackupFile&gt;</span>
+  <span class="nt">&lt;verifyFail&gt;</span>stop<span class="nt">&lt;/verifyFail&gt;</span>
+  <span class="nt">&lt;verifyFailOn&gt;</span>strict<span class="nt">&lt;/verifyFailOn&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</pre></div>
+</div>
+<p>The plugin is attached to verification phase to sort <code class="file docutils literal notranslate"><span class="pre">pom.xml</span></code> files.</p>
+<p>To run the plugin directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn sortpom:sort
+</pre></div>
+</div>
+<p>Verification checks if (ignoring whitespace changes) is the current <code class="file docutils literal notranslate"><span class="pre">pom.xml</span></code> in the correct order:</p>
+<blockquote>
+<div><p>mvn sortpom:verify</p>
+</div></blockquote>
+<p>Property <code class="docutils literal notranslate"><span class="pre">pom.fmt.action</span></code> is used to choose <code class="docutils literal notranslate"><span class="pre">sort</span></code> or <code class="docutils literal notranslate"><span class="pre">verify</span></code> (defaults to <code class="docutils literal notranslate"><span class="pre">sort</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn verify -Dqa -Dpom.fmt.action<span class="o">=</span>verify
+</pre></div>
+</div>
+<p>Property <code class="docutils literal notranslate"><span class="pre">pom.fmt.skip</span></code> used to skip sortpom plugin when running <code class="docutils literal notranslate"><span class="pre">qa</span></code> build (defaults to <code class="docutils literal notranslate"><span class="pre">spotless.apply.skip</span></code> setting):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn clean install -Dqa -Dpom.fmt.skip<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="checkstyle">
+<h2>Checkstyle<a class="headerlink" href="#checkstyle" title="Permalink to this headline">¶</a></h2>
+<p>Spotless is already in use to keep the code formatted, so <a class="reference external" href="https://maven.apache.org/plugins/maven-checkstyle-plugin/">maven checkstyle plugin</a> is used mainly to verify javadocs errors
+and presence of copyright headers, which none of the other tools can cover.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;artifactId&gt;</span>maven-checkstyle-plugin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;version&gt;</span>3.1.1<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;executions&gt;</span>
+  <span class="nt">&lt;execution&gt;</span>
+    <span class="nt">&lt;goals&gt;</span>
+      <span class="nt">&lt;goal&gt;</span>check<span class="nt">&lt;/goal&gt;</span>
+    <span class="nt">&lt;/goals&gt;</span>
+  <span class="nt">&lt;/execution&gt;</span>
+<span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;encoding&gt;</span>UTF-8<span class="nt">&lt;/encoding&gt;</span>
+  <span class="nt">&lt;logViolationsToConsole&gt;</span>true<span class="nt">&lt;/logViolationsToConsole&gt;</span>
+  <span class="c">&lt;!-- ignore generated classes, e.g., javacc ones --&gt;</span>
+  <span class="nt">&lt;sourceDirectories&gt;</span>${project.build.sourceDirectory}<span class="nt">&lt;/sourceDirectories&gt;</span>
+  <span class="nt">&lt;skip&gt;</span>${checkstyle.skip}<span class="nt">&lt;/skip&gt;</span>
+  <span class="nt">&lt;configLocation&gt;</span>${geoserverBaseDir}/../build/qa/checkstyle.xml<span class="nt">&lt;/configLocation&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</pre></div>
+</div>
+<p>The checkstyle ruleset checks the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;module</span> <span class="na">name=</span><span class="s">&quot;Checker&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;severity&quot;</span> <span class="na">value=</span><span class="s">&quot;error&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;module</span> <span class="na">name=</span><span class="s">&quot;TreeWalker&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;module</span> <span class="na">name=</span><span class="s">&quot;JavadocMethod&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;allowMissingParamTags&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;allowMissingReturnTag&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/module&gt;</span>
+    <span class="nt">&lt;module</span> <span class="na">name=</span><span class="s">&quot;ArrayTypeStyle&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/module&gt;</span>
+  <span class="nt">&lt;module</span> <span class="na">name=</span><span class="s">&quot;RegexpHeader&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;multiLines&quot;</span> <span class="na">value=</span><span class="s">&quot;2,3&quot;</span><span class="nt">/&gt;</span> <span class="c">&lt;!-- Allows to have other copyrights, see line 2 and 3 of the regexp --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span> <span class="na">value=</span><span class="s">&quot;^/\* (Copyright\s*)?\(c\) \d{4}(\s*-\s*\d{4})? Open Source Geospatial Foundation - all rights reserved$\n^</span>
+<span class="s">\* (Copyright\s*)?\(c\).*$\n^</span>
+<span class="s">\*$\n^</span>
+<span class="s">\* This code is licensed under the GPL 2.0 license, available at the root$\n^</span>
+<span class="s">\* application directory.$\n^</span>
+<span class="s">\*&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;fileExtensions&quot;</span> <span class="na">value=</span><span class="s">&quot;java&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/module&gt;</span>
+  <span class="nt">&lt;module</span> <span class="na">name=</span><span class="s">&quot;RegexpSingleline&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;format&quot;</span> <span class="na">value=</span><span class="s">&quot;^\s{60}&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;message&quot;</span> <span class="na">value=</span><span class="s">&quot;Excessive nesting found. Please try to factor out the deeply nested code in a separate method or class&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;minimum&quot;</span> <span class="na">value=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;maximum&quot;</span> <span class="na">value=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;fileExtensions&quot;</span> <span class="na">value=</span><span class="s">&quot;java&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/module&gt;</span>
+<span class="nt">&lt;/module&gt;</span>
+</pre></div>
+</div>
+<p>To run the plugin directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mvn initialize checkstyle:check
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../eclipse-guide/index.html" title="previous chapter">Eclipse Guide</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../programming-guide/index.html" title="next chapter">Programming Guide</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Automatic Quality Assurance checks</a><ul>
+<li><a class="reference internal" href="#pmd-checks">PMD checks</a><ul>
+<li><a class="reference internal" href="#pmd-false-positive-suppression">PMD false positive suppression</a></li>
+<li><a class="reference internal" href="#pmd-closeresource-checks">PMD CloseResource checks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">Error Prone</a></li>
+<li><a class="reference internal" href="#spotbugs">Spotbugs</a></li>
+<li><a class="reference internal" href="#spotless">Spotless</a></li>
+<li><a class="reference internal" href="#sortpom">Sortpom</a></li>
+<li><a class="reference internal" href="#checkstyle">Checkstyle</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../eclipse-guide/index.html" title="previous chapter">Eclipse Guide</a></li>
+            <li>Next: <a href="../programming-guide/index.html" title="next chapter">Programming Guide</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/qa-guide/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

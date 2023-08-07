@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2.2. Style &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="3. CSS Styling Workbook" href="../css/index.html" />
+    <link rel="prev" title="2.1. Symbology" href="symbology.html" /> 
+  </head><body class="styling/workshop/design/style">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling Workshop</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U"><span class="section-number">2. </span>Design</a> &raquo;</li>
+    <li>2.2. Style</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../css/index.html" title="<span class="section-number">3. </span>CSS Styling Workbook" accesskey="N">Next</a></li>
+  <li>
+    <a href="symbology.html" title="<span class="section-number">2.1. </span>Symbology" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="style">
+<h1><span class="section-number">2.2. </span>Style<a class="headerlink" href="#style" title="Permalink to this headline">¶</a></h1>
+<p>The design choices made to represent content is a key aspect of cartography. The style used when rendering data into a visualisation is the result of these choices.</p>
+<p>The Open Geospatial Consortium standard for recording style is divided into two parts:</p>
+<ul class="simple">
+<li><p><strong>Symbology Encoding (SE)</strong>: Records a “feature type style” documenting how individual features are drawn using a series of rules.</p></li>
+<li><p><strong>Style Layer Descriptor (SLD)</strong>: Records which “feature type styles” may be used with a layer.</p></li>
+</ul>
+<p>The <strong>Symbology Encoding</strong> standard provides the terms we will be using to describe style:</p>
+<ul class="simple">
+<li><p><strong>Stroke</strong>: borders and outlines of shapes</p></li>
+<li><p><strong>Fill</strong>: interior of shapes</p></li>
+</ul>
+<div class="section" id="line-symbolizer">
+<h2><span class="section-number">2.2.1. </span>Line symbolizer<a class="headerlink" href="#line-symbolizer" title="Permalink to this headline">¶</a></h2>
+<p>A line symbolizer documents how individual strokes are used to draw a line string, including color and line width.</p>
+<img alt="../../../_images/LineSymbolizer.svg" src="../../../_images/LineSymbolizer.svg" /><p>The SLD specification provides a default <strong>stroke</strong> used when drawing line strings. These values for color and width will be used if needed.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LineSymbolizer&gt;</span>
+  <span class="nt">&lt;Stroke/&gt;</span>
+<span class="nt">&lt;/LineSymbolizer&gt;</span>
+</pre></div>
+</div>
+<p>GeoServer includes a default <code class="file docutils literal notranslate"><span class="pre">line.sld</span></code> file providing a blue stroke. This file is used when you initially set up a linestring layer.</p>
+<p>From GeoServer’s <strong>line.sld</strong> style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;LineSymbolizer&gt;</span>
+  <span class="nt">&lt;Stroke&gt;</span>
+    <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000FF<span class="nt">&lt;/CssParameter&gt;</span>
+  <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/LineSymbolizer&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="polygon-symbolizer">
+<h2><span class="section-number">2.2.2. </span>Polygon symbolizer<a class="headerlink" href="#polygon-symbolizer" title="Permalink to this headline">¶</a></h2>
+<p>A polygon symbolizer documents both the stroke in addition to the fill used to draw a polygon. A fill can consist of a color, pattern, or other texture:</p>
+<p>The SLD specification provides a default gray fill, but does not supply a stroke. These values will be used if you do not provide an alternative.</p>
+<img alt="../../../_images/PolygonSymbolizer.svg" src="../../../_images/PolygonSymbolizer.svg" /><p>GeoServer includes a default <code class="file docutils literal notranslate"><span class="pre">polygon.sld</span></code> file providing a gray fill and a black outline. This file will be used when you initially create a polygon layer.</p>
+<p>From GeoServer’s <strong>polygon.sld</strong> style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PolygonSymbolizer&gt;</span>
+  <span class="nt">&lt;Fill&gt;</span>
+    <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#AAAAAA<span class="nt">&lt;/CssParameter&gt;</span>
+  <span class="nt">&lt;/Fill&gt;</span>
+  <span class="nt">&lt;Stroke&gt;</span>
+    <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+    <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/CssParameter&gt;</span>
+  <span class="nt">&lt;/Stroke&gt;</span>
+<span class="nt">&lt;/PolygonSymbolizer&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="point-symbolizer">
+<h2><span class="section-number">2.2.3. </span>Point symbolizer<a class="headerlink" href="#point-symbolizer" title="Permalink to this headline">¶</a></h2>
+<p>A point symbolizer documents the “mark” used to represent a point. A mark may be defined by a glyph (icon) or a common mark (circle, square, etc.). The point symbolizer records the stroke and fill used to draw the mark.</p>
+<img alt="../../../_images/PointSymbolizer.svg" src="../../../_images/PointSymbolizer.svg" /><p>From GeoServer’s default <strong>point.sld</strong> style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PointSymbolizer&gt;</span>
+  <span class="nt">&lt;Graphic&gt;</span>
+    <span class="nt">&lt;Mark&gt;</span>
+      <span class="nt">&lt;WellKnownName&gt;</span>square<span class="nt">&lt;/WellKnownName&gt;</span>
+      <span class="nt">&lt;Fill&gt;</span>
+        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FF0000<span class="nt">&lt;/CssParameter&gt;</span>
+      <span class="nt">&lt;/Fill&gt;</span>
+    <span class="nt">&lt;/Mark&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>6<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/Graphic&gt;</span>
+<span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="text-symbolizer">
+<h2><span class="section-number">2.2.4. </span>Text symbolizer<a class="headerlink" href="#text-symbolizer" title="Permalink to this headline">¶</a></h2>
+<p>A text symbolizer provides details on how labels are to be drawn, including font, size, and color information.</p>
+<img alt="../../../_images/TextSymbolizer.svg" src="../../../_images/TextSymbolizer.svg" /><p>From the <code class="file docutils literal notranslate"><span class="pre">populated_places.sld</span></code> style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;sld:TextSymbolizer&gt;</span>
+    <span class="nt">&lt;sld:Label&gt;</span>
+        <span class="nt">&lt;ogc:PropertyName&gt;</span>NAME<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+    <span class="nt">&lt;/sld:Label&gt;</span>
+    <span class="nt">&lt;sld:Font&gt;</span>
+        <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-family&quot;</span><span class="nt">&gt;</span>Arial<span class="nt">&lt;/sld:CssParameter&gt;</span>
+        <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-size&quot;</span><span class="nt">&gt;</span>10.0<span class="nt">&lt;/sld:CssParameter&gt;</span>
+        <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-style&quot;</span><span class="nt">&gt;</span>normal<span class="nt">&lt;/sld:CssParameter&gt;</span>
+        <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;font-weight&quot;</span><span class="nt">&gt;</span>bold<span class="nt">&lt;/sld:CssParameter&gt;</span>
+    <span class="nt">&lt;/sld:Font&gt;</span>
+    <span class="nt">&lt;sld:Halo&gt;</span>
+        <span class="nt">&lt;sld:Radius&gt;</span>1<span class="nt">&lt;/sld:Radius&gt;</span>
+        <span class="nt">&lt;sld:Fill&gt;</span>
+            <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FFFFFF<span class="nt">&lt;/sld:CssParameter&gt;</span>
+        <span class="nt">&lt;/sld:Fill&gt;</span>
+    <span class="nt">&lt;/sld:Halo&gt;</span>
+    <span class="nt">&lt;sld:Fill&gt;</span>
+        <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/sld:CssParameter&gt;</span>
+    <span class="nt">&lt;/sld:Fill&gt;</span>
+<span class="nt">&lt;/sld:TextSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <strong>Style Layer Descriptor</strong> standard makes use of the <strong>Filter Encoding</strong> specification to create small expressions as shown above to access the <strong>NAME</strong> of each city:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyName</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">PropertyName</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>This same approach can be used to dynamically generate any values needed for styling.</p>
+</div>
+</div>
+<div class="section" id="raster-symbolizer">
+<h2><span class="section-number">2.2.5. </span>Raster symbolizer<a class="headerlink" href="#raster-symbolizer" title="Permalink to this headline">¶</a></h2>
+<p>A raster symbolizer provides a mapping from raster values to colors displayed. This can be provided by a color table, function, or directly mapping bands of data to use for the display channels.</p>
+<p>From GeoServer’s <code class="file docutils literal notranslate"><span class="pre">dem.sld</span></code> style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;RasterSymbolizer&gt;</span>
+  <span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
+  <span class="nt">&lt;ColorMap&gt;</span>
+    <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#000000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;-500&quot;</span> <span class="na">label=</span><span class="s">&quot;nodata&quot;</span> <span class="na">opacity=</span><span class="s">&quot;0.0&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#AAFFAA&quot;</span> <span class="na">quantity=</span><span class="s">&quot;0&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#00FF00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1000&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FFFF00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1200&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FF7F00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1400&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#BF7F3F&quot;</span> <span class="na">quantity=</span><span class="s">&quot;1600&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#000000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;2000&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/ColorMap&gt;</span>
+<span class="nt">&lt;/RasterSymbolizer&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="symbology.html" title="previous chapter"><span class="section-number">2.1. </span>Symbology</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../css/index.html" title="next chapter"><span class="section-number">3. </span>CSS Styling Workbook</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">2.2. Style</a><ul>
+<li><a class="reference internal" href="#line-symbolizer">2.2.1. Line symbolizer</a></li>
+<li><a class="reference internal" href="#polygon-symbolizer">2.2.2. Polygon symbolizer</a></li>
+<li><a class="reference internal" href="#point-symbolizer">2.2.3. Point symbolizer</a></li>
+<li><a class="reference internal" href="#text-symbolizer">2.2.4. Text symbolizer</a></li>
+<li><a class="reference internal" href="#raster-symbolizer">2.2.5. Raster symbolizer</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="symbology.html" title="previous chapter"><span class="section-number">2.1. </span>Symbology</a></li>
+            <li>Next: <a href="../css/index.html" title="next chapter"><span class="section-number">3. </span>CSS Styling Workbook</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/workshop/design/style.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>External Web Feature Server &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Cascaded Web Feature Service Stored Queries" href="stored_query.html" />
+    <link rel="prev" title="Cascaded service data" href="index.html" /> 
+  </head><body class="data/cascaded/wfs">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Cascaded service data</a> &raquo;</li>
+    <li>External Web Feature Server</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="stored_query.html" title="Cascaded Web Feature Service Stored Queries" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="Cascaded service data" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="external-web-feature-server">
+<span id="data-external-wfs"></span><h1>External Web Feature Server<a class="headerlink" href="#external-web-feature-server" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer has the ability to load data from a remote Web Feature Server (WFS).  This is useful if the remote WFS lacks certain functionality that GeoServer contains.  For example, if the remote WFS is not also a Web Map Server (WMS), data from the WFS can be cascaded through GeoServer to utilize GeoServer’s WMS.  If the remote WFS has a WMS but that WMS cannot output KML, data can be cascaded through GeoServer’s WMS to output KML.</p>
+<div class="section" id="adding-an-external-wfs">
+<h2>Adding an external WFS<a class="headerlink" href="#adding-an-external-wfs" title="Permalink to this headline">¶</a></h2>
+<p>To connect to an external WFS, it is necessary to load it as a new datastore.  To start, navigate to <span class="menuselection">Stores ‣ Add a new store ‣ Web Feature Server</span>.</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/externalwfs.png" src="../../_images/externalwfs.png" />
+<p class="caption"><span class="caption-text"><em>Adding an external WFS as a store</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Option</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">Workspace</span></p></td>
+<td><p>Name of the workspace to contain the store.  This will also be the prefix of all of the layer names created from the store.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">Data Source Name</span></p></td>
+<td><p>Name of the store as known to GeoServer.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">Description</span></p></td>
+<td><p>Description of the store.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">Enabled</span></p></td>
+<td><p>Enables the store.  If disabled, no data from the external WFS will be served.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">GET_CAPABILITIES_URL</span></p></td>
+<td><p>URL to access the capabilities document of the remote WFS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">PROTOCOL</span></p></td>
+<td><p>When checked, connects with POST, otherwise uses GET.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">USERNAME</span></p></td>
+<td><p>The user name to connect to the external WFS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">PASSWORD</span></p></td>
+<td><p>The password associated with the above user name.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">ENCODING</span></p></td>
+<td><p>The character encoding of the XML requests sent to the server.  Defaults to <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">TIMEOUT</span></p></td>
+<td><p>Time (in milliseconds) before timing out.  Default is <code class="docutils literal notranslate"><span class="pre">3000</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">BUFFER_SIZE</span></p></td>
+<td><p>Specifies a buffer size (in number of features).  Default is <code class="docutils literal notranslate"><span class="pre">10</span></code> features.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">TRY_GZIP</span></p></td>
+<td><p>Specifies that the server should transfer data using compressed HTTP if supported by the server.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">LENIENT</span></p></td>
+<td><p>When checked, will try to render features that don’t match the appropriate schema.  Errors will be logged.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">MAXFEATURES</span></p></td>
+<td><p>Maximum amount of features to retrieve for each featuretype.  Default is no limit.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">AXIS_ORDER</span></p></td>
+<td><p>Axis order used in result coordinates (It applies only to WFS 1.x.0 servers). Default is Compliant.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">AXIS_ORDER_FILTER</span></p></td>
+<td><p>Axis order used in filter (It applies only to WFS 1.x.0 servers). Default is Compliant.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">OUTPUTFORMAT</span></p></td>
+<td><p>Output format to request (instead of the default remote service one).</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">GML_COMPLIANCE_LEVEL</span></p></td>
+<td><p>OCG GML compliance level. i.e. (simple feature) 0, 1 or 2. Default is 0.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">GML_COMPATIBLE_TYPENAMES</span></p></td>
+<td><p>Use Gml Compatible TypeNames (replace : by _).  Default is no false.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">USE_HTTP_CONNECTION_POOLING</span></p></td>
+<td><p>Use connection pooling to connect to the remote WFS service. Also enables digest authentcation.</p></td>
+</tr>
+</tbody>
+</table>
+<p>When finished, click <span class="guilabel">Save</span>.</p>
+</div>
+<div class="section" id="configuring-external-wfs-layers">
+<h2>Configuring external WFS layers<a class="headerlink" href="#configuring-external-wfs-layers" title="Permalink to this headline">¶</a></h2>
+<p>When properly loaded, all layers served by the external WFS will be available to GeoServer.  Before they can be served, however, they will need to be individually configured as new layers.  See the section on <a class="reference internal" href="../webadmin/layers.html#data-webadmin-layers"><span class="std std-ref">Layers</span></a> for how to add and edit new layers.</p>
+</div>
+<div class="section" id="connecting-to-an-external-wfs-layer-via-a-proxy-server">
+<h2>Connecting to an external WFS layer via a proxy server<a class="headerlink" href="#connecting-to-an-external-wfs-layer-via-a-proxy-server" title="Permalink to this headline">¶</a></h2>
+<p>In a corporate environment it may be necessary to connect to an external WFS through a proxy server. To achieve this, various java variables need to be set.</p>
+<p>For a Windows install running GeoServer as a service, this is done by modifying the wrapper.conf file. For a default Windows install, modify <code class="file docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\GeoServer</span> <span class="pre">x.x.x\wrapper\wrapper.conf</span></code> similarly to the following.</p>
+<blockquote>
+<div><p># Java Additional Parameters</p>
+<p>wrapper.java.additional.1=-Djetty.home=.
+wrapper.java.additional.2=-DGEOSERVER_DATA_DIR=”%GEOSERVER_DATA_DIR%”
+wrapper.java.additional.3=-Dhttp.proxySet=true
+wrapper.java.additional.4=-Dhttp.proxyHost=maitproxy
+wrapper.java.additional.5=-Dhttp.proxyPort=8080
+wrapper.java.additional.6=-Dhttps.proxyHost=maitproxy
+wrapper.java.additional.7=-Dhttps.proxyPort=8080
+wrapper.java.additional.8=-Dhttp.nonProxyHosts=”mait*|dpi*|localhost”</p>
+</div></blockquote>
+<p>Note that the <strong class="command">http.proxySet=true</strong> parameter is required. Also, the parameter numbers must be consecutive - ie. no gaps.</p>
+<p>For a Windows install not running GeoServer as a service, modify <code class="file docutils literal notranslate"><span class="pre">startup.bat</span></code> so that the <strong class="command">java</strong> command runs with similar -D parameters.</p>
+<p>For a Linux/UNIX install, modify <code class="file docutils literal notranslate"><span class="pre">startup.sh</span></code> so that the <strong class="command">java</strong> command runs with similar -D parameters.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">Cascaded service data</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="stored_query.html" title="next chapter">Cascaded Web Feature Service Stored Queries</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">External Web Feature Server</a><ul>
+<li><a class="reference internal" href="#adding-an-external-wfs">Adding an external WFS</a></li>
+<li><a class="reference internal" href="#configuring-external-wfs-layers">Configuring external WFS layers</a></li>
+<li><a class="reference internal" href="#connecting-to-an-external-wfs-layer-via-a-proxy-server">Connecting to an external WFS layer via a proxy server</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">Cascaded service data</a></li>
+            <li>Next: <a href="stored_query.html" title="next chapter">Cascaded Web Feature Service Stored Queries</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/cascaded/wfs.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

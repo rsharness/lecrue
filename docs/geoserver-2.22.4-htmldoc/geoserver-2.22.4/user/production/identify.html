@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Make cluster nodes identifiable from the GUI &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="REST" href="../rest/index.html" />
+    <link rel="prev" title="Troubleshooting" href="troubleshooting.html" /> 
+  </head><body class="production/identify">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Running in a production environment</a> &raquo;</li>
+    <li>Make cluster nodes identifiable from the GUI</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../rest/index.html" title="REST" accesskey="N">Next</a></li>
+  <li>
+    <a href="troubleshooting.html" title="Troubleshooting" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="make-cluster-nodes-identifiable-from-the-gui">
+<span id="identify"></span><h1>Make cluster nodes identifiable from the GUI<a class="headerlink" href="#make-cluster-nodes-identifiable-from-the-gui" title="Permalink to this headline">¶</a></h1>
+<p>When running one or more clusters of GeoServer installations it is useful to identify which
+cluster (and eventually which node of the cluster) one is working against by just glancing
+the web administration UI.</p>
+<p>This is possible by setting one variable, <code class="docutils literal notranslate"><span class="pre">GEOSERVER_NODE_OPTS</span></code>, with one of the supported
+mechanisms:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>as a system variable</p></li>
+<li><p>as an environment variable</p></li>
+<li><p>as a servlet context parameter</p></li>
+</ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">GEOSERVER_NODE_OPTS</span></code> is a semicolon separated list of key/value pairs and it can contain the following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>id: the string identifying the node, which in turn can be a static string, or include the following substitution tokens</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">$host_ip</span></code> The IP address of the node</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$host_name</span></code> The hostname of the node</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$host_short_name</span></code> The hostname truncated to not include the domain (<code class="docutils literal notranslate"><span class="pre">foo.local</span></code> becomes <code class="docutils literal notranslate"><span class="pre">foo</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$host_compact_name</span></code> The hostname with all domain parts shortened to their first character (<code class="docutils literal notranslate"><span class="pre">foo.local</span></code> becomes <code class="docutils literal notranslate"><span class="pre">foo.l</span></code>)</p></li>
+</ul>
+</li>
+<li><p>color: the label color, as a CSS color</p></li>
+<li><p>background: the background color, as a CSS color</p></li>
+</ul>
+</div></blockquote>
+<p>Here are some examples:</p>
+<div class="figure align-center" id="id1">
+<img alt="../_images/custom_id.png" src="../_images/custom_id.png" />
+<p class="caption"><span class="caption-text"><em>GEOSERVER_NODE_OPTS=”id:test1;background:black;color:white”</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id2">
+<img alt="../_images/host_ip.png" src="../_images/host_ip.png" />
+<p class="caption"><span class="caption-text"><em>GEOSERVER_NODE_OPTS=”id:$host_ip”</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id3">
+<img alt="../_images/host_name.png" src="../_images/host_name.png" />
+<p class="caption"><span class="caption-text"><em>GEOSERVER_NODE_OPTS=”id:$host_name”</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="troubleshooting.html" title="previous chapter">Troubleshooting</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../rest/index.html" title="next chapter">REST</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="troubleshooting.html" title="previous chapter">Troubleshooting</a></li>
+            <li>Next: <a href="../rest/index.html" title="next chapter">REST</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/production/identify.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

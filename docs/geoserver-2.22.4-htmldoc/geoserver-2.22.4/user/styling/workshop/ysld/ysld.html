@@ -1,0 +1,524 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>4.1. YSLD Quickstart &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="4.2. Lines" href="linestring.html" />
+    <link rel="prev" title="4. YSLD Styling Workbook" href="index.html" /> 
+  </head><body class="styling/workshop/ysld/ysld">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling Workshop</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U"><span class="section-number">4. </span>YSLD Styling Workbook</a> &raquo;</li>
+    <li>4.1. YSLD Quickstart</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="linestring.html" title="<span class="section-number">4.2. </span>Lines" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="<span class="section-number">4. </span>YSLD Styling Workbook" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="ysld-quickstart">
+<span id="styling-workshop-ysld-quickstart"></span><h1><span class="section-number">4.1. </span>YSLD Quickstart<a class="headerlink" href="#ysld-quickstart" title="Permalink to this headline">¶</a></h1>
+<p>In the last section, we saw how the OGC defines style using XML documents (called SLD files).</p>
+<p>We will now explore GeoServer styling in greater detail using a tool to generate our SLD files. The <strong>YSLD</strong> GeoServer extension is used to generate SLD files using a clearer, more concise language based on <strong>YAML</strong>. Unlike <strong>CSS</strong>, the <strong>YSLD</strong> styling language has a one-to-one correspondence to SLD, meaning that each line of YSLD translates directly to one or more lines of SLD. Additionally, A YSLD style can be converted to SLD <em>and back</em> without loss of information.</p>
+<p>Using the YSLD extension to define styles results in shorter examples that are easier to understand. At any point we will be able to review the generated SLD file.</p>
+<p>Reference:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../ysld/reference/index.html#ysld-reference"><span class="std std-ref">YSLD Reference</span></a></p></li>
+</ul>
+<div class="section" id="syntax">
+<h2><span class="section-number">4.1.1. </span>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>This section provides a quick introduction to YSLD syntax for mapping professionals who may not be familiar with YAML.</p>
+<div class="section" id="property-syntax">
+<h3><span class="section-number">4.1.1.1. </span>Property Syntax<a class="headerlink" href="#property-syntax" title="Permalink to this headline">¶</a></h3>
+<p>Individual statements (or directives) in a YSLD styling document are designed as key-value, or property-value pairs of the following form:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;property&gt;</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The <kbd class="kbd docutils literal notranslate">&lt;property&gt;</kbd> is a string denoting the property name, while the <kbd class="kbd docutils literal notranslate">&lt;value&gt;</kbd> can be one of a number of different types depending on context.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Integer</p></td>
+<td><p>Numerical value. May be surrounded by quotes.</p></td>
+</tr>
+<tr class="row-even"><td><p>Float</p></td>
+<td><p>Numerical value. May be surrounded by quotes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Text</p></td>
+<td><p>Text value.  If value is ambiguous, use single quotes.</p></td>
+</tr>
+<tr class="row-even"><td><p>Color</p></td>
+<td><p>Hexadecimal color of the form <kbd class="kbd docutils literal notranslate">'#RRGGBB'</kbd>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tuple</p></td>
+<td><p>A list of values in brackets. e.g. <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">[0,</kbd> <kbd class="kbd docutils literal notranslate">1]</kbd></kbd></p></td>
+</tr>
+<tr class="row-even"><td><p>Expression</p></td>
+<td><p>CQL expression surrounded by <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">${</kbd> <kbd class="kbd docutils literal notranslate">}</kbd></kbd></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="mappings-and-lists">
+<h3><span class="section-number">4.1.1.2. </span>Mappings and lists<a class="headerlink" href="#mappings-and-lists" title="Permalink to this headline">¶</a></h3>
+<p>There are three types of objects in a YSLD document:</p>
+<ol class="arabic">
+<li><p>Scalar, a simple value</p></li>
+<li><p>Mapping, a collection of key-value (property-value) pairs</p></li>
+<li><p>List, any collection of objects. A list can contain mappings, scalars, and even other lists.</p>
+<p>Lists require dashes for every entry, while mappings do not.</p>
+</li>
+</ol>
+<p>For example, a symbolizer block is a list, so every entry requires its own dash:</p>
+<blockquote>
+<div></div></blockquote>
+<p>The <kbd class="kbd docutils literal notranslate">polygon:</kbd> and <kbd class="kbd docutils literal notranslate">text:</kbd> objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">polygon</span><span class="p">:</span>
+    <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;#808080&#39;</span>
+    <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;#FF0000&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The dash next to polygon means that the item itself is contained in a list, not that it contains a list. And the placement of the dash is at the same level of indentation as the list title.</p>
+<p>If you have a list that contains only one item, and there is no other content at higher levels of the list, you may omit the enclosing elements. For example, the following are equivalent:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">feature-styles</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+        <span class="nt">symbols</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+            <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+            <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">point</span><span class="p">:</span>
+  <span class="nt">symbols</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+      <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>This is useful for making your styles more concise.</p>
+</div>
+<div class="section" id="indentation">
+<h3><span class="section-number">4.1.1.3. </span>Indentation<a class="headerlink" href="#indentation" title="Permalink to this headline">¶</a></h3>
+<p>Indentation is very important in YSLD. All directives must be indented to its proper place to ensure proper hierarchy. Improper indentation will cause a style to be rendered incorrectly, or not at all.</p>
+<p>For example, the polygon symbolizer, since it is a mapping, contains certain parameters inside it, such as the color of the fill and stroke. These must be indented such that they are “inside” the polygon block.</p>
+<p>In this example, the following markup is <strong>correct</strong>:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">polygon</span><span class="p">:</span>
+    <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;#808080&#39;</span>
+    <span class="nt">fill-opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
+    <span class="nt">stroke-color</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+    <span class="nt">stroke-opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.75</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The parameters inside the polygon (symbolizer) are indented, meaning that they are referencing the symbolizer and are not “outside it.”</p>
+<p>Compare to the following <strong>incorrect</strong> markup:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">polygon</span><span class="p">:</span>
+  <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;#808080&#39;</span>
+  <span class="nt">fill-opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
+  <span class="nt">stroke-color</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">black</span>
+  <span class="nt">stroke-opacity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.75</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="rules">
+<h3><span class="section-number">4.1.1.4. </span>Rules<a class="headerlink" href="#rules" title="Permalink to this headline">¶</a></h3>
+<p>We have already seen a CSS style composed of a single rule:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">point</span><span class="p">:</span>
+  <span class="nt">symbols</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+      <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+      <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>We can make a style consisting of more than one rule, carefully choosing the selector for each rule. In this case we are using a selector to style capital cities with a star, and non-capital with a circle:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${FEATURECLA = &#39;Admin-0 capital&#39;}</span>
+    <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+    <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+        <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+        <span class="nt">symbols</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+            <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">star</span>
+            <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+            <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+            <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">filter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+    <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+    <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+        <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">6</span>
+        <span class="nt">symbols</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">mark</span><span class="p">:</span>
+            <span class="nt">shape</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">circle</span>
+            <span class="nt">stroke-color</span><span class="p">:</span> <span class="s">&#39;black&#39;</span>
+            <span class="nt">stroke-width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+            <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The feature attribute test performed above uses <strong>Constraint Query Language (CQL)</strong>. This syntax can be used to define filters to select content, similar to how the SQL WHERE statement is used. It can also be used to define expressions to access attribute values allowing their use when defining style properties.</p>
+<p>Rule selectors can also be triggered based on the state of the rendering engine. In this example we are only applying labels when zoomed in:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="s">&#39;2.0E7&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">symbolizers</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">text</span><span class="p">:</span>
+        <span class="nt">label</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
+        <span class="nt">fill-color</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In the above example the label is defined using the CQL Expression <kbd class="kbd docutils literal notranslate">NAME</kbd>. This results in a dynamic style that generates each label on a case-by-case basis, filling in the label with the feature attribute <kbd class="kbd docutils literal notranslate">NAME</kbd>.</p>
+<p>Reference:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://suite.opengeo.org/docs/latest/cartography/ysld/reference/filters.html">Filter Syntax</a> (YSLD Reference)</p></li>
+<li><p><a class="reference internal" href="../../../filter/ecql_reference.html#filter-ecql-reference"><span class="std std-ref">ECQL Reference</span></a> (User Guide)</p></li>
+</ul>
+</div>
+<div class="section" id="variables">
+<h3><span class="section-number">4.1.1.5. </span>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
+<p>Up to this point we have been styling individual features, documenting how each shape is represented.</p>
+<p>When styling multiple features, or using filters to style individual features in different years, you may need to repeat styling information.</p>
+<p>Variables in YSLD allow for a certain directive or block of directives to be defined by name and later reused. This can greatly simplify the styling document.</p>
+<p>The two most-common use cases for using variables are:</p>
+<ul class="simple">
+<li><p>To create a more-friendly name for a value (such as using myorange instead of <kbd class="kbd docutils literal notranslate">#EE8000</kbd>)</p></li>
+<li><p>To define a block of directives to remove redundant content and to decrease file length</p></li>
+</ul>
+<p>It is customary, but not required, to place all definitions at the very top of the YSLD file.</p>
+<p>The syntax for defining a variable as a single value is:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;variable</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The defined variable can then be used as a value by variable name with a <kbd class="kbd docutils literal notranslate">*</kbd>:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;directive&gt;</span><span class="p">:</span> <span class="nv">*variable</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The syntax for defining a variable as a content block is:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">define</span><span class="p">:</span> <span class="nl">&amp;varblock</span>
+  <span class="nt">&lt;directive&gt;</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span>
+  <span class="nt">&lt;directive&gt;</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span>
+  <span class="l l-Scalar l-Scalar-Plain">...</span>
+  <span class="nt">&lt;block&gt;</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">&lt;directive&gt;</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span>
+    <span class="nt">&lt;directive&gt;</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span>
+  <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The syntax for using a variable block is to prepend the variable name with <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">&lt;&lt;:</kbd> <kbd class="kbd docutils literal notranslate">*</kbd></kbd>. For example:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;block&gt;</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">&lt;directive&gt;</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;value&gt;</span>
+  <span class="nt">&lt;&lt;</span><span class="p">:</span> <span class="nv">*varblock</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li><p><a class="reference external" href="http://suite.opengeo.org/docs/latest/cartography/ysld/reference/variables.html">Variables</a> (YSLD Reference)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="compare-ysld-to-sld">
+<h2><span class="section-number">4.1.2. </span>Compare YSLD to SLD<a class="headerlink" href="#compare-ysld-to-sld" title="Permalink to this headline">¶</a></h2>
+<p>As noted above, YSLD has a one-to-one correspondence with SLD, it merely uses a different markup language to display the same content. We can compare a SLD style with a YSLD style to see this correspondence:</p>
+<div class="section" id="sld-style">
+<h3><span class="section-number">4.1.2.1. </span>SLD Style<a class="headerlink" href="#sld-style" title="Permalink to this headline">¶</a></h3>
+<p>Here is an example <a class="reference download internal" download="" href="../../../_downloads/6b267cdfd71b6d4d5037c808f44c5be5/airports0.sld"><code class="xref download docutils literal notranslate"><span class="pre">SLD</span> <span class="pre">file</span></code></a> for reference:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="lineno"> 2 </span><span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+<span class="lineno"> 3 </span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;</span>
+<span class="lineno"> 4 </span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span>
+<span class="lineno"> 5 </span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+<span class="lineno"> 6 </span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+<span class="lineno"> 7 </span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+<span class="lineno"> 8 </span>  <span class="nt">&lt;NamedLayer&gt;</span>
+<span class="lineno"> 9 </span>    <span class="nt">&lt;Name&gt;</span>airports<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">10 </span>    <span class="nt">&lt;UserStyle&gt;</span>
+<span class="lineno">11 </span>      <span class="nt">&lt;Title&gt;</span>Airports<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno">12 </span>      <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+<span class="lineno">13 </span>        <span class="nt">&lt;Rule&gt;</span>
+<span class="lineno">14 </span>          <span class="nt">&lt;Name&gt;</span>airports<span class="nt">&lt;/Name&gt;</span>
+<span class="lineno">15 </span>          <span class="nt">&lt;Title&gt;</span>Airports<span class="nt">&lt;/Title&gt;</span>
+<span class="lineno">16 </span>          <span class="nt">&lt;PointSymbolizer&gt;</span>
+<span class="lineno">17 </span>            <span class="nt">&lt;Graphic&gt;</span>
+<span class="lineno">18 </span>              <span class="nt">&lt;ExternalGraphic&gt;</span>
+<span class="lineno">19 </span>                <span class="nt">&lt;OnlineResource</span> <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+<span class="lineno">20 </span>                <span class="na">xlink:href=</span><span class="s">&quot;airport.svg&quot;</span> <span class="nt">/&gt;</span>
+<span class="lineno">21 </span>                <span class="nt">&lt;Format&gt;</span>image/svg<span class="nt">&lt;/Format&gt;</span>
+<span class="lineno">22 </span>              <span class="nt">&lt;/ExternalGraphic&gt;</span>
+<span class="lineno">23 </span>              <span class="nt">&lt;Size&gt;</span>16<span class="nt">&lt;/Size&gt;</span>
+<span class="lineno">24 </span>            <span class="nt">&lt;/Graphic&gt;</span>
+<span class="lineno">25 </span>          <span class="nt">&lt;/PointSymbolizer&gt;</span>
+<span class="lineno">26 </span>        <span class="nt">&lt;/Rule&gt;</span>
+<span class="lineno">27 </span>      <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+<span class="lineno">28 </span>    <span class="nt">&lt;/UserStyle&gt;</span>
+<span class="lineno">29 </span>  <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="lineno">30 </span><span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ysld-style">
+<h3><span class="section-number">4.1.2.2. </span>YSLD Style<a class="headerlink" href="#ysld-style" title="Permalink to this headline">¶</a></h3>
+<p>Here is the same example as <a class="reference download internal" download="" href="../../../_downloads/aee9a52b78da2f9997d2b06e46dc60ac/airports0.ysld"><code class="xref download docutils literal notranslate"><span class="pre">YSLD</span></code></a>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">airports</span>
+<span class="lineno"> 2 </span><span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Airports</span>
+<span class="lineno"> 3 </span><span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+<span class="lineno"> 4 </span><span class="nt">symbolizers</span><span class="p">:</span>
+<span class="lineno"> 5 </span><span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+<span class="lineno"> 6 </span>    <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">16</span>
+<span class="lineno"> 7 </span>    <span class="nt">symbols</span><span class="p">:</span>
+<span class="lineno"> 8 </span>    <span class="p p-Indicator">-</span> <span class="nt">external</span><span class="p">:</span>
+<span class="lineno"> 9 </span>        <span class="nt">url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">airport.svg</span>
+<span class="lineno">10 </span>        <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">image/svg</span>
+</pre></div>
+</div>
+<p>We use a point symbolizer to indicate we want this content drawn as a <strong>Point</strong> (line 16 in the SLD, line 5 in the YSLD). The point symbolizer declares an external graphic, which contains the URL <kbd class="kbd docutils literal notranslate">airports.svg</kbd> indicating the image that should be drawn (line 20 in the SLD, line 9 in the YSLD).</p>
+</div>
+</div>
+<div class="section" id="tour">
+<h2><span class="section-number">4.1.3. </span>Tour<a class="headerlink" href="#tour" title="Permalink to this headline">¶</a></h2>
+<p>To confirm everything works, let’s reproduce the airports style above.</p>
+<ol class="arabic">
+<li><p>Navigate to the <strong>Styles</strong> page.</p></li>
+<li><p>Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click <span class="guilabel">Add a new style</span> and choose the following:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Name:</p></td>
+<td><p><kbd class="kbd docutils literal notranslate">airports0</kbd></p></td>
+</tr>
+<tr class="row-even"><td><p>Workspace:</p></td>
+<td><p>(leave empty)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Format:</p></td>
+<td><p><kbd class="kbd docutils literal notranslate">YSLD</kbd></p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p>Replace the initial YSLD definition with our airport YSLD example and click <span class="guilabel">Apply</span>:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">airports</span>
+<span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Airports</span>
+<span class="nt">scale</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span> <span class="nv">max</span><span class="p p-Indicator">]</span>
+<span class="nt">symbolizers</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">point</span><span class="p">:</span>
+    <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">16</span>
+    <span class="nt">symbols</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">external</span><span class="p">:</span>
+        <span class="nt">url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">airport.svg</span>
+        <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">image/svg</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Click the <span class="guilabel">Layer Preview</span> tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select <kbd class="kbd docutils literal notranslate">ne:airports</kbd> from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.</p>
+<div class="figure align-default" id="id1">
+<img alt="../../../_images/css_02_choose_data.png" src="../../../_images/css_02_choose_data.png" />
+<p class="caption"><span class="caption-text">Choosing the airports layer</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id2">
+<img alt="../../../_images/css_06_preview.png" src="../../../_images/css_06_preview.png" />
+<p class="caption"><span class="caption-text">Layer preview</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click <span class="guilabel">Layer Data</span> for a summary of the selected data.</p>
+<div class="figure align-default" id="id3">
+<img alt="../../../_images/css_07_data.png" src="../../../_images/css_07_data.png" />
+<p class="caption"><span class="caption-text">Layer attributes</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="bonus">
+<h2><span class="section-number">4.1.4. </span>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
+<p>Finished early? For now please help your neighbour so we can proceed with the workshop.</p>
+<p>If you are really stuck please consider the following challenge rather than skipping ahead.</p>
+<div class="section" id="explore-data">
+<h3><span class="section-number">4.1.4.1. </span>Explore Data<a class="headerlink" href="#explore-data" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Return to the <span class="guilabel">Data</span> tab and use the <span class="guilabel">Compute</span> link to determine the minimum and maximum for the <strong>scalerank</strong> attribute.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="challenge-compare-sld-generation">
+<h3><span class="section-number">4.1.4.2. </span>Challenge Compare SLD Generation<a class="headerlink" href="#challenge-compare-sld-generation" title="Permalink to this headline">¶</a></h3>
+<p># The rest API can be used to review your YAML file directly.</p>
+<blockquote>
+<div><p>Browser:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="view-source:http://localhost:8080/geoserver/rest/styles/airport0.yaml">view-source:http://localhost:8080/geoserver/rest/styles/airport0.yaml</a></p></li>
+</ul>
+<p>Command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">u</span> <span class="n">admin</span><span class="p">:</span><span class="n">geoserver</span> <span class="o">-</span><span class="n">XGET</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">rest</span><span class="o">/</span><span class="n">styles</span><span class="o">/</span><span class="n">airports0</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p>The REST API can also be used generate an SLD file:</p>
+<p>Browser:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="view-source:http://localhost:8080/geoserver/rest/styles/airport0.sld?pretty=true">view-source:http://localhost:8080/geoserver/rest/styles/airport0.sld?pretty=true</a></p></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<div><p>Command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld?pretty=true
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Compare the generated SLD differ above with the handwritten <a class="reference download internal" download="" href="../../../_downloads/6b267cdfd71b6d4d5037c808f44c5be5/airports0.sld"><code class="xref download docutils literal notranslate"><span class="pre">SLD</span> <span class="pre">file</span></code></a> used as an example?</p>
+<p><strong>Challenge:</strong> What differences can you spot?</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter"><span class="section-number">4. </span>YSLD Styling Workbook</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="linestring.html" title="next chapter"><span class="section-number">4.2. </span>Lines</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">4.1. YSLD Quickstart</a><ul>
+<li><a class="reference internal" href="#syntax">4.1.1. Syntax</a><ul>
+<li><a class="reference internal" href="#property-syntax">4.1.1.1. Property Syntax</a></li>
+<li><a class="reference internal" href="#mappings-and-lists">4.1.1.2. Mappings and lists</a></li>
+<li><a class="reference internal" href="#indentation">4.1.1.3. Indentation</a></li>
+<li><a class="reference internal" href="#rules">4.1.1.4. Rules</a></li>
+<li><a class="reference internal" href="#variables">4.1.1.5. Variables</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compare-ysld-to-sld">4.1.2. Compare YSLD to SLD</a><ul>
+<li><a class="reference internal" href="#sld-style">4.1.2.1. SLD Style</a></li>
+<li><a class="reference internal" href="#ysld-style">4.1.2.2. YSLD Style</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tour">4.1.3. Tour</a></li>
+<li><a class="reference internal" href="#bonus">4.1.4. Bonus</a><ul>
+<li><a class="reference internal" href="#explore-data">4.1.4.1. Explore Data</a></li>
+<li><a class="reference internal" href="#challenge-compare-sld-generation">4.1.4.2. Challenge Compare SLD Generation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter"><span class="section-number">4. </span>YSLD Styling Workbook</a></li>
+            <li>Next: <a href="linestring.html" title="next chapter"><span class="section-number">4.2. </span>Lines</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/workshop/ysld/ysld.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

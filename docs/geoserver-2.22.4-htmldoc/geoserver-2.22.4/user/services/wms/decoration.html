@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WMS Decorations &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Google Earth" href="googleearth/index.html" />
+    <link rel="prev" title="GetLegendGraphic" href="get_legend_graphic/index.html" /> 
+  </head><body class="services/wms/decoration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+    <li>WMS Decorations</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="googleearth/index.html" title="Google Earth" accesskey="N">Next</a></li>
+  <li>
+    <a href="get_legend_graphic/index.html" title="GetLegendGraphic" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wms-decorations">
+<span id="id1"></span><h1>WMS Decorations<a class="headerlink" href="#wms-decorations" title="Permalink to this headline">¶</a></h1>
+<p>WMS Decorations provide a framework for visually annotating images from WMS with absolute, rather than spatial,
+positioning.  Examples of decorations include compasses, legends, and watermarks.</p>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>To use decorations in a <a class="reference internal" href="reference.html#wms-getmap"><span class="std std-ref">GetMap</span></a> request, the administrator must first configure a decoration layout.  These
+layouts are stored in a subdirectory called <code class="docutils literal notranslate"><span class="pre">layouts</span></code> in the <a class="reference internal" href="../../datadirectory/index.html#datadir"><span class="std std-ref">GeoServer data directory</span></a> as XML files, one file per layout.
+Each layout file must have the extension <code class="docutils literal notranslate"><span class="pre">.xml</span></code>.  Once a layout <code class="docutils literal notranslate"><span class="pre">foo.xml</span></code> is defined, users can request it by
+adding <code class="docutils literal notranslate"><span class="pre">&amp;format_options=layout:foo</span></code> to the request parameters.</p>
+<p>Layout files follow a very simple XML structure; a root node named layout containing any number of decoration elements.
+The order of the decoration elements is the order they are drawn so, in case they are overlapping, the first one will appear under the others.</p>
+<p>Each decoration element has several attributes:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>the type of decoration to use (see <a class="reference internal" href="#wms-decoration-types"><span class="std std-ref">Decoration Types</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">affinity</span></code></p></td>
+<td><p>the region of the map image to which the decoration is anchored</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">offset</span></code></p></td>
+<td><p>how far from the anchor point the decoration is drawn</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<td><p>the maximum size to render the decoration.  Note that some decorations may dynamically resize themselves.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Each decoration element may also contain an arbitrary number of option elements providing a parameter name and value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">option</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="o">/&gt;</span>
+</pre></div>
+</div>
+<p>Option interpretation depends on the type of decoration in use.</p>
+</div>
+<div class="section" id="decoration-types">
+<span id="wms-decoration-types"></span><h2>Decoration Types<a class="headerlink" href="#decoration-types" title="Permalink to this headline">¶</a></h2>
+<p>While GeoServer allows for decorations to be added via extension, there is a core set of decorations included in the
+default installation.  These decorations include:</p>
+<p>The <strong>image</strong> decoration (<code class="docutils literal notranslate"><span class="pre">type=&quot;image&quot;</span></code>) overlays a static image file onto the document.  If height and width are
+specified, the image will be scaled to fit, otherwise the image is displayed at full size.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option Name</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">url</span></code></p></td>
+<td><p>provides the URL or file path to the image to draw (relative to the GeoServer data directory)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">opacity</span></code></p></td>
+<td><p>a number from 0 to 100 indicating how opaque the image should be.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>scaleratio</strong> decoration (<code class="docutils literal notranslate"><span class="pre">type=&quot;scaleratio&quot;</span></code>) overlays a text description of the map’s scale ratio onto the
+document.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option Name</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bgcolor</span></code></p></td>
+<td><p>the background color for the text.  supports RGB or RGBA colors specified as hex values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fgcolor</span></code></p></td>
+<td><p>the color for the text and border.  follows the color specification from bgcolor.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p>the number format pattern, specified using Java own <a class="reference external" href="https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html">DecimalFormat</a> syntax</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">formatLanguage</span></code></p></td>
+<td><p>the language used to drive number formatting (applies only if also <code class="docutils literal notranslate"><span class="pre">format</span></code> is used), using a valid Java <a class="reference external" href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html">Locale</a></p></td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>scaleline</strong> decoration (<code class="docutils literal notranslate"><span class="pre">type=&quot;scaleline&quot;</span></code>) overlays a graphic showing the scale of the map in world units.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option Name</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bgcolor</span></code></p></td>
+<td><p>the background color, as used in scaleratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fgcolor</span></code></p></td>
+<td><p>the foreground color, as used in scaleratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fontsize</span></code></p></td>
+<td><p>the size of the font to use</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">transparent</span></code></p></td>
+<td><p>if set to true, the background and border won’t be painted (false by default)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">measurement-system</span></code></p></td>
+<td><p>can be set to “metric” to only show metric units, “imperial” to only show imperial units, or “both” to show both of them (default)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>legend</strong> decoration (<code class="docutils literal notranslate"><span class="pre">type=&quot;legend&quot;</span></code>) overlays a graphic containing legends for the layers in the map.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option Name</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">legend_options</span></code></p></td>
+<td><p>the list of legend_options used as in <a class="reference external" href="./get_legend_graphic/index.html#controlling-legend-appearance-with-legend-options">GetLegendGraphic</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">opacity</span></code></p></td>
+<td><p>the legend opacity with a value between 0 and 1</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>text</strong> decoration (<code class="docutils literal notranslate"><span class="pre">type=&quot;text&quot;</span></code>) overlays a parametric, single line text message on top of the map. The
+parameter values can be fed via the <code class="docutils literal notranslate"><span class="pre">env</span></code> request parameter, just like SLD environment parameters.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option Name</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">message</span></code></p></td>
+<td><p>the message to be displayed, as plain text or Freemarker template that can use the <code class="docutils literal notranslate"><span class="pre">env</span></code> map contents to expand variables</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">font-family</span></code></p></td>
+<td><p>the name of the font used to display the message, e.g., <code class="docutils literal notranslate"><span class="pre">Arial</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">Serif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">font-size</span></code></p></td>
+<td><p>the size of the font to use (can have decimals), defaults to 12</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">font-italic</span></code></p></td>
+<td><p>it <code class="docutils literal notranslate"><span class="pre">true</span></code> the font will be italic, defaults to <code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">font-bold</span></code></p></td>
+<td><p>if <code class="docutils literal notranslate"><span class="pre">true</span></code> the font will be bold, defaults to <code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">font-color</span></code></p></td>
+<td><p>the color of the message, in <code class="docutils literal notranslate"><span class="pre">#RRGGBB</span></code> or <code class="docutils literal notranslate"><span class="pre">#RRGGBBAA</span></code> format, defaults to black</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">halo-radius</span></code></p></td>
+<td><p>the radius of a halo around the message, can have decimals, defaults to 0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">halo-color</span></code></p></td>
+<td><p>the halo fill color, in <code class="docutils literal notranslate"><span class="pre">#RRGGBB</span></code> or <code class="docutils literal notranslate"><span class="pre">#RRGGBBAA</span></code> format, defaults to white</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>A layout configuration file might look like this:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;layout&gt;</span>
+    <span class="nt">&lt;decoration</span> <span class="na">type=</span><span class="s">&quot;image&quot;</span> <span class="na">affinity=</span><span class="s">&quot;bottom,right&quot;</span> <span class="na">offset=</span><span class="s">&quot;6,6&quot;</span> <span class="na">size=</span><span class="s">&quot;80,31&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;option</span> <span class="na">name=</span><span class="s">&quot;url&quot;</span> <span class="na">value=</span><span class="s">&quot;pbGS_80x31glow.png&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/decoration&gt;</span>
+
+    <span class="nt">&lt;decoration</span> <span class="na">type=</span><span class="s">&quot;scaleline&quot;</span> <span class="na">affinity=</span><span class="s">&quot;bottom,left&quot;</span> <span class="na">offset=</span><span class="s">&quot;36,6&quot;</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;decoration</span> <span class="na">type=</span><span class="s">&quot;legend&quot;</span> <span class="na">affinity=</span><span class="s">&quot;top,left&quot;</span> <span class="na">offset=</span><span class="s">&quot;6,6&quot;</span> <span class="na">size=</span><span class="s">&quot;auto&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/layout&gt;</span>
+</pre></div>
+</div>
+<p>Used against the states layer from the default GeoServer data, this layout produces an image like the following.</p>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/decoration.png" src="../../_images/decoration.png" />
+<p class="caption"><span class="caption-text">The default states layer, drawn with the decoration layout above.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="expressions-in-decoration-attributes-and-options">
+<span id="wms-dynamic-decorations"></span><h2>Expressions in decoration attributes and options<a class="headerlink" href="#expressions-in-decoration-attributes-and-options" title="Permalink to this headline">¶</a></h2>
+<p>Each decoration can have options to control its appearance, as well as attributes controlling
+its positioning. Option and attribute values are normally static strings specified in the decoration layout.</p>
+<p>However, it’s also possible to make them dynamic using (E)CQL expressions,
+using the <code class="docutils literal notranslate"><span class="pre">${cql</span> <span class="pre">expression}</span></code> syntax. The expression can use functions, and in particular it can
+access <code class="docutils literal notranslate"><span class="pre">env</span></code> variables provided though the request.</p>
+<p>For example, this decoration layout:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;layout&gt;</span>
+    <span class="nt">&lt;decoration</span> <span class="na">type=</span><span class="s">&quot;scaleline&quot;</span> <span class="na">affinity=</span><span class="s">&quot;${env(&#39;sla&#39;, &#39;bottom,left&#39;)}&quot;</span><span class="nt">&gt;</span>
+       <span class="nt">&lt;option</span> <span class="na">name=</span><span class="s">&quot;bgcolor&quot;</span> <span class="na">value=</span><span class="s">&quot;${env(&#39;bg&#39;, &#39;#AAAAAA&#39;)}&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/decoration&gt;</span>
+<span class="nt">&lt;/layout&gt;</span>
+</pre></div>
+</div>
+<p>Would generate a scale line with:</p>
+<ul class="simple">
+<li><p>A light gray background, with a GetMap request that does not contain the <code class="docutils literal notranslate"><span class="pre">bg</span></code> env variable.</p></li>
+<li><p>A red background, if the request includes a env section like <code class="docutils literal notranslate"><span class="pre">&amp;env=bg:FF0000</span></code>.</p></li>
+<li><p>A scaleline positioned on the top right, if the request includes a env section like <code class="docutils literal notranslate"><span class="pre">&amp;env=sla:top,right</span></code>.</p></li>
+</ul>
+<p>All options allow usage of expressions, with <strong>one notable exception</strong>: the <code class="docutils literal notranslate"><span class="pre">message</span></code> option in
+the <code class="docutils literal notranslate"><span class="pre">text</span></code> decoration. This one option cannot use expressions, as it would allow expansion, and
+evaluation, of user provided FreeMarker templates. The template can contain control structures,
+loops and other active elements, as such, allowing its value to be provided via WMS requests
+is deemed too risky.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="get_legend_graphic/index.html" title="previous chapter">GetLegendGraphic</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="googleearth/index.html" title="next chapter">Google Earth</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WMS Decorations</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#decoration-types">Decoration Types</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#expressions-in-decoration-attributes-and-options">Expressions in decoration attributes and options</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="get_legend_graphic/index.html" title="previous chapter">GetLegendGraphic</a></li>
+            <li>Next: <a href="googleearth/index.html" title="next chapter">Google Earth</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/decoration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

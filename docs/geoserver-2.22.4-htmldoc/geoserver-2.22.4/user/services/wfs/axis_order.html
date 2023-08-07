@@ -1,0 +1,764 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Axis ordering &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Web Coverage Service (WCS)" href="../wcs/index.html" />
+    <link rel="prev" title="WFS schema mapping" href="schemamapping.html" /> 
+  </head><body class="services/wfs/axis_order">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Feature Service (WFS)</a> &raquo;</li>
+    <li>Axis ordering</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../wcs/index.html" title="Web Coverage Service (WCS)" accesskey="N">Next</a></li>
+  <li>
+    <a href="schemamapping.html" title="WFS schema mapping" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="axis-ordering">
+<span id="wfs-basics-axis"></span><h1>Axis ordering<a class="headerlink" href="#axis-ordering" title="Permalink to this headline">¶</a></h1>
+<p>The definition of a spatial reference system includes an indication of the axis order used to interpret the coordinates. There are a number of projected spatial reference systems defined in <cite>north/east</cite> order in the formal <code class="docutils literal notranslate"><span class="pre">EPSG</span></code> definition, but are interpreted as being in <code class="docutils literal notranslate"><span class="pre">east/north</span></code> order by earlier versions of the <code class="docutils literal notranslate"><span class="pre">WFS</span></code> protocol.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">WFS</span> <span class="pre">1.0.0</span></code>: Provides geographic coordinates in <code class="docutils literal notranslate"><span class="pre">east/north</span></code> and may not be trusted to respect the EPSG definition axis order.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WFS</span> <span class="pre">1.1.0</span></code>: Respects the axis order defined by the EPSG definition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WFS</span> <span class="pre">2.0.0</span></code>: Respects the axis order defined by the EPSG definition.</p></li>
+</ul>
+<p>Forcing content into <code class="docutils literal notranslate"><span class="pre">east/north</span></code> order was intended to be easier for developers where computer displays are defined with an <cite>x/y</cite> order. However this decision has introduced no end of confusion, and was corrected in later versions of <code class="docutils literal notranslate"><span class="pre">WFS</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some spatial reference systems, for example polar stereographic, do not have an <code class="docutils literal notranslate"><span class="pre">east</span></code> or <code class="docutils literal notranslate"><span class="pre">west</span></code> as they have a pole in the middle of the axis.</p>
+</div>
+<p>These differences may cause difficulties when clients switch between different <code class="docutils literal notranslate"><span class="pre">WFS</span></code> versions. To minimize confusion and increase interoperability, GeoServer has adopted the following guidelines when specifying spatial reference systems to avoid ambiguity.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Representation</p></th>
+<th class="head"><p>Axis order</p></th>
+<th class="head"><p>Interpretation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code></p></td>
+<td><p>longitude/latitude</p></td>
+<td><p>assumption</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#xxxx</span></code></p></td>
+<td><p>longitude/latitude</p></td>
+<td><p>strict</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:xxxx</span></code></p></td>
+<td><p>latitude/longitude</p></td>
+<td><p>strict</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">urn:ogc:def:crs:EPSG::4326</span></code></p></td>
+<td><p>latitude/longitude</p></td>
+<td><p>strict</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="srslist-axis-order">
+<h2>SRSList Axis Order<a class="headerlink" href="#srslist-axis-order" title="Permalink to this headline">¶</a></h2>
+<p>To compare the spatial reference system definition for <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<ol class="arabic">
+<li><p>Navigate <span class="menuselection">Demos ‣ SRS List</span> page and search for <kbd class="kbd docutils literal notranslate">4326</kbd>.</p></li>
+<li><p>Compare the formal <cite>EPSG</cite> definition of <cite>WGS84</cite>:</p>
+<div class="figure align-default" id="id1">
+<img alt="../../_images/wgs84-epsg-description.png" src="../../_images/wgs84-epsg-description.png" />
+<p class="caption"><span class="caption-text">WGS84 EPSG definition</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>With the internal definition of <cite>WGS84</cite>:</p>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/wgs84-internal-description.png" src="../../_images/wgs84-internal-description.png" />
+<p class="caption"><span class="caption-text">WGS84 Internal definition</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ol>
+<p>The same approach can be used to check the definition of any spatial reference system supported by GeoServer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The formal <code class="docutils literal notranslate"><span class="pre">EPSG</span></code> definition provides the axis-order used to interpret coordinate values. GeoServer uses an internal representation that does not always respect the <code class="docutils literal notranslate"><span class="pre">EPSG</span></code> provided axis order.</p>
+<p>In the example above <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code> is defined with a <cite>north/east</cite> axis order, while the internal representation has <code class="docutils literal notranslate"><span class="pre">east/north</span></code> order.</p>
+<p>The startup option <code class="docutils literal notranslate"><span class="pre">-Dorg.geotools.referencing.forceXY=true</span></code> is used to configure GeoServer to prefer an internal representation in <cite>east/north</cite> axis order. We recommend the default value of <code class="docutils literal notranslate"><span class="pre">true</span></code> to match a wide range of clients that make this assumption.</p>
+</div>
+</div>
+<div class="section" id="layer-axis-order">
+<h2>Layer Axis Order<a class="headerlink" href="#layer-axis-order" title="Permalink to this headline">¶</a></h2>
+<p>The default data directory includes the following dataset illustrating this challenge:</p>
+<ul>
+<li><p><code class="file docutils literal notranslate"><span class="pre">shapefile/states.shp`</span></code>: Data stored in x/y order:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MULTIPOLYGON</span> <span class="p">(((</span><span class="o">-</span><span class="mf">121.664154</span> <span class="mf">38.169369</span><span class="p">,</span><span class="o">-</span><span class="mf">121.781296</span> <span class="mf">38.066856</span><span class="p">,</span> <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">shapefiles/states.prj</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GEOGCS</span><span class="p">[</span><span class="s2">&quot;GCS_WGS_1984&quot;</span><span class="p">,</span><span class="n">DATUM</span><span class="p">[</span><span class="s2">&quot;WGS_1984&quot;</span><span class="p">,</span><span class="n">SPHEROID</span><span class="p">[</span><span class="s2">&quot;WGS_1984&quot;</span><span class="p">,</span><span class="mi">6378137</span><span class="p">,</span><span class="mf">298.257223563</span><span class="p">]],</span><span class="n">PRIMEM</span><span class="p">[</span><span class="s2">&quot;Greenwich&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">UNIT</span><span class="p">[</span><span class="s2">&quot;Degree&quot;</span><span class="p">,</span><span class="mf">0.017453292519943295</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Published as <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> with Spatial Reference System <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>.</p>
+</li>
+</ul>
+<p>To review how this layer has been published:</p>
+<ol class="arabic">
+<li><p>Navigate to the <span class="guilabel">Edit Layer</span> page for <code class="docutils literal notranslate"><span class="pre">topp:states</span></code>.</p></li>
+<li><p>Locate <span class="guilabel">Native SRS</span> and click on the <span class="guilabel">GCS_WGS_1984</span> link to show how GeoServer interpreted the <code class="file docutils literal notranslate"><span class="pre">PRJ</span></code> file above.</p>
+<p>The <code class="file docutils literal notranslate"><span class="pre">PRJ</span></code> did not provide an axis-order and GeoSever has filled in an assumption. This describing the data in <cite>x/y</cite> order which matches our data and we could use it unmodified.</p>
+<div class="figure align-default" id="id3">
+<img alt="../../_images/native_srs.png" src="../../_images/native_srs.png" />
+<p class="caption"><span class="caption-text">Native SRS for topp:states</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Locate <span class="guilabel">Declared SRS</span> and click on <span class="guilabel">EPSG:WGS 84…</span> link to see the definition used to publish this content.</p>
+<p>This is the internal definition of <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code> as shown in the SRSList above, which also describes the data in <cite>x/y</cite> order matching our data. This definition provides slightly more readable names along with additional  <code class="docutils literal notranslate"><span class="pre">AUTHORITY</span></code> information that may be helpful to client applications.</p>
+<div class="figure align-default" id="id4">
+<img alt="../../_images/declared_srs.png" src="../../_images/declared_srs.png" />
+<p class="caption"><span class="caption-text">Declared SRS for topp:states</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>The <span class="guilabel">SRS Handling</span> is set to <code class="docutils literal notranslate"><span class="pre">Force</span> <span class="pre">declared</span></code> to completely ignore the provided <span class="guilabel">Native SRS</span> definition and use the <span class="guilabel">Declared SRS</span>.</p>
+<div class="figure align-default">
+<img alt="../../_images/srs_handling.png" src="../../_images/srs_handling.png" />
+</div>
+<p>Force declared SRS handling for topp:states</p>
+</li>
+</ol>
+</div>
+<div class="section" id="wfs-1-0-axis-order">
+<h2>WFS 1.0 Axis Order<a class="headerlink" href="#wfs-1-0-axis-order" title="Permalink to this headline">¶</a></h2>
+<p><strong>GetCapabilities</strong> describes <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> using:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=wfs&amp;version=1.0.0&amp;request=GetCapabilities">http://localhost:8080/geoserver/ows?service=wfs&amp;version=1.0.0&amp;request=GetCapabilities</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;FeatureType&gt;&lt;Name&gt;</span>topp:states<span class="nt">&lt;/Name&gt;</span>
+  <span class="nt">&lt;Title&gt;</span>USA Population<span class="nt">&lt;/Title&gt;</span>
+  <span class="nt">&lt;Abstract&gt;</span>This is some census data on the states.<span class="nt">&lt;/Abstract&gt;</span>
+  <span class="nt">&lt;Keywords&gt;</span>census, united, boundaries, state, states<span class="nt">&lt;/Keywords&gt;</span>
+  <span class="nt">&lt;SRS&gt;</span>EPSG:4326<span class="nt">&lt;/SRS&gt;</span>
+  <span class="nt">&lt;LatLongBoundingBox</span> <span class="na">minx=</span><span class="s">&quot;-124.731422&quot;</span> <span class="na">miny=</span><span class="s">&quot;24.955967&quot;</span> <span class="na">maxx=</span><span class="s">&quot;-66.969849&quot;</span> <span class="na">maxy=</span><span class="s">&quot;49.371735&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/FeatureType&gt;</span>
+</pre></div>
+</div>
+<p>WFS 1.0 describes the latitude / longitude bounds with the understanding that you will associate <cite>minx</cite> and <cite>maxx</cite> with longitude, and also <cite>miny</cite> and <cite>maxy</cite> with latitude.</p>
+<p>WFS 1.0 <em>GetFeature</em> request defaults to GML2 output, and the default <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code> spatial reference system used to publish the layer:</p>
+<ul>
+<li><p>WFS 1.0 Default: <a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1">http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1</a></p>
+<p>The GML2 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiPolygon</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:polygonMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:outerBoundaryIs&gt;&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:coordinates</span> <span class="na">decimal=</span><span class="s">&quot;.&quot;</span> <span class="na">cs=</span><span class="s">&quot;,&quot;</span> <span class="na">ts=</span><span class="s">&quot; &quot;</span><span class="nt">&gt;</span>
+          -88.071564,37.51099 -88.087883,37.476273
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="section" id="wfs-1-0-output-format-gml3">
+<h3>WFS 1.0 output format GML3<a class="headerlink" href="#wfs-1-0-output-format-gml3" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GML3.1 (default <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>):</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3</a></p>
+<p>GML3 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            -88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+</li>
+<li><p>GML3.1 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code></p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<p>GML3 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            -88.071564 37.51099 -88.087883
+</pre></div>
+</div>
+</li>
+<li><p>GML 3.1 reproject to <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code></p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<p>GML3.1 output using <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code> reference and data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="wfs-1-0-output-format-gml32">
+<h3>WFS 1.0 output format GML32<a class="headerlink" href="#wfs-1-0-output-format-gml32" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GML3.2:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32</a></p>
+<p>The GML32 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>-88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+</li>
+<li><p>GML3.2 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=EPSG:4326</a></p>
+<p>The GML32 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            -88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+</li>
+<li><p>GML3.2 reproject to <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<p>GML3.2 output using <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code> reference and data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;&lt;gml:posList&gt;</span>
+          37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="wfs-1-1-axis-order">
+<h2>WFS 1.1 Axis Order<a class="headerlink" href="#wfs-1-1-axis-order" title="Permalink to this headline">¶</a></h2>
+<p><strong>GetCapabilities</strong> describes <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> using:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=wfs&amp;version=1.1.0&amp;request=GetCapabilities">http://localhost:8080/geoserver/ows?service=wfs&amp;version=1.1.0&amp;request=GetCapabilities</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;FeatureType&gt;</span>
+  <span class="nt">&lt;Name&gt;</span>topp:states<span class="nt">&lt;/Name&gt;</span>
+  <span class="nt">&lt;Title&gt;</span>USA Population<span class="nt">&lt;/Title&gt;</span>
+  <span class="nt">&lt;Abstract&gt;</span>This is some census data on the states.<span class="nt">&lt;/Abstract&gt;</span>
+  <span class="nt">&lt;ows:Keywords&gt;</span>
+    <span class="nt">&lt;ows:Keyword&gt;</span>census<span class="nt">&lt;/ows:Keyword&gt;&lt;ows:Keyword&gt;</span>united<span class="nt">&lt;/ows:Keyword&gt;&lt;ows:Keyword&gt;</span>boundaries<span class="nt">&lt;/ows:Keyword&gt;&lt;ows:Keyword&gt;</span>state<span class="nt">&lt;/ows:Keyword&gt;&lt;ows:Keyword&gt;</span>states<span class="nt">&lt;/ows:Keyword&gt;</span>
+  <span class="nt">&lt;/ows:Keywords&gt;</span>
+  <span class="nt">&lt;DefaultSRS&gt;</span>urn:x-ogc:def:crs:EPSG:4326<span class="nt">&lt;/DefaultSRS&gt;</span>
+  <span class="nt">&lt;ows:WGS84BoundingBox&gt;</span>
+    <span class="nt">&lt;ows:LowerCorner&gt;</span>-124.731422 24.955967<span class="nt">&lt;/ows:LowerCorner&gt;</span>
+    <span class="nt">&lt;ows:UpperCorner&gt;</span>-66.969849 49.371735<span class="nt">&lt;/ows:UpperCorner&gt;</span>
+  <span class="nt">&lt;/ows:WGS84BoundingBox&gt;&lt;/FeatureType&gt;</span>
+</pre></div>
+</div>
+<p>WFS 1.1 describes the <code class="docutils literal notranslate"><span class="pre">WGS84BoundingBox</span></code> as a lower and upper corner in x/y order.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This combination is inconsistent with <code class="docutils literal notranslate"><span class="pre">DefaultSRS</span></code> definition and the <code class="docutils literal notranslate"><span class="pre">LowerCorner</span></code> and <code class="docutils literal notranslate"><span class="pre">UpperCorner</span></code> coordinate order and may confuse client applications.</p>
+<p>The result matches the WFS 1.1.0 Implementation Specification GetCapabilities examples.</p>
+</div>
+<p>WFS 1.1 <em>GetFeature</em> request defaults to GML3 output, and the default <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code> spatial reference system used to publish the layer:</p>
+<ul>
+<li><p>WFS 1.1 Default:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1">http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1</a></p>
+<p>The GML3.1 output uses <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code> reference, with data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+             37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+<li><p>WFS 1.1 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;srsName=EPSG:4326</a></p>
+<p>The GML3.1 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            -88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>srsName</cite> and <cite>posList</cite> coordinate order are consistent.</p>
+<p>This approach can be used to force x/y order.</p>
+</div>
+</li>
+<li><p>WFS 1.1 reproject to <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<p>The GML3.1 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="section" id="wfs-1-1-output-format-gml2">
+<h3>WFS 1.1 output format GML2<a class="headerlink" href="#wfs-1-1-output-format-gml2" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GML2:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2</a></p>
+<p>GML2 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiPolygon</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:polygonMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;&lt;gml:outerBoundaryIs&gt;</span>
+      <span class="nt">&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:coordinates</span> <span class="na">decimal=</span><span class="s">&quot;.&quot;</span> <span class="na">cs=</span><span class="s">&quot;,&quot;</span> <span class="na">ts=</span><span class="s">&quot; &quot;</span><span class="nt">&gt;</span>
+          37.51099,-88.071564 37.476273,-88.087883
+</pre></div>
+</div>
+</li>
+<li><p>GML2 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2&amp;srsName=EPSG:4326</a></p>
+<p>GML2 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiPolygon</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:polygonMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:outerBoundaryIs&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:coordinates</span> <span class="na">decimal=</span><span class="s">&quot;.&quot;</span> <span class="na">cs=</span><span class="s">&quot;,&quot;</span> <span class="na">ts=</span><span class="s">&quot; &quot;</span><span class="nt">&gt;</span>
+            -88.071564,37.51099 -88.087883,37.476273
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>srsName</cite> and <cite>posList</cite> coordinate order are consistent.</p>
+<p>This approach can be used to force x/y order.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="wfs-1-1-output-format-gml3">
+<h3>WFS 1.1 output format GML3<a class="headerlink" href="#wfs-1-1-output-format-gml3" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GML3:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3</a></p>
+<p>GML3.1 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+<li><p>GML3 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=EPSG:4326</a></p>
+<p>GML3.1 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, <em>but has changed the data to x/y order</em>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            -88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>srsName</cite> and <cite>posList</cite> coordinate order are consistent.</p>
+<p>This approach can be used to force x/y order.</p>
+</div>
+</li>
+<li><p>GML3 reproject to <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code></p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<p>GML3.1 output using <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code> reference and data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            -88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>srsName</cite> and <cite>posList</cite> coordinate order are consistent.</p>
+<p>This approach can be used to force x/y order.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="wfs-1-1-output-format-gml32">
+<h3>WFS 1.1 output format GML32<a class="headerlink" href="#wfs-1-1-output-format-gml32" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GML3.2:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32</a></p>
+<p>The GML32 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;gml:exterior&gt;</span>
+      <span class="nt">&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:posList&gt;</span>37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+<li><p>GML3.2 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=EPSG:4326</a></p>
+<p>The GML32 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>-88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+</li>
+<li><p>GML3.2 reproject to <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/topp/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<p>GML3.2 output using <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code> reference and data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;&lt;gml:posList&gt;</span>37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="wfs-2-0-axis-order">
+<h2>WFS 2.0 Axis Order<a class="headerlink" href="#wfs-2-0-axis-order" title="Permalink to this headline">¶</a></h2>
+<p><strong>GetCapabilities</strong> describes <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> using:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=wfs&amp;version=2.0.0&amp;request=GetCapabilities">http://localhost:8080/geoserver/ows?service=wfs&amp;version=2.0.0&amp;request=GetCapabilities</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;FeatureType&gt;</span>
+  <span class="nt">&lt;Name&gt;</span>topp:states<span class="nt">&lt;/Name&gt;</span>
+  <span class="nt">&lt;Title&gt;</span>USA Population<span class="nt">&lt;/Title&gt;</span>
+  <span class="nt">&lt;Abstract&gt;</span>This is some census data on the states.<span class="nt">&lt;/Abstract&gt;</span>
+  <span class="nt">&lt;ows:Keywords&gt;</span>
+    <span class="nt">&lt;ows:Keyword&gt;</span>census<span class="nt">&lt;/ows:Keyword&gt;&lt;ows:Keyword&gt;</span>united<span class="nt">&lt;/ows:Keyword&gt;&lt;ows:Keyword&gt;</span>boundaries<span class="nt">&lt;/ows:Keyword&gt;&lt;ows:Keyword&gt;</span>state<span class="nt">&lt;/ows:Keyword&gt;&lt;ows:Keyword&gt;</span>states<span class="nt">&lt;/ows:Keyword&gt;</span>
+  <span class="nt">&lt;/ows:Keywords&gt;</span>
+  <span class="nt">&lt;DefaultCRS&gt;</span>urn:ogc:def:crs:EPSG::4326<span class="nt">&lt;/DefaultCRS&gt;</span>
+  <span class="nt">&lt;ows:WGS84BoundingBox&gt;</span>
+    <span class="nt">&lt;ows:LowerCorner&gt;</span>-124.731422 24.955967<span class="nt">&lt;/ows:LowerCorner&gt;</span>
+    <span class="nt">&lt;ows:UpperCorner&gt;</span>-66.969849 49.371735<span class="nt">&lt;/ows:UpperCorner&gt;</span>
+  <span class="nt">&lt;/ows:WGS84BoundingBox&gt;</span>
+<span class="nt">&lt;/FeatureType&gt;</span>
+</pre></div>
+</div>
+<p>WFS 2.0 describes the <code class="docutils literal notranslate"><span class="pre">WGS84BoundingBox</span></code> as a lower and upper corner in x/y order.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This combination is inconsistent with <code class="docutils literal notranslate"><span class="pre">DefaultSRS</span></code> definition and the <code class="docutils literal notranslate"><span class="pre">LowerCorner</span></code> and <code class="docutils literal notranslate"><span class="pre">UpperCorner</span></code> coordinate order and may confuse client applications.</p>
+<p>The result matches the WFS 2.0 GetCapabilities examples.</p>
+</div>
+<p>WFS 2.0 <em>GetFeature</em> request defaults to GML3.2 output, and the default <code class="docutils literal notranslate"><span class="pre">urn:ogc:def:crs:EPSG::4326</span></code> spatial reference system used to publish the layer:</p>
+<ul>
+<li><p>WFS 2.0 Default:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1</a></p>
+<p>The GML3.2 output uses <code class="docutils literal notranslate"><span class="pre">urn:ogc:def:crs:EPSG::4326</span></code> reference, with data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:posList&gt;</span>
+          37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+<li><p>WFS 2.0 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;srsName=EPSG:4326</a></p>
+<p>The GML3.2 output uses <code class="docutils literal notranslate"><span class="pre">http://www.opengis.net/gml/srs/epsg.xml#4326</span></code> reference, with data in x/y order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:posList&gt;</span>
+          -88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+</li>
+<li><p>WFS 2.0 reproject to <code class="docutils literal notranslate"><span class="pre">urn:ogc:def:crs:EPSG::4326</span></code>
+<a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;srsName=urn:ogc:def:crs:EPSG::4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;srsName=urn:ogc:def:crs:EPSG::4326</a></p>
+<p>The GML3.2 output uses <code class="docutils literal notranslate"><span class="pre">urn:ogc:def:crs:EPSG::4326</span></code> reference, with data in y/x order:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:posList&gt;</span>
+          37.51099 -88.071564 37.476273 -88.087883 37.442852
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="section" id="wfs-2-0-output-format-gml2">
+<h3>WFS 2.0 output format GML2<a class="headerlink" href="#wfs-2-0-output-format-gml2" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GML2:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiPolygon</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:polygonMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:outerBoundaryIs&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:coordinates</span> <span class="na">decimal=</span><span class="s">&quot;.&quot;</span> <span class="na">cs=</span><span class="s">&quot;,&quot;</span> <span class="na">ts=</span><span class="s">&quot; &quot;</span><span class="nt">&gt;</span>
+            37.51099,-88.071564 37.476273,-88.087883
+</pre></div>
+</div>
+</li>
+<li><p>GML2 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2&amp;srsName=EPSG:4326</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiPolygon</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:polygonMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:outerBoundaryIs&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:coordinates</span> <span class="na">decimal=</span><span class="s">&quot;.&quot;</span> <span class="na">cs=</span><span class="s">&quot;,&quot;</span> <span class="na">ts=</span><span class="s">&quot; &quot;</span><span class="nt">&gt;</span>
+            -88.071564,37.51099 -88.087883,37.476273
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>srsName</cite> and <cite>posList</cite> coordinate order are consistent.</p>
+<p>This approach can be used to force x/y order.</p>
+</div>
+</li>
+<li><p>GML2 reproject to <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml2&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiPolygon</span> <span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:polygonMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:outerBoundaryIs&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:coordinates</span> <span class="na">decimal=</span><span class="s">&quot;.&quot;</span> <span class="na">cs=</span><span class="s">&quot;,&quot;</span> <span class="na">ts=</span><span class="s">&quot; &quot;</span><span class="nt">&gt;</span>
+            37.51099,-88.071564 37.476273,-88.087883
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="wfs-2-0-output-format-gml3">
+<h3>WFS 2.0 output format GML3<a class="headerlink" href="#wfs-2-0-output-format-gml3" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GML3:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+<li><p>GML3 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=EPSG:4326</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            -88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This combination is inconsistent between <cite>srsName</cite> and <cite>posList</cite> coordinate order and may confuse applications expecting a valid GML3 document.</p>
+<p>This approach can be used to force x/y order.</p>
+</div>
+</li>
+<li><p>GML3 reproject to <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml3&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon&gt;</span>
+      <span class="nt">&lt;gml:exterior&gt;</span>
+        <span class="nt">&lt;gml:LinearRing&gt;</span>
+          <span class="nt">&lt;gml:posList&gt;</span>
+            37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="wfs-2-0-output-format-gml32">
+<h3>WFS 2.0 output format GML32<a class="headerlink" href="#wfs-2-0-output-format-gml32" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GML32:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;&lt;gml:exterior&gt;</span>
+      <span class="nt">&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:posList&gt;</span>
+          37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+<li><p>GML32 reproject to <code class="docutils literal notranslate"><span class="pre">EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=EPSG:4326</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;&lt;gml:exterior&gt;</span>
+      <span class="nt">&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:posList&gt;</span>
+          -88.071564 37.51099 -88.087883 37.476273
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This combination is inconsistent between <cite>srsName</cite> and <cite>posList</cite> coordinate order and may confuse applications expecting a valid GML3 document.</p>
+<p>This approach can be used to force x/y order.</p>
+</div>
+</li>
+<li><p>GML32 reproject to <code class="docutils literal notranslate"><span class="pre">urn:x-ogc:def:crs:EPSG:4326</span></code>:</p>
+<p><a class="reference external" href="http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=urn:x-ogc:def:crs:EPSG:4326">http://localhost:8080/geoserver/ows?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=topp%3Astates&amp;featureId=states.1&amp;outputFormat=gml32&amp;srsName=urn:x-ogc:def:crs:EPSG:4326</a></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gml:MultiSurface</span> <span class="na">srsName=</span><span class="s">&quot;urn:ogc:def:crs:EPSG::4326&quot;</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;gml:surfaceMember&gt;</span>
+    <span class="nt">&lt;gml:Polygon</span> <span class="na">gml:id=</span><span class="s">&quot;states.1.the_geom.1&quot;</span><span class="nt">&gt;&lt;gml:exterior&gt;</span>
+      <span class="nt">&lt;gml:LinearRing&gt;</span>
+        <span class="nt">&lt;gml:posList&gt;</span>
+          37.51099 -88.071564 37.476273 -88.087883
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="schemamapping.html" title="previous chapter">WFS schema mapping</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../wcs/index.html" title="next chapter">Web Coverage Service (WCS)</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Axis ordering</a><ul>
+<li><a class="reference internal" href="#srslist-axis-order">SRSList Axis Order</a></li>
+<li><a class="reference internal" href="#layer-axis-order">Layer Axis Order</a></li>
+<li><a class="reference internal" href="#wfs-1-0-axis-order">WFS 1.0 Axis Order</a><ul>
+<li><a class="reference internal" href="#wfs-1-0-output-format-gml3">WFS 1.0 output format GML3</a></li>
+<li><a class="reference internal" href="#wfs-1-0-output-format-gml32">WFS 1.0 output format GML32</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#wfs-1-1-axis-order">WFS 1.1 Axis Order</a><ul>
+<li><a class="reference internal" href="#wfs-1-1-output-format-gml2">WFS 1.1 output format GML2</a></li>
+<li><a class="reference internal" href="#wfs-1-1-output-format-gml3">WFS 1.1 output format GML3</a></li>
+<li><a class="reference internal" href="#wfs-1-1-output-format-gml32">WFS 1.1 output format GML32</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#wfs-2-0-axis-order">WFS 2.0 Axis Order</a><ul>
+<li><a class="reference internal" href="#wfs-2-0-output-format-gml2">WFS 2.0 output format GML2</a></li>
+<li><a class="reference internal" href="#wfs-2-0-output-format-gml3">WFS 2.0 output format GML3</a></li>
+<li><a class="reference internal" href="#wfs-2-0-output-format-gml32">WFS 2.0 output format GML32</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="schemamapping.html" title="previous chapter">WFS schema mapping</a></li>
+            <li>Next: <a href="../wcs/index.html" title="next chapter">Web Coverage Service (WCS)</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wfs/axis_order.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

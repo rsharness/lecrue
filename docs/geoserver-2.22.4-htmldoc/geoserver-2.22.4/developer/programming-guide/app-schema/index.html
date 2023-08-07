@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App-Schema Online Tests &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Release Schedule" href="../../release-schedule/index.html" />
+    <link rel="prev" title="Security" href="../security/index.html" /> 
+  </head><body class="programming-guide/app-schema/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+    <li>App-Schema Online Tests</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../../release-schedule/index.html" title="Release Schedule" accesskey="N">Next</a></li>
+  <li>
+    <a href="../security/index.html" title="Security" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="app-schema-online-tests">
+<span id="id1"></span><h1>App-Schema Online Tests<a class="headerlink" href="#app-schema-online-tests" title="Permalink to this headline">¶</a></h1>
+<p>The offline tests in app-schema-test suite use properties files as data source. In reality, properties files are only used as testing means, whereas in production, users would use databases as data source. Users would often encounter problems/bugs that cannot be recreated using properties files, which raises the need to run with a test database. Moreover, Niels’ joining support to increase performance can only be tested online, and we need to ensure that it works with the current features/bug fixes covered in the tests.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>This requires installation of Oracle driver in Maven repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mvn</span> <span class="n">install</span><span class="p">:</span><span class="n">install</span><span class="o">-</span><span class="n">file</span> <span class="o">-</span><span class="n">Dfile</span><span class="o">=</span><span class="n">ojdbc7</span><span class="o">.</span><span class="n">jar</span> <span class="o">-</span><span class="n">DgroupId</span><span class="o">=</span><span class="n">com</span><span class="o">.</span><span class="n">oracle</span> <span class="o">-</span><span class="n">DartifactId</span><span class="o">=</span><span class="n">ojdbc7</span> <span class="o">-</span><span class="n">Dversion</span><span class="o">=</span><span class="mf">12.1</span><span class="o">.</span><span class="mf">0.2</span> <span class="o">-</span><span class="n">Dpackaging</span><span class="o">=</span><span class="n">jar</span>
+</pre></div>
+</div>
+<p>You would also need to have test databases for both Oracle and Postgis. Then follow these steps:</p>
+<ul>
+<li><p>Create oracle.properties and postgis.properties in {user directory}/.geoserver directory.</p></li>
+<li><p>Populate each properties file with database details, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">password</span><span class="o">=</span><span class="n">onlinetestuser</span>
+
+<span class="n">passwd</span><span class="o">=</span><span class="n">onlinetestuser</span>
+
+<span class="n">user</span><span class="o">=</span><span class="n">onlinetestuser</span>
+
+<span class="n">port</span><span class="o">=</span><span class="mi">5432</span>
+
+<span class="n">url</span><span class="o">=</span><span class="n">jdbc</span>\<span class="p">:</span><span class="n">postgresql</span>\<span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">5432</span><span class="o">/</span><span class="n">onlinetest</span>
+
+<span class="n">host</span><span class="o">=</span><span class="n">localhost</span>
+
+<span class="n">database</span><span class="o">=</span><span class="n">onlinetest</span>
+
+<span class="n">driver</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">postgresql</span><span class="o">.</span><span class="n">Driver</span>
+
+<span class="n">dbtype</span><span class="o">=</span><span class="n">postgisng</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="running-tests-from-maven">
+<h2>Running tests from Maven<a class="headerlink" href="#running-tests-from-maven" title="Permalink to this headline">¶</a></h2>
+<p>Without specifying any profile, the default Maven configuration for app-schema-test is to run offline tests only.</p>
+<p>To run online tests, enable the profile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Papp</span><span class="o">-</span><span class="n">schema</span><span class="o">-</span><span class="n">online</span><span class="o">-</span><span class="n">test</span>
+</pre></div>
+</div>
+<p>This profile enables the data reference set tests and offline tests to run online. Data reference set tests are online tests based on data and use cases from GeoScience Victoria. Each is explicit for a database type (Oracle and Postgis) and has a copy to run with joining enabled.</p>
+<p>The offline tests are configured to run online with joining through separate modules for each database: app-schema-oracle-test and app-schema-postgis-test. These modules are placeholders for pom.xml files containing database specific parameters. This makes it easy to identify when a test fails with a particular database when running from Maven/buildbot.</p>
+<div class="section" id="memory-requirements">
+<h3>Memory requirements<a class="headerlink" href="#memory-requirements" title="Permalink to this headline">¶</a></h3>
+<p>The online tests require more memory than usual, so specifying the usual -Dtest.maxHeapSize=256m is not enough. Specify –Dtest.maxHeapSize=1024m instead.</p>
+<p>When the build is successful, you would see this in the “Reactor Summary”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Application</span> <span class="n">Schema</span> <span class="n">Integration</span> <span class="n">Online</span> <span class="n">Test</span> <span class="k">with</span> <span class="n">Oracle</span> <span class="n">Database</span>  <span class="n">SUCCESS</span>  <span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mf">52.980</span><span class="n">s</span><span class="p">]</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Application</span> <span class="n">Schema</span> <span class="n">Integration</span> <span class="n">Online</span> <span class="n">Test</span> <span class="k">with</span> <span class="n">Postgis</span> <span class="n">Database</span>  <span class="n">SUCCESS</span>  <span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mf">42.428</span><span class="n">s</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="running-tests-from-junit">
+<h2>Running tests from JUnit<a class="headerlink" href="#running-tests-from-junit" title="Permalink to this headline">¶</a></h2>
+<p>There is no need to import the online test modules as they are empty and you cannot run the tests through them in Eclipse.</p>
+<p>To run offline tests (in app-schema-test/src/test/java/org/geoserver/test) with a test database,
+enable joining and specify the database. Add these parameters in VM Arguments for postgis:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Dapp</span><span class="o">-</span><span class="n">schema</span><span class="o">.</span><span class="n">joining</span><span class="o">=</span><span class="n">true</span> <span class="o">-</span><span class="n">DtestDatabase</span><span class="o">=</span><span class="n">postgis</span> <span class="o">-</span><span class="n">Xmx256m</span>
+</pre></div>
+</div>
+<p>Similarly, to test with oracle:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Dapp</span><span class="o">-</span><span class="n">schema</span><span class="o">.</span><span class="n">joining</span><span class="o">=</span><span class="n">true</span> <span class="o">-</span><span class="n">DtestDatabase</span><span class="o">=</span><span class="n">oracle</span> <span class="o">-</span><span class="n">Xmx256m</span>
+</pre></div>
+</div>
+<p>Additionally for Oracle, you also need to add ojdbc14.jar in the test Classpath.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that you should only run the tests in org.geoserver.test package with the above parameters, since the data reference tests in org.geoserver.test.onlineTest package contain non-joining tests which would fail.</p>
+</div>
+<p>You do not need to specify these VM Arguments for running data reference tests (in app-schema-test/src/test/java/org/geoserver/test/onlineTest). However, you would still need to specify the Oracle JDBC driver in the Classpath for Oracle specific tests. Data reference tests package also requires 768m memory to run from JUnit.</p>
+</div>
+<div class="section" id="adding-new-tests">
+<h2>Adding new tests<a class="headerlink" href="#adding-new-tests" title="Permalink to this headline">¶</a></h2>
+<p>When adding new tests to app-schema-test suite (except for onlineTest package for data reference tests), please note the following:</p>
+<div class="section" id="test-offline-only">
+<h3>Test offline only<a class="headerlink" href="#test-offline-only" title="Permalink to this headline">¶</a></h3>
+<p>If your test is a special case and does not need to be tested online, exclude them in both app-schema-oracle-test and app-schema-postgis-test pom.xml and ignore the points beyond this. Otherwise, read on.</p>
+</div>
+<div class="section" id="idexpression">
+<h3>idExpression<a class="headerlink" href="#idexpression" title="Permalink to this headline">¶</a></h3>
+<p>If your test database does not use primary keys, ensure idExpression is specified for the top level element in your mapping file.</p>
+</div>
+<div class="section" id="multi-valued-properties-ordering">
+<h3>Multi-valued properties ordering<a class="headerlink" href="#multi-valued-properties-ordering" title="Permalink to this headline">¶</a></h3>
+<p>When testing multi-valued properties, the order of the values could vary depending on the data source type. To be safe, compare your values as a list, instead of evaluating individual xpath node against a single value for such properties. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">names</span> <span class="o">=</span> <span class="n">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;New Group&quot;</span><span class="p">);</span>
+<span class="n">names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;-Xy&quot;</span><span class="p">);</span>
+<span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;//gsml:MappedFeature[@gml:id=&#39;&quot;</span> <span class="o">+</span> <span class="nb">id</span>
+        <span class="o">+</span> <span class="s2">&quot;&#39;]/gsml:specification/gsml:GeologicUnit/gml:name[1]&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">names</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">name</span><span class="p">));</span>
+<span class="n">names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+<span class="n">name</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;//gsml:MappedFeature[@gml:id=&#39;&quot;</span> <span class="o">+</span> <span class="nb">id</span>
+        <span class="o">+</span> <span class="s2">&quot;&#39;]/gsml:specification/gsml:GeologicUnit/gml:name[2]&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">names</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">name</span><span class="p">));</span>
+<span class="n">names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">names</span><span class="o">.</span><span class="n">isEmpty</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>This is because of the difference in the handling of queries with joining. Joining uses order by when querying tables. When the tests run offline, property data store returns data from properties file unordered.</p>
+<p>When joining is enabled:</p>
+<ul class="simple">
+<li><p>If the multi-valued properties are not feature chained, the order is unpredictable.</p></li>
+<li><p>If the multi-valued properties are feature chained, they are ordered by the foreign key used in feature chaining.</p></li>
+</ul>
+</div>
+<div class="section" id="column-names-in-upper-case">
+<h3>Column names in upper case<a class="headerlink" href="#column-names-in-upper-case" title="Permalink to this headline">¶</a></h3>
+<p>Ensure column names in mapping files are in upper case, even if they are in lower case in the properties file. This is to avoid failures with Oracle database, due to OracleDialect not wrapping names with escape characters. To work around this, the script for online tests creates the columns in upper case, therefore should be referred by with upper case.</p>
+</div>
+<div class="section" id="functions-in-feature-chaining">
+<h3>Functions in feature chaining<a class="headerlink" href="#functions-in-feature-chaining" title="Permalink to this headline">¶</a></h3>
+<p>If using feature chaining, avoid using functions in sourceExpression for linking attributes, i.e. attribute used in both OCQL and linkField. This is because functions used in feature chaining are not supported with joining support.</p>
+</div>
+<div class="section" id="d-tests">
+<h3>3D tests<a class="headerlink" href="#d-tests" title="Permalink to this headline">¶</a></h3>
+<p>There are a number of tests that try out 3D features in App-schema. To run these as online tests against a postgis or oracle database, a number of prerequisites must be met.</p>
+<p>For PostGIS:</p>
+<blockquote>
+<div><ul>
+<li><p>You must use postgis 2 to support 3D.</p></li>
+<li><p>In your postgis, if it hasn’t been done yet, this command must be executed to support srid 4979 (wgs84 with 3d):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">into</span> <span class="n">spatial_ref_sys</span> <span class="p">(</span><span class="n">srid</span><span class="p">,</span> <span class="n">auth_name</span><span class="p">,</span> <span class="n">auth_srid</span><span class="p">,</span> <span class="n">proj4text</span><span class="p">,</span> <span class="n">srtext</span><span class="p">)</span> <span class="n">values</span> <span class="p">(</span> <span class="mi">4979</span><span class="p">,</span> <span class="s1">&#39;epsg&#39;</span><span class="p">,</span> <span class="mi">4979</span><span class="p">,</span> <span class="s1">&#39;+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs &#39;</span><span class="p">,</span> <span class="s1">&#39;GEOGCS[&quot;WGS 84&quot;,DATUM[&quot;World Geodetic System 1984&quot;,SPHEROID[&quot;WGS 84&quot;,6378137.0,298.257223563,AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]],PRIMEM[&quot;Greenwich&quot;,0.0,AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],UNIT[&quot;degree&quot;,0.017453292519943295],AXIS[&quot;Geodetic latitude&quot;,NORTH],AXIS[&quot;Geodetic longitude&quot;,EAST],AXIS[&quot;Ellipsoidal height&quot;,UP],AUTHORITY[&quot;EPSG&quot;,&quot;4979&quot;]]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>For Oracle:</p>
+<blockquote>
+<div><ul>
+<li><p>You must use Oracle 11g Release 2, preferably the latest version that can be downloaded for best 3D support</p></li>
+<li><p>Oracle does NOT support WKT parsing of 3d geometries, so some extra DBA work is needed to set this up. Otherwise the online tests, which rely on WKT to enter data in the database, will fail.</p>
+<p>You need the following package ‘SC4O’ (Spatial Companion for Oracle), created Simon Greener: download at <a class="reference external" href="http://www.spatialdbadvisor.com/files/SC4O.zip">http://www.spatialdbadvisor.com/files/SC4O.zip</a>.
+It has an installation script for linux and windows that must be run from the server that runs oracle. The package will provide JTS functionality that can be called from PL/SQL.</p>
+<p>If the online test user is different from the user used for the installation of the package, the online test user must be given permission to use the package.
+You must also execute as an admin user the following command (with ‘onlinetestuser’ being the online test user):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CALL</span> <span class="n">DBMS_JAVA</span><span class="o">.</span><span class="n">GRANT_PERMISSION</span><span class="p">(</span><span class="s1">&#39;onlinetestuser&#39;</span><span class="p">,</span><span class="s1">&#39;java.lang.RuntimePermission&#39;</span><span class="p">,</span><span class="s1">&#39;getClassLoader&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Afterwards, you have to specify the user where the SC4O package was installed to the online testing system. You do this by specifying the system property -DSC4OUser. If it is the same as the online test user, you can omit this parameter.
+The online test will use the JTS method for wkt parsing (ST_GeomFromEWKT) rather than the regular oracle method SDO_GEOMETRY.
+For example, I installed the package using the System user. Then I gave onlinetestuser permission to execute it.
+I run the tests with -DSC4OUser=System so it knows to use the System.SC4O.ST_GeomFromEWKT method.</p>
+</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="running-mongodb-online-tests">
+<h2>Running MongoDB Online Tests<a class="headerlink" href="#running-mongodb-online-tests" title="Permalink to this headline">¶</a></h2>
+<p>MongoDB online tests are activated by the <code class="docutils literal notranslate"><span class="pre">app-schema-online-test</span></code> profile and will run if configuration file <code class="docutils literal notranslate"><span class="pre">{user</span> <span class="pre">directory}/.geoserver/mongodb.properties</span></code> is available. If the configuration file is not available an example file will be created and tests will be skipped. The content of the configuration file should look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mongo</span><span class="o">.</span><span class="n">port</span><span class="o">=</span><span class="mi">27017</span>
+<span class="n">mongo</span><span class="o">.</span><span class="n">host</span><span class="o">=</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
+</pre></div>
+</div>
+<p>During the tests a new database will be created in MongoDB and when the tests end that database will be removed.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../security/index.html" title="previous chapter">Security</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../../release-schedule/index.html" title="next chapter">Release Schedule</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">App-Schema Online Tests</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#running-tests-from-maven">Running tests from Maven</a><ul>
+<li><a class="reference internal" href="#memory-requirements">Memory requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#running-tests-from-junit">Running tests from JUnit</a></li>
+<li><a class="reference internal" href="#adding-new-tests">Adding new tests</a><ul>
+<li><a class="reference internal" href="#test-offline-only">Test offline only</a></li>
+<li><a class="reference internal" href="#idexpression">idExpression</a></li>
+<li><a class="reference internal" href="#multi-valued-properties-ordering">Multi-valued properties ordering</a></li>
+<li><a class="reference internal" href="#column-names-in-upper-case">Column names in upper case</a></li>
+<li><a class="reference internal" href="#functions-in-feature-chaining">Functions in feature chaining</a></li>
+<li><a class="reference internal" href="#d-tests">3D tests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#running-mongodb-online-tests">Running MongoDB Online Tests</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../security/index.html" title="previous chapter">Security</a></li>
+            <li>Next: <a href="../../release-schedule/index.html" title="next chapter">Release Schedule</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/app-schema/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

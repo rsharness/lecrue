@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DirectDownload &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Web Map Tile Service (WMTS)" href="../wmts/index.html" />
+    <link rel="prev" title="Catalog Services for the Web (CSW) features" href="features.html" /> 
+  </head><body class="services/csw/directdownload">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Catalog Services for the Web (CSW)</a> &raquo;</li>
+    <li>DirectDownload</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../wmts/index.html" title="Web Map Tile Service (WMTS)" accesskey="N">Next</a></li>
+  <li>
+    <a href="features.html" title="Catalog Services for the Web (CSW) features" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="directdownload">
+<span id="csw-directdownload"></span><h1>DirectDownload<a class="headerlink" href="#directdownload" title="Permalink to this headline">¶</a></h1>
+<p>DirectDownload is a new operation (since GeoServer 2.9.x) supported by the CSW service.</p>
+<p>In the Meteorology, Oceanography and Earth Observation domains, layers are usually based on complex
+NetCDF/GRIB files. Protocols such as WCS are set up to allow slice, rescale and reprojection of
+data, but not to preserve the original data as is.</p>
+<p>This new operation allows direct download of the raw data for that layer.
+If the DirectDownload capability is enabled for a Coverage layer, the CSW record will be updated to
+contain links pointing back to the CSW service, using the DirectDownload vendor operation that will
+assemble the files for the requested resource, zip them, and send the result back to the requester.</p>
+<p>The download links (one for each data file composing the layer plus a link to get all the files
+composing the layer) are added as new entries in CSW records:</p>
+<ul class="simple">
+<li><p>as additional <strong>term-references</strong> element for a Dublin Core schema</p></li>
+<li><p>as additional <strong>OnlineResource</strong> for ISO Metadata</p></li>
+</ul>
+<p>Those links also contain the validity domain for the file such as envelope/time/elevation/custom
+dimensions (when present) for multidimensional layers.</p>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>DirectDownload capability can be activated as default for all layers, as global CSW configuration.
+Go into the CSW service panel and click on the <em>enable DirectDownload</em> checkbox if you want it enabled for all layers:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/serviceConfig1.png" src="../../_images/serviceConfig1.png" />
+<p class="caption"><span class="caption-text"><em>DirectDownload configuration (Service level)</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>From this section you can also set a download size limit value (0 means no limit). The specified
+value represents the maximum size (in kilobytes) of the sum of the sizes of the raw data referred
+to by a single download link. (You can think about the case of a download link referring to the
+whole layer data which may contain a wide set of files).</p>
+<p>Note that the size check is performed on the raw data files prior to any compression.</p>
+</div>
+<div class="section" id="per-layer-configuration">
+<h2>Per Layer configuration<a class="headerlink" href="#per-layer-configuration" title="Permalink to this headline">¶</a></h2>
+<p>DirectDownload capability can also be enabled/disabled for a specific layer, which will override the
+global CSW configuration.</p>
+<p>Go to the <em>publishing</em> tab of the layer.</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/layerConfig1.png" src="../../_images/layerConfig1.png" />
+<p class="caption"><span class="caption-text"><em>Layer publishing section</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>Look for the <em>DirectDownload settings</em> section.</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/layerConfig2.png" src="../../_images/layerConfig2.png" />
+<p class="caption"><span class="caption-text"><em>DirectDownload configuration (Layer level)</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>The configuration of this parameter follows the same rules as shown for the CSW configuration panel.</p>
+<div class="section" id="getrecords-example">
+<h3>GetRecords example<a class="headerlink" href="#getrecords-example" title="Permalink to this headline">¶</a></h3>
+<p>A GetRecords response containing a layer with DirectDownload enabled, may result having a piece
+like this (using <a class="reference internal" href="../../extensions/csw-iso/index.html#csw-iso"><span class="std std-ref">ISO Metadata output schema</span></a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>...
+&lt;gmd:CI_OnlineResource&gt;
+  &lt;gmd:linkage&gt;
+    &lt;gmd:URL&gt;
+    http://localhost:8080/geoserver/ows?service=CSW&amp;version=2.0.2&amp;request=DirectDownload&amp;resourceId=geosolutions:Reflectivity_height_above_ground&amp;file=82643c5bf682f67ef8b7de737b90ada759965cd8-samplefile.grib2&amp;ENVELOPE=-2699073.2421875,-1588806.0302734375,2697926.7578125,1588193.9697265625&amp;TIME=2015-06-23T00:00:00.000Z/2015-06-23T00:00:00.000Z&amp;HEIGHT_ABOVE_GROUND=1000.0/4000.0
+    &lt;/gmd:URL&gt;
+  &lt;/gmd:linkage&gt;
+&lt;/gmd:CI_OnlineResource&gt;
+...
+</pre></div>
+</div>
+<p>That URL allows the direct download of the indicated file. Note that the filename has a SHA-1 header
+to avoid publishing the underlying file system structure paths.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="features.html" title="previous chapter">Catalog Services for the Web (CSW) features</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../wmts/index.html" title="next chapter">Web Map Tile Service (WMTS)</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">DirectDownload</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#per-layer-configuration">Per Layer configuration</a><ul>
+<li><a class="reference internal" href="#getrecords-example">GetRecords example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="features.html" title="previous chapter">Catalog Services for the Web (CSW) features</a></li>
+            <li>Next: <a href="../wmts/index.html" title="next chapter">Web Map Tile Service (WMTS)</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/csw/directdownload.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

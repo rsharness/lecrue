@@ -1,0 +1,488 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Installation Of OpenFire XMPP Server To Exchange Messages &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Deployment And Setup Of The XMPP Python Wrappers" href="install_python.html" />
+    <link rel="prev" title="Deployment And Setup Of GeoServer With WPS Remote Plugin" href="install_geoserver.html" /> 
+  </head><body class="community/remote-wps/install_xmpp">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WPS Remote community module</a> &raquo;</li>
+    <li>Installation Of OpenFire XMPP Server To Exchange Messages</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="install_python.html" title="Deployment And Setup Of The XMPP Python Wrappers" accesskey="N">Next</a></li>
+  <li>
+    <a href="install_geoserver.html" title="Deployment And Setup Of GeoServer With WPS Remote Plugin" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="installation-of-openfire-xmpp-server-to-exchange-messages">
+<span id="extensions-wps-remote-install-xmpp"></span><h1>Installation Of OpenFire XMPP Server To Exchange Messages<a class="headerlink" href="#installation-of-openfire-xmpp-server-to-exchange-messages" title="Permalink to this headline">¶</a></h1>
+<p>The following commands will prepare a CentOS 7 Minimal ISO machine for the deployment of:</p>
+<ul class="simple">
+<li><p>Openfire XMPP Server</p></li>
+<li><p>NFS shared file-system</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Prerequisite to this section, is the basic preparation of the CentOS machine as described on the section <a class="reference internal" href="install_geoserver.html#extensions-wps-remote-install-geoserver"><span class="std std-ref">Deployment And Setup Of GeoServer With WPS Remote Plugin</span></a>.</p>
+</div>
+<div class="section" id="setup-and-configuration-of-openfire-xmpp-server">
+<h2>Setup and configuration of Openfire XMPP Server<a class="headerlink" href="#setup-and-configuration-of-openfire-xmpp-server" title="Permalink to this headline">¶</a></h2>
+<p>Originally named Jabber, XMPP is the new label for <em>Extensible Messaging and Presence Protocol.</em> and it is associated mostly with instant messaging.</p>
+<div class="section" id="setting-up-postgresql-database-backend">
+<h3>Setting up PostgreSQL database backend<a class="headerlink" href="#setting-up-postgresql-database-backend" title="Permalink to this headline">¶</a></h3>
+<p>For the purposes of running a private XMPP communication platform, we can safely stick with PostgreSQL 9.2 which is stable and comes in CentOS 7 by default.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; yum install -y postgresql postgresql-server postgresql-devel postgresql-libs
+
+<span class="c1"># After PostgreSQL packages are installed, enable PostgreSQL to start after each reboot.</span>
+
+$&gt; systemctl <span class="nb">enable</span> postgresql.service
+
+<span class="c1"># Initialize directory structure and postgres system database.</span>
+
+$&gt; postgresql-setup initdb
+
+<span class="c1"># And start the service.</span>
+
+$&gt; systemctl start postgresql.service
+</pre></div>
+</div>
+<p>Postgres installation is now up and running, lets proceed with setting up the specific database and the dedicated user for OpenFire, together with authentication method and administration password.</p>
+<p>For full administration access, switch to postgres user.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>su postgres
+
+<span class="c1"># as postgres</span>
+
+$&gt; createdb openfire
+$&gt; createuser -P openfire
+
+<span class="c1"># The &#39;-P&#39; parameter ensures that the shell will explicitly ask for user&#39;s password and you will need to type it in. Enter the password twice</span>
+
+   R3m0T3wP5
+
+$&gt; psql -U postgres -d postgres -c <span class="s2">&quot;ALTER USER postgres WITH PASSWORD &#39;R3m0T3wP5&#39;;&quot;</span>
+</pre></div>
+</div>
+<p>Postgres user is secured with the new password. Lets put authentication methods in practice and force every application or shell login to prompt for these passwords.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as postgres</span>
+
+$&gt; vim /var/lib/pgsql/data/pg_hba.conf
+
+<span class="c1"># Scroll down to the bottom of the file and replace all peer and ident strings with md5 string.</span>
+<span class="c1"># The configuration should look like this:</span>
+
+   <span class="c1"># TYPE DATABASE USER CIDR-ADDRESS METHOD</span>
+
+   <span class="c1"># &quot;local&quot; is for Unix domain socket connections only</span>
+
+   <span class="nb">local</span>      all         all                 md5
+
+   <span class="c1"># IPv4 local connections:</span>
+
+   host       all         all <span class="m">127</span>.0.0.1/32    md5
+
+   <span class="c1"># IPv6 local connections:</span>
+
+   host       all         all      ::1/128    md5
+</pre></div>
+</div>
+<p>Go back from postgres shell (Ctrl+D) and restart postgresql service as root.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; systemctl restart postgresql.service
+</pre></div>
+</div>
+</div>
+<div class="section" id="download-and-install-openfire-from-ignite-realtime">
+<h3>Download and install Openfire from Ignite Realtime<a class="headerlink" href="#download-and-install-openfire-from-ignite-realtime" title="Permalink to this headline">¶</a></h3>
+<p>Since OpenFire RPM package is not included in any major RHEL / CentOS / Fedora distribution repositories, it must be downloaded directly from Ignite Realtime website.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; wget http://www.igniterealtime.org/downloadServlet?filename<span class="o">=</span>openfire/openfire-3.10.0-1.i386.rpm -O openfire-3.10.0-1.i386.rpm
+
+<span class="c1"># This package come in 32bit version only, so in case we run this installation on x86_64 system, we need to make sure to install corresponding 32bit libraries as well.</span>
+
+$&gt; yum install -y /root/openfire-3.9.3-1.i386.rpm
+
+$&gt; yum install -y glibc.i686
+</pre></div>
+</div>
+<p>Enable the openfire service and start it</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; chkconfig openfire on
+
+$&gt; systemctl start openfire.service
+
+<span class="c1"># We need to open the firewall ports in order to expose the gui to the outside</span>
+
+$&gt; firewall-cmd --permanent --zone<span class="o">=</span>public --add-port<span class="o">=</span><span class="m">9090</span>/tcp
+$&gt; firewall-cmd --permanent --zone<span class="o">=</span>public --add-port<span class="o">=</span><span class="m">9091</span>/tcp
+$&gt; firewall-cmd --reload
+</pre></div>
+</div>
+<p><strong>Configuration of Openfire server</strong></p>
+<p>Move the browser to the url</p>
+<blockquote>
+<div><p><a class="reference external" href="http://YOUR-SERVER-IP:9090">http://YOUR-SERVER-IP:9090</a></p>
+</div></blockquote>
+<p>Choose preferable language and hit <code class="docutils literal notranslate"><span class="pre">Contine</span></code></p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire001.jpg" src="../../_images/openfire001.jpg" />
+</div>
+</div></blockquote>
+<p>Specify the server Domain as</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">geoserver.org</span></code></p>
+<div class="figure align-center">
+<img alt="../../_images/openfire002.jpg" src="../../_images/openfire002.jpg" />
+</div>
+</div></blockquote>
+<p>Choose the <em>Standard Database Connection</em> in the next section</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire003.jpg" src="../../_images/openfire003.jpg" />
+</div>
+</div></blockquote>
+<p>Provide the Database connection parameters for the PostgreSQL DB in the standard connection section.</p>
+<p>The password for the user <code class="docutils literal notranslate"><span class="pre">openfire</span></code> is the same provided in the PostgreSQL DB setup (see above).</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire004.jpg" src="../../_images/openfire004.jpg" />
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be sure the <code class="docutils literal notranslate"><span class="pre">openfire</span></code> database and user have been correctly created on PostgreSQL and the passwords provided (see above for instructions).</p>
+</div>
+<p>If there are no connection issues, choose <code class="docutils literal notranslate"><span class="pre">Default</span></code> value on the users profile settings section.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire005.jpg" src="../../_images/openfire005.jpg" />
+</div>
+</div></blockquote>
+<p>Create the <em>Administrator</em> account in the next section.</p>
+<p>The password <strong>*must*</strong> match the one specified in the <code class="docutils literal notranslate"><span class="pre">remoteProcess.properties</span></code> file</p>
+<blockquote>
+<div><blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">R3m0T3wP5</span></code></p>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="../../_images/openfire006.jpg" src="../../_images/openfire006.jpg" />
+</div>
+</div></blockquote>
+<p>The initial setup is now complete. Log into the system using the newly created <em>admin</em> account.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire007.jpg" src="../../_images/openfire007.jpg" />
+</div>
+<div class="figure align-center">
+<img alt="../../_images/openfire008.jpg" src="../../_images/openfire008.jpg" />
+</div>
+</div></blockquote>
+<p>Move to the <code class="docutils literal notranslate"><span class="pre">Server</span> <span class="pre">Certificates</span></code> section of the <code class="docutils literal notranslate"><span class="pre">Server</span> <span class="pre">Settings</span></code> tab panel.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.</p>
+<div class="figure align-center">
+<img alt="../../_images/openfire009.jpg" src="../../_images/openfire009.jpg" />
+</div>
+</div>
+<p>Make sure that the self-signed certificates have been correctly generated and click on <code class="docutils literal notranslate"><span class="pre">here</span></code> in order to restart the server</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.</p>
+<div class="figure align-center">
+<img alt="../../_images/openfire010.jpg" src="../../_images/openfire010.jpg" />
+</div>
+</div>
+<p>The same section now shows the server certificates and won’t ask for another restart unless the certificates are generated again.</p>
+<p>Update the <code class="docutils literal notranslate"><span class="pre">Security</span> <span class="pre">Settings</span></code> in order to allow the server accepting self-signed certificates on secured connections.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.</p>
+<div class="figure align-center">
+<img alt="../../_images/openfire011.jpg" src="../../_images/openfire011.jpg" />
+</div>
+</div>
+<p>Create the <code class="docutils literal notranslate"><span class="pre">default</span></code> channel as shown in the next figure.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire012.jpg" src="../../_images/openfire012.jpg" />
+</div>
+</div></blockquote>
+<p>Create the <code class="docutils literal notranslate"><span class="pre">management</span></code> channel as shown in the next figure. Pay attention to the <code class="docutils literal notranslate"><span class="pre">Room</span> <span class="pre">Options</span></code> and specify the password for the channel</p>
+<blockquote>
+<div><blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">R3m0T3wP5</span></code></p>
+</div></blockquote>
+<div class="figure align-center">
+<img alt="../../_images/openfire013.jpg" src="../../_images/openfire013.jpg" />
+</div>
+</div></blockquote>
+<p>Double check that the channels have been correctly created and they appear in the <code class="docutils literal notranslate"><span class="pre">Group</span> <span class="pre">Chat</span> <span class="pre">Rooms</span></code>.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire014.jpg" src="../../_images/openfire014.jpg" />
+</div>
+</div></blockquote>
+<p><em>Restart GeoServer</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; systemctl restart geoserver
+</pre></div>
+</div>
+<p>After the GeoServer has successfully restarted, double check that it is connected to the server using the <code class="docutils literal notranslate"><span class="pre">admin</span></code> credentials.</p>
+<p>It is <strong>*very*</strong> important that the user is shown as <code class="docutils literal notranslate"><span class="pre">Authenticated</span></code>.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire015.jpg" src="../../_images/openfire015.jpg" />
+</div>
+</div></blockquote>
+<p>Check also that the user is registered to the XMPP channels created above.</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../../_images/openfire016.jpg" src="../../_images/openfire016.jpg" />
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="firewall-rules-for-xmpp-ports">
+<h3>Firewall Rules For XMPP Ports<a class="headerlink" href="#firewall-rules-for-xmpp-ports" title="Permalink to this headline">¶</a></h3>
+<p>By default the TCP Ports where the XMPP Server is listening for incoming connection are closed to the outside. Therefore it is necessary to enable the Firewall rules at least for the Openfire default secured port <em>5223</em> unless it has been changed by the user during the server setup.</p>
+<p>In order to do that issue the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+<span class="c1"># We need to open the firewall ports in order to expose the gui to the outside</span>
+
+$&gt; firewall-cmd --permanent --zone<span class="o">=</span>public --add-port<span class="o">=</span><span class="m">5222</span>/tcp
+$&gt; firewall-cmd --permanent --zone<span class="o">=</span>public --add-port<span class="o">=</span><span class="m">5223</span>/tcp
+
+$&gt; firewall-cmd --reload
+</pre></div>
+</div>
+</div>
+<div class="section" id="forward-proxy-to-apache-httpd-server">
+<h3>Forward Proxy to Apache HTTPD Server<a class="headerlink" href="#forward-proxy-to-apache-httpd-server" title="Permalink to this headline">¶</a></h3>
+<p>The procedures described in this section allows to expose GeoServer via HTTPD through Apache HTTPD Server.</p>
+<p>Those steps are not mandatory and the procedure may change accordingly to the final deployment on production systems.</p>
+<p>In order to install Apache HTTPD Server proceed as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; yum -y install httpd mod_ssl
+
+$&gt; vi /etc/httpd/conf.d/forward-proxy.conf
+
+   ProxyRequests Off
+
+   ProxyPass /geoserver ajp://localhost:8009/geoserver
+   ProxyPassReverse /geoserver ajp://localhost:8009/geoserver
+
+$&gt; systemctl <span class="nb">enable</span> httpd.service
+
+$&gt; service httpd restart
+</pre></div>
+</div>
+<p><em>Selinux</em>, enabled by default, needs to be instructed to allow http network connections. This can be done by running the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; /usr/sbin/setsebool -P httpd_can_network_connect <span class="m">1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="shared-folder-through-the-nfs-protocol">
+<h3>Shared Folder through the NFS protocol<a class="headerlink" href="#shared-folder-through-the-nfs-protocol" title="Permalink to this headline">¶</a></h3>
+<p>The next steps describe how to setup the system in order to expose a Shared Network Folder which will be used to store the outcomes of the remote processing.</p>
+<p>The following procedures are not mandatory and the final deployment on the production system may be configured to use different protocols and frameworks to expose shared file-systems.</p>
+<p>The setup and initial configuration of the NFS packages can be done by following the next procedure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; yum -y install nfs-utils
+
+$&gt; vi /etc/idmapd.conf
+
+   <span class="c1"># The following should be set to the local NFSv4 domain name</span>
+
+   <span class="c1"># The default is the host&#39;s DNS domain name.</span>
+   <span class="nv">Domain</span> <span class="o">=</span> geoserver.org
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The domain specified above maybe different depending on the final system deployment and the production environment setup.</p>
+</div>
+<p>Creating and exposing a shared folder is possible by following the next steps:</p>
+<ol class="arabic simple">
+<li><p>as root</p></li>
+<li><p>Create the physical folder structure to be exposed via the Network Filesystem</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; mkdir /share
+$&gt; mkdir /share/xmpp_data
+$&gt; mkdir /share/xmpp_data/output
+$&gt; mkdir /share/xmpp_data/resource_dir
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic" start="3">
+<li><p>Modify the rights in order to allow</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; chmod -Rf <span class="m">777</span> /share
+</pre></div>
+</div>
+</li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p>Once the physical folder is ready it must be exposed via the <code class="docutils literal notranslate"><span class="pre">exports</span></code></p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; vi /etc/exports
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>write settings for NFS exports</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/share host_ip/24<span class="o">(</span>rw,no_root_squash<span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>Restart the NFS services</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; systemctl start rpcbind nfs-server
+
+$&gt; systemctl <span class="nb">enable</span> rpcbind nfs-server
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <strong>host_ip</strong> must be the one of the host exposing the shared folder.</p>
+</div>
+<p><em>Selinux</em>, enabled by default, needs to be instructed to allow NFS connections. This can be done by running the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root</span>
+
+$&gt; setsebool -P <span class="nv">httpd_use_nfs</span><span class="o">=</span><span class="m">1</span>
+
+$&gt; setsebool -P <span class="nv">samba_share_nfs</span><span class="o">=</span><span class="m">1</span>
+
+$&gt; setsebool -P <span class="nv">samba_export_all_ro</span><span class="o">=</span><span class="m">1</span>
+
+$&gt; setsebool -P <span class="nv">samba_export_all_rw</span><span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="install_geoserver.html" title="previous chapter">Deployment And Setup Of GeoServer With WPS Remote Plugin</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="install_python.html" title="next chapter">Deployment And Setup Of The XMPP Python Wrappers</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Installation Of OpenFire XMPP Server To Exchange Messages</a><ul>
+<li><a class="reference internal" href="#setup-and-configuration-of-openfire-xmpp-server">Setup and configuration of Openfire XMPP Server</a><ul>
+<li><a class="reference internal" href="#setting-up-postgresql-database-backend">Setting up PostgreSQL database backend</a></li>
+<li><a class="reference internal" href="#download-and-install-openfire-from-ignite-realtime">Download and install Openfire from Ignite Realtime</a></li>
+<li><a class="reference internal" href="#firewall-rules-for-xmpp-ports">Firewall Rules For XMPP Ports</a></li>
+<li><a class="reference internal" href="#forward-proxy-to-apache-httpd-server">Forward Proxy to Apache HTTPD Server</a></li>
+<li><a class="reference internal" href="#shared-folder-through-the-nfs-protocol">Shared Folder through the NFS protocol</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="install_geoserver.html" title="previous chapter">Deployment And Setup Of GeoServer With WPS Remote Plugin</a></li>
+            <li>Next: <a href="install_python.html" title="next chapter">Deployment And Setup Of The XMPP Python Wrappers</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/remote-wps/install_xmpp.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

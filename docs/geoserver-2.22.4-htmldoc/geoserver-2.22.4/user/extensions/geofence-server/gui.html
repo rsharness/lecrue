@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoFence Server GUI &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GeoFence Rest API" href="rest.html" />
+    <link rel="prev" title="Installing the GeoServer GeoFence Server extension" href="installing.html" /> 
+  </head><body class="extensions/geofence-server/gui">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Geofence Internal Server</a> &raquo;</li>
+    <li>GeoFence Server GUI</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="rest.html" title="GeoFence Rest API" accesskey="N">Next</a></li>
+  <li>
+    <a href="installing.html" title="Installing the GeoServer GeoFence Server extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="geofence-server-gui">
+<h1>GeoFence Server GUI<a class="headerlink" href="#geofence-server-gui" title="Permalink to this headline">¶</a></h1>
+<p>The GeoFence user interface is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the <span class="guilabel">GeoFence Server</span> link, found on the left side of the screen after logging in.</p>
+<div class="section" id="rules-page">
+<h2>Rules page<a class="headerlink" href="#rules-page" title="Permalink to this headline">¶</a></h2>
+<p>An overview of all rules is provided with priority, the rule’s scope specifications (role, user, service, request, workspace and layer) and its access behaviour. The ‘*’ symbol means that the rule applies to all possible values of that specification. Rules are always ordered by priority, but the order can be reversed by pressing the ‘P’ priority column header.</p>
+<div class="figure align-center">
+<img alt="../../_images/rulespage.png" src="../../_images/rulespage.png" />
+</div>
+<p>A new rule can be added with the “Add new rule” link. Any number of rules can be deleted by selecting them and then clicking on the “Remove selected rules” link.</p>
+<p>Rule priority order can be easily on this page through the up and down arrows on the right side. Rules can be modified using the pencil symbol, which opens the rule page.</p>
+</div>
+<div class="section" id="rule-page">
+<h2>Rule page<a class="headerlink" href="#rule-page" title="Permalink to this headline">¶</a></h2>
+<p>This page is displayed both when creating a new rule and modifying an existing rule.</p>
+<div class="figure align-center">
+<img alt="../../_images/rulepage.png" src="../../_images/rulepage.png" />
+</div>
+<p>Priority can be changed manually by specifying a priority number. If this priority number is already occupied by another rule, this will cause that rule and all rules after it to shift one place to a lower priority.</p>
+<p>If using the IP Address range to limit access then on Linux (and other systems with IPv6 enabled) add the <code class="docutils literal notranslate"><span class="pre">-Djava.net.preferIPv4Stack=true</span></code> flag to the GeoServer startup options to make sure that the IP range matching works with IPv4 style addresses.
+Currently, IPv6 style address ranges are not supported by GeoFence.</p>
+<p>When Access type LIMIT is selected, additional options are displayed that allows the user to select the Catalog Mode and the Allowed Area (WKT) associated with this rule. The Spatial Filter Type parameter allows to define whether apply the Allowed Area filter to vector data as an Intersects or a Clip filter.</p>
+<div class="figure align-center">
+<img alt="../../_images/limit.png" src="../../_images/limit.png" />
+</div>
+<p>When Access type ACCESS is selected as well as a specific layer, it becomes possible to specify the “layer details” in a separate tab.
+These make it possible to add additional filters to the layer for the rule in question. For example, the rule can alter the default style of the layer, specify which styles are available at all, which attributes are accessible for reading and/or writing, specify CQL filters for both reading and writing, specify a catalog mode, and an allowed area (WKT) filter.</p>
+<div class="figure align-center">
+<img alt="../../_images/layerdetails.png" src="../../_images/layerdetails.png" />
+</div>
+<p>A CQL Read Filter can be setup to allow users to only access a subset of the available data.</p>
+<p>For example, having a daily time series layer (a Layer with time attribute/dimension),
+it’s possible to restrict access to a given time range.</p>
+<p>A CQL filter to limit access to the whole 2020 year (static time range) would look as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">between</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="ow">and</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">31</span>
+</pre></div>
+</div>
+<p>A CQL filter limiting access to data older than a week (dynamic time range) would look like this instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dateDifference</span><span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">time</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">7</span>
+</pre></div>
+</div>
+<p>(see <a class="reference internal" href="../../filter/function_reference.html#temporal-functions"><span class="std std-ref">temporal-functions</span></a> for more details on the date difference function)</p>
+<p>Allowed area can be defined in whatever SRID. Geoserver will automatically reproject it to the resource CRS when needed.</p>
+<div class="section" id="layer-groups">
+<h3>Layer groups<a class="headerlink" href="#layer-groups" title="Permalink to this headline">¶</a></h3>
+<p>Layer groups are also supported. If no workspace has been specified, the layer dropdown will show global layer groups, while if a workspace is selected the workspace’s layergroup will be showed together with the layers.</p>
+<p>The read and write filters text areas as well as the style palette in the layer details tab are disabled when the layer group is being configured.</p>
+<p>When a LayerGroup is request the contained resource will be handled in the following way:</p>
+<ul class="simple">
+<li><p>a limit applied to the layer groups (allowed area or grant type) will be applied to all the contained layers.</p></li>
+<li><p>if the access rule a contained layer is denying the access to the layer for the user requesting group, the layer will not be present in the output.</p></li>
+<li><p>if the access rule of the layer has limits on its own, they will be merged in a restrictive way (intersection) with the one of the layer group if both the limits have been defined for the same role.</p></li>
+<li><p>if the access rule of the layer has limits on its own, they will be merged in a permissive way (union) with the one of the layer group if both the limits have been defined for the different roles.</p></li>
+</ul>
+<p>When a layer contained in one or more layer group is directly accessed in the context of a WMS request, the following rules apply:</p>
+<ul class="simple">
+<li><p>If any of the layer groups containing the requested resource has mode <strong>SINGLE</strong> no limits eventually defined for any of the layer groups will be applied.</p></li>
+<li><p>If all the layer groups containing the requested resource have mode <strong>OPAQUE</strong>, the layer will not be visible.</p></li>
+<li><p>If all the layer groups containing the resource has mode different from <strong>SINGLE</strong> and <strong>OPAQUE</strong>, the layer groups limits will be applied and merged with the one defined for the resource if present. For each layer group, the limits will be merged in a restrictive way with the ones defined for the resource if the rule was defined for the same role. On the contrary the limits will be merged with an enlargement logic, if coming from rules defined for different roles.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="installing.html" title="previous chapter">Installing the GeoServer GeoFence Server extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="rest.html" title="next chapter">GeoFence Rest API</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GeoFence Server GUI</a><ul>
+<li><a class="reference internal" href="#rules-page">Rules page</a></li>
+<li><a class="reference internal" href="#rule-page">Rule page</a><ul>
+<li><a class="reference internal" href="#layer-groups">Layer groups</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="installing.html" title="previous chapter">Installing the GeoServer GeoFence Server extension</a></li>
+            <li>Next: <a href="rest.html" title="next chapter">GeoFence Rest API</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/geofence-server/gui.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

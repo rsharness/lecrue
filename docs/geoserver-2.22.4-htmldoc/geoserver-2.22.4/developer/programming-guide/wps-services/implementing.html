@@ -1,0 +1,425 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Implementing a WPS Process &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Implementing a Rendering Transformation" href="implement-rendertrans.html" />
+    <link rel="prev" title="WPS design guide" href="design-guide.html" /> 
+  </head><body class="programming-guide/wps-services/implementing">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Programming Guide</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">WPS Services</a> &raquo;</li>
+    <li>Implementing a WPS Process</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="implement-rendertrans.html" title="Implementing a Rendering Transformation" accesskey="N">Next</a></li>
+  <li>
+    <a href="design-guide.html" title="WPS design guide" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="implementing-a-wps-process">
+<span id="wps-services-implementing"></span><h1>Implementing a WPS Process<a class="headerlink" href="#implementing-a-wps-process" title="Permalink to this headline">¶</a></h1>
+<p>This section describes how to implement a WPS process for use in GeoServer.
+It demonstrates the development artifacts and build steps
+necessary to create a WPS process, deploy it in GeoServer,
+and test it.</p>
+<p>The example process used is a simple “Hello World” process
+which accepts a single input parameter and returns a single text output.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See also GeoTools <a class="reference external" href="https://docs.geotools.org/latest/userguide/tutorial/process.html">process tutorial</a></p>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Before starting, GeoServer must be built on the local system. See
+the <a class="reference internal" href="../../source.html#source"><span class="std std-ref">Source Code</span></a> and <a class="reference internal" href="../../quickstart/index.html#quickstart"><span class="std std-ref">Quickstart</span></a> sections for details.
+GeoServer must be built with WPS support as described in the
+<a class="reference internal" href="../../maven-guide/index.html#maven-guide"><span class="std std-ref">Maven Guide</span></a> section.
+Specifically, make sure GeoServer is built using the <code class="docutils literal notranslate"><span class="pre">-Pwps</span></code> profile.</p>
+<p>Alternatively, the custom WPS plug-in can be deployed into an existing GeoServer
+instance (which must have the WPS extension installed).</p>
+</div>
+<div class="section" id="create-the-process-module">
+<h2>Create the process module<a class="headerlink" href="#create-the-process-module" title="Permalink to this headline">¶</a></h2>
+<p>To create a new WPS process plug-in module the first step is to create a Maven project.
+For this example the project will be called “hello_wps”.</p>
+<ol class="arabic simple">
+<li><p>Create a new directory named <code class="docutils literal notranslate"><span class="pre">hello_wps</span></code> somewhere on the file system.</p></li>
+<li><p>Add the following <code class="docutils literal notranslate"><span class="pre">pom.xml</span></code> to the root of the new module in the <code class="docutils literal notranslate"><span class="pre">hello_wps</span></code> directory:</p></li>
+</ol>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span>
+    <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+    <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0</span>
+<span class="s">    http://maven.apache.org/maven-v4_0_0.xsd &quot;</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+   <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+   <span class="nt">&lt;artifactId&gt;</span>hello_wps<span class="nt">&lt;/artifactId&gt;</span>
+   <span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+   <span class="nt">&lt;version&gt;</span>2.8-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+   <span class="nt">&lt;name&gt;</span>hello_wps<span class="nt">&lt;/name&gt;</span>
+
+   <span class="nt">&lt;properties&gt;</span>
+     <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+     <span class="nt">&lt;gt.version&gt;</span>14-SNAPSHOT<span class="nt">&lt;/gt.version&gt;</span>  <span class="c">&lt;!-- change to GeoTools version --&gt;</span>
+     <span class="nt">&lt;gs.version&gt;</span>2.8-SNAPSHOT<span class="nt">&lt;/gs.version&gt;</span>  <span class="c">&lt;!-- change to GeoServer version --&gt;</span>
+   <span class="nt">&lt;/properties&gt;</span>
+   <span class="nt">&lt;dependencies&gt;</span>
+     <span class="nt">&lt;dependency&gt;</span>
+       <span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
+       <span class="nt">&lt;artifactId&gt;</span>gt-process<span class="nt">&lt;/artifactId&gt;</span>
+       <span class="nt">&lt;version&gt;</span>${gt.version}<span class="nt">&lt;/version&gt;</span>
+     <span class="nt">&lt;/dependency&gt;</span>
+     <span class="nt">&lt;dependency&gt;</span>
+       <span class="nt">&lt;groupId&gt;</span>org.geoserver.extension<span class="nt">&lt;/groupId&gt;</span>
+       <span class="nt">&lt;artifactId&gt;</span>gs-wps-core<span class="nt">&lt;/artifactId&gt;</span>
+       <span class="nt">&lt;version&gt;</span>${gs.version}<span class="nt">&lt;/version&gt;</span>
+     <span class="nt">&lt;/dependency&gt;</span>
+     <span class="nt">&lt;dependency&gt;</span>
+       <span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+       <span class="nt">&lt;artifactId&gt;</span>gs-main<span class="nt">&lt;/artifactId&gt;</span>
+       <span class="nt">&lt;version&gt;</span>${gs.version}<span class="nt">&lt;/version&gt;</span>
+       <span class="nt">&lt;classifier&gt;</span>tests<span class="nt">&lt;/classifier&gt;</span>
+       <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+     <span class="nt">&lt;/dependency&gt;</span>
+     <span class="nt">&lt;dependency&gt;</span>
+       <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+       <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+       <span class="nt">&lt;version&gt;</span>4.11<span class="nt">&lt;/version&gt;</span>
+       <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+     <span class="nt">&lt;/dependency&gt;</span>
+     <span class="nt">&lt;dependency&gt;</span>
+       <span class="nt">&lt;groupId&gt;</span>com.mockrunner<span class="nt">&lt;/groupId&gt;</span>
+       <span class="nt">&lt;artifactId&gt;</span>mockrunner<span class="nt">&lt;/artifactId&gt;</span>
+       <span class="nt">&lt;version&gt;</span>0.3.6<span class="nt">&lt;/version&gt;</span>
+      <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+     <span class="nt">&lt;/dependency&gt;</span>
+   <span class="nt">&lt;/dependencies&gt;</span>
+
+   <span class="nt">&lt;build&gt;</span>
+     <span class="nt">&lt;plugins&gt;</span>
+       <span class="nt">&lt;plugin&gt;</span>
+         <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+         <span class="nt">&lt;configuration&gt;</span>
+           <span class="nt">&lt;source&gt;</span>1.8<span class="nt">&lt;/source&gt;</span>
+           <span class="nt">&lt;target&gt;</span>1.8<span class="nt">&lt;/target&gt;</span>
+         <span class="nt">&lt;/configuration&gt;</span>
+      <span class="nt">&lt;/plugin&gt;</span>
+    <span class="nt">&lt;/plugins&gt;</span>
+   <span class="nt">&lt;/build&gt;</span>
+
+    <span class="nt">&lt;repositories&gt;</span>
+        <span class="nt">&lt;repository&gt;</span>
+            <span class="nt">&lt;id&gt;</span>boundless<span class="nt">&lt;/id&gt;</span>
+            <span class="nt">&lt;name&gt;</span>Boundless Maven Repository<span class="nt">&lt;/name&gt;</span>
+            <span class="nt">&lt;url&gt;</span>https://repo.boundlessgeo.com/main<span class="nt">&lt;/url&gt;</span>
+        <span class="nt">&lt;/repository&gt;</span>
+        <span class="nt">&lt;repository&gt;</span>
+            <span class="nt">&lt;id&gt;</span>osgeo<span class="nt">&lt;/id&gt;</span>
+            <span class="nt">&lt;name&gt;</span>Open Source Geospatial Foundation Repository<span class="nt">&lt;/name&gt;</span>
+            <span class="nt">&lt;url&gt;</span>https://download.osgeo.org/webdav/geotools<span class="nt">&lt;/url&gt;</span>
+        <span class="nt">&lt;/repository&gt;</span>
+    <span class="nt">&lt;/repositories&gt;</span>
+
+<span class="nt">&lt;/project&gt;</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p>Create the directory <code class="docutils literal notranslate"><span class="pre">src/main/java</span></code> under the root of the new module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_wps</span><span class="p">]</span><span class="o">%</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span>
+</pre></div>
+</div>
+<p>The project should now have the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello_wps</span><span class="o">/</span>
+ <span class="o">+</span> <span class="n">pom</span><span class="o">.</span><span class="n">xml</span>
+  <span class="o">+</span> <span class="n">src</span><span class="o">/</span>
+    <span class="o">+</span> <span class="n">main</span><span class="o">/</span>
+      <span class="o">+</span> <span class="n">java</span><span class="o">/</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="create-the-process-class">
+<h2>Create the process class<a class="headerlink" href="#create-the-process-class" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Create the package that will contain the custom WPS process.</p>
+<p>For this example, create a package named <code class="docutils literal notranslate"><span class="pre">org.geoserver.hello.wps</span></code> inside the
+<em>src/main/java</em> directory structure.</p>
+<p>[hello_wps]% mkdir -p src/main/java/org/geoserver/hello/wps</p>
+</li>
+<li><p>Create the Java class that implements the custom WPS process.</p>
+<p>Create a Java class called <code class="docutils literal notranslate"><span class="pre">HelloWPS.java</span></code> inside the created package (make sure you are in the ‘src/main/java’ folder and not in the ‘src/test/java’ folder):</p>
+</li>
+</ol>
+<blockquote>
+<div><div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.geoserver.hello.wps</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.geotools.process.factory.DescribeParameter</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.geotools.process.factory.DescribeProcess</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.geotools.process.factory.DescribeResult</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.geoserver.wps.gs.GeoServerProcess</span><span class="p">;</span>
+
+<span class="nd">@DescribeProcess</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;helloWPS&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">&quot;Hello WPS Sample&quot;</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWPS</span> <span class="kd">implements</span> <span class="n">GeoServerProcess</span> <span class="p">{</span>
+
+   <span class="nd">@DescribeResult</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;result&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">&quot;output result&quot;</span><span class="p">)</span>
+   <span class="kd">public</span> <span class="n">String</span> <span class="nf">execute</span><span class="p">(</span><span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">&quot;name to return&quot;</span><span class="p">)</span> <span class="n">String</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">&quot;Hello, &quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="register-the-process-in-geoserver">
+<h2>Register the process in GeoServer<a class="headerlink" href="#register-the-process-in-geoserver" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer uses the <a class="reference external" href="http://www.springsource.org/spring-framework/">Spring Framework</a> to manage
+instantiation of components. This mechanism is used to register the process with GeoServer when it
+starts, which will make it discoverable via the WPS service interface.</p>
+<ol class="arabic">
+<li><p>Create a directory <code class="docutils literal notranslate"><span class="pre">src/main/resources</span></code> under the root of the new module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">hello_wps</span><span class="p">]</span><span class="o">%</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">resources</span>
+</pre></div>
+</div>
+<p>The project should now have the following directory structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello_wps</span><span class="o">/</span>
+ <span class="o">+</span> <span class="n">pom</span><span class="o">.</span><span class="n">xml</span>
+  <span class="o">+</span> <span class="n">src</span><span class="o">/</span>
+    <span class="o">+</span> <span class="n">main</span><span class="o">/</span>
+      <span class="o">+</span> <span class="n">java</span><span class="o">/</span>
+      <span class="o">+</span> <span class="n">resources</span><span class="o">/</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create an <code class="docutils literal notranslate"><span class="pre">applicationContext.xml</span></code> in the <code class="docutils literal notranslate"><span class="pre">src/main/resources</span></code> directory with the following contents:</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+  <span class="cp">&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;</span>
+  <span class="nt">&lt;beans&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;helloWPS&quot;</span> <span class="na">class=</span><span class="s">&quot;org.geoserver.hello.wps.HelloWPS&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/beans&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A process registered in the GeoServer spring context will be assigned to the “gs”
+process namespace.</p>
+</div>
+</div>
+<div class="section" id="build-and-deploy">
+<h2>Build and Deploy<a class="headerlink" href="#build-and-deploy" title="Permalink to this headline">¶</a></h2>
+<p>To build the custom process, run the following command from the root of the project:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mvn clean install</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>This cleans the build area, compiles the code, and creates a JAR file in the <code class="docutils literal notranslate"><span class="pre">target</span></code> directory.
+The JAR file name is determined by the name and version given to the project in the <code class="docutils literal notranslate"><span class="pre">pom.xml</span></code> file.
+(for this example it is <code class="docutils literal notranslate"><span class="pre">hello_wps-2.6-SNAPSHOT.jar</span></code>).</p>
+<p>To deploy the process module, copy this JAR file into the <code class="docutils literal notranslate"><span class="pre">/WEB-INF/lib</span></code> directory of GeoServer and then restart the instance.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For alternative deployment options (i.e. running from source), see the <em>Trying it out</em>
+section inside <a class="reference internal" href="../ows-services/implementing.html#ows-services-implementing"><span class="std std-ref">Implementing a simple OWS service</span></a></p>
+</div>
+</div>
+<div class="section" id="test">
+<h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<p>You can verify that the new process was deployed successfully by using
+the <strong>WPS Request Builder</strong>. The WPS Request Builder is a utility that allows invoking WPS processes
+through the GeoServer UI. Access this utility by navigating to the <em>WPS Request Builder</em> in the <em>Demos</em>
+section of the GeoServer Web Admin Interface.</p>
+<p>In the WPS Request Builder select the process called <code class="docutils literal notranslate"><span class="pre">gs:helloWPS</span></code> from the <strong>Choose process</strong> dropdown.
+The request builder displays an interface which allows calling the process, based on the
+parameters and outputs described in the capabilities of the process
+(which are defined by the process class annotations).</p>
+<p>The following image shows the WPS Request Builder running the <code class="docutils literal notranslate"><span class="pre">gs:helloWPS</span></code> process.
+Enter the desired parameter and click on <strong>Execute process</strong> to run it. A window with the expected result should appear.</p>
+<blockquote>
+<div><div class="figure align-default" id="id1">
+<img alt="../../_images/helloWPS.png" src="../../_images/helloWPS.png" />
+<p class="caption"><span class="caption-text"><em>WPS Request Builder, showing gs:HelloWPS process parameters</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="accepting-or-returning-raw-data">
+<h2>Accepting or returning raw data<a class="headerlink" href="#accepting-or-returning-raw-data" title="Permalink to this headline">¶</a></h2>
+<p>The basic GeoServer WPS architecture is meant to offload and centralize input decoding and output encoding, leaving
+the processes to work against Java objects, and automatically creating new input and output types for all processes
+as soon as a new matching PPIO is registered.</p>
+<p>It is however also possible to leave the process to accept both raw inputs and outputs, and do the parsing encoding itself.
+This suits well binding to external network or command line tools that are already doing parsing and encoding as their
+normal activities.</p>
+<p>Raw inputs and outputs are represented by the RawData interface:</p>
+<blockquote>
+<div><blockquote>
+<div><div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RawData</span> <span class="p">{</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Returns the mime type of the stream&#39;s contents</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getMimeType</span><span class="p">();</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Gives access to the raw data contents.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return</span>
+<span class="cm">     * @throws FileNotFoundException</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="n">InputStream</span> <span class="nf">getInputStream</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="p">;</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Optional field for output raw data, used by</span>
+<span class="cm">     * WPS to generate a file extension</span>
+<span class="cm">     *</span>
+<span class="cm">     * @return</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFileExtension</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>As an input, the RawData will be provided to the process, that will discover the mimeType chosen by the user,
+and will get access to the raw input stream of the data.
+As an output, the process will return a RawData and the WPS will see what mimeType the result will be in, get access
+to the raw contents, and grab a file extension to build file names for the user file downloads.</p>
+<p>The process using RawData will also have to provide some extra metadata in the annotations, in order to declare
+which mime types are supported and to allow the process to know which output mime types were chosen in the Execute request.
+The extra annotations <code class="docutils literal notranslate"><span class="pre">mimeTypes</span></code> and <code class="docutils literal notranslate"><span class="pre">chosenMimeType</span></code> are placed in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of the result and parameter annotations:</p>
+<blockquote>
+<div><div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@DescribeResult</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;result&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Output raster&quot;</span><span class="p">,</span>
+                <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;mimeTypes=application/json,text/xml&quot;</span><span class="p">,</span>
+                        <span class="s">&quot;chosenMimeType=outputMimeType&quot;</span> <span class="p">})</span>
+<span class="kd">public</span> <span class="n">RawData</span> <span class="nf">execute</span><span class="p">(</span>
+        <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;data&quot;</span><span class="p">,</span>
+                           <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&quot;mimeTypes=text/plain&quot;</span> <span class="p">})</span>
+                           <span class="kd">final</span> <span class="n">RawData</span> <span class="n">input</span><span class="p">,</span>
+        <span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;outputMimeType&quot;</span><span class="p">,</span> <span class="n">min</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+                           <span class="kd">final</span> <span class="n">String</span> <span class="n">outputMimeType</span><span class="p">)</span> <span class="p">{</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The above instructs GeoServer WPS about raw data handling:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">result</span></code> output can be returned in <code class="docutils literal notranslate"><span class="pre">application/json</span></code> or <code class="docutils literal notranslate"><span class="pre">text/xml</span></code>, with <code class="docutils literal notranslate"><span class="pre">application/json</span></code> as the default one</p></li>
+<li><p>The mime type chosen by the user for the output will be provided to the process as the <code class="docutils literal notranslate"><span class="pre">outputMimeType</span></code> parameter (and this parameter will be
+hidden from the DescribeProcess output)</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">input</span></code> parameter will be advertised as supporting the <code class="docutils literal notranslate"><span class="pre">text/plain</span></code> mime type</p></li>
+</ul>
+<p>In terms of building a <code class="docutils literal notranslate"><span class="pre">RawData</span></code>, the process is free to create its own class if needed,
+or it can use one of the existing <code class="docutils literal notranslate"><span class="pre">FileRawData</span></code>, <code class="docutils literal notranslate"><span class="pre">StringRawData</span></code>, <code class="docutils literal notranslate"><span class="pre">StreamRawData</span></code> implementations.</p>
+</div></blockquote>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="design-guide.html" title="previous chapter">WPS design guide</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="implement-rendertrans.html" title="next chapter">Implementing a Rendering Transformation</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Implementing a WPS Process</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#create-the-process-module">Create the process module</a></li>
+<li><a class="reference internal" href="#create-the-process-class">Create the process class</a></li>
+<li><a class="reference internal" href="#register-the-process-in-geoserver">Register the process in GeoServer</a></li>
+<li><a class="reference internal" href="#build-and-deploy">Build and Deploy</a></li>
+<li><a class="reference internal" href="#test">Test</a></li>
+<li><a class="reference internal" href="#accepting-or-returning-raw-data">Accepting or returning raw data</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="design-guide.html" title="previous chapter">WPS design guide</a></li>
+            <li>Next: <a href="implement-rendertrans.html" title="next chapter">Implementing a Rendering Transformation</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/programming-guide/wps-services/implementing.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

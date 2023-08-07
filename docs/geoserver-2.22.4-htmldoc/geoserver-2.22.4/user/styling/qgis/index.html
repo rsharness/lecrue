@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generating SLD styles with QGIS &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="CSS Styling" href="../css/index.html" />
+    <link rel="prev" title="i18N in SLD" href="../sld/language.html" /> 
+  </head><body class="styling/qgis/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling</a> &raquo;</li>
+    <li>Generating SLD styles with QGIS</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../css/index.html" title="CSS Styling" accesskey="N">Next</a></li>
+  <li>
+    <a href="../sld/language.html" title="i18N in SLD" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="generating-sld-styles-with-qgis">
+<span id="qgis"></span><h1>Generating SLD styles with QGIS<a class="headerlink" href="#generating-sld-styles-with-qgis" title="Permalink to this headline">¶</a></h1>
+<p>QGIS includes a sophisticated style editor with many map rendering possibilities. Styles generated
+with QGIS can then be exported (with limitations) to SLD for usage with GeoServer.</p>
+<p>QGIS style exporting abilities have been evolving over time, as a reference:</p>
+<ul class="simple">
+<li><p>For vector data QGIS exports SLD 1.1 styles that can be read by GeoServer. In order to get
+the suitable results it’s important to use QGIS 3.0 or newer, and GeoServer 2.13.x or newer.</p></li>
+<li><p>Raster data styling export is new in QGIS 3.4.5 (yet to be released at the time of writing).
+This new version exports SLD 1.0 styles with vendor extensions to support contrast stretching that most recent GeoServer versions support properly. For older QGIS versions limited export functionality is available using the SLD4Raster plugin.</p></li>
+</ul>
+<p>For the export it is advised to use the <span class="guilabel">Save As</span> functionality available in the style dialog,
+as indicated below in this guide. Other plugins exist that streamline the export process, but they
+may ruin the style trying to adapt it to older GeoServer versions (e.g., translating it
+down to SLD 1.0 by simple text processing means), or rewrite it entirely.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Despite the progress in the last years, it is known that not all QGIS rendering
+options are supported by SLD and/or by GeoServer (e.g. shapeburst symbology),
+and that support for exporting some parts  is simply missing (e.g.. expression based symbology is
+supported in SLD, but QGIS won’t export it). If you are interested, both projects would welcome
+sponsoring to improve the situation.</p>
+</div>
+<div class="section" id="exporting-vector-symbology">
+<h2>Exporting vector symbology<a class="headerlink" href="#exporting-vector-symbology" title="Permalink to this headline">¶</a></h2>
+<p>This is a step by step guide to style a GeoServer demo layer, <code class="docutils literal notranslate"><span class="pre">sfdem</span></code>.</p>
+<ol class="arabic">
+<li><p>Open <strong class="command">QGIS</strong> (minimum version 3.0)</p></li>
+<li><p>Load the <code class="file docutils literal notranslate"><span class="pre">states.shp</span></code> dataset from the GeoServer data directory, <code class="file docutils literal notranslate"><span class="pre">&lt;GEOSERVER_DATA_DIR&gt;/data/shapefiles/states.shp</span></code></p></li>
+<li><p>Double click the layer to open the <span class="guilabel">Properties</span> dialog and switch to the <span class="guilabel">Symbology</span> page.</p></li>
+<li><p>Choose a <cite>Graduated</cite> rendering, on the <code class="docutils literal notranslate"><span class="pre">PERSONS</span></code> column, and click on <span class="guilabel">Classify</span> button to generate <cite>1.5</cite> standard deviations, select the <cite>spectral</cite> color ramp, switch mode to <cite>Quantile</cite> and finally and click on the “<span class="guilabel">Classify</span> button to generate a 5 classes map, as shown in figure.</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/qgis-vector-style.png" src="../../_images/qgis-vector-style.png" />
+<p class="caption"><span class="caption-text">QGIS vector styling</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Switch to the <span class="guilabel">Labels</span> page, choose <cite>Single labels`</cite>, label with the <code class="docutils literal notranslate"><span class="pre">STATE</span> <span class="pre">NAME</span></code> attribute and choose your preferred text rendering options, as shown in figure</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/qgis-label-style.png" src="../../_images/qgis-label-style.png" />
+<p class="caption"><span class="caption-text">QGIS labelling</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>The layer renders as follows:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/qgis-vector-render.png" src="../../_images/qgis-vector-render.png" />
+<p class="caption"><span class="caption-text">QGIS raster styling</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Go back At the <span class="guilabel">Properties</span> dialog, from the bottom of the <span class="guilabel">Styles</span> page, choose <span class="menuselection">Style ‣ Save Style</span>.</p>
+<div class="figure align-center" id="id4">
+<img alt="../../_images/qgis-vector-saveas.png" src="../../_images/qgis-vector-saveas.png" />
+<p class="caption"><span class="caption-text"><em>Export using Save As…</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Choose export in the SLD format, placing the file in the desired location.</p>
+<div class="figure align-center" id="id5">
+<img alt="../../_images/qgis-choose-format.png" src="../../_images/qgis-choose-format.png" />
+<p class="caption"><span class="caption-text">Choosing export format…</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Go in GeoServer, create a new style, use the <span class="guilabel">Upload a new style</span> dialog to choose the exported file, and click on <cite>upload</cite> link.</p>
+<div class="figure align-center" id="id6">
+<img alt="../../_images/gs-vector-upload.png" src="../../_images/gs-vector-upload.png" />
+<p class="caption"><span class="caption-text">Uploading style in GeoServer…</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click on guilabel:<cite>Apply</cite>.</p></li>
+<li><p>Change to the <span class="guilabel">Layer preview</span> tab, click on the <span class="guilabel">Preview on Layer</span> link to choose <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> to verify  proper rendering.</p>
+<div class="figure align-center" id="id7">
+<img alt="../../_images/gs-vector-preview.png" src="../../_images/gs-vector-preview.png" />
+<p class="caption"><span class="caption-text">Previewing style in GeoServer…</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Eventually switch to the <span class="guilabel">Publishing</span> tab, search for <code class="docutils literal notranslate"><span class="pre">states</span></code>, and select <span class="guilabel">Default</span> or <span class="guilabel">Associated</span> checkbox to publish the layer to use the new style permanently.</p>
+<div class="figure align-center" id="id8">
+<img alt="../../_images/gs-vector-associate.png" src="../../_images/gs-vector-associate.png" />
+<p class="caption"><span class="caption-text">Associating style in GeoServer…</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="exporting-raster-symbology">
+<h2>Exporting raster symbology<a class="headerlink" href="#exporting-raster-symbology" title="Permalink to this headline">¶</a></h2>
+<p>The following are a couple of examples on how to export raster layers’ symbology in QGIS and how to use the resulting SLD to style layers in GeoServer.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>As mentioned above, this functionality has some limitations:</p>
+<ul class="simple">
+<li><p><span class="guilabel">Hillshading</span> vendor options are not fully supported by GeoServer so you can’t choose the <cite>Band</cite> and the position of the sun (<cite>Altitude</cite> and <cite>Azimuth</cite>), the <cite>Multidirectional</cite> option is not supported too</p></li>
+<li><p>GeoServer is not able to interpret the <span class="guilabel">Color Rendering</span> options yet</p></li>
+</ul>
+</div>
+<p>This is a step by step guide to style a GeoServer demo layer, <code class="docutils literal notranslate"><span class="pre">sfdem</span></code>.</p>
+<ol class="arabic">
+<li><p>Open QGIS (minimum version 3.4.5)</p></li>
+<li><p>Load the <code class="file docutils literal notranslate"><span class="pre">sfdem.tif</span></code> raster from the GeoServer data directory, <code class="file docutils literal notranslate"><span class="pre">&lt;GEOSERVER_DATA_DIR&gt;/data/sf/sfdem.tif</span></code></p></li>
+<li><p>Double click the layer to open the <span class="guilabel">Properties</span> dialog and switch to the <span class="guilabel">Symbology</span> page.</p></li>
+<li><p>Choose a <cite>Singleband pseudocolor</cite> rendering, Generate <span class="guilabel">Min / Max Value Settings</span> using <span class="guilabel">Mean +/- standard deviation</span> with using <code class="docutils literal notranslate"><span class="pre">1.5</span></code> standard deviations. Generate a 5 classes <span class="guilabel">Linear</span> interpolated map, as shown in figure.</p>
+<div class="figure align-center" id="id9">
+<img alt="../../_images/qgis-raster-style.png" src="../../_images/qgis-raster-style.png" />
+<p class="caption"><span class="caption-text">QGIS raster styling</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>The layer renders as follows:</p>
+<div class="figure align-center" id="id10">
+<img alt="../../_images/qgis-raster-render.png" src="../../_images/qgis-raster-render.png" />
+<p class="caption"><span class="caption-text">QGIS raster styling</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Return to the layer’s <span class="guilabel">Properties</span> dialog <span class="guilabel">Symbology</span> page, at the bottom of the page  choose <span class="menuselection">Style ‣ Save Style</span>.</p>
+<div class="figure align-center" id="id11">
+<img alt="../../_images/qgis-raster-saveas.png" src="../../_images/qgis-raster-saveas.png" />
+<p class="caption"><span class="caption-text">Export using Save As…</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Choose export in the SLD format, placing the file in the desired location</p>
+<div class="figure align-center" id="id12">
+<img alt="../../_images/qgis-choose-format.png" src="../../_images/qgis-choose-format.png" />
+<p class="caption"><span class="caption-text">Choosing export format…</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Go in GeoServer, create a new style, use the <span class="guilabel">Upload a new style</span> dialog to choose the exported file, and click on <cite>upload</cite> link.</p>
+<div class="figure align-center" id="id13">
+<img alt="../../_images/gs-raster-upload.png" src="../../_images/gs-raster-upload.png" />
+<p class="caption"><span class="caption-text">Uploading style in GeoServer…</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Click on guilabel:<cite>Apply</cite> then change to the <span class="guilabel">Layer preview</span> tab. Click on the <span class="guilabel">Preview on Layer</span> link to choose <code class="docutils literal notranslate"><span class="pre">sfdem</span></code> to verify  proper rendering.</p>
+<div class="figure align-center" id="id14">
+<img alt="../../_images/gs-raster-preview.png" src="../../_images/gs-raster-preview.png" />
+<p class="caption"><span class="caption-text">Previewing style in GeoServer…</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Finally switch to the <span class="guilabel">Publishing</span> tab, search for <code class="docutils literal notranslate"><span class="pre">sfdem</span></code> layer, and select <span class="guilabel">Default</span> or <span class="guilabel">Associated</span> checkbox to publish <code class="docutils literal notranslate"><span class="pre">sfdem</span></code> with the new style.</p>
+<div class="figure align-center" id="id15">
+<img alt="../../_images/gs-raster-associate.png" src="../../_images/gs-raster-associate.png" />
+<p class="caption"><span class="caption-text">Associating style in GeoServer…</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+</ol>
+<p>The next example shows how to style an aerial image instead.</p>
+<ol class="arabic">
+<li><p>Download an aerial image (for example from <a class="reference external" href="https://landsatlook.usgs.gov/sentinel2/viewer.html">USGS Landsat image archives</a>) if you do not already have one. Give it a name (<code class="docutils literal notranslate"><span class="pre">aerial</span></code> in this example) and <span class="guilabel">save it as GeoTIFF</span></p>
+<div class="figure align-center" id="id16">
+<img alt="../../_images/landsat_usgs_sentinel2.png" src="../../_images/landsat_usgs_sentinel2.png" />
+<p class="caption"><span class="caption-text">aerial.tiff</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Open GeoServer, <span class="guilabel">create a new Store</span> (see <a class="reference internal" href="../../data/webadmin/stores.html#data-webadmin-stores-add-a-store"><span class="std std-ref">Add a Store</span></a>), <span class="guilabel">add a GeoTIFF Raster Data Source</span> to the Store and <span class="guilabel">connect</span> it to your <code class="docutils literal notranslate"><span class="pre">aerial.tif</span></code> file</p></li>
+<li><p>In GeoServer, <span class="guilabel">create a new Layer</span> (see <a class="reference internal" href="../../data/webadmin/layers.html#data-webadmin-layers-add-a-layer"><span class="std std-ref">Add a Layer</span></a>) choosing the Store you have created in the previous step</p></li>
+<li><p>Open QGIS (minimum version 3.4.5)</p></li>
+<li><p>Load the <code class="docutils literal notranslate"><span class="pre">aerial.tif</span></code> raster</p></li>
+<li><p>Double click the layer to open the <span class="guilabel">Properties</span> dialog and switch to the <span class="guilabel">Symbology</span> page</p></li>
+<li><p>Choose a <cite>Multiband color</cite> rendering, set the <span class="guilabel">bands</span> (Red band == Band 1 (red), Green band == Band 2 (Green), Blue band == Band 3 (Blue)), generate <span class="guilabel">Min / Max Value Settings</span> using <code class="docutils literal notranslate"><span class="pre">5,0</span> <span class="pre">-</span> <span class="pre">95,0</span> <span class="pre">%</span> <span class="pre">range</span></code> of <span class="guilabel">Cumulative count cut</span> and select <code class="docutils literal notranslate"><span class="pre">Stretch</span> <span class="pre">to</span> <span class="pre">MinMax</span></code> as <span class="guilabel">Contrast enhancement</span> option, as shown in the picture below</p>
+<div class="figure align-center" id="id17">
+<img alt="../../_images/qgis-sentinel2-raster-style.png" src="../../_images/qgis-sentinel2-raster-style.png" />
+<p class="caption"><span class="caption-text">QGIS layer properties - Symbology</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>The layer renders as follows:</p>
+<div class="figure align-center" id="id18">
+<img alt="../../_images/qgis-sentinel2-raster-rendering.png" src="../../_images/qgis-sentinel2-raster-rendering.png" />
+<p class="caption"><span class="caption-text">QGIS layer rendering</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p><span class="guilabel">Save the Style</span> as SLD</p></li>
+<li><p>Go in GeoServer, use the generated SLD to <span class="guilabel">create a new style</span>, choose the <code class="docutils literal notranslate"><span class="pre">aerial</span></code> layer through the <span class="guilabel">Preview on Layer</span> link and verify if the layer is properly rendered (see the previous example for further details)</p>
+<div class="figure align-center" id="id19">
+<img alt="../../_images/gs-sentinel2-raster-rendering.png" src="../../_images/gs-sentinel2-raster-rendering.png" />
+<p class="caption"><span class="caption-text">GeoServer layer rendering</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>Finally <span class="guilabel">Publish</span> the <code class="docutils literal notranslate"><span class="pre">aerial</span></code> layer with the new style as described in the previous example.</p></li>
+</ol>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../sld/language.html" title="previous chapter">i18N in SLD</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../css/index.html" title="next chapter">CSS Styling</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Generating SLD styles with QGIS</a><ul>
+<li><a class="reference internal" href="#exporting-vector-symbology">Exporting vector symbology</a></li>
+<li><a class="reference internal" href="#exporting-raster-symbology">Exporting raster symbology</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../sld/language.html" title="previous chapter">i18N in SLD</a></li>
+            <li>Next: <a href="../css/index.html" title="next chapter">CSS Styling</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/qgis/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

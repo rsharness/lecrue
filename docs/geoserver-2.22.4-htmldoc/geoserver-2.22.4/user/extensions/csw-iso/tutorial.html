@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalog Services for the Web (CSW) ISO Metadata tutorial &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Metadata" href="../metadata/index.html" />
+    <link rel="prev" title="CSW ISO Metadata Profile Mapping File" href="mapping.html" /> 
+  </head><body class="extensions/csw-iso/tutorial">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Catalog Services for the Web (CSW) - ISO Metadata Profile</a> &raquo;</li>
+    <li>Catalog Services for the Web (CSW) ISO Metadata tutorial</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../metadata/index.html" title="Metadata" accesskey="N">Next</a></li>
+  <li>
+    <a href="mapping.html" title="CSW ISO Metadata Profile Mapping File" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="catalog-services-for-the-web-csw-iso-metadata-tutorial">
+<span id="csw-iso-tutorial"></span><h1>Catalog Services for the Web (CSW) ISO Metadata tutorial<a class="headerlink" href="#catalog-services-for-the-web-csw-iso-metadata-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will show how to use the CSW module with the ISO Metadata Profile scheme. It assumes a fresh installation of GeoServer with the <a class="reference internal" href="../../services/csw/installing.html#csw-installing"><span class="std std-ref">CSW ISO Metadata Profile module installed</span></a>.</p>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>In the <code class="file docutils literal notranslate"><span class="pre">&lt;data_dir&gt;/csw</span></code> directory, create a new file named <code class="file docutils literal notranslate"><span class="pre">MD_Metadata.properties</span></code> (ISO Metadata Profile mapping file) with the following contents:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>@fileIdentifier.CharacterString=prefixedName
+identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString=title
+identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=keywords
+identificationInfo.AbstractMD_Identification.abstract.CharacterString=abstract
+$dateStamp.Date= if_then_else ( isNull(&quot;metadata.date&quot;) , &#39;Unknown&#39;, &quot;metadata.date&quot;)
+hierarchyLevel.MD_ScopeCode.@codeListValue=&#39;http://purl.org/dc/dcmitype/Dataset&#39;
+$contact.CI_ResponsibleParty.individualName.CharacterString=&#39;John Smith&#39;
+</pre></div>
+</div>
+</div>
+<div class="section" id="services">
+<h2>Services<a class="headerlink" href="#services" title="Permalink to this headline">¶</a></h2>
+<p>With GeoServer running (and responding on <code class="docutils literal notranslate"><span class="pre">http://localhost:8080</span></code>), test GeoServer CSW in a web browser by querying the CSW capabilities as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/csw?service=csw&amp;version=2.0.2&amp;request=GetCapabilities
+</pre></div>
+</div>
+<p>We can request a description of our Metadata record:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/csw?service=CSW&amp;version=2.0.2&amp;request=DescribeRecord&amp;typeName=gmd:MD_Metadata
+</pre></div>
+</div>
+<p>This yields the following result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;csw:DescribeRecordResponse xmlns:csw=&quot;http://www.opengis.net/cat/csw/2.0.2&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/cat/csw/2.0.2 http://localhost:8080/geoserver/schemas/csw/2.0.2CSW-discovery.xsd&quot;&gt;
+&lt;csw:SchemaComponent targetNamespace=&quot;http://www.opengis.net/cat/csw/2.0.2&quot; schemaLanguage=&quot;http://www.w3.org/XML/Schema&quot;&gt;
+&lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:gco=&quot;http://www.isotc211.org/2005/gco&quot; xmlns:gmd=&quot;http://www.isotc211.org/2005/gmd&quot; targetNamespace=&quot;http://www.isotc211.org/2005/gmd&quot; elementFormDefault=&quot;qualified&quot; version=&quot;2012-07-13&quot;&gt;
+      &lt;!-- ================================= Annotation ================================ --&gt;
+      &lt;xs:annotation&gt;
+              &lt;xs:documentation&gt;Geographic MetaData (GMD) extensible markup language is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GMD includes all the definitions of http://www.isotc211.org/2005/gmd namespace. The root document of this namespace is the file gmd.xsd. This identification.xsd schema implements the UML conceptual schema defined in A.2.2 of ISO 19115:2003. It contains the implementation of the following classes: MD_Identification, MD_BrowseGraphic, MD_DataIdentification, MD_ServiceIdentification, MD_RepresentativeFraction, MD_Usage, MD_Keywords, DS_Association, MD_AggregateInformation, MD_CharacterSetCode, MD_SpatialRepresentationTypeCode, MD_TopicCategoryCode, MD_ProgressCode, MD_KeywordTypeCode, DS_AssociationTypeCode, DS_InitiativeTypeCode, MD_ResolutionType.&lt;/xs:documentation&gt;
+      &lt;/xs:annotation&gt;
+      ...
+</pre></div>
+</div>
+<p>Query all layers as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecords&amp;typeNames=gmd:MD_Metadata&amp;resultType=results&amp;elementSetName=full&amp;outputSchema=http://www.isotc211.org/2005/gmd
+</pre></div>
+</div>
+<p>Request a particular layer by ID…:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;elementsetname=summary&amp;id=CoverageInfoImpl--4a9eec43:132d48aac79:-8000&amp;typeNames=gmd:MD_Metadata&amp;resultType=results&amp;elementSetName=full&amp;outputSchema=http://www.isotc211.org/2005/gmd
+</pre></div>
+</div>
+<p>…or use a filter to retrieve it by Title:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecords&amp;typeNames=gmd:MD_Metadata&amp;resultType=results&amp;elementSetName=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;constraint=Title=%27mosaic%27
+</pre></div>
+</div>
+<p>Either case should return:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;csw:GetRecordsResponse xmlns:xml=&quot;http://www.w3.org/XML/1998/namespace&quot; xmlns=&quot;http://www.opengis.net/cat/csw/apiso/1.0&quot; xmlns:csw=&quot;http://www.opengis.net/cat/csw/2.0.2&quot; xmlns:gco=&quot;http://www.isotc211.org/2005/gco&quot; xmlns:gmd=&quot;http://www.isotc211.org/2005/gmd&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; version=&quot;2.0.2&quot; xsi:schemaLocation=&quot;http://www.opengis.net/cat/csw/2.0.2 http://localhost:8080/geoserver/schemas/csw/2.0.2/record.xsd&quot;&gt;
+  &lt;csw:SearchStatus timestamp=&quot;2013-06-28T13:41:43.090Z&quot;/&gt;
+  &lt;csw:SearchResults numberOfRecordsMatched=&quot;1&quot; numberOfRecordsReturned=&quot;1&quot; nextRecord=&quot;0&quot; recordSchema=&quot;http://www.isotc211.org/2005/gmd&quot; elementSet=&quot;full&quot;&gt;
+    &lt;gmd:MD_Metadata&gt;
+      &lt;gmd:fileIdentifier&gt;
+        &lt;gco:CharacterString&gt;CoverageInfoImpl--4a9eec43:132d48aac79:-8000&lt;/gco:CharacterString&gt;
+      &lt;/gmd:fileIdentifier&gt;
+      &lt;gmd:dateStamp&gt;
+        &lt;gco:Date&gt;Unknown&lt;/gco:Date&gt;
+      &lt;/gmd:dateStamp&gt;
+      &lt;gmd:identificationInfo&gt;
+        &lt;gmd:MD_DataIdentification&gt;
+          &lt;gmd:extent&gt;
+            &lt;gmd:EX_Extent&gt;
+              &lt;gmd:geographicElement&gt;
+                &lt;gmd:EX_GeographicBoundingBox crs=&quot;urn:x-ogc:def:crs:EPSG:6.11:4326&quot;&gt;
+                  &lt;gmd:westBoundLongitude&gt;36.492&lt;/gmd:westBoundLongitude&gt;
+                  &lt;gmd:southBoundLatitude&gt;6.346&lt;/gmd:southBoundLatitude&gt;
+                  &lt;gmd:eastBoundLongitude&gt;46.591&lt;/gmd:eastBoundLongitude&gt;
+                  &lt;gmd:northBoundLatitude&gt;20.83&lt;/gmd:northBoundLatitude&gt;
+                &lt;/gmd:EX_GeographicBoundingBox&gt;
+              &lt;/gmd:geographicElement&gt;
+            &lt;/gmd:EX_Extent&gt;
+          &lt;/gmd:extent&gt;
+        &lt;/gmd:MD_DataIdentification&gt;
+        &lt;gmd:AbstractMD_Identification&gt;
+          &lt;gmd:citation&gt;
+            &lt;gmd:CI_Citation&gt;
+              &lt;gmd:title&gt;
+                &lt;gco:CharacterString&gt;mosaic&lt;/gco:CharacterString&gt;
+              &lt;/gmd:title&gt;
+            &lt;/gmd:CI_Citation&gt;
+          &lt;/gmd:citation&gt;
+          &lt;gmd:descriptiveKeywords&gt;
+            &lt;gmd:MD_Keywords&gt;
+              &lt;gmd:keyword&gt;
+                &lt;gco:CharacterString&gt;WCS&lt;/gco:CharacterString&gt;
+              &lt;/gmd:keyword&gt;
+              &lt;gmd:keyword&gt;
+                &lt;gco:CharacterString&gt;ImageMosaic&lt;/gco:CharacterString&gt;
+              &lt;/gmd:keyword&gt;
+              &lt;gmd:keyword&gt;
+                &lt;gco:CharacterString&gt;mosaic&lt;/gco:CharacterString&gt;
+              &lt;/gmd:keyword&gt;
+            &lt;/gmd:MD_Keywords&gt;
+          &lt;/gmd:descriptiveKeywords&gt;
+        &lt;/gmd:AbstractMD_Identification&gt;
+      &lt;/gmd:identificationInfo&gt;
+      &lt;gmd:contact&gt;
+        &lt;gmd:CI_ResponsibleParty&gt;
+          &lt;gmd:individualName&gt;
+            &lt;gco:CharacterString&gt;John Smith&lt;/gco:CharacterString&gt;
+          &lt;/gmd:individualName&gt;
+        &lt;/gmd:CI_ResponsibleParty&gt;
+      &lt;/gmd:contact&gt;
+      &lt;gmd:hierarchyLevel&gt;
+        &lt;gmd:MD_ScopeCode codeListValue=&quot;http://purl.org/dc/dcmitype/Dataset&quot;/&gt;
+      &lt;/gmd:hierarchyLevel&gt;
+    &lt;/gmd:MD_Metadata&gt;
+  &lt;/csw:SearchResults&gt;
+&lt;/csw:GetRecordsResponse&gt;
+</pre></div>
+</div>
+<p>We can request the domain of a property. For example, all values of “Title”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/csw?service=csw&amp;version=2.0.2&amp;request=GetDomain&amp;propertyName=Title
+</pre></div>
+</div>
+<p>This should yield the following result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;csw:GetDomainResponse xmlns:csw=&quot;http://www.opengis.net/cat/csw/2.0.2&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:dct=&quot;http://purl.org/dc/terms/&quot; xmlns:ows=&quot;http://www.opengis.net/ows/1.1&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/cat/csw/2.0.2 http://localhost:8080/geoserver/schemas/csw/2.0.2/CSW-discovery.xsd&quot;&gt;
+  &lt;csw:DomainValues type=&quot;csw:Record&quot;&gt;
+      &lt;csw:PropertyName&gt;Title&lt;/csw:PropertyName&gt;
+      &lt;csw:ListOfValues&gt;
+        &lt;csw:Value&gt;A sample ArcGrid file&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Manhattan (NY) landmarks&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Manhattan (NY) points of interest&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Manhattan (NY) roads&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;North America sample imagery&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Pk50095 is a A raster file accompanied by a spatial data file&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Spearfish archeological sites&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Spearfish bug locations&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Spearfish restricted areas&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Spearfish roads&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Spearfish streams&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Tasmania cities&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Tasmania roads&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Tasmania state boundaries&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;Tasmania water bodies&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;USA Population&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;World rectangle&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;mosaic&lt;/csw:Value&gt;
+        &lt;csw:Value&gt;sfdem is a Tagged Image File Format with Geographic information&lt;/csw:Value&gt;
+      &lt;/csw:ListOfValues&gt;
+  &lt;/csw:DomainValues&gt;
+&lt;/csw:GetDomainResponse&gt;
+</pre></div>
+</div>
+<p>To request more than the first 10 records or for more complex queries you can use a HTTP POST request with an XML query as the request body. For example, using the maxRecords option in the following request it is possible to return the first 50 layers with “ImageMosaic” in a keyword:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">csw</span>
+</pre></div>
+</div>
+<p>Postbody:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;GetRecords service=&quot;CSW&quot; version=&quot;2.0.2&quot; maxRecords=&quot;50&quot; startPosition=&quot;1&quot; resultType=&quot;results&quot; outputFormat=&quot;application/xml&quot; outputSchema=&quot;http://www.opengis.net/cat/csw/2.0.2&quot; xmlns=&quot;http://www.opengis.net/cat/csw/2.0.2&quot; xmlns:csw=&quot;http://www.opengis.net/cat/csw/2.0.2&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot; xmlns:ows=&quot;http://www.opengis.net/ows&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:dct=&quot;http://purl.org/dc/terms/&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/cat/csw/2.0.2 ../../../csw/2.0.2/CSW-discovery.xsd&quot;&gt;
+  &lt;Query typeNames=&quot;csw:Record&quot;&gt;
+    &lt;ElementSetName typeNames=&quot;csw:Record&quot;&gt;full&lt;/ElementSetName&gt;
+    &lt;Constraint version=&quot;1.1.0&quot;&gt;
+      &lt;ogc:Filter&gt;
+        &lt;ogc:PropertyIsLike wildCard=&quot;%&quot; singleChar=&quot;_&quot; escapeChar=&quot;\&quot;&gt;
+          &lt;ogc:PropertyName&gt;dc:subject&lt;/ogc:PropertyName&gt;
+          &lt;ogc:Literal&gt;%ImageMosaic%&lt;/ogc:Literal&gt;
+        &lt;/ogc:PropertyIsLike&gt;
+      &lt;/ogc:Filter&gt;
+    &lt;/Constraint&gt;
+  &lt;/Query&gt;
+&lt;/GetRecords&gt;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="mapping.html" title="previous chapter">CSW ISO Metadata Profile Mapping File</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../metadata/index.html" title="next chapter">Metadata</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Catalog Services for the Web (CSW) ISO Metadata tutorial</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#services">Services</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="mapping.html" title="previous chapter">CSW ISO Metadata Profile Mapping File</a></li>
+            <li>Next: <a href="../metadata/index.html" title="next chapter">Metadata</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/csw-iso/tutorial.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

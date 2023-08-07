@@ -1,0 +1,674 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WFS reference &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WFS output formats" href="outputformats.html" />
+    <link rel="prev" title="WFS basics" href="basics.html" /> 
+  </head><body class="services/wfs/reference">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Web Feature Service (WFS)</a> &raquo;</li>
+    <li>WFS reference</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="outputformats.html" title="WFS output formats" accesskey="N">Next</a></li>
+  <li>
+    <a href="basics.html" title="WFS basics" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wfs-reference">
+<span id="id1"></span><h1>WFS reference<a class="headerlink" href="#wfs-reference" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference external" href="http://www.opengeospatial.org/standards/wfs">Web Feature Service</a> (WFS) is a standard created by the Open Geospatial Consortium (OGC) for creating, modifying and exchanging vector format geographic information on the Internet using HTTP. A WFS encodes and transfers information in Geography Markup Language (GML), a subset of XML.</p>
+<p>The current version of WFS is <strong>2.0.0</strong>. GeoServer supports versions 2.0.0, 1.1.0, and 1.0.0. Although there are some important differences between the versions, the request syntax often remains the same.</p>
+<p>A related OGC specification, the <a class="reference internal" href="../wms/index.html#wms"><span class="std std-ref">Web Map Service (WMS)</span></a>, defines the standard for exchanging geographic information in digital image format.</p>
+<div class="section" id="benefits-of-wfs">
+<h2>Benefits of WFS<a class="headerlink" href="#benefits-of-wfs" title="Permalink to this headline">¶</a></h2>
+<p>The WFS standard defines the framework for providing access to, and supporting transactions on, discrete geographic features in a manner that is independent of the underlying data source. Through a combination of discovery, query, locking, and transaction operations, users have access to the source spatial and attribute data in a manner that allows them to interrogate, style, edit (create, update, and delete), and download individual features. The transactional capabilities of WFS also support the development and deployment of collaborative mapping applications.</p>
+</div>
+<div class="section" id="operations">
+<h2>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h2>
+<p>All versions of WFS support these operations:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GetCapabilities</span></code></p></td>
+<td><p>Generates a metadata document describing a WFS service provided by server  as well as valid WFS operations and parameters</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DescribeFeatureType</span></code></p></td>
+<td><p>Returns a description of feature types supported by a WFS service</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GetFeature</span></code></p></td>
+<td><p>Returns a selection of features from a data source including geometry and attribute values</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LockFeature</span></code></p></td>
+<td><p>Prevents a feature from being edited through a persistent feature lock</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></p></td>
+<td><p>Edits existing feature types by creating, updating, and deleting</p></td>
+</tr>
+</tbody>
+</table>
+<p>The following operations are available in <strong>version 2.0.0 only</strong>:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GetPropertyValue</span></code></p></td>
+<td><p>Retrieves the value of a feature property or part of the value of a complex feature property from the data store for a set of features identified using a query expression</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GetFeatureWithLock</span></code></p></td>
+<td><p>Returns a selection of features and also applies a lock on those features</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CreateStoredQuery</span></code></p></td>
+<td><p>Create a stored query on the WFS server</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DropStoredQuery</span></code></p></td>
+<td><p>Deletes a stored query from the WFS server</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ListStoredQueries</span></code></p></td>
+<td><p>Returns a list of the stored queries on a WFS server</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DescribeStoredQueries</span></code></p></td>
+<td><p>Returns a metadata document describing the stored queries on a WFS server</p></td>
+</tr>
+</tbody>
+</table>
+<p>The following operations are available in <strong>version 1.1.0 only</strong>:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GetGMLObject</span></code></p></td>
+<td><p>Retrieves features and elements by ID from a WFS</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the examples that follow, the fictional URL <code class="docutils literal notranslate"><span class="pre">http://example.com/geoserver/wfs</span></code> is used for illustration. To test the examples, substitute the address of a valid WFS. Also, although the request would normally be defined on one line with no breaks, breaks are added for clarity in the examples provided.</p>
+</div>
+</div>
+<div class="section" id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<p>WFS also supports a number of formats for reporting exceptions. The supported values for exception reporting are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 35%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Syntax</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>XML</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exceptions=text/xml</span></code></p></td>
+<td><p><em>(default)</em> XML output</p></td>
+</tr>
+<tr class="row-odd"><td><p>JSON</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exceptions=application/json</span></code></p></td>
+<td><p>Simple JSON</p></td>
+</tr>
+<tr class="row-even"><td><p>JSONP</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exceptions=text/javascript</span></code></p></td>
+<td><p>Return a JsonP in the form: parseResponse(…jsonp…). See <a class="reference internal" href="../wms/vendor.html#wms-vendor-parameters"><span class="std std-ref">WMS vendor parameters</span></a> to change the callback name. Note that this format is disabled by default (See <a class="reference internal" href="../wms/global.html#wms-global-variables"><span class="std std-ref">Global variables affecting WMS</span></a>).</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="getcapabilities">
+<span id="wfs-getcap"></span><h3>GetCapabilities<a class="headerlink" href="#getcapabilities" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>GetCapabilities</strong> operation is a request to a WFS server for a list of the operations and services, or <em>capabilities</em>, supported by that server.</p>
+<p>To issue a GET request using HTTP:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=1.1.0&amp;
+  request=GetCapabilities
+</pre></div>
+</div>
+<p>The equivalent request using POST:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;GetCapabilities</span>
+ <span class="na">service=</span><span class="s">&quot;WFS&quot;</span>
+ <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span>
+ <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+ <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wfs</span>
+<span class="s"> http://schemas.opengis.net/wfs/1.1.0/wfs.xsd&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>GET requests are simplest to decode, but the POST requests are equivalent.</p>
+<p>The parameters for GetCapabilities are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">service</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Service name—Value is <code class="docutils literal notranslate"><span class="pre">WFS</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">version</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Service version—Value is the current version number. The full version number must be supplied (“1.1.0”, “1.0.0”), not the abbreviated form (“1” or “1.1”).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Operation name—Value is <code class="docutils literal notranslate"><span class="pre">GetCapabilities</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Although all of the above parameters are technically required as per the specification, GeoServer will provide default values if any parameters are omitted from a request.</p>
+<p>The GetCapabilities response is a lengthy XML document, the format of which is different for each of the supported versions. There are five main components in a GetCapabilities document:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ServiceIdentification</span></code></p></td>
+<td><p>Contains basic header information for the request such as the <code class="docutils literal notranslate"><span class="pre">Title</span></code> and <code class="docutils literal notranslate"><span class="pre">ServiceType</span></code>. The <code class="docutils literal notranslate"><span class="pre">ServiceType</span></code> indicates which version(s) of WFS are supported.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ServiceProvider</span></code></p></td>
+<td><p>Provides contact information about the company publishing the WFS service, including telephone, website, and email.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OperationsMetadata</span></code></p></td>
+<td><p>Describes the operations that the WFS server supports and the parameters for each operation. A WFS server may be configured not to respond to the operations listed above.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FeatureTypeList</span></code></p></td>
+<td><p>Lists the feature types published by a WFS server. Feature types are listed in the form <code class="docutils literal notranslate"><span class="pre">namespace:featuretype</span></code>. The default projection of the feature type is also listed, along with the bounding box for the data in the stated projection.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Filter_Capabilities</span></code></p></td>
+<td><p>Lists the filters, or expressions, that are available to form query predicates, for example, <code class="docutils literal notranslate"><span class="pre">SpatialOperators</span></code> (such as <code class="docutils literal notranslate"><span class="pre">Equals</span></code>, <code class="docutils literal notranslate"><span class="pre">Touches</span></code>) and <code class="docutils literal notranslate"><span class="pre">ComparisonOperators</span></code> (such as <code class="docutils literal notranslate"><span class="pre">LessThan</span></code>, <code class="docutils literal notranslate"><span class="pre">GreaterThan</span></code>). The filters themselves are not included in the GetCapabilities document.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="describefeaturetype">
+<span id="wfs-dft"></span><h3>DescribeFeatureType<a class="headerlink" href="#describefeaturetype" title="Permalink to this headline">¶</a></h3>
+<p><strong>DescribeFeatureType</strong> requests information about an individual feature type before requesting the actual data. Specifically, the operation will request a list of features and attributes for the given feature type, or list the feature types available.</p>
+<p>The parameters for DescribeFeatureType are:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Required?</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">service</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Service name—Value is <code class="docutils literal notranslate"><span class="pre">WFS</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">version</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Service version—Value is the current version number</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Operation name—Value is <code class="docutils literal notranslate"><span class="pre">DescribeFeatureType</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">typeNames</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Name of the feature type to describe (<code class="docutils literal notranslate"><span class="pre">typeName</span></code> for WFS 1.1.0 and earlier)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">exceptions</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Format for reporting exceptions—default value is <code class="docutils literal notranslate"><span class="pre">application/vnd.ogc.se_xml</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">outputFormat</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Defines the scheme description language used to describe feature types</p></td>
+</tr>
+</tbody>
+</table>
+<p>To return a list of feature types, the GET request would be as follows. This request will return the list of feature types, sorted by namespace:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=DescribeFeatureType
+</pre></div>
+</div>
+<p>To list information about a specific feature type called <code class="docutils literal notranslate"><span class="pre">namespace:featuretype</span></code>, the GET request would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=DescribeFeatureType&amp;
+  typeNames=namespace:featuretype
+</pre></div>
+</div>
+</div>
+<div class="section" id="getfeature">
+<span id="wfs-getfeature"></span><h3>GetFeature<a class="headerlink" href="#getfeature" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>GetFeature</strong> operation returns a selection of features from the data source.</p>
+<p>This request will execute a GetFeature request for a given layer <code class="docutils literal notranslate"><span class="pre">namespace:featuretype</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype
+</pre></div>
+</div>
+<p>Executing this command will return the geometries for all features in given a feature type, potentially a large amount of data. To limit the output, you can restrict the GetFeature request to a single feature by including an additional parameter, <code class="docutils literal notranslate"><span class="pre">featureID</span></code> and providing the ID of a specific feature. In this case, the GET request would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  featureID=feature
+</pre></div>
+</div>
+<p>If the ID of the feature is unknown but you still want to limit the number of features returned, use the <code class="docutils literal notranslate"><span class="pre">count</span></code> parameter for WFS 2.0.0 or the <code class="docutils literal notranslate"><span class="pre">maxFeatures</span></code> parameter for earlier WFS versions. In the examples below, <code class="docutils literal notranslate"><span class="pre">N</span></code> represents the number of features to return:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  count=N
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=1.1.0&amp;
+  request=GetFeature&amp;
+  typeName=namespace:featuretype&amp;
+  maxFeatures=N
+</pre></div>
+</div>
+<p>Exactly which N features will be returned depends in the internal structure of the data. However, you can sort the returned selection based on an attribute value. In the following example, an attribute is included in the request using the <code class="docutils literal notranslate"><span class="pre">sortBy=attribute</span></code> parameter (replace <code class="docutils literal notranslate"><span class="pre">attribute</span></code> with the attribute you wish to sort by):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+   service=wfs&amp;
+   version=2.0.0&amp;
+   request=GetFeature&amp;
+   typeNames=namespace:featuretype&amp;
+   count=N&amp;
+   sortBy=attribute
+</pre></div>
+</div>
+<p>The default sort operation is to sort in ascending order. Some WFS servers require the sort order to be specified, even if an ascending order sort if required. In this case, append a <code class="docutils literal notranslate"><span class="pre">+A</span></code> to the request. Conversely, add a <code class="docutils literal notranslate"><span class="pre">+D</span></code> to the request to sort in descending order as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  count=N&amp;
+  sortBy=attribute+D
+</pre></div>
+</div>
+<p>There is no obligation to use <code class="docutils literal notranslate"><span class="pre">sortBy</span></code> with <code class="docutils literal notranslate"><span class="pre">count</span></code> in a GetFeature request, but they can be used together to manage the returned selection of features more effectively.</p>
+<p>To restrict a GetFeature request by attribute rather than feature, use the <code class="docutils literal notranslate"><span class="pre">propertyName</span></code> key in the form <code class="docutils literal notranslate"><span class="pre">propertyName=attribute</span></code>. You can specify a single attribute, or multiple attributes separated by commas. To search for a single attribute in all features, the following request would be required:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  propertyName=attribute
+</pre></div>
+</div>
+<p>For a single property from just one feature, use both <code class="docutils literal notranslate"><span class="pre">featureID</span></code> and <code class="docutils literal notranslate"><span class="pre">propertyName</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  featureID=feature&amp;
+  propertyName=attribute
+</pre></div>
+</div>
+<p>For more than one property from a single feature, use a comma-separated list of values for <code class="docutils literal notranslate"><span class="pre">propertyName</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  featureID=feature&amp;
+  propertyName=attribute1,attribute2
+</pre></div>
+</div>
+<p>While the above permutations for a GetFeature request focused on non-spatial parameters, it is also possible to query for features based on geometry. While there are limited options available in a GET request for spatial queries (more are available in POST requests using filters), filtering by bounding box (BBOX) is supported.</p>
+<p>The BBOX parameter allows you to search for features that are contained (or partially contained) inside a box of user-defined coordinates. The format of the BBOX parameter is <code class="docutils literal notranslate"><span class="pre">bbox=a1,b1,a2,b2,[crs]</span></code> where <code class="docutils literal notranslate"><span class="pre">a1</span></code>, <code class="docutils literal notranslate"><span class="pre">b1</span></code>, <code class="docutils literal notranslate"><span class="pre">a2</span></code>, and <code class="docutils literal notranslate"><span class="pre">b2</span></code> represent the coordinate values. The optional <code class="docutils literal notranslate"><span class="pre">crs</span></code> parameter is used to name the CRS for the bbox coordinates (if they are different to the featureTypes native CRS.) The order of coordinates passed to the BBOX parameter depends on the coordinate system used
+(this is why the coordinate syntax isn’t represented with <code class="docutils literal notranslate"><span class="pre">x</span></code> or <code class="docutils literal notranslate"><span class="pre">y</span></code>.)</p>
+<p>To specify the coordinate system for the returned features, append <code class="docutils literal notranslate"><span class="pre">srsName=CRS</span></code> to the WFS request, where <code class="docutils literal notranslate"><span class="pre">CRS</span></code> is the Coordinate Reference System you wish to use.</p>
+<p>As for which corners of the bounding box to specify, the only requirement is for a bottom corner (left or right) to be provided first. For example, bottom left and top right, or bottom right and top left.</p>
+<p>An example request returning features based on a bounding box (using the featureTypes native CRS):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  srsName=CRS&amp;
+  bbox=a1,b1,a2,b2
+</pre></div>
+</div>
+<p>To request features using a bounding box with CRS different from featureTypes native CRS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetFeature&amp;
+  typeNames=namespace:featuretype&amp;
+  srsName=CRS&amp;
+  bbox=a1,b1,a2,b2,CRS
+</pre></div>
+</div>
+</div>
+<div class="section" id="lockfeature">
+<h3>LockFeature<a class="headerlink" href="#lockfeature" title="Permalink to this headline">¶</a></h3>
+<p>A <strong>LockFeature</strong> operation provides a long-term feature locking mechanism to ensure consistency in edit transactions. If one client fetches a feature and makes some changes before submitting it back to the WFS, locks prevent other clients from making any changes to the same feature, ensuring a transaction that can be serialized. If a WFS server supports this operation, it will be reported in the server’s GetCapabilities response.</p>
+<p>In practice, few clients support this operation.</p>
+</div>
+<div class="section" id="transaction">
+<span id="wfs-wfst"></span><h3>Transaction<a class="headerlink" href="#transaction" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>Transaction</strong> operation can create, modify, and delete features published by a WFS. Each transaction will consist of zero or more Insert, Update, and Delete elements, with each transaction element performed in order. Every GeoServer transaction is <em>atomic</em>, meaning that if any of the elements fail, the transaction is abandoned, and the data is unaltered. A WFS server that supports <strong>transactions</strong> is sometimes known as a WFS-T server. <strong>GeoServer fully supports transactions.</strong></p>
+<p>More information on the syntax of transactions can be found in the <a class="reference external" href="http://www.opengeospatial.org/standards/wfs">WFS specification</a> and in the <a class="reference internal" href="../../configuration/demos/index.html#demos"><span class="std std-ref">GeoServer sample requests</span></a>.</p>
+</div>
+<div class="section" id="getgmlobject">
+<h3>GetGMLObject<a class="headerlink" href="#getgmlobject" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is valid for <strong>WFS version 1.1.0 only</strong>.</p>
+</div>
+<p>A <strong>GetGMLObject</strong> operation accepts the identifier of a GML object (feature or geometry) and returns that object. This operation is relevant only in situations that require <a class="reference internal" href="../../data/app-schema/complex-features.html#app-schema-complex-features"><span class="std std-ref">Complex Features</span></a> by allowing clients to extract just a portion of the nested properties of a complex feature. As a result, this operation is not widely used by client applications.</p>
+</div>
+<div class="section" id="getpropertyvalue">
+<h3>GetPropertyValue<a class="headerlink" href="#getpropertyvalue" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is valid for <strong>WFS version 2.0.0 only</strong>.</p>
+</div>
+<p>A <strong>GetPropertyValue</strong> operation retrieves the value of a feature property, or part of the value of a complex feature property, from a data source for a given set of features identified by a query.</p>
+<p>This example retrieves the geographic content only of the features in the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> layer:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  service=wfs&amp;
+  version=2.0.0&amp;
+  request=GetPropertyValue&amp;
+  typeNames=topp:states&amp;
+  valueReference=the_geom
+</pre></div>
+</div>
+<p>The same example in a POST request:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wfs:GetPropertyValue</span> <span class="na">service=</span><span class="s">&#39;WFS&#39;</span> <span class="na">version=</span><span class="s">&#39;2.0.0&#39;</span>
+ <span class="na">xmlns:topp=</span><span class="s">&#39;http://www.openplans.org/topp&#39;</span>
+ <span class="na">xmlns:fes=</span><span class="s">&#39;http://www.opengis.net/fes/2.0&#39;</span>
+ <span class="na">xmlns:wfs=</span><span class="s">&#39;http://www.opengis.net/wfs/2.0&#39;</span>
+ <span class="na">valueReference=</span><span class="s">&#39;the_geom&#39;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wfs:Query</span> <span class="na">typeNames=</span><span class="s">&#39;topp:states&#39;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/wfs:GetPropertyValue&gt;</span>
+</pre></div>
+</div>
+<p>To retrieve value for a different attribute, alter the <code class="docutils literal notranslate"><span class="pre">valueReference</span></code> parameter.</p>
+</div>
+<div class="section" id="getfeaturewithlock">
+<h3>GetFeatureWithLock<a class="headerlink" href="#getfeaturewithlock" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is valid for <strong>WFS version 2.0.0 only</strong>.</p>
+</div>
+<p>A <strong>GetFeatureWithLock</strong> operation is similar to a <strong>GetFeature</strong> operation, except that when the set of features are returned from the WFS server, the features are also locked in anticipation of a subsequent transaction operation.</p>
+<p>This POST example retrieves the features of the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> layer, but in addition locks those features for five minutes.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wfs:GetFeatureWithLock</span> <span class="na">service=</span><span class="s">&#39;WFS&#39;</span> <span class="na">version=</span><span class="s">&#39;2.0.0&#39;</span>
+ <span class="na">handle=</span><span class="s">&#39;GetFeatureWithLock-tc1&#39;</span> <span class="na">expiry=</span><span class="s">&#39;5&#39;</span> <span class="na">resultType=</span><span class="s">&#39;results&#39;</span>
+ <span class="na">xmlns:topp=</span><span class="s">&#39;http://www.openplans.org/topp&#39;</span>
+ <span class="na">xmlns:fes=</span><span class="s">&#39;http://www.opengis.net/fes/2.0&#39;</span>
+ <span class="na">xmlns:wfs=</span><span class="s">&#39;http://www.opengis.net/wfs/2.0&#39;</span>
+ <span class="na">valueReference=</span><span class="s">&#39;the_geom&#39;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wfs:Query</span> <span class="na">typeNames=</span><span class="s">&#39;topp:states&#39;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/wfs:GetFeatureWithLock&gt;</span>
+</pre></div>
+</div>
+<p>To adjust the lock time, alter the <code class="docutils literal notranslate"><span class="pre">expiry</span></code> parameter.</p>
+</div>
+<div class="section" id="createstoredquery">
+<h3>CreateStoredQuery<a class="headerlink" href="#createstoredquery" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is valid for <strong>WFS version 2.0.0 only</strong>.</p>
+</div>
+<p>A <strong>CreateStoredQuery</strong> operation creates a stored query on the WFS server. The definition of the stored query is encoded in the <code class="docutils literal notranslate"><span class="pre">StoredQueryDefinition</span></code> parameter and is given an ID for a reference.</p>
+<p>This POST example creates a new stored query (called “myStoredQuery”) that filters the <code class="docutils literal notranslate"><span class="pre">topp:states</span></code> layer to those features that are within a given area of interest (<code class="docutils literal notranslate"><span class="pre">${AreaOfInterest}</span></code>):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wfs:CreateStoredQuery</span> <span class="na">service=</span><span class="s">&#39;WFS&#39;</span> <span class="na">version=</span><span class="s">&#39;2.0.0&#39;</span>
+ <span class="na">xmlns:wfs=</span><span class="s">&#39;http://www.opengis.net/wfs/2.0&#39;</span>
+ <span class="na">xmlns:fes=</span><span class="s">&#39;http://www.opengis.org/fes/2.0&#39;</span>
+ <span class="na">xmlns:gml=</span><span class="s">&#39;http://www.opengis.net/gml/3.2&#39;</span>
+ <span class="na">xmlns:myns=</span><span class="s">&#39;http://www.someserver.com/myns&#39;</span>
+ <span class="na">xmlns:topp=</span><span class="s">&#39;http://www.openplans.org/topp&#39;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wfs:StoredQueryDefinition</span> <span class="na">id=</span><span class="s">&#39;myStoredQuery&#39;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;wfs:Parameter</span> <span class="na">name=</span><span class="s">&#39;AreaOfInterest&#39;</span> <span class="na">type=</span><span class="s">&#39;gml:Polygon&#39;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;wfs:QueryExpressionText</span>
+     <span class="na">returnFeatureTypes=</span><span class="s">&#39;topp:states&#39;</span>
+     <span class="na">language=</span><span class="s">&#39;urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression&#39;</span>
+     <span class="na">isPrivate=</span><span class="s">&#39;false&#39;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;wfs:Query</span> <span class="na">typeNames=</span><span class="s">&#39;topp:states&#39;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;fes:Filter&gt;</span>
+          <span class="nt">&lt;fes:Within&gt;</span>
+            <span class="nt">&lt;fes:ValueReference&gt;</span>the_geom<span class="nt">&lt;/fes:ValueReference&gt;</span>
+             ${AreaOfInterest}
+          <span class="nt">&lt;/fes:Within&gt;</span>
+        <span class="nt">&lt;/fes:Filter&gt;</span>
+      <span class="nt">&lt;/wfs:Query&gt;</span>
+    <span class="nt">&lt;/wfs:QueryExpressionText&gt;</span>
+  <span class="nt">&lt;/wfs:StoredQueryDefinition&gt;</span>
+<span class="nt">&lt;/wfs:CreateStoredQuery&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dropstoredquery">
+<h3>DropStoredQuery<a class="headerlink" href="#dropstoredquery" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is valid for <strong>WFS version 2.0.0 only</strong>.</p>
+</div>
+<p>A <strong>DropStoredQuery</strong> operation drops a stored query previous created by a CreateStoredQuery operation. The request accepts the ID of the query to drop.</p>
+<p>This example will drop a stored query with an ID of <code class="docutils literal notranslate"><span class="pre">myStoredQuery</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  request=DropStoredQuery&amp;
+  storedQuery_Id=myStoredQuery
+</pre></div>
+</div>
+<p>The same example in a POST request:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wfs:DropStoredQuery</span>
+ <span class="na">xmlns:wfs=</span><span class="s">&#39;http://www.opengis.net/wfs/2.0&#39;</span>
+ <span class="na">service=</span><span class="s">&#39;WFS&#39;</span> <span class="na">id=</span><span class="s">&#39;myStoredQuery&#39;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="liststoredqueries">
+<h3>ListStoredQueries<a class="headerlink" href="#liststoredqueries" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is valid for <strong>WFS version 2.0.0 only</strong>.</p>
+</div>
+<p>A <strong>ListStoredQueries</strong> operation returns a list of the stored queries currently maintained by the WFS server.</p>
+<p>This example lists all stored queries on the server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  request=ListStoredQueries&amp;
+  service=wfs&amp;
+  version=2.0.0
+</pre></div>
+</div>
+<p>The same example in a POST request:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wfs:ListStoredQueries</span> <span class="na">service=</span><span class="s">&#39;WFS&#39;</span>
+ <span class="na">version=</span><span class="s">&#39;2.0.0&#39;</span>
+ <span class="na">xmlns:wfs=</span><span class="s">&#39;http://www.opengis.net/wfs/2.0&#39;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="describestoredqueries">
+<h3>DescribeStoredQueries<a class="headerlink" href="#describestoredqueries" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is valid for <strong>WFS version 2.0.0 only</strong>.</p>
+</div>
+<p>A <strong>DescribeStoredQuery</strong> operation returns detailed metadata about each stored query maintained by the WFS server. A description of an individual query may be requested by providing the ID of the specific query. If no ID is provided, all queries are described.</p>
+<p>This example describes the existing stored query with an ID of <code class="docutils literal notranslate"><span class="pre">urn:ogc:def:query:OGC-WFS::GetFeatureById</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://example.com/geoserver/wfs?
+  request=DescribeStoredQueries&amp;
+  storedQuery_Id=urn:ogc:def:query:OGC-WFS::GetFeatureById
+</pre></div>
+</div>
+<p>The same example in a POST request:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wfs:DescribeStoredQueries</span>
+ <span class="na">xmlns:wfs=</span><span class="s">&#39;http://www.opengis.net/wfs/2.0&#39;</span>
+ <span class="na">service=</span><span class="s">&#39;WFS&#39;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;wfs:StoredQueryId&gt;</span>urn:ogc:def:query:OGC-WFS::GetFeatureById<span class="nt">&lt;/wfs:StoredQueryId&gt;</span>
+<span class="nt">&lt;/wfs:DescribeStoredQueries&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="basics.html" title="previous chapter">WFS basics</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="outputformats.html" title="next chapter">WFS output formats</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WFS reference</a><ul>
+<li><a class="reference internal" href="#benefits-of-wfs">Benefits of WFS</a></li>
+<li><a class="reference internal" href="#operations">Operations</a></li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a><ul>
+<li><a class="reference internal" href="#getcapabilities">GetCapabilities</a></li>
+<li><a class="reference internal" href="#describefeaturetype">DescribeFeatureType</a></li>
+<li><a class="reference internal" href="#getfeature">GetFeature</a></li>
+<li><a class="reference internal" href="#lockfeature">LockFeature</a></li>
+<li><a class="reference internal" href="#transaction">Transaction</a></li>
+<li><a class="reference internal" href="#getgmlobject">GetGMLObject</a></li>
+<li><a class="reference internal" href="#getpropertyvalue">GetPropertyValue</a></li>
+<li><a class="reference internal" href="#getfeaturewithlock">GetFeatureWithLock</a></li>
+<li><a class="reference internal" href="#createstoredquery">CreateStoredQuery</a></li>
+<li><a class="reference internal" href="#dropstoredquery">DropStoredQuery</a></li>
+<li><a class="reference internal" href="#liststoredqueries">ListStoredQueries</a></li>
+<li><a class="reference internal" href="#describestoredqueries">DescribeStoredQueries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="basics.html" title="previous chapter">WFS basics</a></li>
+            <li>Next: <a href="outputformats.html" title="next chapter">WFS output formats</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wfs/reference.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

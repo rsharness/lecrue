@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WMS Support &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="WFS 2.0 Support" href="wfs-2.0-support.html" />
+    <link rel="prev" title="Data Access Integration" href="data-access-integration.html" /> 
+  </head><body class="data/app-schema/wms-support">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>WMS Support</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="wfs-2.0-support.html" title="WFS 2.0 Support" accesskey="N">Next</a></li>
+  <li>
+    <a href="data-access-integration.html" title="Data Access Integration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="wms-support">
+<span id="app-schema-wms-support"></span><h1>WMS Support<a class="headerlink" href="#wms-support" title="Permalink to this headline">¶</a></h1>
+<p>App-schema supports WMS requests as well as WFS requests.
+This page provides some useful examples for configuring the WMS service to work with complex features.</p>
+<p>Note that the rendering performance of WMS can be significantly slower when using app-schema data stores. We strongly recommend employing <a class="reference internal" href="joining.html#app-schema-joining"><span class="std std-ref">Joining Support For Performance</span></a> when using WMS with feature chaining, which can make response time for large data requests several orders of magnitude faster.</p>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>For WMS to be applicable to complex feature data, it is necessary that the complex feature types are recognised by GeoServer as layers. This must be configured by adding an extra configuration file named ‘layer.xml’ in the data directory of each feature type that we want to use as a WMS layer.</p>
+<p>This will expand the structure of the <code class="docutils literal notranslate"><span class="pre">workspaces</span></code> folder in the GeoServer data directory as follows (<code class="docutils literal notranslate"><span class="pre">workspaces</span></code>) (see  <a class="reference internal" href="configuration.html#app-schema-configuration"><span class="std std-ref">Configuration</span></a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">workspaces</span>
+    <span class="o">-</span> <span class="n">gsml</span>
+        <span class="o">-</span> <span class="n">SomeDataStore</span>
+            <span class="o">-</span> <span class="n">SomeFeatureType</span>
+                <span class="o">-</span> <span class="n">featuretype</span><span class="o">.</span><span class="n">xml</span>
+                <span class="o">-</span> <span class="n">layer</span><span class="o">.</span><span class="n">xml</span>
+            <span class="o">-</span> <span class="n">datastore</span><span class="o">.</span><span class="n">xml</span>
+            <span class="o">-</span> <span class="n">SomeFeatureType</span><span class="o">-</span><span class="n">mapping</span><span class="o">-</span><span class="n">file</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<p>The file layer.xml must have the following contents:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="p">[</span><span class="n">mylayerid</span><span class="p">]</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="p">[</span><span class="n">mylayername</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">path</span><span class="o">&gt;/&lt;/</span><span class="n">path</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nb">type</span><span class="o">&gt;</span><span class="n">VECTOR</span><span class="o">&lt;/</span><span class="nb">type</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">defaultStyle</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="p">[</span><span class="n">mydefaultstyle</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">defaultStyle</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">resource</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;featureType&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="p">[</span><span class="n">myfeaturetypeid</span><span class="p">]</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">resource</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">enabled</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">enabled</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">attribution</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">logoWidth</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">logoWidth</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">logoHeight</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">logoHeight</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">attribution</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">layer</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Replace the fields in between brackets with the following values:</p>
+<ul class="simple">
+<li><p><strong>[mylayerid]</strong> must be a custom id for the layer.</p></li>
+<li><p><strong>[mylayername]</strong> must be a custom name for the layer.</p></li>
+<li><p><strong>[mydefaultstyle]</strong> the default style used for this layer (when a style is not specified in the wms request). The style must exist in the GeoServer configuration.</p></li>
+<li><p><strong>[myfeaturetypeid]</strong> is the id of the feature type. This <em>must</em> the same as the id specified in the file featuretype.xml of the same directory.</p></li>
+</ul>
+</div>
+<div class="section" id="getmap">
+<h2>GetMap<a class="headerlink" href="#getmap" title="Permalink to this headline">¶</a></h2>
+<p>Read <a class="reference internal" href="../../services/wms/reference.html#wms-getmap"><span class="std std-ref">GetMap</span></a> for general information on the GetMap request.
+Read <a class="reference internal" href="../../styling/index.html#styling"><span class="std std-ref">Styling</span></a> for general information on how to style WMS maps with SLD files.
+When styling complex features, you can use XPaths to specify nested properties in your filters, as explained in <a class="reference internal" href="feature-chaining.html#app-schema-filtering-nested"><span class="std std-ref">Filtering nested attributes on chained features</span></a>. However,  in WMS styling filters X-paths do not support handling referenced features (see  <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining-by-reference"><span class="std std-ref">Multi-valued properties by reference (xlink:href)</span></a>) as if they were actual nested features (because the filters are applied after building the features rather than before.)
+The prefix/namespace context that is used in the XPath expression is defined locally in the XML tags of the style file.
+This is an example of a Style file for complex features:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="lineno"> 2 </span><span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
+<span class="lineno"> 3 </span>    <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;</span>
+<span class="lineno"> 4 </span>    <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+<span class="lineno"> 5 </span>    <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+<span class="lineno"> 6 </span>    <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+<span class="lineno"> 7 </span>    <span class="na">xmlns:gsml=</span><span class="s">&quot;urn:cgi:xmlns:CGI:GeoSciML:2.0&quot;</span>
+<span class="lineno"> 8 </span>    <span class="na">xmlns:sld=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span>
+<span class="lineno"> 9 </span>    <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+<span class="lineno">10 </span> <span class="nt">&lt;sld:NamedLayer&gt;</span>
+<span class="lineno">11 </span>  <span class="nt">&lt;sld:Name&gt;</span>geology-lithology<span class="nt">&lt;/sld:Name&gt;</span>
+<span class="lineno">12 </span>  <span class="nt">&lt;sld:UserStyle&gt;</span>
+<span class="lineno">13 </span>    <span class="nt">&lt;sld:Name&gt;</span>geology-lithology<span class="nt">&lt;/sld:Name&gt;</span>
+<span class="lineno">14 </span>    <span class="nt">&lt;sld:Title&gt;</span>Geological Unit Lithology Theme<span class="nt">&lt;/sld:Title&gt;</span>
+<span class="lineno">15 </span>    <span class="nt">&lt;sld:Abstract&gt;</span>The colour has been creatively adapted from Moyer,Hasting
+<span class="lineno">16 </span>         and Raines, 2005 (http://pubs.usgs.gov/of/2005/1314/of2005-1314.pdf)
+<span class="lineno">17 </span>         which provides xls spreadsheets for various color schemes.
+<span class="lineno">18 </span>         plus some creative entries to fill missing entries.
+<span class="lineno">19 </span>    <span class="nt">&lt;/sld:Abstract&gt;</span>
+<span class="lineno">20 </span>    <span class="nt">&lt;sld:IsDefault&gt;</span>1<span class="nt">&lt;/sld:IsDefault&gt;</span>
+<span class="lineno">21 </span>    <span class="nt">&lt;sld:FeatureTypeStyle&gt;</span>
+<span class="lineno">22 </span>      <span class="nt">&lt;sld:Rule&gt;</span>
+<span class="lineno">23 </span>        <span class="nt">&lt;sld:Name&gt;</span>acidic igneous material<span class="nt">&lt;/sld:Name&gt;</span>
+<span class="lineno">24 </span>        <span class="nt">&lt;sld:Abstract&gt;</span>Igneous material with more than 63 percent SiO2.
+<span class="lineno">25 </span>                       (after LeMaitre et al. 2002)
+<span class="lineno">26 </span>        <span class="nt">&lt;/sld:Abstract&gt;</span>
+<span class="lineno">27 </span>        <span class="nt">&lt;ogc:Filter&gt;</span>
+<span class="lineno">28 </span>          <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+<span class="lineno">29 </span>            <span class="nt">&lt;ogc:PropertyName&gt;</span>gsml:specification/gsml:GeologicUnit/gsml:composition/
+<span class="lineno">30 </span>                 gsml:CompositionPart/gsml:lithology/@xlink:href<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">31 </span>            <span class="nt">&lt;ogc:Literal&gt;</span>urn:cgi:classifier:CGI:SimpleLithology:200811:
+<span class="lineno">32 </span>                         acidic_igneous_material<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">33 </span>          <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+<span class="lineno">34 </span>        <span class="nt">&lt;/ogc:Filter&gt;</span>
+<span class="lineno">35 </span>        <span class="nt">&lt;sld:PolygonSymbolizer&gt;</span>
+<span class="lineno">36 </span>          <span class="nt">&lt;sld:Fill&gt;</span>
+<span class="lineno">37 </span>            <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FFCCB3<span class="nt">&lt;/sld:CssParameter&gt;</span>
+<span class="lineno">38 </span>          <span class="nt">&lt;/sld:Fill&gt;</span>
+<span class="lineno">39 </span>        <span class="nt">&lt;/sld:PolygonSymbolizer&gt;</span>
+<span class="lineno">40 </span>      <span class="nt">&lt;/sld:Rule&gt;</span>
+<span class="lineno">41 </span>      <span class="nt">&lt;sld:Rule&gt;</span>
+<span class="lineno">42 </span>        <span class="nt">&lt;sld:Name&gt;</span>acidic igneous rock<span class="nt">&lt;/sld:Name&gt;</span>
+<span class="lineno">43 </span>        <span class="nt">&lt;sld:Abstract&gt;</span>Igneous rock with more than 63 percent SiO2.
+<span class="lineno">44 </span>                     (after LeMaitre et al. 2002)
+<span class="lineno">45 </span>        <span class="nt">&lt;/sld:Abstract&gt;</span>
+<span class="lineno">46 </span>        <span class="nt">&lt;ogc:Filter&gt;</span>
+<span class="lineno">47 </span>          <span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
+<span class="lineno">48 </span>            <span class="nt">&lt;ogc:PropertyName&gt;</span>gsml:specification/gsml:GeologicUnit/gsml:composition/
+<span class="lineno">49 </span>                 gsml:CompositionPart/gsml:lithology/@xlink:href<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+<span class="lineno">50 </span>            <span class="nt">&lt;ogc:Literal&gt;</span>urn:cgi:classifier:CGI:SimpleLithology:200811:
+<span class="lineno">51 </span>                         acidic_igneous_rock<span class="nt">&lt;/ogc:Literal&gt;</span>
+<span class="lineno">52 </span>            <span class="nt">&lt;/ogc:PropertyIsEqualTo&gt;</span>
+<span class="lineno">53 </span>        <span class="nt">&lt;/ogc:Filter&gt;</span>
+<span class="lineno">54 </span>        <span class="nt">&lt;sld:PolygonSymbolizer&gt;</span>
+<span class="lineno">55 </span>          <span class="nt">&lt;sld:Fill&gt;</span>
+<span class="lineno">56 </span>            <span class="nt">&lt;sld:CssParameter</span> <span class="na">name=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>#FECDB2<span class="nt">&lt;/sld:CssParameter&gt;</span>
+<span class="lineno">57 </span>          <span class="nt">&lt;/sld:Fill&gt;</span>
+<span class="lineno">58 </span>        <span class="nt">&lt;/sld:PolygonSymbolizer&gt;</span>
+<span class="lineno">59 </span>      <span class="nt">&lt;/sld:Rule&gt;</span>
+<span class="lineno">60 </span>      ...
+<span class="lineno">61 </span>    <span class="nt">&lt;/sld:FeatureTypeStyle&gt;</span>
+<span class="lineno">62 </span>  <span class="nt">&lt;/sld:UserStyle&gt;</span>
+<span class="lineno">63 </span> <span class="nt">&lt;/sld:NamedLayer&gt;</span>
+<span class="lineno">64 </span><span class="nt">&lt;/sld:StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getfeatureinfo">
+<h2>GetFeatureInfo<a class="headerlink" href="#getfeatureinfo" title="Permalink to this headline">¶</a></h2>
+<p>Read <a class="reference internal" href="../../services/wms/reference.html#wms-getfeatureinfo"><span class="std std-ref">GetFeatureInfo</span></a> for general information on the GetFeatureInfo request.
+Read the tutorial on <a class="reference internal" href="../../tutorials/GetFeatureInfo/index.html#tutorials-getfeatureinfo"><span class="std std-ref">GetFeatureInfo Templates</span></a> for information on how to template the html output.
+If you want to store a separate standard template for complex feature collections, save it under the filename
+<code class="docutils literal notranslate"><span class="pre">complex_content.ftl</span></code> in the template directory.</p>
+<p>Read the tutorial on <a class="reference internal" href="../../tutorials/freemarker.html#tutorial-freemarkertemplate"><span class="std std-ref">Freemarker Templates</span></a> for more information on how to use the freemarker templates.
+Freemarker templates support recursive calls, which can be useful for templating complex content.
+For example, the following freemarker template creates a table of features with a column for each property,
+and will create another table inside each cell that contains a feature as property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;#--
+Macro&#39;s used for content
+--&gt;
+
+&lt;#macro property node&gt;
+    &lt;#if !node.isGeometry&gt;
+      &lt;#if node.isComplex&gt;
+      &lt;td&gt; &lt;@feature node=node.rawValue type=node.type /&gt; &lt;/td&gt;
+      &lt;#else&gt;
+      &lt;td&gt;${node.value?string}&lt;/td&gt;
+      &lt;/#if&gt;
+    &lt;/#if&gt;
+&lt;/#macro&gt;
+
+&lt;#macro header typenode&gt;
+&lt;caption class=&quot;featureInfo&quot;&gt;${typenode.name}&lt;/caption&gt;
+  &lt;tr&gt;
+  &lt;th&gt;fid&lt;/th&gt;
+&lt;#list typenode.attributes as attribute&gt;
+  &lt;#if !attribute.isGeometry&gt;
+    &lt;#if attribute.prefix == &quot;&quot;&gt;
+        &lt;th &gt;${attribute.name}&lt;/th&gt;
+    &lt;#else&gt;
+        &lt;th &gt;${attribute.prefix}:${attribute.name}&lt;/th&gt;
+    &lt;/#if&gt;
+  &lt;/#if&gt;
+&lt;/#list&gt;
+  &lt;/tr&gt;
+&lt;/#macro&gt;
+
+&lt;#macro feature node type&gt;
+&lt;table class=&quot;featureInfo&quot;&gt;
+  &lt;@header typenode=type /&gt;
+  &lt;tr&gt;
+  &lt;td&gt;${node.fid}&lt;/td&gt;
+  &lt;#list node.attributes as attribute&gt;
+      &lt;@property node=attribute /&gt;
+  &lt;/#list&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/#macro&gt;
+
+&lt;#--
+Body section of the GetFeatureInfo template, it&#39;s provided with one feature collection, and
+will be called multiple times if there are various feature collections
+--&gt;
+&lt;table class=&quot;featureInfo&quot;&gt;
+  &lt;@header typenode=type /&gt;
+
+&lt;#assign odd = false&gt;
+&lt;#list features as feature&gt;
+  &lt;#if odd&gt;
+    &lt;tr class=&quot;odd&quot;&gt;
+  &lt;#else&gt;
+    &lt;tr&gt;
+  &lt;/#if&gt;
+  &lt;#assign odd = !odd&gt;
+
+  &lt;td&gt;${feature.fid}&lt;/td&gt;
+  &lt;#list feature.attributes as attribute&gt;
+    &lt;@property node=attribute /&gt;
+  &lt;/#list&gt;
+  &lt;/tr&gt;
+&lt;/#list&gt;
+&lt;/table&gt;
+&lt;br/&gt;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="data-access-integration.html" title="previous chapter">Data Access Integration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="wfs-2.0-support.html" title="next chapter">WFS 2.0 Support</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">WMS Support</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#getmap">GetMap</a></li>
+<li><a class="reference internal" href="#getfeatureinfo">GetFeatureInfo</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="data-access-integration.html" title="previous chapter">Data Access Integration</a></li>
+            <li>Next: <a href="wfs-2.0-support.html" title="next chapter">WFS 2.0 Support</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/wms-support.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

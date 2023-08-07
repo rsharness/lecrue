@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basic Concepts &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="TaskManager User Guide" href="user.html" />
+    <link rel="prev" title="Geoserver Task Manager" href="index.html" /> 
+  </head><body class="community/taskmanager/basic">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Geoserver Task Manager</a> &raquo;</li>
+    <li>Basic Concepts</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="user.html" title="TaskManager User Guide" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="Geoserver Task Manager" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="basic-concepts">
+<h1>Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this headline">¶</a></h1>
+<p>The two main kinds of objects of the <a class="reference external" href="index.html">Task Manager</a> are
+<a class="reference external" href="#configurations">configurations</a> and <a class="reference external" href="#batches">batches</a>. Task
+Manager also allows the creation of <a class="reference external" href="#templates">Templates</a> for
+configurations.</p>
+<div class="section" id="configurations">
+<h2>Configurations<a class="headerlink" href="#configurations" title="Permalink to this headline">¶</a></h2>
+<p>The configuration is the central object in the Task Manager. A
+configuration is typically linked to a data object, such as a GeoServer
+layer, and serves as an entry point to the tasks and batches related to
+this data object.</p>
+<p>A configuration has a unique name, a description and a workspace. It
+contains three groups of objects:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Attributes</span></code>: The attributes contain information about this
+configuration that can be shared between the different tasks of this
+configuration. An attribute has a name and a value. Each attribute is
+associated with at least one task parameter (see below). Attributes
+inherit their validation properties from their associated parameters,
+such as its accepted values and whether it is required.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tasks</span></code>: Each task configures an operation that can be executed on
+this configuration. Each task has a name that is unique within the
+configuration, a type and a list of parameters with each a name and a
+value. The full name of a task is donated as
+<em>configuration-name/task-name</em> (which serves as a unique identifier
+for the task). The task’s type is chosen from a <a class="reference external" href="user.html#task-types">list of available
+task types</a> which define different kinds of
+operations (for example: copy a database table, publish a layer, ..)
+and expects a list of parameters that each has a name and a type. A
+parameter may or may not be required. The parameter type defines the
+accepted values of the parameter. Parameter types are dependent types
+when the list of accepted values depends on the value of another
+parameter (for example: tables inside a database). A parameter value
+is either a literal or a reference to an attribute of the form
+<code class="docutils literal notranslate"><span class="pre">${attribute-name}</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Batches</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="batches">
+<h2>Batches<a class="headerlink" href="#batches" title="Permalink to this headline">¶</a></h2>
+<p>A batch is made of an ordered sequence of tasks that can either be run
+on demand or be scheduled to run repeatedly at specific times. There are
+two kinds of batches:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Configuration</span> <span class="pre">batches</span></code>: these are batches that belong to a
+configuration. All of the tasks inside this batch are tasks that
+belong to that same configuration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Independent</span> <span class="pre">batches</span></code>: these are batches that do not belong to a
+configuration. They may contains tasks from any existing
+configuration.</p></li>
+</ul>
+<p>A batch has a name, a description and a workspace. The name of a batch
+must be unique amongst its configuration or amongst all independent
+batches. The full name of a batch is denoted as
+<em>[configuration-name:]batch-name</em> which serves as a unique identifier
+for the batch.</p>
+<p>Configuration batches that have a name starting with a <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>, are hidden
+from the general batch overview and are only accessible from their
+configuration. Hidden batch names may be reserved for special functions.
+At this point, there is only one such case (see <a class="reference external" href="#templates">Initializing
+templates</a>).</p>
+<p>A batch can be run manually if the following conditions are met:</p>
+<ul class="simple">
+<li><p>the list of tasks is non-empty;</p></li>
+<li><p>the operating user has the security rights to do so (see
+<a class="reference external" href="user.html#security">Security</a>).</p></li>
+</ul>
+<p>A batch will be run automatically on its scheduled time if the following
+conditions are met:</p>
+<ul class="simple">
+<li><p>the list of tasks is non-empty;</p></li>
+<li><p>the batch is enabled;</p></li>
+<li><p>the batch has a frequency configured other than <code class="docutils literal notranslate"><span class="pre">NEVER</span></code>;</p></li>
+<li><p>the batch is independent or its configuration has been completed,
+i.e. validated without errors (in some cases a configuration may be
+saved before it is validated, see <a class="reference external" href="#templates">Initializing
+templates</a>).</p></li>
+</ul>
+<div class="section" id="running-a-batch">
+<h3>Running a batch<a class="headerlink" href="#running-a-batch" title="Permalink to this headline">¶</a></h3>
+<p>The batch is executed in two phases:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">RUN</span></code> phase: tasks are executed in the defined order. If an error
+occurs or the run is manually intermitted, cease execution and go to
+<code class="docutils literal notranslate"><span class="pre">ROLLBACK</span></code> phase. If all tasks finish successfully, go to <code class="docutils literal notranslate"><span class="pre">COMMIT</span></code>
+phase.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">COMMIT/ROLLBACK</span></code> phase: tasks are committed or rollbacked in the
+<em>opposite</em> order.</p></li>
+</ul>
+<p>Consider a batch with three tasks</p>
+<p><em>B = T1 -&gt; T2 -&gt; T3</em>.</p>
+<p>A normal run would then be</p>
+<p><em>run T1 -&gt; run T2 -&gt; run T3 -&gt; commit T3 -&gt; commit T2 -&gt; commit T1</em>.</p>
+<p>However, if T2 fails, the run would be</p>
+<p><em>run T1 -&gt; run T2 (failure) -&gt; rollback T1</em>.</p>
+<p>Most tasks support <code class="docutils literal notranslate"><span class="pre">COMMIT/ROLLBACK</span></code> by creating temporary objects
+that only become definite objects after a <code class="docutils literal notranslate"><span class="pre">COMMIT</span></code>. The <code class="docutils literal notranslate"><span class="pre">ROLLBACK</span></code>
+phase then simply cleans up those temporary objects. However, some
+particular <a class="reference external" href="user.html#task-types">task types</a> may not support the
+<code class="docutils literal notranslate"><span class="pre">COMMIT/ROLLBACK</span></code> mechanism (in which case running them is definite).</p>
+<p>The commit phase happens in opposite order because dependencies in the
+old version of the data often requires this. A concrete example may
+clear things up. Imagine that <em>T1</em> copies a database table <em>R</em> from one
+database to another, while <em>T2</em> creates a view <em>V</em> based on that table,
+so <em>V</em> depends on <em>R</em>. If the table and view already exist in older
+versions (<em>R_old</em> and <em>V_old</em>), they must not be removed until the
+<code class="docutils literal notranslate"><span class="pre">COMMIT</span></code> phase, so that their original state remains in the case of a
+<code class="docutils literal notranslate"><span class="pre">ROLLBACK</span></code>. During the <code class="docutils literal notranslate"><span class="pre">COMMIT</span></code> phase, <em>R_old</em> and <em>V_old</em> are
+removed, but it is not possible to remove <em>R_old</em> until <em>V_old</em> is
+removed. Therefore it is necessary to commit <em>T2</em> before <em>T1</em>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">COMMIT</span></code> phase typically replaces old objects with the new objects
+that have a temporary name. Since tasks often create objects that depend
+on objects of the previous tasks, these objects contain references to
+temporary names. Which means that when the temporary object is committed
+and becomes the real object, references in depending objects must also
+be updated. For this purpose, a tasks that uses a temporary object from
+a previous task registers a <em>dependency</em>, which is essentially an update
+added to the commit phase of that previous task.</p>
+<p>If <em>T3</em> has a dependency on task <em>T1</em> that we call <em>D1</em>, the following
+happens:</p>
+<p><em>run T1 -&gt; run T2 -&gt; run T3, register D1 -&gt; commit T3 -&gt; commit T2 -&gt;
+commit T1, update D1</em>.</p>
+<p>Let’s make it clearer again using an example. During the <code class="docutils literal notranslate"><span class="pre">RUN</span></code> phase
+<em>T1</em> creates table <em>R1_temp</em> and <em>T2</em> creates <em>V1_temp</em> that depends
+on <em>R1_temp</em>, this dependency will be registered. During the commit
+phase, <em>T2</em> will replace <em>V1</em> by <em>V1_temp</em>. Then, <em>T1</em> will replace
+<em>T1</em> by <em>T1_temp</em>. However, <em>V1</em> may still reference <em>T1_temp</em> which
+no longer exists. Therefore, <em>T1</em> will use the registered dependency to
+update <em>V1</em> to refer to <em>T1</em> instead of <em>T1_temp</em>.</p>
+<p>Within a batch run, each task that has yet started has a status. These
+are the possible statuses:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>: the task is currently running.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WAITING_TO_COMMIT</span></code>: the task has finished running, but is waiting
+to commit (or rollback) while other tasks are running or committing
+(or rolling back).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">COMMITTING</span></code>: the task is currently committing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROLLING_BACK</span></code>: the task is currently rolling back.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">COMMITTED</span></code>: the task was successfully committed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROLLED_BACK</span></code>: the task was successfully rolled back.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NOT_COMMITTED</span></code>: the task was supposed to commit but failed during
+the commit phase.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NOT_ROLLED_BACK</span></code>: the task was supposed to roll back but failed
+during roll back phase.</p></li>
+</ul>
+<p>A task is consired finished if its status is not <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WAITING_TO_COMMIT</span></code>, <code class="docutils literal notranslate"><span class="pre">ROLLING_BACK</span></code> or <code class="docutils literal notranslate"><span class="pre">COMMITTING</span></code>. A batch run
+does not have its own status, but it takes on the status of the last
+task that has started but is not <code class="docutils literal notranslate"><span class="pre">COMMITTED</span></code> or <code class="docutils literal notranslate"><span class="pre">ROLLED_BACK</span></code>. A
+batch run is considered finished if its status is not <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WAITING_TO_COMMIT</span></code> or <code class="docutils literal notranslate"><span class="pre">COMMITTING</span></code>.</p>
+<p>There is concurrency protection both on the level of tasks and batches.
+A single batch can never run simultaneously in multiple runs (the second
+run will wait for the first one to finish). A single task can never run
+simultaneously in multiple runs, even if part of a different batch. A
+single task can also not commit simultaneously in multiple runs.</p>
+</div>
+</div>
+<div class="section" id="templates">
+<h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
+<p>Templates are in every way identical to configurations, with the
+exception of:</p>
+<ul class="simple">
+<li><p>they are never validated when saved (their attributes need not be
+filled in) and</p></li>
+<li><p>their tasks and batches can never be executed.</p></li>
+</ul>
+<p>A template is used as a blueprint for the creation of configurations
+that are very similar to each other. Typically, the tasks are all the
+same but the attribute values are different. However, a template may
+also have attribute values filled in that serve as defaults.</p>
+<p>Once a configuration is created from a template, it is independent from
+that template (changes to the template do not affect it). The
+configuration can then be modified like any other configuration,
+including the removal, addition and manipulation of tasks.</p>
+<div class="section" id="initializing-templates">
+<h3>Initializing templates<a class="headerlink" href="#initializing-templates" title="Permalink to this headline">¶</a></h3>
+<p>An initializing template is any template that has a batch named
+<code class="docutils literal notranslate"><span class="pre">&#64;Initialize</span></code> (case sensitive), which configures special behaviour.
+The purpose of this batch is to execute some tasks that must have been
+done at least once until some other tasks can actually be configured.
+For example, you may want to create a vector layer based on that table
+copied from a source database, then synchronise this layer to a target
+geoserver. The task that synchronizes a layer to the external geoserver
+will expect an existing configured layer, which you cannot create until
+you have copied the table first. The <code class="docutils literal notranslate"><span class="pre">&#64;Initialize</span></code> batch would in this
+case copy the table from the source and create a layer in the local
+geoserver.</p>
+<p>When creating a configuration from this template, configuration happens
+in two phases</p>
+<ul class="simple">
+<li><ol class="arabic simple">
+<li><p>Initially, only attributes related to tasks in the
+<code class="docutils literal notranslate"><span class="pre">&#64;Initialize</span></code> batch must be configured. When the configuration
+is saved, the <code class="docutils literal notranslate"><span class="pre">&#64;Initialize</span></code> batch is automatically executed.</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="2">
+<li><p>Now, all other attributes and tasks must be configured and the
+configuration must be saved again.</p></li>
+</ol>
+</li>
+</ul>
+<p>This is the only case that a configuration can be saved before all the
+required attributes are filled in. Mind that batches will not be
+scheduled or visible in the general overview until the batch has been
+saved again (and the attributes have thus been validated).</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">Geoserver Task Manager</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="user.html" title="next chapter">TaskManager User Guide</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Basic Concepts</a><ul>
+<li><a class="reference internal" href="#configurations">Configurations</a></li>
+<li><a class="reference internal" href="#batches">Batches</a><ul>
+<li><a class="reference internal" href="#running-a-batch">Running a batch</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#templates">Templates</a><ul>
+<li><a class="reference internal" href="#initializing-templates">Initializing templates</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">Geoserver Task Manager</a></li>
+            <li>Next: <a href="user.html" title="next chapter">TaskManager User Guide</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/taskmanager/basic.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

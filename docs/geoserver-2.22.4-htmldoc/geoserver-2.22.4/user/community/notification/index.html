@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notification community module Plugin Documentation &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Authentication with OAuth2" href="../oauth2/index.html" />
+    <link rel="prev" title="GHRSST NetCDF output" href="../netcdf-ghrsst/index.html" /> 
+  </head><body class="community/notification/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>Notification community module Plugin Documentation</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../oauth2/index.html" title="Authentication with OAuth2" accesskey="N">Next</a></li>
+  <li>
+    <a href="../netcdf-ghrsst/index.html" title="GHRSST NetCDF output" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="notification-community-module-plugin-documentation">
+<span id="notification-plugin"></span><h1>Notification community module Plugin Documentation<a class="headerlink" href="#notification-community-module-plugin-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The notification community module is meant to be a pluggable system to listen, summarize and notify events triggered by GeoServer data and configuration manipulation to some external source, in some agreed upon format.</p>
+<p>The events of interest are:</p>
+<ol class="arabic simple">
+<li><p><strong>Catalog configuration changes</strong> (insert/update/removal of layers, styles, workspaces, stores, groups and so on)</p></li>
+<li><p><strong>Data changes via WFS-T</strong> (anything that can affect the data precise bounding box)</p></li>
+</ol>
+<p>The system is completely pluggable in terms of notification destinations, potential targets can be direct HTTP calls to external system, message queues, log files, email.
+The message format can also vary depending on the target and intended usage, both in terms of contents, e.g., it could be full of details or simply an indication of what changed, and encoding, e.g., xml, json, text, html.</p>
+<div class="section" id="overall-architecture">
+<h2>Overall architecture<a class="headerlink" href="#overall-architecture" title="Permalink to this headline">¶</a></h2>
+<p>The overall architecture is depicted in the following diagram:</p>
+<div class="figure align-center">
+<img alt="../../_images/architecture.png" src="../../_images/architecture.png" />
+</div>
+<p>The system basically generates a set of events, has a configuration to match them with a desired tool to send the message out (the processor).
+The sender can be conceived as a the combination of an “encoder” that generates the message payload and a “sender”.</p>
+<p>Each message is combined with its processor and send into a destination queue, where  a thread pool picks the events and runs their processor. For some type of events, like catalog ones, the thread pool will have to be configured with just one thread to make sure the events are sent in the right order to the destinations.</p>
+</div>
+<div class="section" id="installing-the-extension">
+<h2>Installing the extension<a class="headerlink" href="#installing-the-extension" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Download the Notification extension from the nightly GeoServer community module builds.</p></li>
+<li><p>Download the Notification Common extension from the nightly GeoServer community module builds.</p></li>
+<li><p>(optional) If you want use sender/encoder provided for GeoNode, download the Notification Geonode extension from the nightly GeoServer community module builds.</p></li>
+<li><p>Place the JARs into the <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory of the GeoServer installation.</p></li>
+</ol>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The usage of the extensions is based on two components that defines its behavior and logic:</p>
+<ul class="simple">
+<li><p>A configuration file named notifier.xml that must be present on a “notifier” subfolder of Geoserver root data directory (if extensions found no one <code class="docutils literal notranslate"><span class="pre">notifier.xml</span></code> file under  notifier folder, will create a new one with default values)</p></li>
+<li><p>A JAR that implements the specific logic of sender/encoder</p></li>
+</ul>
+</div>
+<div class="section" id="configuration-file">
+<h2>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>The configuration file will be parsed by XStream framework to instantiate the right classes. An example of notifier.xml have the follow content:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">notificationConfiguration</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">queueSize</span><span class="o">&gt;</span><span class="mi">1000</span><span class="o">&lt;/</span><span class="n">queueSize</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">notificator</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">messageFilter</span><span class="o">&gt;</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Catalog&#39;</span><span class="o">&lt;/</span><span class="n">messageFilter</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">queueSize</span><span class="o">&gt;</span><span class="mi">1000</span><span class="o">&lt;/</span><span class="n">queueSize</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">processorThreads</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">processorThreads</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">genericProcessor</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">geonodeEncoder</span> <span class="o">/&gt;</span>
+          <span class="o">&lt;</span><span class="n">fanoutSender</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">username</span><span class="o">&gt;</span><span class="n">guest</span><span class="o">&lt;/</span><span class="n">username</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">password</span><span class="o">&gt;</span><span class="n">guest</span><span class="o">&lt;/</span><span class="n">password</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">host</span><span class="o">&gt;</span><span class="n">localhost</span><span class="o">&lt;/</span><span class="n">host</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">port</span><span class="o">&gt;</span><span class="mi">4432</span><span class="o">&lt;/</span><span class="n">port</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">virtualHost</span><span class="o">&gt;&lt;/</span><span class="n">virtualHost</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">exchangeName</span><span class="o">&gt;</span><span class="n">testExchange</span><span class="o">&lt;/</span><span class="n">exchangeName</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">routingKey</span><span class="o">&gt;</span><span class="n">testRouting</span><span class="o">&lt;/</span><span class="n">routingKey</span><span class="o">&gt;</span>
+          <span class="o">&lt;/</span><span class="n">fanoutSender</span><span class="o">&gt;</span>
+        <span class="o">&lt;/</span><span class="n">genericProcessor</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">notificator</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">notificator</span><span class="o">&gt;</span>
+  <span class="o">...</span>
+  <span class="o">&lt;/</span><span class="n">notificator</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">notificationConfiguration</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>notificationConfiguration</strong> -&gt; <strong>queueSize</strong> = the size of queue that store all the notification messages.</p>
+<p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> = is possible to have one or more notificator.</p>
+<p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> -&gt; <strong>messageFilter</strong> = the is a CQL filter, only notification message that  satisfy this filter, will be processed by this notificator. Possible values are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">type='Catalog'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type='Data'</span></code></p></li>
+</ul>
+<p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> -&gt; <strong>queueSize</strong> = the size of queue to store the notification messages for specific notificator, only the notification that satisfy the  CQL filter specified on <code class="docutils literal notranslate"><span class="pre">&lt;messageFilter&gt;</span></code> element will be pushed in this queue.</p>
+<p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> -&gt; <strong>processorThreads</strong> = number of threads that will be work to encode and send the notification messages. Note that for <code class="docutils literal notranslate"><span class="pre">'Catalog'</span></code> type event, this will have to be valued as 1 to make sure the events are sent in the right order to the destinations.</p>
+<p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> -&gt; <strong>genericProcessor</strong> = configurations for the encoder and sender components</p>
+<p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> -&gt; <strong>geonodeEncoder</strong> = this is a placeholder tag that must match with the alias used to map the implementation class for encoder. Based on custom implementation, additional attributes or child tags can be provided.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>is mandatory that one and only one implementation of encoder match with each alias.</p>
+</div>
+<p><strong>notificationConfiguration</strong> -&gt; <strong>notificator</strong> -&gt; <strong>fanoutSender</strong> = this is a placeholder tag that must match with the alias used to map the implementation class for sender. Based on custom implementation, additional attributes or child tags can be provided.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>is mandatory that one and only one implementation of sender match with each alias.</p>
+</div>
+<p>For the case of <em>AMQP Fanout (RabbitMQ)</em> based sender implementation, the additional parameters are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">host</span></code> : the IP/DNS to which the underlying TCP connection is made</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">port</span></code> : port number to which the underlying TCP connection is made</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">virtualhost</span></code> (optional) : a path which acts as a namespace</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">username</span></code> (optional) : if present is used for SASL exchange</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">password</span></code> (optional) : if present is used for SASL exchange</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exchangeName</span></code> : the name of exchange to publish the message to</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">routingKey</span></code> : identify the queue to publish the message to (ignored by fanout type)</p></li>
+</ul>
+</div>
+<div class="section" id="sender-and-encoder-implementations">
+<h2>Sender and encoder implementations<a class="headerlink" href="#sender-and-encoder-implementations" title="Permalink to this headline">¶</a></h2>
+<p>This plugin allow the pluggability of sender/encoder implementation, multiple implementation plugins are allowed.</p>
+<p>The core notification extension will be resolve the implementations of the interfaces:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">org.geoserver.notification.common.NotificationEncoder</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">org.geoserver.notification.common.NotificationProcessor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">org.geoserver.notification.common.NotificationXStreamInitializer</span></code></p></li>
+</ul>
+<p>Based on the match between the tag names on configuration file (<code class="docutils literal notranslate"><span class="pre">notifier.xml</span></code>) and the aliases define in <strong>NotificationXStreamInitializer</strong>, the notification core will be use the right implementation of <strong>NotificationEncoder</strong> / <strong>NotificationProcessor</strong>.</p>
+<p>An example of this implementation is provided by the Notification Geonode extension.</p>
+<p>The minimal dependencies of this kind of plugin are (see <code class="docutils literal notranslate"><span class="pre">pom.xml</span></code> of <em>Notification Geonode</em> extension):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gs-notification-common</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gs-main</span></code></p></li>
+</ul>
+<p>The plugin must be extends/implements almost the three classes/interfaces:</p>
+<p><strong>NotificationXStreamDefaultInitializer</strong>: is a utility implementation of <strong>NotificationXStreamInitializer</strong> to define the match between <strong>NotificationEncoder</strong> / <strong>NotificationProcessor</strong> and configuration aliases:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">getEncoderName</span></code> : this method must be return the alias for encoder</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getSenderName</span></code> : this method must be return the alias for sender</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getEncoderClass</span></code> : this method must be return the class for encoder</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getSenderClass</span></code> : this method must be return the class for sender</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../netcdf-ghrsst/index.html" title="previous chapter">GHRSST NetCDF output</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../oauth2/index.html" title="next chapter">Authentication with OAuth2</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Notification community module Plugin Documentation</a><ul>
+<li><a class="reference internal" href="#overall-architecture">Overall architecture</a></li>
+<li><a class="reference internal" href="#installing-the-extension">Installing the extension</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#configuration-file">Configuration file</a></li>
+<li><a class="reference internal" href="#sender-and-encoder-implementations">Sender and encoder implementations</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../netcdf-ghrsst/index.html" title="previous chapter">GHRSST NetCDF output</a></li>
+            <li>Next: <a href="../oauth2/index.html" title="next chapter">Authentication with OAuth2</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/notification/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>libjpeg-turbo Map Encoder Extension &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Monitoring" href="../monitoring/index.html" />
+    <link rel="prev" title="JP2K Plugin" href="../jp2k/index.html" /> 
+  </head><body class="extensions/libjpeg-turbo/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+    <li>libjpeg-turbo Map Encoder Extension</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../monitoring/index.html" title="Monitoring" accesskey="N">Next</a></li>
+  <li>
+    <a href="../jp2k/index.html" title="JP2K Plugin" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="libjpeg-turbo-map-encoder-extension">
+<span id="community-libjpeg-turbo"></span><h1>libjpeg-turbo Map Encoder Extension<a class="headerlink" href="#libjpeg-turbo-map-encoder-extension" title="Permalink to this headline">¶</a></h1>
+<p>This plugin brings in the ability to encode JPEG images as WMS output using the libjpeg-turbo library. Citing its website the <a class="reference external" href="http://libjpeg-turbo.virtualgl.org//">libjpeg-turbo library</a> is a derivative of libjpeg that uses SIMD instructions (MMX, SSE2, NEON) to accelerate baseline JPEG compression and decompression on x86, x86-64, and ARM systems. On such systems, libjpeg-turbo is generally 2-4x as fast as the unmodified version of libjpeg, all else being equal. I guess it is pretty clear why we wrote this plugin! Note that the underlying imageio-ext-turbojpeg uses TurboJpeg which is a higher level set of API (providing more user-friendly methods like “Compress”) built on top of libjpeg-turbo.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The speedup may vary depending on the target infrastructure.</p>
+</div>
+<p>The module, once installed, simply replace the standard JPEG encoder for GeoServer and allows us to use the libjpeg-turbo library to encode JPEG response for GetMap requests.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is worth to point out that the module depends on a successful installation of the libjpeg-turbo native libraries (more on this later).</p>
+</div>
+<div class="section" id="installing-the-libjpeg-turbo-native-library">
+<h2>Installing the libjpeg-turbo native library<a class="headerlink" href="#installing-the-libjpeg-turbo-native-library" title="Permalink to this headline">¶</a></h2>
+<p>Installing the libjpeg-turbo native library is a precondition to have the relative GeoServer Map Encoder properly installed; once the GeoServer extension has been installed as we explain in the following section, the needed JARs with the Java bridge to the library are in the classpath, therefore all we need to do is to install the native library itself to start encoding JPEG at turbo speed.</p>
+<p>To perform the installation of the libjpeg-turbo binaries (or native library) you have to perform the following steps:</p>
+<ol class="arabic simple">
+<li><p>Go to the download site <a class="reference external" href="https://sourceforge.net/projects/libjpeg-turbo/files/">here</a> and download the latest available stable release (1.2.90 at the time of writing)</p></li>
+<li><p>Select the package that matches the target platform in terms of Operating System (e.g. Linux rather than Windows) and Architecture (32 vs 64 bits)</p></li>
+<li><p>Perform the installation using the target platform conventions. As an instance for Windows you should be using an installer that installs all the needed libs in a location at user’s choice. On Ubuntu Linux systems you can use the <em>deb</em> files instead.</p></li>
+<li><p>Once the native libraries are installed, you have to make sure the GeoServer can load them. This should happen automatically after Step 2 on Linux, while on Windows you should make sure that the location where you placed the DLLs is part of the PATH environment variable for the Java Process for the GeoServer.</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When installing on Windows, always make sure that the location where you placed the DLLs is part of the PATH environment variable for the Java Process for the GeoServer. This usually means that you have to add such location to the PATH environmental variable for the user that is used to run GeoServer or the system wide variables.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When installing on Linux, make sure that the location where you placed the DLLs is part of the LD_LIBRARY_PATH environment variable for the Java Process for the GeoServer. This usually happens automatically for the various Linux packages, but in some cases you might be forced to do that manually</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It does not hurt to add also the location where the native libraries where installed to the Java startup options -Djava.library.path=&lt;absolute_and_valid_path&gt;</p>
+</div>
+</div>
+<div class="section" id="installing-the-geoserver-libjpeg-turbo-extension">
+<h2>Installing the GeoServer libjpeg-turbo extension<a class="headerlink" href="#installing-the-geoserver-libjpeg-turbo-extension" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Before moving on make sure you installed the libjpeg-turbo binaries as per the section above.</p>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Visit the <a class="reference external" href="http://geoserver.org/download">website download</a> page, locate your release, and download:  <a class="reference external" href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.22.4/extensions/geoserver-2.22.4-libjpeg-turbo-plugin.zip">geoserver-2.22.4-libjpeg-turbo-plugin.zip</a></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure to match the version of the extension (for example 2.22.4 above) to the version of the GeoServer instance!</p>
+</div>
+</li>
+</ol>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Extract the contents of the archive into the <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory of the GeoServer installation.</p></li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="checking-if-the-extension-is-enabled">
+<h2>Checking if the extension is enabled<a class="headerlink" href="#checking-if-the-extension-is-enabled" title="Permalink to this headline">¶</a></h2>
+<p>Once the extension is installed, the following lines should appear in the GeoServer log:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">10</span><span class="o">-</span><span class="n">mar</span><span class="o">-</span><span class="mi">2013</span> <span class="mf">19.16</span><span class="o">.</span><span class="mi">28</span> <span class="n">it</span><span class="o">.</span><span class="n">geosolutions</span><span class="o">.</span><span class="n">imageio</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">turbojpeg</span><span class="o">.</span><span class="n">TurboJpegUtilities</span> <span class="n">load</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">TurboJPEG</span> <span class="n">library</span> <span class="n">loaded</span> <span class="p">(</span><span class="n">turbojpeg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">10</span> <span class="n">mar</span> <span class="mi">19</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">12</span> <span class="n">WARN</span> <span class="p">[</span><span class="n">turbojpeg</span><span class="o">.</span><span class="n">TurboJPEGMapResponse</span><span class="p">]</span> <span class="o">-</span> <span class="n">The</span> <span class="n">turbo</span> <span class="n">jpeg</span> <span class="n">encoder</span> <span class="ow">is</span> <span class="n">available</span> <span class="k">for</span> <span class="n">usage</span>
+</pre></div>
+</div>
+<p>You can also check in the <span class="menuselection">Server Status</span> page. From the <span class="guilabel">Modules</span> tab:</p>
+<ul class="simple">
+<li><p>Locate the <span class="guilabel">GeoServer libjpeg-turbo Module</span> module. The enabled status indicates if the extension is available</p></li>
+<li><p>Click on the <span class="guilabel">GeoServer libjpeg-turbo Module</span> link to check module status. The <span class="guilabel">Module Info</span> dialog indicates the JNI LibJPEGTurbo Wrapper Version used.</p></li>
+</ul>
+</div>
+<div class="section" id="disabling-the-extension">
+<h2>Disabling the extension<a class="headerlink" href="#disabling-the-extension" title="Permalink to this headline">¶</a></h2>
+<p>When running GeoServer the turb encoder can be disabled by using the Java switch for the JVM process:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Ddisable</span><span class="o">.</span><span class="n">turbojpeg</span><span class="o">=</span><span class="n">true</span>
+</pre></div>
+</div>
+<p>In this case a message like the following should be found in the log:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WARN</span> <span class="p">[</span><span class="nb">map</span><span class="o">.</span><span class="n">turbojpeg</span><span class="p">]</span> <span class="o">-</span> <span class="n">The</span> <span class="n">turbo</span> <span class="n">jpeg</span> <span class="n">encoder</span> <span class="n">has</span> <span class="n">been</span> <span class="n">explicitly</span> <span class="n">disabled</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We will soon add a section in the GUI to check the status of the extension and to allow users to enable/disable it at runtime.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../jp2k/index.html" title="previous chapter">JP2K Plugin</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../monitoring/index.html" title="next chapter">Monitoring</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">libjpeg-turbo Map Encoder Extension</a><ul>
+<li><a class="reference internal" href="#installing-the-libjpeg-turbo-native-library">Installing the libjpeg-turbo native library</a></li>
+<li><a class="reference internal" href="#installing-the-geoserver-libjpeg-turbo-extension">Installing the GeoServer libjpeg-turbo extension</a></li>
+<li><a class="reference internal" href="#checking-if-the-extension-is-enabled">Checking if the extension is enabled</a></li>
+<li><a class="reference internal" href="#disabling-the-extension">Disabling the extension</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../jp2k/index.html" title="previous chapter">JP2K Plugin</a></li>
+            <li>Next: <a href="../monitoring/index.html" title="next chapter">Monitoring</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/libjpeg-turbo/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

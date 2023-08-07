@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KML Regionation &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="KML Scoring" href="kmlscoring.html" />
+    <link rel="prev" title="KML Super-Overlays" href="kmlsuperoverlays.html" /> 
+  </head><body class="services/wms/googleearth/features/kmlregionation">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Google Earth</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features</a> &raquo;</li>
+    <li>KML Regionation</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="kmlscoring.html" title="KML Scoring" accesskey="N">Next</a></li>
+  <li>
+    <a href="kmlsuperoverlays.html" title="KML Super-Overlays" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="kml-regionation">
+<span id="ge-feature-kml-regionation"></span><h1>KML Regionation<a class="headerlink" href="#kml-regionation" title="Permalink to this headline">¶</a></h1>
+<p>Displaying vector features on Google Earth is a very powerful way of creating nicely-styled maps. However, it is not always optimal to display all features at all times. Displaying too many features can create an unsightly map, and can adversely affect Google Earth’s performance. To combat this, GeoServer’s KML output includes the ability to limit features based on certain criteria. This process is known as <strong>regionation</strong>. Regionation is active by default when using the superoverlay KML reflector mode.</p>
+<div class="section" id="regionation-attributes">
+<h2>Regionation Attributes<a class="headerlink" href="#regionation-attributes" title="Permalink to this headline">¶</a></h2>
+<p>The most important aspect of regionation is to decide how to determine which features show up more prominently than others. This can be done either <strong>by geometry</strong>, or <strong>by attribute</strong>. One should choose the option that best exemplifies the relative “importance” of the feature. When choosing to regionate by geometry, only the larger lines and polygons will be displayed at higher zoom levels, with smaller ones being displayed when zooming in. When regionating by an attribute, the higher value of this attribute will make those features show up at higher zoom levels. (Choosing an attribute with a non-numeric value will be ignored, and will instead default to regionation by geometry.)</p>
+</div>
+<div class="section" id="regionation-strategies">
+<h2>Regionation Strategies<a class="headerlink" href="#regionation-strategies" title="Permalink to this headline">¶</a></h2>
+<p>Regionation strategies sets how to determine which features should be shown at any given time or zoom level. There are five types of regionation strategies:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Strategy</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">best_guess</span></code></p></td>
+<td><p>(<em>default</em>) The actual strategy is determined by the type of data being operated on. If the data consists of points, the <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy is used. If the data consists of lines or polygons, the <code class="docutils literal notranslate"><span class="pre">geometry</span></code> strategy is used.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">external-sorting</span></code></p></td>
+<td><p>Creates a temporary auxiliary database within GeoServer.  It takes slightly extra time to build the index upon first request.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">native-sorting</span></code></p></td>
+<td><p>Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">geometry</span></code></p></td>
+<td><p>Externally sorts by length (if lines) or area (if polygons).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">random</span></code></p></td>
+<td><p>Uses the existing order of the data and does not sort.</p></td>
+</tr>
+</tbody>
+</table>
+<p>In most cases, the <strong>best_guess</strong> strategy is sufficient.</p>
+</div>
+<div class="section" id="setting-regionation-parameters">
+<h2>Setting Regionation Parameters<a class="headerlink" href="#setting-regionation-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Regionation strategies and attributes are featuretype-specific, and therefore are set in the <a class="reference internal" href="../../../../data/webadmin/layers.html#data-webadmin-layers"><span class="std std-ref">Layers</span></a> editing page of the <a class="reference internal" href="../../../../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a>.  This can be navigated to by selecting ‘Layers’ on the left sidebar.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="kmlsuperoverlays.html" title="previous chapter">KML Super-Overlays</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="kmlscoring.html" title="next chapter">KML Scoring</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">KML Regionation</a><ul>
+<li><a class="reference internal" href="#regionation-attributes">Regionation Attributes</a></li>
+<li><a class="reference internal" href="#regionation-strategies">Regionation Strategies</a></li>
+<li><a class="reference internal" href="#setting-regionation-parameters">Setting Regionation Parameters</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="kmlsuperoverlays.html" title="previous chapter">KML Super-Overlays</a></li>
+            <li>Next: <a href="kmlscoring.html" title="next chapter">KML Scoring</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/features/kmlregionation.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

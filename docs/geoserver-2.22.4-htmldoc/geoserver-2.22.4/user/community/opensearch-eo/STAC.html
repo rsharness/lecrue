@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The STAC extension &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="OpenSearch/STAC JSON templates" href="templates.html" />
+    <link rel="prev" title="Automation with the administration REST API" href="automation.html" /> 
+  </head><body class="community/opensearch-eo/STAC">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">OpenSearch for EO</a> &raquo;</li>
+    <li>The STAC extension</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="templates.html" title="OpenSearch/STAC JSON templates" accesskey="N">Next</a></li>
+  <li>
+    <a href="automation.html" title="Automation with the administration REST API" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="the-stac-extension">
+<span id="stac"></span><h1>The STAC extension<a class="headerlink" href="#the-stac-extension" title="Permalink to this headline">¶</a></h1>
+<p>The OpenSeach for EO subsystem exposes also a <a class="reference external" href="https://stacspec.org/">STAC</a> service, implemented
+as a OGC API Features conformant <a class="reference external" href="https://github.com/radiantearth/stac-api-spec">STAC API</a>.</p>
+<p>The landing page of the STAC API is linked from the GeoServer home page, and available at <code class="docutils literal notranslate"><span class="pre">$HOST:$PORT/geoserver/ogc/stac</span></code>.
+The API exposes the OpenSearch for EO contents, restructuring them as needed:</p>
+<ul class="simple">
+<li><p>The collections table is mapped to STAC collections</p></li>
+<li><p>The products table is mapped to STAC items</p></li>
+</ul>
+<p>Given the differences in names and structures the STAC resources are created using templates, in
+particular:</p>
+<ul class="simple">
+<li><p>The HTML representation is built using <a class="reference internal" href="../../tutorials/freemarker.html#tutorial-freemarkertemplate"><span class="std std-ref">Freemarker templates</span></a></p></li>
+<li><p>The GeoJSON representation is built using GeoJSON <a class="reference internal" href="../features-templating/index.html#community-wfstemplating"><span class="std std-ref">features templates</span></a></p></li>
+</ul>
+<p>The default templates work against the <a class="reference external" href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql">default PostGIS database structure</a> and
+can be customized to include new properties to follow eventual database modifications.</p>
+<p>All built-in templates are copied over to the data directory for customization, and placed
+in the <code class="docutils literal notranslate"><span class="pre">$GEOSERER_DATA_DIR/templates/ogc/stac</span></code> folder:</p>
+<ul class="simple">
+<li><p>collection.ftl</p></li>
+<li><p>collection_include.ftl</p></li>
+<li><p>collections.ftl</p></li>
+<li><p>collections.json</p></li>
+<li><p>item.ftl</p></li>
+<li><p>item_include.ftl</p></li>
+<li><p>items-content.ftl</p></li>
+<li><p>items-empty.ftl</p></li>
+<li><p>items-footer.ftl</p></li>
+<li><p>items-header.ftl</p></li>
+<li><p>items.json</p></li>
+<li><p>landingPage.ftl</p></li>
+<li><p>queryables-collection.ftl</p></li>
+<li><p>queryables-common.ftl</p></li>
+<li><p>queryables-global.ftl</p></li>
+<li><p>search-content.ftl</p></li>
+<li><p>search-empty.ftl</p></li>
+<li><p>search-footer.ftl</p></li>
+<li><p>search-header.ftl</p></li>
+</ul>
+<p>Specifically for the JSON output:</p>
+<ul class="simple">
+<li><p><cite>$GEOSERER_DATA_DIR/templates/ogc/stac/collections.json</cite> is the <a class="reference external" href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/stac/collections.json">collections template</a></p></li>
+<li><p><cite>$GEOSERER_DATA_DIR/templates/ogc/stac/items.json</cite> is the <a class="reference external" href="https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/stac/items.json">items template</a></p></li>
+</ul>
+<p>The JSON templates in the case of STAC also drive database querying, the exposed STAC properties
+are back-mapped into database properties by interpreting the template. It is advised to keep
+property mapping as simple as possible to allow usage of native SQL queries and indexes while
+accessing the database through the STAC API.</p>
+<p>For both items and collections, collection specific templates can also be provided, which would contain
+directives and mappings unique to that collection.
+A collection specific template can be placed in the same templates directory as above,
+using the naming convention <code class="docutils literal notranslate"><span class="pre">items-&lt;COLLECTION_ID&gt;.json</span></code> or <code class="docutils literal notranslate"><span class="pre">collections-&lt;COLLECTION_ID&gt;.json</span></code>,
+where <code class="docutils literal notranslate"><span class="pre">&lt;COLLECTION_ID&gt;</span></code> is the collection identifier.
+For example, if the collection is named <code class="docutils literal notranslate"><span class="pre">SENTINEL2</span></code>:</p>
+<ul class="simple">
+<li><p>The collections specific template for it is named <code class="docutils literal notranslate"><span class="pre">collections-SENTINEL2.json</span></code></p></li>
+<li><p>The items template specific for it is named <code class="docutils literal notranslate"><span class="pre">items-SENTINEL2.json</span></code></p></li>
+</ul>
+<div class="section" id="fields-fragments">
+<h2>Fields fragments<a class="headerlink" href="#fields-fragments" title="Permalink to this headline">¶</a></h2>
+<p>When dealing with JSON output for GET requests in the context of STAC service, the module supports the selection of fields based on the inclusion and exclusion semantic described in the <a class="reference external" href="https://github.com/radiantearth/stac-api-spec/tree/master/fragments/fields#includeexclude-semantics">field fragments specification</a>.
+According to the current specification:</p>
+<ul class="simple">
+<li><p>If no <code class="docutils literal notranslate"><span class="pre">fields</span></code> query parameter is specified all the item’s attribute are returned.</p></li>
+<li><p>If a <code class="docutils literal notranslate"><span class="pre">fields</span></code> attribute is specified with no values, only the item’s default values (the one necessary to have a valid STAC entity) are returned: <code class="docutils literal notranslate"><span class="pre">id</span></code>,``type``,``geometry``,``bbox``,``links``,``assets``,``properties.datetime``,``properties.created``.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">fields</span></code> value is specified GeoServer will return always the default attributes, if the user doesn’t target them as excluded. Eg. <code class="docutils literal notranslate"><span class="pre">assets</span></code> will always be present if not exluced explicitly (<code class="docutils literal notranslate"><span class="pre">fields=-assets,...</span></code>).</p></li>
+<li><p>If only include is specified, these attributes are added to the default set of attributes (set union operation).</p></li>
+<li><p>If only exclude is specified, these attributes are subtracted from the union of the default set of attributes and the include attributes (set difference operation). This will result in an entity that is not a valid Item if any of the excluded attributes are in the default set of attributes, but no error message will be raised by GeoServer.</p></li>
+<li><p>If a attribute is included, e.g. <code class="docutils literal notranslate"><span class="pre">properties</span></code>, but one or more of the nested attributes is excluded, e.g. <code class="docutils literal notranslate"><span class="pre">-properties.datetime</span></code>, then the excluded nested attributes will not appear in properties.</p></li>
+<li><p>If an attribute is excluded, e.g. <code class="docutils literal notranslate"><span class="pre">-properties.nestedObj</span></code>, but one of more of the nested attributes is included, e.g. <code class="docutils literal notranslate"><span class="pre">properties.nestedObject.attribute</span></code>, then <code class="docutils literal notranslate"><span class="pre">nestedObject</span></code> will appear in the output with the included attributes only.</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="automation.html" title="previous chapter">Automation with the administration REST API</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="templates.html" title="next chapter">OpenSearch/STAC JSON templates</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">The STAC extension</a><ul>
+<li><a class="reference internal" href="#fields-fragments">Fields fragments</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="automation.html" title="previous chapter">Automation with the administration REST API</a></li>
+            <li>Next: <a href="templates.html" title="next chapter">OpenSearch/STAC JSON templates</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/opensearch-eo/STAC.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

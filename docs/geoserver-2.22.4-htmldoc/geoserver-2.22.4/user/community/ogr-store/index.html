@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OGR datastore &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="OpenSearch for EO" href="../opensearch-eo/index.html" />
+    <link rel="prev" title="OGC Testbed Experiments" href="../ogc-api/testbed.html" /> 
+  </head><body class="community/ogr-store/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>OGR datastore</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../opensearch-eo/index.html" title="OpenSearch for EO" accesskey="N">Next</a></li>
+  <li>
+    <a href="../ogc-api/testbed.html" title="OGC Testbed Experiments" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="ogr-datastore">
+<span id="ogr-store"></span><h1>OGR datastore<a class="headerlink" href="#ogr-datastore" title="Permalink to this headline">¶</a></h1>
+<p>The OGR datastore module allows to use the <cite>GDAL/OGR &lt;https://gdal.org/&gt;</cite> native library
+to access a wide variety of vector spatial formats and publish them in GeoServer.</p>
+<p>This library is recommended to use when a particular data source does not have a GeoServer pure Java
+datastore fulfilling the same needs, in particular, compared to built in sources, it has the following limitations:</p>
+<ul class="simple">
+<li><p>Generally slower than the existing pure Java counterparts, especially for map rendering (the GeoServer
+stores can help rendering by providing reduced resolution version of the geometries, OGR provides no
+such facility)</p></li>
+<li><p>Less scalable than the pure Java counterparts, as the DataSource objects used to access data are not
+thread safe (see the pooling options below)</p></li>
+<li><p>More risky than the pure java counterparts, a SEGFAULT occurring inside OGR will take down the entire
+GeoServer process (while a pure Java exception is managed and reported, but won’t have consequences
+on the server itself)</p></li>
+</ul>
+<p>The OGR store has been tested with GDAL 2.2.x, but might be working with other versions as well.
+In case of malfunctions, you can try to remove the <code class="docutils literal notranslate"><span class="pre">gdal-&lt;version&gt;.jar</span></code> file from the GeoServer
+installation package, and replace it with the specific version jar instead, which you should find
+in your GDAL installation.</p>
+<div class="section" id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<p>This is a community module, which means that it will not be available in the GeoServer official releases and needs to be installed manually.</p>
+<p>This module can be installed following these steps:</p>
+<ol class="arabic simple">
+<li><p>Download this module package from the <a class="reference external" href="https://build.geoserver.org/geoserver/">nightly builds</a>, the module version should match the desired GeoServer version.</p></li>
+<li><p>Extract the contents of the package into the <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory of the GeoServer installation.</p></li>
+<li><p>Make sure that the GDAL library as well as the GDAL JNI native library are available in the GeoServer path (see below).</p></li>
+</ol>
+<div class="section" id="linux-installation-details">
+<h3>Linux installation details<a class="headerlink" href="#linux-installation-details" title="Permalink to this headline">¶</a></h3>
+<p>On Linux the native librariers are commonly available via packages such as <code class="docutils literal notranslate"><span class="pre">gdal</span></code> and <code class="docutils literal notranslate"><span class="pre">gdal-java</span></code>,
+which, on installation, make available the required libraries on the file system (the specific name may vary):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libgdal</span><span class="o">.</span><span class="n">so</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jni</span><span class="o">/</span><span class="n">libgdaljni</span><span class="o">.</span><span class="n">so</span>
+</pre></div>
+</div>
+<p>Normally these directories are already in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>, so no further configuration is required.</p>
+<p>If using a custom build instead, the <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">GDAL_DATA</span></code> directories:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">LD_LIBRARY_PATH</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">gdal</span><span class="o">/</span><span class="n">libraries</span>
+<span class="n">export</span> <span class="n">GDAL_DATA</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">gdal</span><span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>See also the GDAL FAQ <a class="reference external" href="https://trac.osgeo.org/gdal/wiki/FAQInstallationAndBuilding#HowtosetGDAL_DATAvariable">about the GDAL_DATA setup</a>.</p>
+</div>
+<div class="section" id="windows-installation-details">
+<h3>Windows installation details<a class="headerlink" href="#windows-installation-details" title="Permalink to this headline">¶</a></h3>
+<p>On windows the files in question might look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gdal204</span><span class="o">.</span><span class="n">dll</span>
+<span class="n">gdalalljni</span><span class="o">.</span><span class="n">dll</span>
+</pre></div>
+</div>
+<p>Locating a pre-build GDAL that includes Java support might be difficult. One option is to download
+the <a class="reference external" href="http://www.gisinternals.com/release.php">gisinternals.com</a> packages, in particular the
+release zip packages including both mapserver and GDAL (these are rather complete and include the necessary libraries,
+whilst the MSI installers are typically missing the Java support).</p>
+<p>Once the package is available on disk, one has to set the following environment variables before
+starting GeoServer (the path might change depending on the package that is being downloaded):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="n">PATH</span><span class="o">=%</span><span class="n">PATH</span><span class="o">%</span><span class="p">;</span><span class="n">C</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">release</span><span class="o">-</span><span class="mi">1900</span><span class="o">-</span><span class="n">x64</span><span class="o">-</span><span class="n">gdal</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">0</span><span class="o">-</span><span class="n">mapserver</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span>\<span class="nb">bin</span><span class="p">;</span><span class="n">C</span><span class="p">:</span>\<span class="n">tmp</span>\<span class="n">release</span><span class="o">-</span><span class="mi">1900</span><span class="o">-</span><span class="n">x64</span><span class="o">-</span><span class="n">gdal</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">0</span><span class="o">-</span><span class="n">mapserver</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span>\<span class="nb">bin</span>\<span class="n">gdal</span>\<span class="n">java</span>
+<span class="nb">set</span> <span class="n">GDAL_DRIVER_PATH</span><span class="o">=</span><span class="n">C</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">release</span><span class="o">-</span><span class="mi">1900</span><span class="o">-</span><span class="n">x64</span><span class="o">-</span><span class="n">gdal</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">0</span><span class="o">-</span><span class="n">mapserver</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span>\<span class="nb">bin</span>\<span class="n">gdal</span>\<span class="n">plugins</span>
+<span class="nb">set</span> <span class="n">GDAL_DATA</span><span class="o">=</span><span class="n">C</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">release</span><span class="o">-</span><span class="mi">1900</span><span class="o">-</span><span class="n">x64</span><span class="o">-</span><span class="n">gdal</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">0</span><span class="o">-</span><span class="n">mapserver</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span>\<span class="nb">bin</span>\<span class="n">gdal</span><span class="o">-</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="configuring-a-store">
+<h2>Configuring a store<a class="headerlink" href="#configuring-a-store" title="Permalink to this headline">¶</a></h2>
+<p>If the library is properly installed you will get the “OGR” data store among the supported stores
+in the “new store” page. In case it’s not there, check the logs, they might be reporting that
+the GDAL/OGR native libs are missing, if the error is not there, check that the jars have been
+unpacked in the right position instead.</p>
+<p>Creating a new store requires configuration of only the <span class="guilabel">DatasourceName</span> field, any other parameter is
+optional:</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/store_config.png" src="../../_images/store_config.png" />
+<p class="caption"><span class="caption-text"><em>The OGR datasore configuration page</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <span class="guilabel">DatasourceName</span> can be a reference to a file, a directory, or a set of connection parameters to
+a server. For example, to connect to a PostGIS database the connection parameters could be:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">PG:user=theUser</span> <span class="pre">password=thePassword</span> <span class="pre">dbname=theDatabase</span></code></p>
+</div></blockquote>
+<p>Notice how, unlike documented in the OGR page, single quotes are not needed (and actually harmful) around the
+user/password/dbname section.
+The <span class="guilabel">Browse</span> button can be used to quickly peek files or directories from the file system.</p>
+<p>The <span class="guilabel">Driver</span> parameter is optional, OGR should be able to recognize the appropriate driver automatically,
+but it’s useful to force a specific choice when multiple competing drivers are available for the same
+data source (e.g., OpenFileGDB vs FileGDB).</p>
+<p>The pooling parameters, similar to those found in a database, merit an explanation.
+OGR exposes access to data through DataSource objects, which are not thread safe, so only one
+request at a time can use them. At the same time, they can be expensive to create and hold onto
+useful state, like in memory data caches, spatial indexes and the like.
+As such, they have been stored in a pool much like relational database connections.</p>
+<p>The <span class="guilabel">Prime DataSources</span> option can be enabled to force a full read of the source data
+before the GDAL <code class="docutils literal notranslate"><span class="pre">DataSource</span></code> object is used. In some formats this allows the creation of useful
+support data structures, like an in memory spatial index in the <code class="docutils literal notranslate"><span class="pre">OpenFileGDB</span></code> format.
+Since the full read can be expensive, care should be taken to configure the pooling options so that
+it gets reused as much as possible (e.g., setting a higher <code class="docutils literal notranslate"><span class="pre">min</span> <span class="pre">connections</span></code>, eventually setting
+it to the same value as <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">connections</span></code>).</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../ogc-api/testbed.html" title="previous chapter">OGC Testbed Experiments</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../opensearch-eo/index.html" title="next chapter">OpenSearch for EO</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">OGR datastore</a><ul>
+<li><a class="reference internal" href="#installing">Installing</a><ul>
+<li><a class="reference internal" href="#linux-installation-details">Linux installation details</a></li>
+<li><a class="reference internal" href="#windows-installation-details">Windows installation details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-a-store">Configuring a store</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../ogc-api/testbed.html" title="previous chapter">OGC Testbed Experiments</a></li>
+            <li>Next: <a href="../opensearch-eo/index.html" title="next chapter">OpenSearch for EO</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/ogr-store/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

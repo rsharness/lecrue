@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Docker Container &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Upgrading existing versions" href="upgrade.html" />
+    <link rel="prev" title="Web archive" href="war.html" /> 
+  </head><body class="installation/docker">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Installation</a> &raquo;</li>
+    <li>Docker Container</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="upgrade.html" title="Upgrading existing versions" accesskey="N">Next</a></li>
+  <li>
+    <a href="war.html" title="Web archive" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="docker-container">
+<span id="installation-docker"></span><h1>Docker Container<a class="headerlink" href="#docker-container" title="Permalink to this headline">¶</a></h1>
+<p>Geoserver is also packaged as a Docker Container.  For more details, see the <a class="reference external" href="https://github.com/geoserver/docker">Geoserver Docker Container Project</a>.</p>
+<p>See the <a class="reference external" href="https://github.com/geoserver/docker/blob/master/README.md">README.md</a> file for more technical information.</p>
+<div class="section" id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>This will run the container, with the data directory included with the container:</p>
+<ol class="arabic">
+<li><p>Make sure you have <a class="reference external" href="https://www.docker.com/">Docker</a> installed.</p></li>
+<li><p>Download the container:</p>
+<p>These instructions are for GeoServer 2.22.4.</p>
+<pre class="literal-block">docker pull docker.osgeo.org/geoserver:2.22.4</pre>
+</li>
+<li><p>Run the container</p>
+<pre class="literal-block">docker run -it -p8080:8080 docker.osgeo.org/geoserver:2.22.4</pre>
+</li>
+<li><p>In a web browser, navigate to <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/geoserver</span></code>.</p>
+<p>If you see the GeoServer Welcome page, then GeoServer is successfully installed.</p>
+<div class="figure align-default" id="id1">
+<img alt="../_images/success.png" src="../_images/success.png" />
+<p class="caption"><span class="caption-text">GeoServer Welcome Page</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>This setup is a quick test to ensure the software is working, but is difficult to use as file data can only be transferred to the data directory included with the container via the REST API.</p></li>
+</ol>
+</div>
+<div class="section" id="using-your-own-data-directory">
+<h2>Using your own Data Directory<a class="headerlink" href="#using-your-own-data-directory" title="Permalink to this headline">¶</a></h2>
+<p>This will run the container with a local data directory.  The data directory will be <a class="reference external" href="https://docs.docker.com/storage/bind-mounts/">mounted</a> into the docker container.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Change <cite>/MY/DATADIRECTORY</cite> to your data directory.  If this directory is empty it will be populated with the standard Geoserver Sample Data Directory.</p>
+</div>
+<ol class="arabic">
+<li><p>Make sure you have <a class="reference external" href="https://www.docker.com/">Docker</a> installed.</p></li>
+<li><p>Download the container</p>
+<pre class="literal-block">docker pull docker.osgeo.org/geoserver:2.22.4</pre>
+</li>
+<li><p>Run the container</p>
+<pre class="literal-block">docker run --mount type=bind,src=/MY/DATADIRECTORY,target=/opt/geoserver_data -it -p8080:8080 docker.osgeo.org/geoserver:2.22.4</pre>
+</li>
+<li><p>In a web browser, navigate to <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/geoserver</span></code>.</p>
+<p>If you see the GeoServer Welcome page, then GeoServer is successfully installed.</p>
+<div class="figure align-default" id="id2">
+<img alt="../_images/success.png" src="../_images/success.png" />
+<p class="caption"><span class="caption-text">GeoServer Welcome Page</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</li>
+<li><p>This setup allows direct management of the file data shared with the container. This setup is also easy to update to use the latest container.</p></li>
+</ol>
+</div>
+<div class="section" id="adding-geoserver-extensions">
+<h2>Adding GeoServer Extensions<a class="headerlink" href="#adding-geoserver-extensions" title="Permalink to this headline">¶</a></h2>
+<p>You can add GeoServer Extensions - the container will download them during startup.</p>
+<pre class="literal-block">docker run -it -p8080:8080 \
+  --env INSTALL_EXTENSIONS=true \
+  --env STABLE_EXTENSIONS=&quot;ysld,h2&quot; \
+  docker.osgeo.org/geoserver:2.22.4</pre>
+<p>This will download and install the YSLD and H2 extension.</p>
+<p>Here is a list of available extensions (taken from the <a class="reference external" href="https://build.geoserver.org/geoserver/main/ext-latest/">build server</a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">-</span><span class="n">schema</span>   <span class="n">gdal</span>            <span class="n">jp2k</span>          <span class="n">ogr</span><span class="o">-</span><span class="n">wps</span>          <span class="n">web</span><span class="o">-</span><span class="n">resource</span>
+<span class="n">authkey</span>      <span class="n">geofence</span>        <span class="n">libjpeg</span><span class="o">-</span><span class="n">turbo</span> <span class="n">oracle</span>           <span class="n">wmts</span><span class="o">-</span><span class="n">multi</span><span class="o">-</span><span class="n">dimensional</span>
+<span class="n">cas</span>          <span class="n">geofence</span><span class="o">-</span><span class="n">server</span> <span class="n">mapml</span>         <span class="n">params</span><span class="o">-</span><span class="n">extractor</span> <span class="n">wps</span><span class="o">-</span><span class="n">cluster</span><span class="o">-</span><span class="n">hazelcast</span>
+<span class="n">charts</span>       <span class="n">geopkg</span><span class="o">-</span><span class="n">output</span>   <span class="n">mbstyle</span>       <span class="n">printing</span>         <span class="n">wps</span><span class="o">-</span><span class="n">cluster</span><span class="o">-</span><span class="n">hazelcast</span>
+<span class="n">control</span><span class="o">-</span><span class="n">flow</span> <span class="n">grib</span>            <span class="n">mongodb</span>       <span class="n">pyramid</span>          <span class="n">wps</span><span class="o">-</span><span class="n">download</span>
+<span class="n">css</span>          <span class="n">gwc</span><span class="o">-</span><span class="n">s3</span>          <span class="n">monitor</span>       <span class="n">querylayer</span>       <span class="n">wps</span><span class="o">-</span><span class="n">jdbc</span>
+<span class="n">csw</span>          <span class="n">h2</span>              <span class="n">mysql</span>         <span class="n">sldservice</span>       <span class="n">wps</span>
+<span class="n">db2</span>          <span class="n">imagemap</span>        <span class="n">netcdf</span><span class="o">-</span><span class="n">out</span>    <span class="n">sqlserver</span>        <span class="n">xslt</span>
+<span class="n">dxf</span>          <span class="n">importer</span>        <span class="n">netcdf</span>        <span class="n">vectortiles</span>      <span class="n">ysld</span>
+<span class="n">excel</span>        <span class="n">inspire</span>         <span class="n">ogr</span><span class="o">-</span><span class="n">wfs</span>       <span class="n">wcs2_0</span><span class="o">-</span><span class="n">eo</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing-geoserver-community-modules">
+<h2>Testing Geoserver Community modules<a class="headerlink" href="#testing-geoserver-community-modules" title="Permalink to this headline">¶</a></h2>
+<p>Working with a Nightly build is a good way to test community modules and provide feedback to developers working on new functionality.</p>
+<p>To work with community modules you must be using the GeoServer 2.22.x nightly build that matches the community module build:</p>
+<pre class="literal-block">docker run -it -p8080:8080 \
+  --env INSTALL_EXTENSIONS=true \
+  --env STABLE_EXTENSIONS=&quot;ysld,h2&quot; \
+  --env COMMUNITY_EXTENSIONS=&quot;ogcapi&quot; \
+  docker.osgeo.org/geoserver:2.22.x</pre>
+<p>For the current list see GeoServer <a class="reference external" href="https://build.geoserver.org/geoserver/main/community-latest/">build server</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activeMQ</span><span class="o">-</span><span class="n">broker</span>            <span class="n">jdbcconfig</span>                 <span class="n">pgraster</span>
+<span class="n">backup</span><span class="o">-</span><span class="n">restore</span>             <span class="n">jdbcstore</span>                  <span class="n">proxy</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ext</span>
+<span class="n">cog</span>                        <span class="n">jms</span><span class="o">-</span><span class="n">cluster</span>                <span class="n">s3</span><span class="o">-</span><span class="n">geotiff</span>
+<span class="n">colormap</span>                   <span class="n">libdeflate</span>                 <span class="n">saml</span>
+<span class="n">cov</span><span class="o">-</span><span class="n">json</span>                   <span class="n">mbtiles</span>                    <span class="n">sec</span><span class="o">-</span><span class="n">keycloak</span>
+<span class="n">dds</span>                        <span class="n">mbtiles</span><span class="o">-</span><span class="n">store</span>              <span class="n">sec</span><span class="o">-</span><span class="n">oauth2</span><span class="o">-</span><span class="n">geonode</span>
+<span class="n">dyndimension</span>               <span class="n">mongodb</span><span class="o">-</span><span class="n">schemaless</span>         <span class="n">sec</span><span class="o">-</span><span class="n">oauth2</span><span class="o">-</span><span class="n">github</span>
+<span class="n">elasticsearch</span>              <span class="n">ncwms</span>                      <span class="n">sec</span><span class="o">-</span><span class="n">oauth2</span><span class="o">-</span><span class="n">google</span>
+<span class="n">features</span><span class="o">-</span><span class="n">templating</span>        <span class="n">netcdf</span><span class="o">-</span><span class="n">ghrsst</span>              <span class="n">sec</span><span class="o">-</span><span class="n">oauth2</span><span class="o">-</span><span class="n">openid</span><span class="o">-</span><span class="n">connect</span>
+<span class="n">flatgeobuf</span>                 <span class="n">notification</span>               <span class="n">smart</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">loader</span>
+<span class="n">gdal</span><span class="o">-</span><span class="n">wcs</span>                   <span class="n">nsg</span><span class="o">-</span><span class="n">wmts</span><span class="o">-</span><span class="n">profile</span>           <span class="n">solr</span>
+<span class="n">gdal</span><span class="o">-</span><span class="n">wps</span>                   <span class="n">ogcapi</span><span class="o">-</span><span class="n">coverages</span>           <span class="n">spatialjson</span>
+<span class="n">geopkg</span>                     <span class="n">ogcapi</span><span class="o">-</span><span class="n">dggs</span>                <span class="n">stac</span><span class="o">-</span><span class="n">datastore</span>
+<span class="n">gpx</span>                        <span class="n">ogcapi</span><span class="o">-</span><span class="n">features</span>            <span class="n">taskmanager</span><span class="o">-</span><span class="n">core</span>
+<span class="n">gsr</span>                        <span class="n">ogcapi</span><span class="o">-</span><span class="n">images</span>              <span class="n">taskmanager</span><span class="o">-</span><span class="n">s3</span>
+<span class="n">gwc</span><span class="o">-</span><span class="n">azure</span><span class="o">-</span><span class="n">blobstore</span>        <span class="n">ogcapi</span><span class="o">-</span><span class="n">maps</span>                <span class="n">teradata</span>
+<span class="n">gwc</span><span class="o">-</span><span class="n">distributed</span>            <span class="n">ogcapi</span><span class="o">-</span><span class="n">styles</span>              <span class="n">vector</span><span class="o">-</span><span class="n">mosaic</span>
+<span class="n">gwc</span><span class="o">-</span><span class="n">mbtiles</span>                <span class="n">ogcapi</span><span class="o">-</span><span class="n">tiled</span><span class="o">-</span><span class="n">features</span>      <span class="n">vsi</span>
+<span class="n">gwc</span><span class="o">-</span><span class="n">sqlite</span>                 <span class="n">ogcapi</span><span class="o">-</span><span class="n">tiles</span>               <span class="n">webp</span>
+<span class="n">hz</span><span class="o">-</span><span class="n">cluster</span>                 <span class="n">ogr</span><span class="o">-</span><span class="n">datastore</span>              <span class="n">wms</span><span class="o">-</span><span class="n">eo</span>
+<span class="n">importer</span><span class="o">-</span><span class="n">jdbc</span>              <span class="n">opensearch</span><span class="o">-</span><span class="n">eo</span>              <span class="n">wmts</span><span class="o">-</span><span class="n">styles</span>
+<span class="n">jdbc</span><span class="o">-</span><span class="n">metrics</span>               <span class="n">ows</span><span class="o">-</span><span class="n">simulate</span>               <span class="n">wps</span><span class="o">-</span><span class="n">remote</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="war.html" title="previous chapter">Web archive</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="upgrade.html" title="next chapter">Upgrading existing versions</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Docker Container</a><ul>
+<li><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li><a class="reference internal" href="#using-your-own-data-directory">Using your own Data Directory</a></li>
+<li><a class="reference internal" href="#adding-geoserver-extensions">Adding GeoServer Extensions</a></li>
+<li><a class="reference internal" href="#testing-geoserver-community-modules">Testing Geoserver Community modules</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="war.html" title="previous chapter">Web archive</a></li>
+            <li>Next: <a href="upgrade.html" title="next chapter">Upgrading existing versions</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/installation/docker.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

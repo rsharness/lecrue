@@ -1,0 +1,636 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RasterSymbolizer &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="SLD Extensions in GeoServer" href="../extensions/index.html" />
+    <link rel="prev" title="Labeling" href="labeling.html" /> 
+  </head><body class="styling/sld/reference/rastersymbolizer">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Reference</a> &raquo;</li>
+    <li>RasterSymbolizer</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../extensions/index.html" title="SLD Extensions in GeoServer" accesskey="N">Next</a></li>
+  <li>
+    <a href="labeling.html" title="Labeling" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="rastersymbolizer">
+<span id="sld-reference-rastersymbolizer"></span><h1>RasterSymbolizer<a class="headerlink" href="#rastersymbolizer" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer supports the ability to display raster data in addition to vector data.</p>
+<p>Raster data is not merely a picture, rather it can be thought of as a grid of georeferenced information, much like a graphic is a grid of visual information (with combination of reds, greens, and blues).
+Unlike graphics, which only contain visual data, each point/pixel in a raster grid can have many different attributes (bands), with possibly none of them having an inherently visual component.</p>
+<p>With the above in mind, one needs to choose how to visualize the data, and this, like in all other cases, is done by using an SLD.
+The analogy to vector data is evident in the naming of the tags used.
+Vectors, consisting of points, line, and polygons, are styled by using the <code class="docutils literal notranslate"><span class="pre">&lt;PointSymbolizer&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;LineSymbolizer&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;PolygonSymbolizer&gt;</span></code> tags.
+It is therefore not very surprising that raster data is styled with the tag &lt;RasterSymbolizer&gt;.</p>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>The following elements can be used inside the <code class="docutils literal notranslate"><span class="pre">&lt;RasterSymbolizer&gt;</span></code> element.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>&lt;Opacity&gt;</p></li>
+<li><p>&lt;ColorMap&gt;</p></li>
+<li><p>&lt;ChannelSelection&gt;</p></li>
+<li><p>&lt;ContrastEnhancement&gt;</p></li>
+<li><p>&lt;ShadedRelief&gt; *</p></li>
+<li><p>&lt;OverlapBehavior&gt; *</p></li>
+<li><p>&lt;ImageOutline&gt; *</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The starred (*) elements are not yet implemented in GeoServer.</p>
+</div>
+<div class="section" id="opacity">
+<h3>Opacity<a class="headerlink" href="#opacity" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;Opacity&gt;</span></code> element sets the transparency level for the entire rendered image.
+As is standard, the values range from zero (0) to one (1),
+with zero being transparent, and one being opaque.
+The syntax is:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Opacity&gt;</span>0.5<span class="nt">&lt;/Opacity&gt;</span>
+</pre></div>
+</div>
+<p>where, in this case, the raster is rendered at 50% opacity.</p>
+</div>
+<div class="section" id="colormap">
+<h3>ColorMap<a class="headerlink" href="#colormap" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;ColorMap&gt;</span></code> element defines the color values for the pixels
+of a raster image, as either color gradients,
+or a mapping of specific values to fixed colors.</p>
+<p>A color map is defined by a sequence of <code class="docutils literal notranslate"><span class="pre">&lt;ColorMapEntry&gt;</span></code> elements.
+Each <code class="docutils literal notranslate"><span class="pre">&lt;ColorMapEntry&gt;</span></code> element specifies a <code class="docutils literal notranslate"><span class="pre">color</span></code> and a <code class="docutils literal notranslate"><span class="pre">quantity</span></code> attribute.
+The quantity refers to the value of a raster pixel.
+The <code class="docutils literal notranslate"><span class="pre">color</span></code> value is denoted in standard hexadecimal RGB format (#RRGGBB).
+<code class="docutils literal notranslate"><span class="pre">&lt;ColorMapEntry&gt;</span></code> elements can also have <code class="docutils literal notranslate"><span class="pre">opacity</span></code> and <code class="docutils literal notranslate"><span class="pre">label</span></code> attributes.
+The <code class="docutils literal notranslate"><span class="pre">opacity</span></code> attribute overrides the global <code class="docutils literal notranslate"><span class="pre">&lt;Opacity&gt;</span></code> value.
+The <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute is used to provide text for legends.
+A color map can contain up to 255 <code class="docutils literal notranslate"><span class="pre">&lt;ColorMapEntry&gt;</span></code> elements.</p>
+<p>The simplest <code class="docutils literal notranslate"><span class="pre">&lt;ColorMap&gt;</span></code> has two color map entries.
+One specifyies a color for the “bottom” of the dataset,
+and the other specifyies a color for the “top” of the dataset.
+Pixels with values equal to or less than the minimum value
+are rendered with the bottom color (and opacity).
+Pixels with values equal to or great than the maximum value
+are rendered with the top color and opacity.
+The colors for values in between are automatically interpolated,
+making creating color gradients easy.</p>
+<p>A color map can be refined by adding additional intermediate entries.
+This is useful if the dataset has discrete values rather than a gradient,
+or if a multi-colored gradient is desired.
+One entry is added for each different color to be used,
+along with the corresponding quantity value.</p>
+<p>For example, a simple ColorMap can define a color gradient from color #323232 to color #BBBBBB over quantity values from -300 to 200:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ColorMap&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#323232&quot;</span> <span class="na">quantity=</span><span class="s">&quot;-300&quot;</span> <span class="na">label=</span><span class="s">&quot;label1&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#BBBBBB&quot;</span> <span class="na">quantity=</span><span class="s">&quot;200&quot;</span> <span class="na">label=</span><span class="s">&quot;label2&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/ColorMap&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/colormap1.png" src="../../../_images/colormap1.png" />
+</div>
+<p>A more refined example defines a color gradient from color #FFCC32 through color #BBBBBB,
+running through color #3645CC and color #CC3636.
+The bottom color #FFCC32 is defined to be transparent
+This simulates an alpha channel, since
+pixels with values of -300 and below will not be rendered.
+Notice that the default opacity is 1 (opaque) when not specified.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ColorMap&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FFCC32&quot;</span> <span class="na">quantity=</span><span class="s">&quot;-300&quot;</span> <span class="na">label=</span><span class="s">&quot;label1&quot;</span> <span class="na">opacity=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#3645CC&quot;</span> <span class="na">quantity=</span><span class="s">&quot;0&quot;</span> <span class="na">label=</span><span class="s">&quot;label2&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#CC3636&quot;</span> <span class="na">quantity=</span><span class="s">&quot;100&quot;</span> <span class="na">label=</span><span class="s">&quot;label3&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#BBBBBB&quot;</span> <span class="na">quantity=</span><span class="s">&quot;200&quot;</span> <span class="na">label=</span><span class="s">&quot;label4&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/ColorMap&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/colormap2.png" src="../../../_images/colormap2.png" />
+</div>
+<p>GeoServer extends the <code class="docutils literal notranslate"><span class="pre">&lt;ColorMap&gt;</span></code> element to allow two attributes: <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">extended</span></code>.</p>
+<div class="section" id="type">
+<h4>type<a class="headerlink" href="#type" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;ColorMap&gt;</span></code> <code class="docutils literal notranslate"><span class="pre">type</span></code> attribute specifies the kind of ColorMap to use.
+There are three different types of ColorMaps that can be specified: <code class="docutils literal notranslate"><span class="pre">ramp</span></code>, <code class="docutils literal notranslate"><span class="pre">intervals</span></code> and <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">type=&quot;ramp&quot;</span></code> is the default ColorMap type.
+It specifies that colors should be interpolated for values between the color map entries.
+The result is shown in the following example.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ColorMap</span> <span class="na">type=</span><span class="s">&quot;ramp&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#EEBE2F&quot;</span> <span class="na">quantity=</span><span class="s">&quot;-300&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#2851CC&quot;</span> <span class="na">quantity=</span><span class="s">&quot;0&quot;</span> <span class="na">label=</span><span class="s">&quot;values&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#211F1F&quot;</span> <span class="na">quantity=</span><span class="s">&quot;50&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#EE0F0F&quot;</span> <span class="na">quantity=</span><span class="s">&quot;100&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#AAAAAA&quot;</span> <span class="na">quantity=</span><span class="s">&quot;200&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#6FEE4F&quot;</span> <span class="na">quantity=</span><span class="s">&quot;250&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#3ECC1B&quot;</span> <span class="na">quantity=</span><span class="s">&quot;300&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#886363&quot;</span> <span class="na">quantity=</span><span class="s">&quot;350&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#5194CC&quot;</span> <span class="na">quantity=</span><span class="s">&quot;400&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#2C58DD&quot;</span> <span class="na">quantity=</span><span class="s">&quot;450&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#DDB02C&quot;</span> <span class="na">quantity=</span><span class="s">&quot;600&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/ColorMap&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/colormap3.png" src="../../../_images/colormap3.png" />
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">type=&quot;values&quot;</span></code> means that only pixels with the specified entry quantity values are rendered.
+Pixels with other values are not rendered.
+Using the example set of color map entries:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ColorMap</span> <span class="na">type=</span><span class="s">&quot;values&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#EEBE2F&quot;</span> <span class="na">quantity=</span><span class="s">&quot;-300&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
+        ...
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#DDB02C&quot;</span> <span class="na">quantity=</span><span class="s">&quot;600&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/ColorMap&gt;</span>
+</pre></div>
+</div>
+<p>The result image is:</p>
+<div class="figure align-left">
+<img alt="../../../_images/colormap4.png" src="../../../_images/colormap4.png" />
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">type=&quot;intervals&quot;</span></code> value means that each interval defined by two entries is rendered using the color of the first (lowest-value) entry.
+No color interpolation is applied across the intervals.
+Using the example set of color map entries:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ColorMap</span> <span class="na">type=</span><span class="s">&quot;intervals&quot;</span> <span class="na">extended=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#EEBE2F&quot;</span> <span class="na">quantity=</span><span class="s">&quot;-300&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
+        ...
+        <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#DDB02C&quot;</span> <span class="na">quantity=</span><span class="s">&quot;600&quot;</span> <span class="na">label=</span><span class="s">&quot;label&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/ColorMap&gt;</span>
+</pre></div>
+</div>
+<p>The result image is:</p>
+<div class="figure align-left">
+<img alt="../../../_images/colormap5.png" src="../../../_images/colormap5.png" />
+</div>
+<p>The color map type is also reflected in the legend graphic.
+A typical request for a raster legend is
+(using the <code class="docutils literal notranslate"><span class="pre">forceRule:true</span></code> option to force output of the color map):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&amp;VERSION=1.0.0&amp;&amp;STYLE=raster100&amp;FORMAT=image/png&amp;WIDTH=50&amp;HEIGHT=20&amp;LEGEND_OPTIONS=forceRule:true&amp;LAYER=it.geosolutions:di08032_da
+</pre></div>
+</div>
+<p>The legends returned for the different types are:</p>
+<div class="figure align-left">
+<img alt="../../../_images/rasterlegend.png" src="../../../_images/rasterlegend.png" />
+</div>
+</div>
+<div class="section" id="extended">
+<h4>extended<a class="headerlink" href="#extended" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">extended</span></code> attribute specifies whether the color map gradient uses 256 (8-bit) or 65536 (16-bit) colors.
+The value <code class="docutils literal notranslate"><span class="pre">false</span></code> (the default) specifies that the color scale is calculated using 8-bit color, and <code class="docutils literal notranslate"><span class="pre">true</span></code> specifies using 16-bit color.</p>
+</div>
+<div class="section" id="cql-expressions">
+<span id="sld-reference-rastersymbolizer-colormap-cql"></span><h4>CQL Expressions<a class="headerlink" href="#cql-expressions" title="Permalink to this headline">¶</a></h4>
+<p>All of the ColorMapEntry attributes (color, quantity, label and opacity) can be defined using <code class="docutils literal notranslate"><span class="pre">cql</span> <span class="pre">expressions</span></code>, with the ${…expression…} syntax.</p>
+<p>CQL expressions are useful to make the color map dynamic, using values taken from the client:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#00FF00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;${env(&#39;low&#39;,3)}&quot;</span> <span class="na">label=</span><span class="s">&quot;Low&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FFFF00&quot;</span> <span class="na">quantity=</span><span class="s">&quot;${env(&#39;medium&#39;,10)}&quot;</span> <span class="na">label=</span><span class="s">&quot;Medium&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#FF0000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;${env(&#39;high&#39;,1000)}&quot;</span> <span class="na">label=</span><span class="s">&quot;High&quot;</span> <span class="na">opacity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>In this example quantity values are not fixed, but can be specified by the client using the ENV request parameter:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://localhost:8080/geoserver/wms?REQUEST=GetMap&amp;VERSION=1.0.0&amp;...&amp;ENV=low:10;medium:100;high:500">http://localhost:8080/geoserver/wms?REQUEST=GetMap&amp;VERSION=1.0.0&amp;…&amp;ENV=low:10;medium:100;high:500</a></p>
+</div></blockquote>
+<p>For a complete reference of CQL capabilities, see <a class="reference internal" href="../../../filter/ecql_reference.html#filter-ecql-reference"><span class="std std-ref">here</span></a></p>
+</div>
+</div>
+<div class="section" id="channelselection">
+<h3>ChannelSelection<a class="headerlink" href="#channelselection" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;ChannelSelection&gt;</span></code> element specifies how dataset bands are mapped to image color channels.
+Named dataset bands may be mapped to red, green and blue channels, or a single named band may be mapped to a grayscale channel.</p>
+<p>The following example maps source channels 1, 2 and 3 to the red, green, and blue color channels.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ChannelSelection&gt;</span>
+  <span class="nt">&lt;RedChannel&gt;</span>
+    <span class="nt">&lt;SourceChannelName&gt;</span>1<span class="nt">&lt;/SourceChannelName&gt;</span>
+  <span class="nt">&lt;/RedChannel&gt;</span>
+  <span class="nt">&lt;GreenChannel&gt;</span>
+    <span class="nt">&lt;SourceChannelName&gt;</span>2<span class="nt">&lt;/SourceChannelName&gt;</span>
+  <span class="nt">&lt;/GreenChannel&gt;</span>
+  <span class="nt">&lt;BlueChannel&gt;</span>
+    <span class="nt">&lt;SourceChannelName&gt;</span>3<span class="nt">&lt;/SourceChannelName&gt;</span>
+  <span class="nt">&lt;/BlueChannel&gt;</span>
+<span class="nt">&lt;/ChannelSelection&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/channelselection.png" src="../../../_images/channelselection.png" />
+</div>
+<p>The next example shows selecting a single band of an RGB image as a grayscale channel,
+and re-colorizing it via a ColorMap:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;RasterSymbolizer&gt;</span>
+        <span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
+        <span class="nt">&lt;ChannelSelection&gt;</span>
+                <span class="nt">&lt;GrayChannel&gt;</span>
+                        <span class="nt">&lt;SourceChannelName&gt;</span>1<span class="nt">&lt;/SourceChannelName&gt;</span>
+                <span class="nt">&lt;/GrayChannel&gt;</span>
+        <span class="nt">&lt;/ChannelSelection&gt;</span>
+        <span class="nt">&lt;ColorMap</span> <span class="na">extended=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#0000ff&quot;</span> <span class="na">quantity=</span><span class="s">&quot;3189.0&quot;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#009933&quot;</span> <span class="na">quantity=</span><span class="s">&quot;6000.0&quot;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#ff9900&quot;</span> <span class="na">quantity=</span><span class="s">&quot;9000.0&quot;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#ff0000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;14265.0&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/ColorMap&gt;</span>
+<span class="nt">&lt;/RasterSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/channelselection2.png" src="../../../_images/channelselection2.png" />
+</div>
+<div class="section" id="channelselection-expressions">
+<h4>ChannelSelection Expressions<a class="headerlink" href="#channelselection-expressions" title="Permalink to this headline">¶</a></h4>
+<p>Since the previous approach supports Strings only and therefore is static and not suitable when dealing with multispectral imagery that has more than four bands
+and hyperspectral imagery (hyperspectral sensors have typically hundreds of bands), a dynamical approach is needed.</p>
+<p>By replacing Strings with Expressions in <code class="docutils literal notranslate"><span class="pre">&lt;SourceChannelName&gt;</span></code>, context free functions like <code class="docutils literal notranslate"><span class="pre">env</span></code> can be used to indicate which bands are to be used in a particular rendering session.</p>
+<p>The following example shows how to set the Red, Green and Blue channels and to map them into the desired bands. Here below, the <code class="docutils literal notranslate"><span class="pre">env</span></code> function will set, by default in the WMS request, the RedChannel
+on the second band, the GreenChannel on the fifth band and the BlueChannel on the seventh band.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;RasterSymbolizer&gt;</span>
+<span class="nt">&lt;ChannelSelection&gt;</span>
+    <span class="nt">&lt;RedChannel&gt;</span>
+    <span class="nt">&lt;SourceChannelName&gt;</span>
+            <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
+                    <span class="nt">&lt;ogc:Literal&gt;</span>1<span class="nt">&lt;/ogc:Literal&gt;</span>
+            <span class="nt">&lt;/ogc:Function&gt;</span>
+    <span class="nt">&lt;/SourceChannelName&gt;</span>
+    <span class="nt">&lt;/RedChannel&gt;</span>
+    <span class="nt">&lt;GreenChannel&gt;</span>
+    <span class="nt">&lt;SourceChannelName&gt;</span>
+            <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;ogc:Literal&gt;</span>B2<span class="nt">&lt;/ogc:Literal&gt;</span>
+                    <span class="nt">&lt;ogc:Literal&gt;</span>2<span class="nt">&lt;/ogc:Literal&gt;</span>
+            <span class="nt">&lt;/ogc:Function&gt;</span>
+    <span class="nt">&lt;/SourceChannelName&gt;</span>
+    <span class="nt">&lt;/GreenChannel&gt;</span>
+    <span class="nt">&lt;BlueChannel&gt;</span>
+    <span class="nt">&lt;SourceChannelName&gt;</span>
+            <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;ogc:Literal&gt;</span>B3<span class="nt">&lt;/ogc:Literal&gt;</span>
+                    <span class="nt">&lt;ogc:Literal&gt;</span>3<span class="nt">&lt;/ogc:Literal&gt;</span>
+            <span class="nt">&lt;/ogc:Function&gt;</span>
+    <span class="nt">&lt;/SourceChannelName&gt;</span>
+    <span class="nt">&lt;/BlueChannel&gt;</span>
+<span class="nt">&lt;/ChannelSelection&gt;</span>
+<span class="nt">&lt;RasterSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/channelsexpression1.png" src="../../../_images/channelsexpression1.png" />
+</div>
+<p>The style Schema supports also the SLD 1.1 and CSS. As a CSS examples:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>* { raster-channels: [env(&#39;B1&#39;,&#39;1&#39;)] &#39;2&#39; &#39;3&#39;; }
+
+* { raster-channels: @B1(1)  &#39;2&#39; &#39;3&#39;;}
+</pre></div>
+</div>
+<p>One can specify the <code class="docutils literal notranslate"><span class="pre">env</span></code> request parameters in the WMS request to switch the bands and render the raster layer using the desired bands,
+for example the 4, 2, 3 as the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8083/geosolutions/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=geosolutions:raster_multichannel&amp;styles=&amp;bbox=-180.0,-90.5,180.0,90.5&amp;width=768&amp;height=386&amp;srs=EPSG:4326&amp;format=application/openlayers&amp;env=B1:4;B2:2;B3:3
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/channelsexpression2.png" src="../../../_images/channelsexpression2.png" />
+</div>
+<p>Now let us suppose that we want to work on a single band and to exclude all the remaining bands in order to render a monochromatic raster.
+As an SLD example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;RasterSymbolizer&gt;</span>
+  <span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/se:Opacity&gt;</span>
+  <span class="nt">&lt;ChannelSelection&gt;</span>
+    <span class="nt">&lt;GrayChannel&gt;</span>
+      <span class="nt">&lt;SourceChannelName&gt;</span>
+            <span class="nt">&lt;Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+             <span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
+             <span class="nt">&lt;ogc:Literal&gt;</span>7<span class="nt">&lt;/ogc:Literal&gt;</span>
+          <span class="nt">&lt;/ogc:Function&gt;</span>
+      <span class="nt">&lt;/SourceChannelName&gt;</span>
+    <span class="nt">&lt;/GrayChannel&gt;</span>
+  <span class="nt">&lt;/ChannelSelection&gt;</span>
+<span class="nt">&lt;/RasterSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/channelsexpression3.png" src="../../../_images/channelsexpression3.png" />
+</div>
+<p>The Schema above will render the channel “7” by default. As before, you can choose to render any channel of the raster by calling the <code class="docutils literal notranslate"><span class="pre">env</span></code> function in your
+WMS request and setting the desired band. By adding to the request &amp;env=B1:3 for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8083/geoserver/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=geosolutions:usa&amp;styles=&amp;bbox=-130.85168,20.7052,-62.0054,54.1141&amp;width=768&amp;height=372&amp;srs=EPSG:4326&amp;format=application/openlayers&amp;env=B1:3
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/channelsexpression4.png" src="../../../_images/channelsexpression4.png" />
+</div>
+<p>Finally, you can add a ColorMap on the selected channel as the following:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;RasterSymbolizer&gt;</span>
+ <span class="nt">&lt;Opacity&gt;</span>1.0<span class="nt">&lt;/Opacity&gt;</span>
+ <span class="nt">&lt;ChannelSelection&gt;</span>
+   <span class="nt">&lt;GrayChannel&gt;</span>
+     <span class="nt">&lt;SourceChannelName&gt;</span>
+            <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;ogc:Literal&gt;</span>B1<span class="nt">&lt;/ogc:Literal&gt;</span>
+            <span class="nt">&lt;ogc:Literal&gt;</span>7<span class="nt">&lt;/ogc:Literal&gt;</span>
+         <span class="nt">&lt;/ogc:Function&gt;</span>
+     <span class="nt">&lt;/SourceChannelName&gt;</span>
+   <span class="nt">&lt;/GrayChannel&gt;</span>
+ <span class="nt">&lt;/ChannelSelection&gt;</span>
+ <span class="nt">&lt;ColorMap&gt;</span>
+     <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#0000ff&quot;</span> <span class="na">quantity=</span><span class="s">&quot;50.0&quot;</span><span class="nt">/&gt;</span>
+     <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#009933&quot;</span> <span class="na">quantity=</span><span class="s">&quot;100.0&quot;</span><span class="nt">/&gt;</span>
+     <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#ff9900&quot;</span> <span class="na">quantity=</span><span class="s">&quot;150.0&quot;</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;ColorMapEntry</span> <span class="na">color=</span><span class="s">&quot;#ff0000&quot;</span> <span class="na">quantity=</span><span class="s">&quot;200.0&quot;</span><span class="nt">/&gt;</span>
+ <span class="nt">&lt;/ColorMap&gt;</span>
+<span class="nt">&lt;/RasterSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="figure align-left">
+<img alt="../../../_images/channelsexpression5.png" src="../../../_images/channelsexpression5.png" />
+</div>
+</div>
+</div>
+<div class="section" id="contrastenhancement">
+<h3>ContrastEnhancement<a class="headerlink" href="#contrastenhancement" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;ContrastEnhancement&gt;</span></code> element is used to adjust the relative brightness of the image data.
+A <code class="docutils literal notranslate"><span class="pre">&lt;ContrastEnhancement&gt;</span></code> element can be specified for the entire image, or in individual <code class="docutils literal notranslate"><span class="pre">Channel</span></code> elements.
+In this way, different enhancements can be used on each channel.</p>
+<p>There are three types of enhancements possible:</p>
+<ul class="simple">
+<li><p>Normalize</p></li>
+<li><p>Histogram</p></li>
+<li><p>GammaValue</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;Normalize&gt;</span></code> means to expand the contrast so that the minimum quantity is mapped to minimum brightness, and the maximum quantity is mapped to maximum brightness.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;Histogram&gt;</span></code> is similar to Normalize, but the algorithm used attempts to produce an image with an equal number of pixels at all brightness levels.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;GammaValue&gt;</span></code> is a scaling factor that adjusts the brightness of the image. A value less than one (1) darkens the image, and a value greater than one (1) brightens it.  The default is 1 (no change).</p>
+<p>These examples turn on Normalize and Histogram, respectively:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ContrastEnhancement&gt;</span>
+        <span class="nt">&lt;Normalize/&gt;</span>
+<span class="nt">&lt;/ContrastEnhancement&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ContrastEnhancement&gt;</span>
+        <span class="nt">&lt;Histogram/&gt;</span>
+<span class="nt">&lt;/ContrastEnhancement&gt;</span>
+</pre></div>
+</div>
+<p>This example increases the brightness of the image by a factor of two.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ContrastEnhancement&gt;</span>
+        <span class="nt">&lt;GammaValue&gt;</span>2<span class="nt">&lt;/GammaValue&gt;</span>
+<span class="nt">&lt;/ContrastEnhancement&gt;</span>
+</pre></div>
+</div>
+<p>It is also possible to customize Normalize Contrast Enhancement element for the RasterSymbolizer.
+3 new VendorOptions are supported:</p>
+<ul class="simple">
+<li><p>&lt;VendorOption name=”algorithm”&gt;ALGORITHM_NAME&lt;/VendorOption&gt; to control the algorithm to apply</p></li>
+<li><p>&lt;VendorOption name=”minValue”&gt;MIN_VALUE&lt;/VendorOption&gt; to control the min value for the algorithm</p></li>
+<li><p>&lt;VendorOption name=”maxValue”&gt;MAX_VALUE&lt;/VendorOption&gt; to control the max value for the algorithm</p></li>
+</ul>
+<p>Supported algorithms are:</p>
+<ul class="simple">
+<li><p><strong>StretchToMinimumMaximum</strong> it will linearly stretch the source raster by linearly mapping values within the [MIN_VALUE, MAX_VALUE] range to [0,255]. This will also automatically result into a clip of the values outside the specified input range.</p></li>
+<li><p><strong>ClipToMinimumMaximum</strong> it will result into a clamp operation. Values smaller than MIN_VALUE will be forced to MIN_VALUE. Values greater than MAX_VALUE will be forced to MAX_VALUE. Values in the [MIN_VALUE, MAX_VALUE] range will passthrough unchanged.</p></li>
+<li><p><strong>ClipToZero</strong> is similar to ClipToMinimumMaximum. However, values outside the [MIN_VALUE, MAX_VALUE] range will be forced to be 0.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The target data type for the stretch algorithm is <strong>always</strong> byte (this might change in the future). This means that if the MAX_VALUE for the Clip oriented algorithms is greater than 255 an implicit clamp will apply anyway to clamp to 255.</p>
+</div>
+<p>Here below some examples</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ContrastEnhancement&gt;</span>
+  <span class="nt">&lt;Normalize&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>StretchToMinimumMaximum<span class="nt">&lt;/VendorOption&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;minValue&quot;</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;maxValue&quot;</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
+  <span class="nt">&lt;/Normalize&gt;</span>
+<span class="nt">&lt;/ContrastEnhancement&gt;</span>
+</pre></div>
+</div>
+<p>This example will apply a Normalized ContrastEnhancement by linearly stretch from pixel values [50, 100] to [0, 255]</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ContrastEnhancement&gt;</span>
+  <span class="nt">&lt;Normalize&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>ClipToMinimumMaximum<span class="nt">&lt;/VendorOption&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;minValue&quot;</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;maxValue&quot;</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
+  <span class="nt">&lt;/Normalize&gt;</span>
+<span class="nt">&lt;/ContrastEnhancement&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ContrastEnhancement&gt;</span>
+  <span class="nt">&lt;Normalize&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>ClipToMinimumMaximum<span class="nt">&lt;/VendorOption&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;minValue&quot;</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
+   <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;maxValue&quot;</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
+  <span class="nt">&lt;/Normalize&gt;</span>
+<span class="nt">&lt;/ContrastEnhancement&gt;</span>
+</pre></div>
+</div>
+<p>Here below a more complex example that shows the possibility to control the values from a client using env functions.
+This is extremely interesting for interactive applications.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>...
+<span class="nt">&lt;ContrastEnhancement&gt;</span>
+        <span class="nt">&lt;Normalize&gt;</span>
+         <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;algorithm&quot;</span><span class="nt">&gt;</span>
+           <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+                 <span class="nt">&lt;ogc:Literal&gt;</span>algorithm<span class="nt">&lt;/ogc:Literal&gt;</span>
+                 <span class="nt">&lt;ogc:Literal&gt;</span>StretchToMinimumMaximum<span class="nt">&lt;/ogc:Literal&gt;</span>
+           <span class="nt">&lt;/ogc:Function&gt;</span>
+         <span class="nt">&lt;/VendorOption&gt;</span>
+         <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&#39;minValue&#39;</span><span class="nt">&gt;</span>
+           <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+                 <span class="nt">&lt;ogc:Literal&gt;</span>minValue<span class="nt">&lt;/ogc:Literal&gt;</span>
+                 <span class="nt">&lt;ogc:Literal&gt;</span>10<span class="nt">&lt;/ogc:Literal&gt;</span>
+           <span class="nt">&lt;/ogc:Function&gt;</span>
+         <span class="nt">&lt;/VendorOption&gt;</span>
+         <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&#39;maxValue&#39;</span><span class="nt">&gt;</span>
+           <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+                 <span class="nt">&lt;ogc:Literal&gt;</span>maxValue<span class="nt">&lt;/ogc:Literal&gt;</span>
+                 <span class="nt">&lt;ogc:Literal&gt;</span>1200<span class="nt">&lt;/ogc:Literal&gt;</span>
+           <span class="nt">&lt;/ogc:Function&gt;</span>
+         <span class="nt">&lt;/VendorOption&gt;</span>
+        <span class="nt">&lt;/Normalize&gt;</span>
+<span class="nt">&lt;/ContrastEnhancement&gt;</span>
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="shadedrelief">
+<h3>ShadedRelief<a class="headerlink" href="#shadedrelief" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Support for this element has not been implemented yet.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;ShadedRelief&gt;</span></code> element can be used to create a 3-D effect, by selectively adjusting brightness. This is a nice effect to use on an elevation dataset. There are two types of shaded relief possible.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>BrightnessOnly</p></li>
+<li><p>ReliefFactor</p></li>
+</ul>
+</div></blockquote>
+<p>BrightnessOnly, which takes no parameters, applies shading in WHAT WAY? ReliefFactor sets the amount of exaggeration of the shading (for example, to make hills appear higher). According to the OGC SLD specification, a value of around 55 gives “reasonable results” for Earth-based datasets:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ShadedRelief&gt;</span>
+        <span class="nt">&lt;BrightnessOnly</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;ReliefFactor&gt;</span>55<span class="nt">&lt;/ReliefFactor&gt;</span>
+<span class="nt">&lt;/ShadedRelief&gt;</span>
+</pre></div>
+</div>
+<p>The above example turns on Relief shading in WHAT WAY?</p>
+</div>
+<div class="section" id="overlapbehavior">
+<h3>OverlapBehavior<a class="headerlink" href="#overlapbehavior" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Support for this element has not been implemented yet.</p>
+</div>
+<p>Sometimes raster data is comprised of multiple image sets. Take, for example, a <a class="reference external" href="http://apod.nasa.gov/apod/ap001127.html">satellite view of the Earth at night</a> . As all of the Earth can’t be in nighttime at once, a composite of multiple images are taken. These images are georeferenced, and pieced together to make the finished product. That said, it is possible that two images from the same dataset could overlap slightly, and the OverlapBehavior element is designed to determine how this is handled. There are four types of OverlapBehavior:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>AVERAGE</p></li>
+<li><p>RANDOM</p></li>
+<li><p>LATEST_ON_TOP</p></li>
+<li><p>EARLIEST_ON_TOP</p></li>
+</ul>
+</div></blockquote>
+<p><strong>AVERAGE</strong> takes each overlapping point and displays their average value. <strong>RANDOM</strong> determines which image gets displayed according to chance (which can sometimes result in a crisper image). <strong>LATEST_ON_TOP</strong> and <strong>EARLIEST_ON_TOP</strong> sets the determining factor to be the internal timestamp on each image in the dataset. None of these elements have any parameters, and are all called in the same way:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;OverlapBehavior&gt;</span>
+        <span class="nt">&lt;AVERAGE</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/OverlapBehavior&gt;</span>
+</pre></div>
+</div>
+<p>The above sets the OverlapBehavior to AVERAGE.</p>
+</div>
+<div class="section" id="imageoutline">
+<h3>ImageOutline<a class="headerlink" href="#imageoutline" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Support for this element has not been implemented yet.</p>
+</div>
+<p>Given the situation mentioned previously of the image composite, it is possible to style each image so as to have an outline. One can even set a fill color and opacity of each image; a reason to do this would be to “gray-out” an image. To use ImageOutline, you would define a &lt;LineSymbolizer&gt; or &lt;PolygonSymbolizer&gt; inside of the element:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ImageOutline&gt;</span>
+        <span class="nt">&lt;LineSymbolizer&gt;</span>
+        <span class="nt">&lt;Stroke&gt;</span>
+                        <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000ff<span class="nt">&lt;/CssParameter&gt;</span>
+        <span class="nt">&lt;/Stroke&gt;</span>
+        <span class="nt">&lt;/LineSymbolizer&gt;</span>
+<span class="nt">&lt;/ImageOutline&gt;</span>
+</pre></div>
+</div>
+<p>The above would create a border line (colored blue with a one pixel default thickness) around each image in the dataset.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="labeling.html" title="previous chapter">Labeling</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../extensions/index.html" title="next chapter">SLD Extensions in GeoServer</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">RasterSymbolizer</a><ul>
+<li><a class="reference internal" href="#syntax">Syntax</a><ul>
+<li><a class="reference internal" href="#opacity">Opacity</a></li>
+<li><a class="reference internal" href="#colormap">ColorMap</a><ul>
+<li><a class="reference internal" href="#type">type</a></li>
+<li><a class="reference internal" href="#extended">extended</a></li>
+<li><a class="reference internal" href="#cql-expressions">CQL Expressions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#channelselection">ChannelSelection</a><ul>
+<li><a class="reference internal" href="#channelselection-expressions">ChannelSelection Expressions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contrastenhancement">ContrastEnhancement</a></li>
+<li><a class="reference internal" href="#shadedrelief">ShadedRelief</a></li>
+<li><a class="reference internal" href="#overlapbehavior">OverlapBehavior</a></li>
+<li><a class="reference internal" href="#imageoutline">ImageOutline</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="labeling.html" title="previous chapter">Labeling</a></li>
+            <li>Next: <a href="../extensions/index.html" title="next chapter">SLD Extensions in GeoServer</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/reference/rastersymbolizer.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

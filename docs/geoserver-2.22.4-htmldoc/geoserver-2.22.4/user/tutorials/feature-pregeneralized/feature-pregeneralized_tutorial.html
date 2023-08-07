@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using the GeoTools feature-pregeneralized module &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="INSPIRE metadata configuration using metadata and CSW" href="../metadata/index.html" />
+    <link rel="prev" title="Building and using an image pyramid" href="../imagepyramid/imagepyramid.html" /> 
+  </head><body class="tutorials/feature-pregeneralized/feature-pregeneralized_tutorial">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Using the GeoTools feature-pregeneralized module</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../metadata/index.html" title="INSPIRE metadata configuration using metadata and CSW" accesskey="N">Next</a></li>
+  <li>
+    <a href="../imagepyramid/imagepyramid.html" title="Building and using an image pyramid" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="using-the-geotools-feature-pregeneralized-module">
+<span id="feature-pregeneralized-tutorial"></span><h1>Using the GeoTools feature-pregeneralized module<a class="headerlink" href="#using-the-geotools-feature-pregeneralized-module" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The screenshots on this tutorial have not yet been updated for the 2.0.x user interface.  But most all the rest of the information should be valid, and the user interface is roughly the same, but a bit more easy to use.</p>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial shows how to use the geotools feature-pregeneralized module in GeoServer. The feature-pregeneralized module is used to improve performance and lower memory usage and IO traffic.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Vector generalization reduces the number of vertices of a geometry for a given purpose. It makes no sense drawing a polygon with 500000 vertices on a screen. A much smaller number of vertices is enough to draw a topological correct picture of the polygon.</p>
+</div>
+<p>This module needs features with already generalized geometries, selecting the best fit geometry on demand.</p>
+<p>The full documentation is available in <a class="reference external" href="https://docs.geotools.org/latest/userguide/library/data/pregeneralized.html">GeoTools Pregeneralized Plugin</a> documentation.</p>
+<p>This tutorial will show two possible scenarios, explaining step by step what to do for using this module in GeoServer.</p>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>First, find the location of the GEOSERVER_DATA_DIR. This info is contained in the log file when starting GeoServer.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">----------------------------------</span>
+<span class="o">-</span> <span class="n">GEOSERVER_DATA_DIR</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mcr</span><span class="o">/</span><span class="n">geoserver</span><span class="o">-</span><span class="mf">1.7</span><span class="o">.</span><span class="n">x</span><span class="o">/</span><span class="mf">1.7</span><span class="o">.</span><span class="n">x</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">release</span>
+<span class="o">----------------------------------</span>
+</pre></div>
+</div>
+<p>Within this directory, we have to place the shape files. There is already a sub directory <code class="file docutils literal notranslate"><span class="pre">data</span></code> which will be used.
+Within this sub directory, create a directory <code class="file docutils literal notranslate"><span class="pre">streams</span></code>.</p>
+<p>Within <code class="file docutils literal notranslate"><em><span class="pre">GEOSERVER_DATA_DIR</span></em><span class="pre">/data/streams</span></code> create another sub directory called <code class="file docutils literal notranslate"><span class="pre">0</span></code>. ( 0 meaning “no generalized geometries”).</p>
+<p>This tutorial is based on a shape file, which you can download from here <a class="reference download internal" download="" href="../../_downloads/b2dcbf7b67a1fc19f19562cd427f5b6c/streams.zip"><code class="xref download docutils literal notranslate"><span class="pre">Streams</span></code></a>.
+Unzip this file into <code class="file docutils literal notranslate"><em><span class="pre">GEOSERVER_DATA_DIR</span></em><span class="pre">/data/streams/0</span></code>.</p>
+<p>Look for the <code class="file docutils literal notranslate"><span class="pre">WEB-INF/lib/</span></code> directory of your GeoServer installation. There must be a file called <code class="file docutils literal notranslate"><span class="pre">gt-feature-pregeneralized-</span><em><span class="pre">version</span></em><span class="pre">-jar</span></code>. This jar file includes a tool for generalizing shape files. Open a cmd line and execute the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">GEOSERVER_DATA_DIR</span><span class="o">&gt;/</span><span class="n">data</span><span class="o">/</span><span class="n">streams</span><span class="o">/</span><span class="mi">0</span>
+<span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="o">&lt;</span><span class="n">GEOSERVER_INSTALLATION</span><span class="o">&gt;/</span><span class="n">WEB</span><span class="o">-</span><span class="n">INF</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">gt</span><span class="o">-</span><span class="n">feature</span><span class="o">-</span><span class="n">pregeneralized</span><span class="o">-</span><span class="p">{</span><span class="n">version</span><span class="p">}</span><span class="o">.</span><span class="n">jar</span> <span class="n">generalize</span> <span class="mi">0</span><span class="o">/</span><span class="n">streams</span><span class="o">.</span><span class="n">shp</span> <span class="o">.</span> <span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span>
+</pre></div>
+</div>
+<p>You should see the following output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Shape</span> <span class="n">file</span>            <span class="mi">0</span><span class="o">/</span><span class="n">streams</span><span class="o">.</span><span class="n">shp</span>
+<span class="n">Target</span> <span class="n">directory</span>      <span class="o">.</span>
+<span class="n">Distances</span>             <span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span>
+<span class="o">%</span> <span class="o">|</span><span class="c1">################################|</span>
+</pre></div>
+</div>
+<p>Now there are four additional directories <code class="file docutils literal notranslate"><span class="pre">5.0</span></code> , <code class="file docutils literal notranslate"><span class="pre">10.0</span></code> , <code class="file docutils literal notranslate"><span class="pre">20.0</span></code> , <code class="file docutils literal notranslate"><span class="pre">50.0</span></code> . Look at the size of files with the extension <code class="file docutils literal notranslate"><span class="pre">shp</span></code> within these directories, increasing the generalization distance reduces the file size.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The generalized geometries can be stored in additional properties of a feature or the features can be duplicated.
+Mixed variations are also possible. Since we are working with shape files we have to duplicate the features.</p>
+</div>
+<p>There are two possibilities how we can deploy our generalized shape files.</p>
+<ol class="arabic simple">
+<li><p>Deploy hidden (not visible to the user)</p></li>
+<li><p>Deploy each generalized shape file as a separate GeoServer feature</p></li>
+</ol>
+</div>
+<div class="section" id="hidden-deployment">
+<h2>Hidden Deployment<a class="headerlink" href="#hidden-deployment" title="Permalink to this headline">¶</a></h2>
+<p>First we need a XML config file</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;GeneralizationInfos</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;GeneralizationInfo</span> <span class="na">dataSourceName=</span><span class="s">&quot;file:data/streams/0/streams.shp&quot;</span>  <span class="na">featureName=</span><span class="s">&quot;GenStreams&quot;</span> <span class="na">baseFeatureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;Generalization</span> <span class="na">dataSourceName=</span><span class="s">&quot;file:data/streams/5.0/streams.shp&quot;</span>  <span class="na">distance=</span><span class="s">&quot;5&quot;</span> <span class="na">featureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;Generalization</span> <span class="na">dataSourceName=</span><span class="s">&quot;file:data/streams/10.0/streams.shp&quot;</span>  <span class="na">distance=</span><span class="s">&quot;10&quot;</span> <span class="na">featureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;Generalization</span> <span class="na">dataSourceName=</span><span class="s">&quot;file:data/streams/20.0/streams.shp&quot;</span>  <span class="na">distance=</span><span class="s">&quot;20&quot;</span> <span class="na">featureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;Generalization</span> <span class="na">dataSourceName=</span><span class="s">&quot;file:data/streams/50.0/streams.shp&quot;</span>  <span class="na">distance=</span><span class="s">&quot;50&quot;</span> <span class="na">featureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/GeneralizationInfo&gt;</span>
+<span class="nt">&lt;/GeneralizationInfos&gt;</span>
+</pre></div>
+</div>
+<p>Save this file as <code class="file docutils literal notranslate"><span class="pre">geninfo_shapefile.xml</span></code> into  <code class="file docutils literal notranslate"><em><span class="pre">GEOSERVER_DATA_DIR</span></em><span class="pre">/data/streams</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <strong>dataSourceName</strong> attribute in the XML config is not interpreted as a name, it could be the URL for a shape file or for a property file containing properties for data store creation (e. g. jdbc connect parameters). Remember, this is a hidden deployment and no names are needed. The only <em>official</em> name is the value of the attribute <strong>featureName</strong> in the <strong>GeneralizationInfo</strong> Element.</p>
+</div>
+<p>Start GeoServer and   go to <span class="menuselection">Config‣Data‣DataStores‣New</span> and fill in the form</p>
+<img alt="../../_images/createdatastore.png" src="../../_images/createdatastore.png" />
+<p>Press <span class="guilabel">Submit</span>.</p>
+<p>The next form you see is</p>
+<img alt="../../_images/editdatastore1.png" src="../../_images/editdatastore1.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>RepositoryClassName</strong> and  <strong>GeneralizationInfosProviderClassName</strong> have default values which suit for GeoTools, not for GeoServer. Change <strong>GeoTools</strong> to <strong>GeoServer</strong> in the package names to instantiate the correct objects for GeoServer. <strong>GeneralizationInfosProviderParam</strong> could be an URL or a datastore from the GeoServer catalog. A datastore is referenced by using <em>workspacename:datastorename</em>. This makes sense if you have your own implementation for the <strong>GeneralizationInfosProvider</strong> interface and this implementation reads the infos from a database.</p>
+</div>
+<p>The configuration should look like this</p>
+<img alt="../../_images/editdatastore2.png" src="../../_images/editdatastore2.png" />
+<p>Press <span class="guilabel">Submit</span>, afterward a form for the feature type opens.</p>
+<p>Alter the <strong>Style</strong> to <em>line</em>, <strong>SRS</strong> is <em>26713</em> and press the <span class="guilabel">Generate</span> button labeled by <strong>Bounding Box</strong>.</p>
+<img alt="../../_images/editfeaturestore1.png" src="../../_images/editfeaturestore1.png" />
+<p>Afterward, press <span class="guilabel">Submit</span>, <span class="guilabel">Apply</span> and <span class="guilabel">Save</span>.</p>
+<p>Examine the result by pressing “<strong>My GeoServer</strong>, <strong>Demo</strong> and <strong>Map Preview</strong>. In this list there must be an entry <strong>topp:GenStreams</strong>. Press it and you will see</p>
+<img alt="../../_images/streams.png" src="../../_images/streams.png" />
+<p>Now start zooming in and out and look at the log file of GeoServer. If the deployment is correct you should see something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">May</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2009</span> <span class="mi">4</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">05</span> <span class="n">PM</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">gen</span><span class="o">.</span><span class="n">PreGeneralizedFeatureSource</span> <span class="n">logDistanceInfo</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Using</span> <span class="n">generalizsation</span><span class="p">:</span> <span class="n">file</span><span class="p">:</span><span class="n">data</span><span class="o">/</span><span class="n">streams</span><span class="o">/</span><span class="mf">20.0</span><span class="o">/</span><span class="n">streams</span><span class="o">.</span><span class="n">shp</span> <span class="n">streams</span> <span class="n">the_geom</span> <span class="mf">20.0</span>
+<span class="n">May</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2009</span> <span class="mi">4</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">41</span> <span class="n">PM</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">gen</span><span class="o">.</span><span class="n">PreGeneralizedFeatureSource</span> <span class="n">logDistanceInfo</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Using</span> <span class="n">generalizsation</span><span class="p">:</span> <span class="n">file</span><span class="p">:</span><span class="n">data</span><span class="o">/</span><span class="n">streams</span><span class="o">/</span><span class="mf">5.0</span><span class="o">/</span><span class="n">streams</span><span class="o">.</span><span class="n">shp</span> <span class="n">streams</span> <span class="n">the_geom</span> <span class="mf">5.0</span>
+<span class="n">May</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2009</span> <span class="mi">4</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="mi">08</span> <span class="n">PM</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">gen</span><span class="o">.</span><span class="n">PreGeneralizedFeatureSource</span> <span class="n">logDistanceInfo</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Using</span> <span class="n">generalizsation</span><span class="p">:</span> <span class="n">file</span><span class="p">:</span><span class="n">data</span><span class="o">/</span><span class="n">streams</span><span class="o">/</span><span class="mf">5.0</span><span class="o">/</span><span class="n">streams</span><span class="o">.</span><span class="n">shp</span> <span class="n">streams</span> <span class="n">the_geom</span> <span class="mf">5.0</span>
+<span class="n">May</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2009</span> <span class="mi">4</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="mi">09</span> <span class="n">PM</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">gen</span><span class="o">.</span><span class="n">PreGeneralizedFeatureSource</span> <span class="n">logDistanceInfo</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Using</span> <span class="n">generalizsation</span><span class="p">:</span> <span class="n">file</span><span class="p">:</span><span class="n">data</span><span class="o">/</span><span class="n">streams</span><span class="o">/</span><span class="mf">20.0</span><span class="o">/</span><span class="n">streams</span><span class="o">.</span><span class="n">shp</span> <span class="n">streams</span> <span class="n">the_geom</span> <span class="mf">20.0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="public-deployment">
+<h2>Public Deployment<a class="headerlink" href="#public-deployment" title="Permalink to this headline">¶</a></h2>
+<p>First we have to configure all our shape files</p>
+<img alt="../../_images/streams_0_ds.png" src="../../_images/streams_0_ds.png" />
+<p>The <strong>Feature Data Set ID</strong> for the other  shape files is</p>
+<ol class="arabic simple">
+<li><p>Streams_5</p></li>
+<li><p>Streams_10</p></li>
+<li><p>Streams_20</p></li>
+<li><p>Streams_50</p></li>
+</ol>
+<img alt="../../_images/streams_0_ds2.png" src="../../_images/streams_0_ds2.png" />
+<p>The <strong>URL</strong>  needed for the other  shape files</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">file:data/streams/5.0/streams.shp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file:data/streams/10.0/streams.shp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file:data/streams/20.0/streams.shp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file:data/streams/50.0/streams.shp</span></code></p></li>
+</ol>
+<img alt="../../_images/streams_0_ds4.png" src="../../_images/streams_0_ds4.png" />
+<p>Each feature needs an <strong>Alias</strong>, here it is <em>streams_0</em>. For the other shape files use</p>
+<ol class="arabic simple">
+<li><p>streams_5</p></li>
+<li><p>streams_10</p></li>
+<li><p>streams_20</p></li>
+<li><p>streams_50</p></li>
+</ol>
+<p>Check the result by pressing <span class="guilabel">My GeoServer</span>, <span class="guilabel">Demo</span> and <span class="guilabel">Map Preview</span>. You should see your additional layers.</p>
+<p>No we need another XML configuration file</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;GeneralizationInfos</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;GeneralizationInfo</span> <span class="na">dataSourceNameSpace=</span><span class="s">&quot;topp&quot;</span> <span class="na">dataSourceName=</span><span class="s">&quot;Streams_0&quot;</span>  <span class="na">featureName=</span><span class="s">&quot;GenStreams2&quot;</span> <span class="na">baseFeatureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;Generalization</span> <span class="na">dataSourceNameSpace=</span><span class="s">&quot;topp&quot;</span> <span class="na">dataSourceName=</span><span class="s">&quot;Streams_5&quot;</span>  <span class="na">distance=</span><span class="s">&quot;5&quot;</span> <span class="na">featureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;Generalization</span> <span class="na">dataSourceNameSpace=</span><span class="s">&quot;topp&quot;</span> <span class="na">dataSourceName=</span><span class="s">&quot;Streams_10&quot;</span>  <span class="na">distance=</span><span class="s">&quot;10&quot;</span> <span class="na">featureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;Generalization</span> <span class="na">dataSourceNameSpace=</span><span class="s">&quot;topp&quot;</span> <span class="na">dataSourceName=</span><span class="s">&quot;Streams_20&quot;</span>  <span class="na">distance=</span><span class="s">&quot;20&quot;</span> <span class="na">featureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;Generalization</span> <span class="na">dataSourceNameSpace=</span><span class="s">&quot;topp&quot;</span> <span class="na">dataSourceName=</span><span class="s">&quot;Streams_50&quot;</span>  <span class="na">distance=</span><span class="s">&quot;50&quot;</span> <span class="na">featureName=</span><span class="s">&quot;streams&quot;</span> <span class="na">geomPropertyName=</span><span class="s">&quot;the_geom&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/GeneralizationInfo&gt;</span>
+<span class="nt">&lt;/GeneralizationInfos&gt;</span>
+</pre></div>
+</div>
+<p>Save this file as <code class="file docutils literal notranslate"><span class="pre">geninfo_shapefile2.xml</span></code> into  <code class="file docutils literal notranslate"><em><span class="pre">GEOSERVER_DATA_DIR</span></em><span class="pre">/data/streams</span></code>.</p>
+<p>Create the pregeneralized datastore</p>
+<img alt="../../_images/createdatastore2.png" src="../../_images/createdatastore2.png" />
+<p>Now we use the <strong>CatalogRepository</strong> class to find our needed data stores</p>
+<img alt="../../_images/editdatastore3.png" src="../../_images/editdatastore3.png" />
+<p>Last step</p>
+<img alt="../../_images/editfeaturestore2.png" src="../../_images/editfeaturestore2.png" />
+<p>In the <span class="guilabel">Map Preview</span> you should find <strong>topp:GenStreams2</strong> and all other generalizations. Test in the same manner we
+discussed in the hidden deployment and you should see something like this in the GeoServer log:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">May</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2009</span> <span class="mi">6</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mi">06</span> <span class="n">PM</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">gen</span><span class="o">.</span><span class="n">PreGeneralizedFeatureSource</span> <span class="n">logDistanceInfo</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Using</span> <span class="n">generalizsation</span><span class="p">:</span> <span class="n">Streams_20</span> <span class="n">streams</span> <span class="n">the_geom</span> <span class="mf">20.0</span>
+<span class="n">May</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2009</span> <span class="mi">6</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mi">08</span> <span class="n">PM</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">gen</span><span class="o">.</span><span class="n">PreGeneralizedFeatureSource</span> <span class="n">logDistanceInfo</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Using</span> <span class="n">generalizsation</span><span class="p">:</span> <span class="n">Streams_10</span> <span class="n">streams</span> <span class="n">the_geom</span> <span class="mf">10.0</span>
+<span class="n">May</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2009</span> <span class="mi">6</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mi">12</span> <span class="n">PM</span> <span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">gen</span><span class="o">.</span><span class="n">PreGeneralizedFeatureSource</span> <span class="n">logDistanceInfo</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Using</span> <span class="n">generalizsation</span><span class="p">:</span> <span class="n">Streams_10</span> <span class="n">streams</span> <span class="n">the_geom</span> <span class="mf">10.0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>This is only a very simple example using shape files. The plugin architecture allows you to get your data and generalizations from anywhere. The used dataset is a very small one, so you will not feel a big difference in response time. Having big geometries (in the sense of many vertices) and creating maps with some different layers will show the difference.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../imagepyramid/imagepyramid.html" title="previous chapter">Building and using an image pyramid</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../metadata/index.html" title="next chapter">INSPIRE metadata configuration using metadata and CSW</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Using the GeoTools feature-pregeneralized module</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#hidden-deployment">Hidden Deployment</a></li>
+<li><a class="reference internal" href="#public-deployment">Public Deployment</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../imagepyramid/imagepyramid.html" title="previous chapter">Building and using an image pyramid</a></li>
+            <li>Next: <a href="../metadata/index.html" title="next chapter">INSPIRE metadata configuration using metadata and CSW</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/feature-pregeneralized/feature-pregeneralized_tutorial.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

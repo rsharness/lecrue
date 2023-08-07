@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using the ImageMosaic plugin with footprint management &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Building and using an image pyramid" href="../imagepyramid/imagepyramid.html" />
+    <link rel="prev" title="Using the ImageMosaic plugin for raster with time and elevation data" href="../imagemosaic_timeseries/imagemosaic_time-elevationseries.html" /> 
+  </head><body class="tutorials/imagemosaic_footprint/imagemosaic_footprint">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Tutorials</a> &raquo;</li>
+    <li>Using the ImageMosaic plugin with footprint management</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../imagepyramid/imagepyramid.html" title="Building and using an image pyramid" accesskey="N">Next</a></li>
+  <li>
+    <a href="../imagemosaic_timeseries/imagemosaic_time-elevationseries.html" title="Using the ImageMosaic plugin for raster with time and elevation data" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="using-the-imagemosaic-plugin-with-footprint-management">
+<span id="tutorial-imagemosaic-footprint"></span><h1>Using the ImageMosaic plugin with footprint management<a class="headerlink" href="#using-the-imagemosaic-plugin-with-footprint-management" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This step-by-step tutorial describes how to associate Footprint to a raster data using the ImageMosaic plugin.</p>
+<p>Footprint is a Shape used as a Mask for the mosaic. Masking can be useful for hiding pixels which are meaningless, or for enhancing only few regions of the image in respect to others.</p>
+<p>This tutorial assumes knowledge of the concepts explained in <a class="reference internal" href="../../data/raster/imagemosaic/index.html#data-imagemosaic"><span class="std std-ref">ImageMosaic</span></a> section.</p>
+<p>This tutorial contains two sections:</p>
+<ul class="simple">
+<li><p>The first section, <strong>Configuration</strong>, describes the possible configurations needed to set up an ImageMosaic with footprint.</p></li>
+<li><p>The second section, <strong>Examples</strong>, provides examples of configuration of an ImageMosaic with footprint.</p></li>
+</ul>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Footprint can be configured in three different ways:</p>
+<ol class="arabic simple">
+<li><p>By using for each mosaic granule a <em>Sidecar File</em>, a Shapefile with the same name of the granule which contains the footprint for it;</p></li>
+<li><p>By using a single Shapefile called <em>footprints.shp</em> which contains all the footprints for each granule; each footprint is associated to a granule with the <strong>location</strong> attribute;</p></li>
+<li><p>By using a file called <strong>footprints.properties</strong> .</p></li>
+</ol>
+<p>The last option should be used when the first two are not available and requires to write the following piece of code inside the <strong>footprints.properties</strong> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">footprint_source</span><span class="o">=*</span><span class="n">location</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Shapefile</span><span class="o">*</span>
+<span class="n">footprint_filter</span><span class="o">=*</span><span class="nb">filter</span> <span class="n">on</span> <span class="n">the</span> <span class="n">Shapefile</span> <span class="n">searching</span> <span class="k">for</span> <span class="n">the</span> <span class="n">attribute</span> <span class="n">associated</span> <span class="n">to</span> <span class="n">each</span> <span class="n">granule</span><span class="o">*</span>
+</pre></div>
+</div>
+<p>For example if a Shapefile called <strong>fakeShapeFile</strong> stores the various footprints in a table like this, where each <em>Name</em> attribute is referred to a granule file:</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/shp_table.png" src="../../_images/shp_table.png" />
+</div>
+</div></blockquote>
+<p>And the associated granules are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>ortho_1-1_1n_s_la087_2010_1.tif</p></li>
+<li><p>ortho_2-2_1n_s_la075_2010_1.tif</p></li>
+<li><p>ortho_1-1_1n_s_la103_2010_1.tif</p></li>
+<li><p>and so on …</p></li>
+</ul>
+</div></blockquote>
+<p>The associated <strong>footprints.properties</strong> file must be like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">footprint_source</span><span class="o">=</span><span class="n">fakeShapeFile</span><span class="o">.</span><span class="n">shp</span>
+<span class="n">footprint_filter</span><span class="o">=</span><span class="n">Name</span><span class="o">=</span><span class="n">strSubstring</span><span class="p">(</span><span class="n">granule</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">strLength</span><span class="p">(</span><span class="n">granule</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The substring operation is done for comparing the footprint attribute names and the granule names without the <em>.tif</em> extension.</p>
+<p>There are three possible behaviours for Footprint:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>None</em>: simply doesn’t use the Footprint and behaves like a standard ImageMosaic layer;</p></li>
+<li><p><em>Transparent</em>: adds an alpha band of 0s on the image portions outside of the Footprint making them transparent, typically used for RGB data;</p></li>
+<li><p><em>Cut</em>: set the background value on the image portions outside of the Footprint, typically used for GrayScale data.</p></li>
+</ul>
+</div></blockquote>
+<p>The behaviour must be set directly on the Layer configuration page.</p>
+<p>Another feature of the <em>Footprint</em> is the possibility to calculate an <strong>Inset</strong> of the image. <em>Inset</em> is a reduction of the footprint border by a value defined by the user which
+is typically used for removing the compression artifacts. This feature can be achieved by adding the following code inside <strong>footprints.properties</strong> (in case of the first two configurations this file
+must be added):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">footprint_inset</span><span class="o">=*</span><span class="n">value</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">shapefile</span> <span class="n">u</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">m</span><span class="o">.*</span>
+<span class="n">footprint_inset_type</span><span class="o">=*</span><span class="n">full</span><span class="o">/</span><span class="n">border</span><span class="o">*</span>
+</pre></div>
+</div>
+<p><strong>Full</strong> inset type calculates the inset for each footprint side while <strong>Border</strong> does the same operation but those straight lines that overlap the image bounds are avoided; this last parameter is useful for
+images already cut in a regular grid.</p>
+<p>Each modification of the <strong>footprints.properties</strong> file requires to <em>Reload</em> GeoServer. This operation can be achieved by going to <span class="guilabel">Server Status</span> and clicking on the
+<span class="guilabel">Reload</span> button on the bottom-right side of the page.</p>
+<p>The two datasets used in the tutorial can be downloaded here: <a class="reference external" href="http://demo.geo-solutions.it/share/tutorial/mosaic_single_tiff.zip">Mosaic with a single image</a>  which represents Boulder (Colorado), <a class="reference external" href="http://demo.geo-solutions.it/share/tutorial/mosaic_sample.zip">Mosaic with multiple images</a> which represents Italy.
+The first can be used for testing footprint configuration with a <em>Sidecar File</em> and the second for the other two configurations.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Here are presented a few steps for configuring a new ImageMosaic layer with footprint.</p>
+<div class="section" id="step-1-create-a-new-imagemosaic-layer">
+<h3>Step 1: Create a new ImageMosaic Layer<a class="headerlink" href="#step-1-create-a-new-imagemosaic-layer" title="Permalink to this headline">¶</a></h3>
+<p>As seen before an ImageMosaic data store can be created by going to <span class="menuselection">Stores ‣ Add New Store ‣ ImageMosaic</span>.</p>
+<div class="figure align-default">
+<img alt="../../_images/imagemosaicconfigure.png" src="../../_images/imagemosaicconfigure.png" />
+</div>
+<p>An associated Layer can be created by going to <span class="menuselection">Layers ‣ Add New Resource</span>, choosing the name of the data store created above and then clicking on the <span class="guilabel">publish</span> button.</p>
+</div>
+<div class="section" id="step-2-configuring-a-new-layer-for-the-mosaic">
+<h3>Step 2: Configuring a new Layer for the Mosaic<a class="headerlink" href="#step-2-configuring-a-new-layer-for-the-mosaic" title="Permalink to this headline">¶</a></h3>
+<p>Inside the new page the only field which is interesting for this tutorial is <em>FootprintBehavior</em>:</p>
+<div class="figure align-default">
+<img alt="../../_images/footprint_behav.png" src="../../_images/footprint_behav.png" />
+</div>
+<p>The user can set one of the three values for the Footprint behaviour as described above.</p>
+<p>After that, the user must confirm the modification by clicking on the <span class="guilabel">Save</span> button on the bottom side of the page.</p>
+</div>
+<div class="section" id="step-3-example-results">
+<h3>Step 3: Example Results<a class="headerlink" href="#step-3-example-results" title="Permalink to this headline">¶</a></h3>
+<p>Here are presented the results for each dataset.</p>
+<div class="section" id="footprint-configured-with-sidecar-file">
+<h4>Footprint configured with <em>Sidecar File</em><a class="headerlink" href="#footprint-configured-with-sidecar-file" title="Permalink to this headline">¶</a></h4>
+<p>This is an example of mosaic without applying Footprint:</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/footprint_normal.png" src="../../_images/footprint_normal.png" />
+</div>
+</div></blockquote>
+<p>And this is the result of setting <strong>FootprintBehavior</strong> to <em>Cut</em>:</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/footprint_cut.png" src="../../_images/footprint_cut.png" />
+</div>
+</div></blockquote>
+<p>Background is gray because in this example the <em>BackgroundValues</em> field has been set to -20000.</p>
+<p>If an Inset is added, the final mosaic is:</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/footprint_cut_inset.png" src="../../_images/footprint_cut_inset.png" />
+</div>
+</div></blockquote>
+<p>The <strong>footprints.properties</strong> file is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">footprint_inset</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="n">footprint_inset_type</span><span class="o">=</span><span class="n">full</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Remember that each modification on <strong>footprints.properties</strong> requires a <em>Reload</em> of GeoServer for seeing the results.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When configuring this mosaic you must set the <em>declared CRS</em> field to “EPSG:4326”.</p>
+</div>
+</div>
+<div class="section" id="footprint-configured-with-footprints-shp">
+<h4>Footprint configured with <em>footprints.shp</em><a class="headerlink" href="#footprint-configured-with-footprints-shp" title="Permalink to this headline">¶</a></h4>
+<p>This is another example of mosaic without Footprint:</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/footprint_mosaic_none.png" src="../../_images/footprint_mosaic_none.png" />
+</div>
+</div></blockquote>
+<p>And now after setting <strong>FootprintBehavior</strong> to <em>Transparent</em> (no Inset is used) on the Layer:</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/footprint_mosaic.png" src="../../_images/footprint_mosaic.png" />
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="footprint-configured-with-footprints-properties">
+<h4>Footprint configured with <em>footprints.properties</em><a class="headerlink" href="#footprint-configured-with-footprints-properties" title="Permalink to this headline">¶</a></h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For testing this functionality the user must rename all the <em>footprints.xxx</em> files to <em>mask.xxx</em>.</p>
+</div>
+<p>The result of setting <strong>FootprintBehavior</strong> to <em>Transparent</em>, Inset type to <em>border</em> and Inset value to 0.00001 is:</p>
+<blockquote>
+<div><div class="figure align-default">
+<img alt="../../_images/footprint_mosaic_prop.png" src="../../_images/footprint_mosaic_prop.png" />
+</div>
+</div></blockquote>
+<p>The <strong>footprints.properties</strong> file is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">footprint_source</span><span class="o">=</span><span class="n">mask</span><span class="o">.</span><span class="n">shp</span>
+<span class="n">footprint_inset</span><span class="o">=</span><span class="mf">0.00001</span>
+<span class="n">footprint_inset_type</span><span class="o">=</span><span class="n">border</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="raster-masking">
+<h2>Raster Masking<a class="headerlink" href="#raster-masking" title="Permalink to this headline">¶</a></h2>
+<p>From 2.8.x version, GeoServer is able to support also Raster Masks. Those masks can be internal or external (in which case the mask files should use the <strong>.msk</strong> extension), for each file. It is crucial that mask files should have the same pixel size, georeferencing and CRS as the image they are masking.</p>
+<p>It must be pointed out that external/internal masks may have overviews like the related original images.</p>
+<p>More information about Mask bands may be found at the <a class="reference external" href="http://trac.osgeo.org/gdal/wiki/rfc15_nodatabitmask">GDAL Mask Band Page</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Raster masking is supported for GeoTiff format only and it does not take into account inset definition. The same support is used for ImageMosaic or ImagePyramids made of GeoTiff files.</p>
+</div>
+<p>A <strong>footprints.properties</strong> file that would exploit raster masks would be as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">footprint_source</span><span class="o">=</span><span class="n">raster</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Raster masks do not support to control inset.</p>
+</div>
+<p>Below you may find an example of configuring a Mosaic with Raster masks:</p>
+<div class="section" id="id1">
+<h3>Step 1: Create a new ImageMosaic Layer<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Download data from the following <a class="reference download internal" download="" href="../../_downloads/45a55a315d85ad7c82ece85026d150e8/rastermask.zip"><code class="xref download docutils literal notranslate"><span class="pre">link</span></code></a> and configure an ImageMosaic layer called <em>rastermask</em> without changing default configuration parameters.</p>
+<p>Zip file contains two images and their related <strong>.msk</strong> files. For this example the two masks are two simple squares.</p>
+</div>
+<div class="section" id="step-2-watch-the-layer-using-layerpreview">
+<h3>Step 2: Watch the layer using LayerPreview<a class="headerlink" href="#step-2-watch-the-layer-using-layerpreview" title="Permalink to this headline">¶</a></h3>
+<p>Go to <span class="menuselection">LayerPreview ‣ rastermask ‣ OpenLayers</span>. The result should be similar to the one below.</p>
+<div class="figure align-default">
+<img alt="../../_images/footprint_none.png" src="../../_images/footprint_none.png" />
+</div>
+</div>
+<div class="section" id="step-3-change-the-footprint-behavior">
+<h3>Step 3: Change the Footprint Behavior<a class="headerlink" href="#step-3-change-the-footprint-behavior" title="Permalink to this headline">¶</a></h3>
+<p>Change the <strong>FootprintBehavior</strong> parameter to <em>Transparent</em>. <em>Cut</em> value should not be used since the files are RGB.</p>
+<div class="figure align-default">
+<img alt="../../_images/footprint_transparent_setting.png" src="../../_images/footprint_transparent_setting.png" />
+</div>
+</div>
+<div class="section" id="step-4-check-the-result">
+<h3>Step 4: Check the result<a class="headerlink" href="#step-4-check-the-result" title="Permalink to this headline">¶</a></h3>
+<p>Go to <span class="menuselection">LayerPreview ‣ rastermask ‣ OpenLayers</span>. The result should be changed now.</p>
+<div class="figure align-default">
+<img alt="../../_images/footprint_transparent.png" src="../../_images/footprint_transparent.png" />
+</div>
+</div>
+</div>
+<div class="section" id="multilevel-geometry-masking">
+<h2>Multilevel Geometry Masking<a class="headerlink" href="#multilevel-geometry-masking" title="Permalink to this headline">¶</a></h2>
+<p>From 2.14.x version, GeoServer is able to support also multilevel overviews geometries (A geometry footprint for each overview, being stored on a separate sidecar file).</p>
+<p>A <strong>footprints.properties</strong> file that would exploit multiple WKB sidecar files would be as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">footprint_source</span><span class="o">=</span><span class="n">multisidecar</span>
+<span class="n">footprintLoaderSPI</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">coverage</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">footprint</span><span class="o">.</span><span class="n">WKBLoaderSPI</span>
+<span class="n">overviewsFootprintLoaderSPI</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">geotools</span><span class="o">.</span><span class="n">coverage</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">footprint</span><span class="o">.</span><span class="n">WKBLoaderSPI</span>
+<span class="n">overviewsRoiInRasterSpace</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">overviewsSuffixFormat</span><span class="o">=</span><span class="n">_</span><span class="o">%</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>Notes:</p>
+<blockquote>
+<div><ul>
+<li><p><em>footprintLoaderSPI</em>: Contains the fully qualified name of the SPI implementation for main footprint loading (Optional property. When not specified, the proper footprint loader will be automatically found by scanning the available SPIs). Currently supported values are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>org.geotools.coverage.grid.io.footprint.WKBLoaderSPI for WKB overviews</p></li>
+<li><p>org.geotools.coverage.grid.io.footprint.WKTLoaderSPI for WKT overviews</p></li>
+<li><p>org.geotools.gce.imagemosaic.catalog.ShapeFileLoaderSPI for Shapefile overviews</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><em>overviewsFootprintLoaderSPI</em>: Contains the fully qualified name of the SPI implementation for overviews footprints loading (Optional property. When not specified, same loader as footprintLoaderSpi will be used if provided);</p></li>
+<li><p><em>overviewsRoiInRasterSpace</em>: Specifies whether the overviews ROI footprint geometrys are in raster space or model space coordinates. (Optional property. Default is False, meaning that overviews footprints are in model space);</p></li>
+<li><p><em>overviewsSuffixFormat</em>: Specifies the String format syntax used to define the suffix of the overviews footprints file name. (Optional property. Default is _%d). To give an example, if granule file is R1C1.tif and related 1st overview footprint is stored into R1C1_1.wkt, overviewsSuffixFormat should be _%d. In case 1st overview footprint is stored into R1C1-Ov1.wkt, overviewsSuffixFormat should be -Ov%d.</p></li>
+</ul>
+</div></blockquote>
+<p>Same steps of previous section are required to configure an ImageMosaic layer with footprint management.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../imagemosaic_timeseries/imagemosaic_time-elevationseries.html" title="previous chapter">Using the ImageMosaic plugin for raster with time and elevation data</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../imagepyramid/imagepyramid.html" title="next chapter">Building and using an image pyramid</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Using the ImageMosaic plugin with footprint management</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#step-1-create-a-new-imagemosaic-layer">Step 1: Create a new ImageMosaic Layer</a></li>
+<li><a class="reference internal" href="#step-2-configuring-a-new-layer-for-the-mosaic">Step 2: Configuring a new Layer for the Mosaic</a></li>
+<li><a class="reference internal" href="#step-3-example-results">Step 3: Example Results</a><ul>
+<li><a class="reference internal" href="#footprint-configured-with-sidecar-file">Footprint configured with <em>Sidecar File</em></a></li>
+<li><a class="reference internal" href="#footprint-configured-with-footprints-shp">Footprint configured with <em>footprints.shp</em></a></li>
+<li><a class="reference internal" href="#footprint-configured-with-footprints-properties">Footprint configured with <em>footprints.properties</em></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#raster-masking">Raster Masking</a><ul>
+<li><a class="reference internal" href="#id1">Step 1: Create a new ImageMosaic Layer</a></li>
+<li><a class="reference internal" href="#step-2-watch-the-layer-using-layerpreview">Step 2: Watch the layer using LayerPreview</a></li>
+<li><a class="reference internal" href="#step-3-change-the-footprint-behavior">Step 3: Change the Footprint Behavior</a></li>
+<li><a class="reference internal" href="#step-4-check-the-result">Step 4: Check the result</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multilevel-geometry-masking">Multilevel Geometry Masking</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../imagemosaic_timeseries/imagemosaic_time-elevationseries.html" title="previous chapter">Using the ImageMosaic plugin for raster with time and elevation data</a></li>
+            <li>Next: <a href="../imagepyramid/imagepyramid.html" title="next chapter">Building and using an image pyramid</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/tutorials/imagemosaic_footprint/imagemosaic_footprint.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

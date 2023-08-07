@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multi-valued properties &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Property listing" href="properties.html" />
+    <link rel="prev" title="Metadata" href="metadata.html" /> 
+  </head><body class="styling/css/multivalueprops">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">CSS Styling</a> &raquo;</li>
+    <li>Multi-valued properties</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="properties.html" title="Property listing" accesskey="N">Next</a></li>
+  <li>
+    <a href="metadata.html" title="Metadata" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="multi-valued-properties">
+<span id="css-multivalueprops"></span><h1>Multi-valued properties<a class="headerlink" href="#multi-valued-properties" title="Permalink to this headline">¶</a></h1>
+<p>When rendering maps, it is sometimes useful to draw the same feature multiple
+times.  For example, you might want to stroke a roads layer with a thick line
+and then a slimmer line of a different color to create a halo effect.</p>
+<p>In GeoServer’s <code class="docutils literal notranslate"><span class="pre">css</span></code> module, all properties may have multiple values.  There
+is a distinction between complex properties, and multi-valued properties.
+Complex properties are separated by spaces, while multi-valued properties are
+separated by commas.  So, this style fills a polygon once:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+    <span class="n">fill</span><span class="p">:</span> <span class="nb">url</span><span class="p">(</span><span class="s2">&quot;path/to/img.png&quot;</span><span class="p">)</span> <span class="kc">red</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">red</span></code> as a fallback color if the image cannot be loaded.  If you wanted
+to draw red on top of the image, you would have to style like so:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+    <span class="n">fill</span><span class="p">:</span> <span class="nb">url</span><span class="p">(</span><span class="s2">&quot;path/to/img.png&quot;</span><span class="p">),</span> <span class="kc">red</span><span class="p">;</span>
+    <span class="c">/* set a transparency for the second fill,</span>
+<span class="c">       leave the first fully opaque. */</span>
+    <span class="n">fill-opacity</span><span class="p">:</span> <span class="mi">100</span><span class="kt">%</span><span class="p">,</span> <span class="mi">20</span><span class="kt">%</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For each type of symbolizer (<code class="docutils literal notranslate"><span class="pre">fill</span></code>, <code class="docutils literal notranslate"><span class="pre">mark</span></code>, <code class="docutils literal notranslate"><span class="pre">stroke</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">label</span></code>) the number of values determines the number of times the feature
+will be drawn.  For example, you could create a bulls-eye effect by drawing
+multiple circles on top of each other with decreasing sizes:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+    <span class="n">mark</span><span class="p">:</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">circle</span><span class="p">),</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">circle</span><span class="p">),</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">circle</span><span class="p">),</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">circle</span><span class="p">);</span>
+    <span class="n">mark-size</span><span class="p">:</span> <span class="mi">40</span><span class="kt">px</span><span class="p">,</span> <span class="mi">30</span><span class="kt">px</span><span class="p">,</span> <span class="mi">20</span><span class="kt">px</span><span class="p">,</span> <span class="mi">10</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you do not provide the same number of values for an auxiliary property, the
+list will be repeated as many times as needed to finish.  So:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+    <span class="n">mark</span><span class="p">:</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">circle</span><span class="p">),</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">circle</span><span class="p">),</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">circle</span><span class="p">),</span> <span class="nf">symbol</span><span class="p">(</span><span class="kc">circle</span><span class="p">);</span>
+    <span class="n">mark-size</span><span class="p">:</span> <span class="mi">40</span><span class="kt">px</span><span class="p">,</span> <span class="mi">30</span><span class="kt">px</span><span class="p">,</span> <span class="mi">20</span><span class="kt">px</span><span class="p">,</span> <span class="mi">10</span><span class="kt">px</span><span class="p">;</span>
+    <span class="n">mark-opacity</span><span class="p">:</span> <span class="mi">12</span><span class="kt">%</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>makes all those circles 12% opaque.  (Note that they are all drawn on top of
+each other, so the center one will appear 4 times as solid as the outermost
+one.)</p>
+<div class="section" id="inheritance">
+<h2>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline">¶</a></h2>
+<p>For purposes of inheritance/cascading, property lists are treated as
+indivisible units.  For example:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+    <span class="n">stroke</span><span class="p">:</span> <span class="kc">red</span><span class="p">,</span> <span class="kc">green</span><span class="p">,</span> <span class="kc">blue</span><span class="p">;</span>
+    <span class="n">stroke-width</span><span class="p">:</span> <span class="mi">10</span><span class="kt">px</span><span class="p">,</span> <span class="mi">6</span><span class="kt">px</span><span class="p">,</span> <span class="mi">2</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="s1">&#39;special&#39;</span><span class="o">]</span> <span class="p">{</span>
+    <span class="n">stroke</span><span class="p">:</span> <span class="kc">pink</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This style will draw the ‘special’ features with only one outline.  It has
+<code class="docutils literal notranslate"><span class="pre">stroke-width:</span> <span class="pre">10px,</span> <span class="pre">6px,</span> <span class="pre">2px;</span></code> so that outline will be 10px wide.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="metadata.html" title="previous chapter">Metadata</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="properties.html" title="next chapter">Property listing</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Multi-valued properties</a><ul>
+<li><a class="reference internal" href="#inheritance">Inheritance</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="metadata.html" title="previous chapter">Metadata</a></li>
+            <li>Next: <a href="properties.html" title="next chapter">Property listing</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/css/multivalueprops.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

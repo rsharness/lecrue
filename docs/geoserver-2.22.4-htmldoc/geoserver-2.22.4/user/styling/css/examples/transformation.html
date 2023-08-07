@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using transformation functions &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Example of 2.5D extrusion" href="extrude.html" />
+    <link rel="prev" title="Fills with randomized symbols" href="randomfills.html" /> 
+  </head><body class="styling/css/examples/transformation">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">CSS Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Styling examples</a> &raquo;</li>
+    <li>Using transformation functions</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="extrude.html" title="Example of 2.5D extrusion" accesskey="N">Next</a></li>
+  <li>
+    <a href="randomfills.html" title="Fills with randomized symbols" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="using-transformation-functions">
+<span id="css-examples-transformation"></span><h1>Using transformation functions<a class="headerlink" href="#using-transformation-functions" title="Permalink to this headline">¶</a></h1>
+<p>The transformation functions supported described in SLD and described in the <a class="reference internal" href="../../sld/tipstricks/transformation-func.html#transformation-func"><span class="std std-ref">equivalent SLD chapter</span></a>
+are also available in CSS, the following shows examples of how they can be used.</p>
+<div class="section" id="recode">
+<h2>Recode<a class="headerlink" href="#recode" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Recode</span></code> filter function transforms a set of discrete values for an attribute into another set of values,
+by applying a <em>(input, output)</em> mapping onto the values of the variable/expression that is provided
+as the first input of the function.</p>
+<p>Consider a chloropleth map of the US states dataset
+using the fill color to indicate the topographic regions for the states.
+The dataset has an attribute <code class="docutils literal notranslate"><span class="pre">SUB_REGION</span></code> containing the region code for each state.
+The <code class="docutils literal notranslate"><span class="pre">Recode</span></code> function is used to map each region code into a different color.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is to be noted that the following example specifies colors as hex string as opposed to native
+CSS color names, this is because the function syntax is expressed in CQL, which does not have
+support for native CSS color names.</p>
+</div>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">fill</span><span class="p">:</span> <span class="p">[</span><span class="nf">recode</span><span class="p">(</span><span class="nf">strTrim</span><span class="p">(</span><span class="n">SUB_REGION</span><span class="p">),</span>
+         <span class="s1">&#39;N Eng&#39;</span><span class="p">,</span> <span class="s1">&#39;#6495ED&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;Mid Atl&#39;</span><span class="p">,</span> <span class="s1">&#39;#B0C4DE&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;S Atl&#39;</span><span class="p">,</span> <span class="s1">&#39;#00FFFF&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;E N Cen&#39;</span><span class="p">,</span> <span class="s1">&#39;#9ACD32&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;E S Cen&#39;</span><span class="p">,</span> <span class="s1">&#39;#00FA9A&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;W N Cen&#39;</span><span class="p">,</span> <span class="s1">&#39;#FFF8DC&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;W S Cen&#39;</span><span class="p">,</span> <span class="s1">&#39;#F5DEB3&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;Mtn&#39;</span><span class="p">,</span> <span class="s1">&#39;#F4A460&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;Pacific&#39;</span><span class="p">,</span> <span class="s1">&#39;#87CEEB&#39;</span><span class="p">)];</span>
+  <span class="n">stroke</span><span class="p">:</span> <span class="kc">lightgrey</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">STATE_ABBR</span><span class="p">];</span>
+  <span class="k">font-family</span><span class="p">:</span> <span class="s1">&#39;Arial&#39;</span><span class="p">;</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-anchor</span><span class="p">:</span> <span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../../_images/recode_usa_region.png" src="../../../_images/recode_usa_region.png" />
+</div>
+</div>
+<div class="section" id="categorize">
+<h2>Categorize<a class="headerlink" href="#categorize" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Categorize</span></code> filter function transforms a continuous-valued attribute
+into a set of discrete values by assiging ranges of values and turning them
+into a color, size, width, opacity, etc.</p>
+<p>In the following example a coropleth map is build associating a color to the state population density
+in the ranges [ &lt;= 20], [20 - 100], and [ &gt; 100].</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">fill</span><span class="p">:</span> <span class="p">[</span><span class="nf">categorize</span><span class="p">(</span>
+         <span class="n">PERSONS</span> <span class="o">/</span> <span class="n">LAND_KM</span><span class="p">,</span>
+         <span class="s1">&#39;#87CEEB&#39;</span><span class="p">,</span>
+         <span class="mi">20</span><span class="p">,</span>
+         <span class="s1">&#39;#FFFACD&#39;</span><span class="p">,</span>
+         <span class="mi">100</span><span class="p">,</span>
+         <span class="s1">&#39;#F08080&#39;</span><span class="p">)];</span>
+  <span class="n">stroke</span> <span class="p">:</span> <span class="kc">lightgrey</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">STATE_ABBR</span><span class="p">];</span>
+  <span class="k">font-family</span><span class="p">:</span> <span class="s1">&#39;Arial&#39;</span><span class="p">;</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-anchor</span><span class="p">:</span> <span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../../_images/categorize_usa_popdensity.png" src="../../../_images/categorize_usa_popdensity.png" />
+</div>
+</div>
+<div class="section" id="interpolate">
+<h2>Interpolate<a class="headerlink" href="#interpolate" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Interpolate</span></code> filter function transforms a continuous-valued attribute
+into another continuous range of values by applying piecewise interpolation.</p>
+<p>The result will work for numeric values such as size, width, opacity
+when operating in <code class="docutils literal notranslate"><span class="pre">numeric</span></code> <strong>interpolation method</strong> (the default), and for colors when working in <code class="docutils literal notranslate"><span class="pre">color</span></code> mode.</p>
+<p>The type of curve fitting the specified points can be either <code class="docutils literal notranslate"><span class="pre">linear</span></code> (the default), <code class="docutils literal notranslate"><span class="pre">cubic</span></code> or <code class="docutils literal notranslate"><span class="pre">cosine</span></code>,
+these values are known as the <strong>interpolation mode</strong>.</p>
+<p>Both the interpolation method and mode are optional, and if provided, they are added at the end of the
+input list.</p>
+<p>In the following example the state population is mapped to a continuous color scale in a rather
+compact way using the interpolate function:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">{</span>
+  <span class="n">fill</span><span class="p">:</span> <span class="p">[</span><span class="nf">Interpolate</span><span class="p">(</span>
+         <span class="n">PERSONS</span><span class="p">,</span>
+         <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;#FEFEEE&#39;</span><span class="p">,</span>
+         <span class="mi">9000000</span><span class="p">,</span> <span class="s1">&#39;#00FF00&#39;</span><span class="p">,</span>
+         <span class="mi">23000000</span><span class="p">,</span> <span class="s1">&#39;#FF0000&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;color&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;linear&#39;</span><span class="p">)];</span>
+  <span class="n">stroke</span> <span class="p">:</span> <span class="kc">lightgrey</span><span class="p">;</span>
+  <span class="n">label</span><span class="p">:</span> <span class="p">[</span><span class="n">STATE_ABBR</span><span class="p">];</span>
+  <span class="k">font-family</span><span class="p">:</span> <span class="s1">&#39;Arial&#39;</span><span class="p">;</span>
+  <span class="n">font-fill</span><span class="p">:</span> <span class="kc">black</span><span class="p">;</span>
+  <span class="n">label-anchor</span><span class="p">:</span> <span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../../_images/interpolate_usa_pop.png" src="../../../_images/interpolate_usa_pop.png" />
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="randomfills.html" title="previous chapter">Fills with randomized symbols</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="extrude.html" title="next chapter">Example of 2.5D extrusion</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Using transformation functions</a><ul>
+<li><a class="reference internal" href="#recode">Recode</a></li>
+<li><a class="reference internal" href="#categorize">Categorize</a></li>
+<li><a class="reference internal" href="#interpolate">Interpolate</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="randomfills.html" title="previous chapter">Fills with randomized symbols</a></li>
+            <li>Next: <a href="extrude.html" title="next chapter">Example of 2.5D extrusion</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/css/examples/transformation.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

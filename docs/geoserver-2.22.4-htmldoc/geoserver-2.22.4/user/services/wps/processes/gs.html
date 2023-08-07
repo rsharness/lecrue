@@ -1,0 +1,483 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoServer processes &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Process chaining" href="chaining.html" />
+    <link rel="prev" title="Geometry Processes" href="geo.html" /> 
+  </head><body class="services/wps/processes/gs">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Web Processing Service (WPS)</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Process Cookbook</a> &raquo;</li>
+    <li>GeoServer processes</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="chaining.html" title="Process chaining" accesskey="N">Next</a></li>
+  <li>
+    <a href="geo.html" title="Geometry Processes" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="geoserver-processes">
+<span id="wps-gs-processes"></span><h1>GeoServer processes<a class="headerlink" href="#geoserver-processes" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer WPS includes a few processes created especially for use with GeoServer.  These are usually GeoServer-specific functions, such as bounds and reprojection.  They use an internal connection to the GeoServer WFS/WCS, not part of the WPS specification, for reading and writing data.</p>
+<p>As with the “geo” processes, the names and definitions of these processes are subject to change, so they have not been included here.  For a full list of GeoServer-specific processes, please see the GeoServer <a class="reference internal" href="../operations.html#wps-getcaps"><span class="std std-ref">WPS capabilities document</span></a> (or browse with the <a class="reference internal" href="../requestbuilder.html#wps-request-builder"><span class="std std-ref">WPS Request Builder</span></a>.)</p>
+<div class="section" id="aggregation-process">
+<h2>Aggregation process<a class="headerlink" href="#aggregation-process" title="Permalink to this headline">¶</a></h2>
+<p>The aggregation process is used to perform common aggregation functions (sum, average, count) on vector data. The available outputs formats for this process are <cite>text/xml</cite> and <cite>application/json</cite>.</p>
+<p>The process parameters are described in the table bellow:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 80%" />
+<col style="width: 5%" />
+<col style="width: 5%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Parameter</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Mandatory</strong></p></td>
+<td><p><strong>Multiple</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">features</span></code></p></td>
+<td><p>Input feature collection.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">aggregationAttribute</span></code></p></td>
+<td><p>Attribute on which to perform aggregation.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">function</span></code></p></td>
+<td><p>An aggregate function to compute. Functions include Count, Average, Max, Median, Min, StdDev, and Sum.</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">singlePass</span></code></p></td>
+<td><p>If TRUE computes all aggregation values in a single pass. This will defeat DBMS-specific optimizations. If a group by attribute is provided this parameter will be ignored.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">groupByAttributes</span></code></p></td>
+<td><p>Group by attribute.</p></td>
+<td><p>no</p></td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+<p>Follow some examples of the invocation of this process using GeoServer shipped <cite>topp:states</cite> layer.</p>
+<p>The examples can be tested with CURL:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -u admin:geoserver -H <span class="s1">&#39;Content-type: xml&#39;</span> -XPOST -d@<span class="s1">&#39;wps-request.xml&#39;</span> http://localhost:8080/geoserver/wps
+</pre></div>
+</div>
+<p>where <cite>wps-request.xml</cite> is the file that contains the request.</p>
+<div class="section" id="aggregate-example">
+<h3>Aggregate Example<a class="headerlink" href="#aggregate-example" title="Permalink to this headline">¶</a></h3>
+<p>Counts the total number of states, sum all the number of persons, computes the average number of persons per state and give the maximum and minimum number of persons in a state.</p>
+<p>Request:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>gs:Aggregate<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>features<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wfs&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;wps:Body&gt;</span>
+          <span class="nt">&lt;wfs:GetFeature</span> <span class="na">service=</span><span class="s">&quot;WFS&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">outputFormat=</span><span class="s">&quot;GML2&quot;</span> <span class="na">xmlns:sf=</span><span class="s">&quot;http://www.openplans.org/spearfish&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;wfs:Query</span> <span class="na">typeName=</span><span class="s">&quot;topp:states&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;/wfs:GetFeature&gt;</span>
+        <span class="nt">&lt;/wps:Body&gt;</span>
+      <span class="nt">&lt;/wps:Reference&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>aggregationAttribute<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>PERSONS<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>function<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>Count<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>function<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>Average<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>function<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>Sum<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>function<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>Min<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>function<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>Max<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>singlePass<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>false<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;application/json&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+<p>The result:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;AggregationAttribute&quot;</span><span class="p">:</span> <span class="s2">&quot;PERSONS&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;AggregationFunctions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Max&quot;</span><span class="p">,</span> <span class="s2">&quot;Min&quot;</span><span class="p">,</span> <span class="s2">&quot;Average&quot;</span><span class="p">,</span> <span class="s2">&quot;Sum&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;GroupByAttributes&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nt">&quot;AggregationResults&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">29760021</span><span class="p">,</span> <span class="mi">453588</span><span class="p">,</span> <span class="mf">5038397.020408163</span><span class="p">,</span> <span class="mi">246881454</span><span class="p">,</span> <span class="mi">49</span><span class="p">]</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The value of <cite>AggregationResults</cite> attribute should be read in a tabular way. The group by attributes come first in the order they appear in <cite>GroupByAttributes</cite> attribute. After comes the result of the aggregation functions in the order they appear in the <cite>AggregationFunctions</cite> attribute. In this case there is no group by attributes so the result only contains a row with the aggregation functions results. This is very similar to the result of an SQL query.</p>
+<p>This result should be interpreted like this:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Max</strong></p></td>
+<td><p><strong>Min</strong></p></td>
+<td><p><strong>Average</strong></p></td>
+<td><p><strong>Sum</strong></p></td>
+<td><p><strong>Count</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>29760021</p></td>
+<td><p>453588</p></td>
+<td><p>5038397.020408163</p></td>
+<td><p>246881454</p></td>
+<td><p>49</p></td>
+</tr>
+</tbody>
+</table>
+<p>To obtain the result in the XML format the request <cite>wps:ResponseForm</cite> element needs to be changed to:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wps:ResponseForm&gt;</span>
+  <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+<span class="nt">&lt;/wps:ResponseForm&gt;</span>
+</pre></div>
+</div>
+<p>The result in XML format:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;AggregationResults&gt;</span>
+  <span class="nt">&lt;Min&gt;</span>453588.0<span class="nt">&lt;/Min&gt;</span>
+  <span class="nt">&lt;Max&gt;</span>2.9760021E7<span class="nt">&lt;/Max&gt;</span>
+  <span class="nt">&lt;Average&gt;</span>5038397.020408163<span class="nt">&lt;/Average&gt;</span>
+  <span class="nt">&lt;Sum&gt;</span>2.46881454E8<span class="nt">&lt;/Sum&gt;</span>
+  <span class="nt">&lt;Count&gt;</span>49<span class="nt">&lt;/Count&gt;</span>
+<span class="nt">&lt;/AggregationResults&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="aggregate-groupby-example">
+<h3>Aggregate GroupBy Example<a class="headerlink" href="#aggregate-groupby-example" title="Permalink to this headline">¶</a></h3>
+<p>This example count the number of states and the population average grouped by region.</p>
+<p>Request:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;wps:Execute</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">service=</span><span class="s">&quot;WPS&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span> <span class="na">xmlns:wps=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0&quot;</span> <span class="na">xmlns:ows=</span><span class="s">&quot;http://www.opengis.net/ows/1.1&quot;</span> <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span> <span class="na">xmlns:wcs=</span><span class="s">&quot;http://www.opengis.net/wcs/1.1.1&quot;</span> <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ows:Identifier&gt;</span>gs:Aggregate<span class="nt">&lt;/ows:Identifier&gt;</span>
+  <span class="nt">&lt;wps:DataInputs&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>features<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Reference</span> <span class="na">mimeType=</span><span class="s">&quot;text/xml&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;http://geoserver/wfs&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;wps:Body&gt;</span>
+          <span class="nt">&lt;wfs:GetFeature</span> <span class="na">service=</span><span class="s">&quot;WFS&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">outputFormat=</span><span class="s">&quot;GML2&quot;</span> <span class="na">xmlns:sf=</span><span class="s">&quot;http://www.openplans.org/spearfish&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;wfs:Query</span> <span class="na">typeName=</span><span class="s">&quot;topp:states&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;/wfs:GetFeature&gt;</span>
+        <span class="nt">&lt;/wps:Body&gt;</span>
+      <span class="nt">&lt;/wps:Reference&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>aggregationAttribute<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>PERSONS<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>function<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>Count<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>function<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>Average<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>singlePass<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>false<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+    <span class="nt">&lt;wps:Input&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>groupByAttributes<span class="nt">&lt;/ows:Identifier&gt;</span>
+      <span class="nt">&lt;wps:Data&gt;</span>
+        <span class="nt">&lt;wps:LiteralData&gt;</span>SUB_REGION<span class="nt">&lt;/wps:LiteralData&gt;</span>
+      <span class="nt">&lt;/wps:Data&gt;</span>
+    <span class="nt">&lt;/wps:Input&gt;</span>
+  <span class="nt">&lt;/wps:DataInputs&gt;</span>
+  <span class="nt">&lt;wps:ResponseForm&gt;</span>
+    <span class="nt">&lt;wps:RawDataOutput</span> <span class="na">mimeType=</span><span class="s">&quot;application/json&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ows:Identifier&gt;</span>result<span class="nt">&lt;/ows:Identifier&gt;</span>
+    <span class="nt">&lt;/wps:RawDataOutput&gt;</span>
+  <span class="nt">&lt;/wps:ResponseForm&gt;</span>
+<span class="nt">&lt;/wps:Execute&gt;</span>
+</pre></div>
+</div>
+<p>The result:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;AggregationAttribute&quot;</span><span class="p">:</span> <span class="s2">&quot;PERSONS&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;AggregationFunctions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Average&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;GroupByAttributes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;SUB_REGION&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;AggregationResults&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">[</span> <span class="s2">&quot;N Eng&quot;</span><span class="p">,</span> <span class="mf">2201157.1666666665</span><span class="p">,</span> <span class="mi">6</span> <span class="p">],</span>
+    <span class="p">[</span> <span class="s2">&quot;W N Cen&quot;</span><span class="p">,</span> <span class="mf">2522812.8571428573</span><span class="p">,</span> <span class="mi">7</span> <span class="p">],</span>
+    <span class="p">[</span> <span class="s2">&quot;Pacific&quot;</span><span class="p">,</span> <span class="mi">12489678</span><span class="p">,</span> <span class="mi">3</span> <span class="p">],</span>
+    <span class="p">[</span> <span class="s2">&quot;Mtn&quot;</span><span class="p">,</span> <span class="mf">1690408.25</span><span class="p">,</span> <span class="mi">8</span> <span class="p">],</span>
+    <span class="p">[</span> <span class="s2">&quot;E S Cen&quot;</span><span class="p">,</span> <span class="mf">3998821.25</span><span class="p">,</span> <span class="mi">4</span> <span class="p">],</span>
+    <span class="p">[</span> <span class="s2">&quot;S Atl&quot;</span><span class="p">,</span> <span class="mf">4837695.666666667</span><span class="p">,</span> <span class="mi">9</span> <span class="p">],</span>
+    <span class="p">[</span> <span class="s2">&quot;Mid Atl&quot;</span><span class="p">,</span> <span class="mf">12534095.333333334</span><span class="p">,</span> <span class="mi">3</span> <span class="p">],</span>
+    <span class="p">[</span> <span class="s2">&quot;E N Cen&quot;</span><span class="p">,</span> <span class="mf">8209477.2</span><span class="p">,</span> <span class="mi">5</span> <span class="p">],</span>
+    <span class="p">[</span> <span class="s2">&quot;W S Cen&quot;</span><span class="p">,</span> <span class="mf">6709575.75</span><span class="p">,</span> <span class="mi">4</span> <span class="p">]</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Since there is a group by attribute the result contains a row for each different value of the group by attribute. Very similar to the result of an SQL query. If there is more that one group by attribute (which is not the case) their values will be in the order they appear in the <cite>GroupByAttributes</cite> attribute.</p>
+<p>This result should be interpreted like this:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Sub Region</strong></p></td>
+<td><p><strong>Average</strong></p></td>
+<td><p><strong>count</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>N Eng</p></td>
+<td><p>2201157.1666666665</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>W N Cen</p></td>
+<td><p>2522812.8571428573</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-even"><td><p>Pacific</p></td>
+<td><p>12489678</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mtn</p></td>
+<td><p>1690408.25</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>E S Cen</p></td>
+<td><p>3998821.25</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>S Atl</p></td>
+<td><p>4837695.666666667</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-even"><td><p>Mid Atl</p></td>
+<td><p>12534095.333333334</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>E N Cen</p></td>
+<td><p>8209477.2</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>W S Cen</p></td>
+<td><p>6709575.75</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+<p>The result in XML format:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;AggregationResults&gt;</span>
+  <span class="nt">&lt;GroupByResult&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>N Eng<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>2201157.1666666665<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>6<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>W N Cen<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>2522812.8571428573<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>7<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>Pacific<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>1.2489678E7<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>3<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>Mtn<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>1690408.25<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>8<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>E S Cen<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>3998821.25<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>4<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>S Atl<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>4837695.666666667<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>9<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>Mid Atl<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>1.2534095333333334E7<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>3<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>E N Cen<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>8209477.2<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>5<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+    <span class="nt">&lt;object-array&gt;</span>
+      <span class="nt">&lt;string&gt;</span>W S Cen<span class="nt">&lt;/string&gt;</span>
+      <span class="nt">&lt;double&gt;</span>6709575.75<span class="nt">&lt;/double&gt;</span>
+      <span class="nt">&lt;int&gt;</span>4<span class="nt">&lt;/int&gt;</span>
+    <span class="nt">&lt;/object-array&gt;</span>
+  <span class="nt">&lt;/GroupByResult&gt;</span>
+<span class="nt">&lt;/AggregationResults&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="geo.html" title="previous chapter">Geometry Processes</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="chaining.html" title="next chapter">Process chaining</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">GeoServer processes</a><ul>
+<li><a class="reference internal" href="#aggregation-process">Aggregation process</a><ul>
+<li><a class="reference internal" href="#aggregate-example">Aggregate Example</a></li>
+<li><a class="reference internal" href="#aggregate-groupby-example">Aggregate GroupBy Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="geo.html" title="previous chapter">Geometry Processes</a></li>
+            <li>Next: <a href="chaining.html" title="next chapter">Process chaining</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wps/processes/gs.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

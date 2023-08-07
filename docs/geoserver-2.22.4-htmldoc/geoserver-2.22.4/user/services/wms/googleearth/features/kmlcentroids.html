@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KML Placemark Placement &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/default.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="KML Height and Time" href="kmlheighttime.html" />
+    <link rel="prev" title="Customizing Placemarks" href="customizingplacemarks.html" /> 
+  </head><body class="services/wms/googleearth/features/kmlcentroids">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../../index.html" accesskey="U">Services</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Web Map Service (WMS)</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Google Earth</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features</a> &raquo;</li>
+    <li>KML Placemark Placement</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="kmlheighttime.html" title="KML Height and Time" accesskey="N">Next</a></li>
+  <li>
+    <a href="customizingplacemarks.html" title="Customizing Placemarks" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="kml-placemark-placement">
+<span id="ge-feature-kml-centroids"></span><h1>KML Placemark Placement<a class="headerlink" href="#kml-placemark-placement" title="Permalink to this headline">¶</a></h1>
+<p>The placemark “placement” (also referred to as the “centroid”) refers to the location of the placemark icon with respect to the feature geometry itself. Historically this placement has been chosen to be simply the centroid of the feature geometry. This section describes options for controlling placement were introduced.</p>
+<div class="section" id="clipping">
+<h2>Clipping<a class="headerlink" href="#clipping" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">KMCENTROID_CLIP</span></code> option determines whether the feature geometry should be clipped to the viewport before the centroid is calculated. This will ensure that the placemark icon always falls within the viewport, even in cases part of a geometry falls outside of it.</p>
+<p>The option is set to either <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>. The default value is``false``.</p>
+<p>As an example consider the following square polygon with its placemark icon. When the polygon is entirely in the viewport the placement is good.</p>
+<div class="figure align-center">
+<img alt="../../../../_images/centroid_clip0.png" src="../../../../_images/centroid_clip0.png" />
+</div>
+<p>When the polygon moves out of the viewport the icon is lost as in the following figure:</p>
+<div class="figure align-center">
+<img alt="../../../../_images/centroid_clip1.png" src="../../../../_images/centroid_clip1.png" />
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">KMCENTROID_CLIP</span></code> set to <code class="docutils literal notranslate"><span class="pre">true</span></code> only the part of the geometry intersecting the viewport is considered.</p>
+<div class="figure align-center">
+<img alt="../../../../_images/centroid_clip2.png" src="../../../../_images/centroid_clip2.png" />
+</div>
+</div>
+<div class="section" id="sampling-for-internal-point">
+<h2>Sampling for internal point<a class="headerlink" href="#sampling-for-internal-point" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">KMCENTROID_CONTAIN</span></code> option determines whether point chosen for the centroid must fall within
+the feature geometry. For irregularly shaped geometries (like a “C” shaped polygon) the default centroid calculation will fall outside of the geometry. The option is set to either <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>. The default value is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
+<p>In order to find a contained point of a polygon a sampling tequnique is used where a number of points
+are chosen until one is found that falls within the polygon. The <code class="docutils literal notranslate"><span class="pre">KMCENTROID_SAMPLE</span></code> option determines how many samples to attempt. The value is an integer with a default value is 5. Note that this option only applies when <code class="docutils literal notranslate"><span class="pre">KMCENTROID_CONTAIN</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>As an example consider the following “c” shaped polygon with its placemark icon. By default the icon falls outside of the polygon.</p>
+<div class="figure align-center">
+<img alt="../../../../_images/centroid_contain0.png" src="../../../../_images/centroid_contain0.png" />
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">KMCENTROID_CONTAIN</span></code> set to <code class="docutils literal notranslate"><span class="pre">true</span></code> a point within the polygon is chosen.</p>
+<div class="figure align-center">
+<img alt="../../../../_images/centroid_contain1.png" src="../../../../_images/centroid_contain1.png" />
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The sampling tequnique may not always be able to find a suitable point. You can try to increase the number of samples but it is still not a guarantee. Care also must be taken when increasing the sample count since it adds overhead to the overall KML rendering process.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="customizingplacemarks.html" title="previous chapter">Customizing Placemarks</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="kmlheighttime.html" title="next chapter">KML Height and Time</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">KML Placemark Placement</a><ul>
+<li><a class="reference internal" href="#clipping">Clipping</a></li>
+<li><a class="reference internal" href="#sampling-for-internal-point">Sampling for internal point</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="customizingplacemarks.html" title="previous chapter">Customizing Placemarks</a></li>
+            <li>Next: <a href="kmlheighttime.html" title="next chapter">KML Height and Time</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/services/wms/googleearth/features/kmlcentroids.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

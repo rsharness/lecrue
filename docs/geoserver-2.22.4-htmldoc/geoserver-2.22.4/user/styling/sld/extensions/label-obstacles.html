@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Label Obstacles &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Adding space around graphic fills" href="margins.html" />
+    <link rel="prev" title="Specifying symbolizer sizes in ground units" href="uom.html" /> 
+  </head><body class="styling/sld/extensions/label-obstacles">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Extensions in GeoServer</a> &raquo;</li>
+    <li>Label Obstacles</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="margins.html" title="Adding space around graphic fills" accesskey="N">Next</a></li>
+  <li>
+    <a href="uom.html" title="Specifying symbolizer sizes in ground units" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="label-obstacles">
+<span id="id1"></span><h1>Label Obstacles<a class="headerlink" href="#label-obstacles" title="Permalink to this headline">¶</a></h1>
+<p>GeoServer implements an algorithm for label conflict
+resolution, to prevent labels from overlapping one another.
+By default this algorithm only considers conflicts with other labels.
+This can result in labels
+overlapping other symbolizers, which may produce an undesirable effect.</p>
+<div class="no-border figure align-default">
+<img alt="../../../_images/label-obstacle1.jpg" src="../../../_images/label-obstacle1.jpg" />
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/label-obstacle2.jpg" src="../../../_images/label-obstacle2.jpg" />
+</div>
+<p>GeoServer supports a vendor option called <code class="docutils literal notranslate"><span class="pre">labelObstacle</span></code> that allows
+marking a symbolizer as an obstacle.
+This tells the labeller to avoid rendering labels that overlap it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Beware of marking a line or poly symbolizer as a label obstacle. The label conflict resolving routine is
+based on the bounding box so marking as a label obstacle will result in no label overlapping not only
+the geometry itself, but its bounding box as well.</p>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+  <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;NamedLayer&gt;</span>
+    <span class="nt">&lt;UserStyle&gt;</span>
+
+  <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+    <span class="nt">&lt;Rule&gt;</span>
+      <span class="nt">&lt;PointSymbolizer&gt;</span>
+        <span class="nt">&lt;Graphic&gt;</span>
+          <span class="nt">&lt;ExternalGraphic&gt;</span>
+            <span class="nt">&lt;OnlineResource</span>
+              <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+              <span class="na">xlink:href=</span><span class="s">&quot;smileyface.png&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;Format&gt;</span>image/png<span class="nt">&lt;/Format&gt;</span>
+          <span class="nt">&lt;/ExternalGraphic&gt;</span>
+          <span class="nt">&lt;Size&gt;</span>32<span class="nt">&lt;/Size&gt;</span>
+        <span class="nt">&lt;/Graphic&gt;</span>
+        <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;labelObstacle&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+      <span class="nt">&lt;/PointSymbolizer&gt;</span>
+    <span class="nt">&lt;/Rule&gt;</span>
+  <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+
+    <span class="nt">&lt;/UserStyle&gt;</span>
+  <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/obs-externalGraphic1.png" src="../../../_images/obs-externalGraphic1.png" />
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/obs-externalGraphic2.png" src="../../../_images/obs-externalGraphic2.png" />
+</div>
+<p>Applying the obstacle to a regular point style:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PointSymbolizer&gt;</span>
+  <span class="nt">&lt;Graphic&gt;</span>
+    <span class="nt">&lt;ExternalGraphic&gt;</span>
+      <span class="nt">&lt;OnlineResource</span>
+        <span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
+        <span class="na">xlink:href=</span><span class="s">&quot;smileyface.png&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;Format&gt;</span>image/png<span class="nt">&lt;/Format&gt;</span>
+    <span class="nt">&lt;/ExternalGraphic&gt;</span>
+    <span class="nt">&lt;Size&gt;</span>32<span class="nt">&lt;/Size&gt;</span>
+  <span class="nt">&lt;/Graphic&gt;</span>
+  <span class="nt">&lt;VendorOption</span> <span class="na">name=</span><span class="s">&quot;labelObstacle&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+<span class="nt">&lt;/PointSymbolizer&gt;</span>
+</pre></div>
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/obs-mark1.png" src="../../../_images/obs-mark1.png" />
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/obs-mark2.png" src="../../../_images/obs-mark2.png" />
+</div>
+<p>Applying the obstacle to line/polygon style:</p>
+<div class="no-border figure align-default">
+<img alt="../../../_images/obs-line1.png" src="../../../_images/obs-line1.png" />
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/obs-line2.png" src="../../../_images/obs-line2.png" />
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/obs-poly1.png" src="../../../_images/obs-poly1.png" />
+</div>
+<div class="no-border figure align-default">
+<img alt="../../../_images/obs-poly2.png" src="../../../_images/obs-poly2.png" />
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="uom.html" title="previous chapter">Specifying symbolizer sizes in ground units</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="margins.html" title="next chapter">Adding space around graphic fills</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="uom.html" title="previous chapter">Specifying symbolizer sizes in ground units</a></li>
+            <li>Next: <a href="margins.html" title="next chapter">Adding space around graphic fills</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/extensions/label-obstacles.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template Configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Backward Mapping" href="querying.html" />
+    <link rel="prev" title="Template Directives" href="directives.html" /> 
+  </head><body class="community/features-templating/configuration">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Features-Templating Extension</a> &raquo;</li>
+    <li>Template Configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="querying.html" title="Backward Mapping" accesskey="N">Next</a></li>
+  <li>
+    <a href="directives.html" title="Template Directives" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="template-configuration">
+<span id="id1"></span><h1>Template Configuration<a class="headerlink" href="#template-configuration" title="Permalink to this headline">¶</a></h1>
+<p>This part of the documentation explains how to add new templates to GeoServer and how to define rules from the layer configuration page for when a template should be applied.</p>
+<div class="section" id="add-features-templates-to-geoserver">
+<h2>Add Features Templates to GeoServer<a class="headerlink" href="#add-features-templates-to-geoserver" title="Permalink to this headline">¶</a></h2>
+<p>Once the plug-in is installed, the left panel of the GeoServer UI will show a new option <code class="docutils literal notranslate"><span class="pre">Feature</span> <span class="pre">Templating</span></code> under the <code class="docutils literal notranslate"><span class="pre">Data</span></code> section.
+Clicking on that option will open a table with the available templates.</p>
+<div class="figure align-default">
+<img alt="../../_images/templates-table.png" src="../../_images/templates-table.png" />
+</div>
+<p>Clicking on the <span class="guilabel">add New</span> button will open the configuration page.</p>
+<div class="figure align-default">
+<img alt="../../_images/template-ui.png" src="../../_images/template-ui.png" />
+</div>
+<p>In the first tab the user can specify the following values:</p>
+<ul class="simple">
+<li><p>the <span class="guilabel">Template Name</span>. This name will be used for the template file name when saved in the data directory.</p></li>
+<li><p>the <span class="guilabel">Template File Type</span> (file extension) of the template, by selecting one among those available.</p></li>
+<li><p>the <span class="guilabel">Workspace</span> if the user wants to limit the usage of the template to the vector layers available in a specific workspace.</p></li>
+<li><ul>
+<li><p>the <span class="guilabel">Layer Name</span> if the user wants to limit the usage of the template to only a specific vector layer. Selecting a <span class="guilabel">Layer Name</span> will not cause the template to be applied to that Layer. This option is intended to make the template usable only by the selected Layer. In order to apply a template content negotiation rules need to be configured on a per layer basis (see section below).</p></li>
+</ul>
+</li>
+</ul>
+<p>The <span class="guilabel">Workspace</span> and <span class="guilabel">Layer Name</span> values, if specified, will also affect where the template will be saved:</p>
+<ul class="simple">
+<li><p>if neither is specified the template will be saved inside the <code class="code docutils literal notranslate"><span class="pre">features-templating</span></code> directory.</p></li>
+<li><p>if a <span class="guilabel">Workspace</span> is specified the template will be saved in that workspace folder.</p></li>
+<li><p>if a <span class="guilabel">Layer Name</span> is specified the template will be saved in that layer folder.</p></li>
+</ul>
+<p>The <span class="guilabel">Template Content</span> section is where the template is actually defined.</p>
+<ul class="simple">
+<li><p>The template can be uploaded from a file, and in that case the <span class="guilabel">Template Name</span> and <span class="guilabel">Template File Type</span> fields are automatically populated from the file.</p></li>
+<li><p>Otherwise the template can be written from scratch into the template editor.</p></li>
+</ul>
+<p>By clicking on the <span class="guilabel">Preview</span> tab the user can specify parameters to test the template and preview the result. The preview will only return a single feature.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When previewing a template the template will be saved/updated in the data directory. This is due the fact that the preview works by issuing a WFS request. This implies that the previous state is lost, but also that any modification is immediately visible to a user that might be accessing the layer.</p>
+</div>
+<div class="figure align-default">
+<img alt="../../_images/preview-ui.png" src="../../_images/preview-ui.png" />
+</div>
+<ul class="simple">
+<li><p>The user must specify one value among the <span class="guilabel">Available Output Formats</span></p></li>
+<li><p>The user must specify values among those available for the  <span class="guilabel">Workspace</span> and <span class="guilabel">Layer Name</span> fields.</p></li>
+<li><p>If the user specified a  <span class="guilabel">Workspace</span> for the template in the <span class="guilabel">Data</span> tab the preview <span class="guilabel">Workspace</span> will be automatically set from that workspace.</p></li>
+<li><p>If the user specified a  <span class="guilabel">Layer Name</span> for the template in the <span class="guilabel">Data</span> tab the preview <span class="guilabel">Layer Name</span> will be automatically set from that layer.</p></li>
+<li><p>The user can specify a <span class="guilabel">Feature ID</span> to obtain a preview for the specified feature.</p></li>
+<li><p>The user can specify a <span class="guilabel">CQL Filter</span> to obtain a preview for a feature matching the filter.</p></li>
+</ul>
+<p>The <span class="guilabel">Validate</span> button acts differently according to the output format:</p>
+<ul class="simple">
+<li><p>In the GML case, it will trigger a schema validation based on the Schema Location specified in the template.</p></li>
+<li><p>In the JSON-LD case, it will perform a JSON-LD <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> validation.</p></li>
+<li><p>In the GeoJSON case no validation will occur.</p></li>
+</ul>
+</div>
+<div class="section" id="add-templates-rules-to-a-layer">
+<h2>Add Templates Rules to a Layer<a class="headerlink" href="#add-templates-rules-to-a-layer" title="Permalink to this headline">¶</a></h2>
+<p>To inform GeoServer when to apply a template, the user needs to specify the rules on a per layer basis.
+The most basic rule is one that binds a template to a specific output format. <span class="guilabel">Request CQL Functions</span> allow specifying more advanced rules.</p>
+<p>When the plug-in is installed a new tab will be available in the Layer configuration page, allowing for the definition of Template rules.</p>
+<div class="figure align-default">
+<img alt="../../_images/template-rules.png" src="../../_images/template-rules.png" />
+</div>
+<p>Once the form is filled the user needs to press the <span class="guilabel">Add</span> button to add the rule to the rules table. The rules will be then persisted to the layer configuration only when the <span class="guilabel">Save</span> button is pressed.</p>
+<p>The following values can be specified:</p>
+<ul class="simple">
+<li><p>the <span class="guilabel">Priority</span> needed to inform GeoServer which rule should be applied if more than one rule matches the GetFeature request.</p></li>
+<li><p>the <span class="guilabel">Template Name</span> that indicates which template should be applied. If the template has a global scope the dropdown will present it with the template name value only. If a Workspace has been defined at template configuration time, the format will be {workspace name}:{template name}. If a Layer Name has been specified at template configuration time, the format will be {workspace name}:{layer name}:{template name}.</p></li>
+<li><p>the <span class="guilabel">Supported Output Formats</span> dropdown shows the output formats for which a template can be invoked. The user can choose one to indicate which output format the selected template should be applied to. If the GML value is selected, the template will be applied to all GML version output formats. If different GML templates should be applied for different GML versions, it is possible to define a condition on the MIME Type using the mimeType() function.</p></li>
+<li><p>the <span class="guilabel">Request CQL filter</span> area allows defining a generic CQL filter to evaluate against the request to determine if the template should be t. The available request functions to be used are listed on the right side of the form.</p></li>
+<li><p>the <span class="guilabel">Profile CQL Filter</span> allows defining a CQL filter allowing a content negotiation to be done per profile. The available request functions to be used are listed on the right side of the form. There is several approaches for content negotiations per profile, for example one of them is the <a class="reference external" href="https://www.w3.org/TR/dx-prof-conneg/">W3C recommended approach</a> where the profile is provided as an HTTP header. This will translate in a CQL filter similar to this one <code class="docutils literal notranslate"><span class="pre">header('Accept-Profile')='http://my-profile/geo+json'</span></code>.</p></li>
+</ul>
+<p>An example CQL filter might be the following:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">requestParam('myParameter')`</span></code> = ‘use this template’</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mimeType()</span></code> = ‘application/geo+json’</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">requestMatchRegex('^.*matchedPart.*$')</span></code> = true</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">header('testHeader')</span></code> = ‘myHeaderValue’</p></li>
+</ul>
+<p>Every rule must define either a value from the <span class="guilabel">Supported Output Formats</span> dropdown or a <span class="guilabel">Request CQL filter</span>  with a filter on the mimeType() value, or both.</p>
+<p>Once rules are defined, if an incoming GetFeature request is matched the template corresponding to the matched rule will be applied to the output.</p>
+</div>
+<div class="section" id="data-directory-configuration">
+<h2>Data Directory configuration<a class="headerlink" href="#data-directory-configuration" title="Permalink to this headline">¶</a></h2>
+<p>A features template can be configured directly from the GeoServer data dir without any UI usage. In this case the template needs to be placed in the Feature Type directory. When configuring templates in this way only one feature template per Feature Type is supported and the name is fixed for each output format as shown in the list below:</p>
+<ul class="simple">
+<li><p>GML 2 = gml2-template.xml</p></li>
+<li><p>GML 3.1 = gml31-template.xml</p></li>
+<li><p>GML 3.2 = gml32-template.xml</p></li>
+<li><p>JSON-LD = json-ld-template.json</p></li>
+<li><p>GEOJSON = geojson-template.json</p></li>
+<li><p>HTML = html-template.xhtml</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="directives.html" title="previous chapter">Template Directives</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="querying.html" title="next chapter">Backward Mapping</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Template Configuration</a><ul>
+<li><a class="reference internal" href="#add-features-templates-to-geoserver">Add Features Templates to GeoServer</a></li>
+<li><a class="reference internal" href="#add-templates-rules-to-a-layer">Add Templates Rules to a Layer</a></li>
+<li><a class="reference internal" href="#data-directory-configuration">Data Directory configuration</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="directives.html" title="previous chapter">Template Directives</a></li>
+            <li>Next: <a href="querying.html" title="next chapter">Backward Mapping</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/features-templating/configuration.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

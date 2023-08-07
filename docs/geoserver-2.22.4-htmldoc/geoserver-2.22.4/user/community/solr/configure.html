@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SOLR layer configuration &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Loading spatial data into SOLR" href="load.html" />
+    <link rel="prev" title="SOLR data store" href="index.html" /> 
+  </head><body class="community/solr/configure">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SOLR data store</a> &raquo;</li>
+    <li>SOLR layer configuration</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="load.html" title="Loading spatial data into SOLR" accesskey="N">Next</a></li>
+  <li>
+    <a href="index.html" title="SOLR data store" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="solr-layer-configuration">
+<span id="community-solr-configure"></span><h1>SOLR layer configuration<a class="headerlink" href="#solr-layer-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mapping-documents-to-layers">
+<h2>Mapping documents to layers<a class="headerlink" href="#mapping-documents-to-layers" title="Permalink to this headline">¶</a></h2>
+<p>SOLR indexes almost free form documents, the SOLR instance has a collection of fields, and
+each document can contain any field, in any combination.
+On the other side, GeoServer organizes data in fixed structure feature types, and exposes
+data in separate layers. This leaves the question of how documents in the index
+should be organized into layers.</p>
+<p>By default the store exposes a single layer, normally named after the SOLR collection the store is connected
+to, by publishing it one can decide which fields to include, and eventually add a filter
+to select which attributes it will contain.</p>
+<p>This single layer can be published multiple times, giving each published layer a different name,
+set of selected attributes, and a different filter to select the documents contained in the layer.</p>
+</div>
+<div class="section" id="installing-the-solr-extension">
+<h2>Installing the SOLR extension<a class="headerlink" href="#installing-the-solr-extension" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Download the SOLR extension from the <a class="reference external" href="https://build.geoserver.org/geoserver/main/community-latest/">nightly GeoServer community module builds</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure to match the version of the extension to the version of the GeoServer instance.</p>
+</div>
+</li>
+<li><p>If GeoServer is running, stop it.</p></li>
+<li><p>Extract the contents of the archive into the <code class="docutils literal notranslate"><span class="pre">WEB-INF/lib</span></code> directory of the GeoServer installation.</p></li>
+<li><p>Restart GeoServer, the SOLR data store should show up as an option when going through the new store
+creation workflow.</p></li>
+</ol>
+</div>
+<div class="section" id="connecting-to-a-solr-server">
+<h2>Connecting to a SOLR server<a class="headerlink" href="#connecting-to-a-solr-server" title="Permalink to this headline">¶</a></h2>
+<p>Once the extension is properly installed <code class="docutils literal notranslate"><span class="pre">SOLR</span></code> will show up as an option when creating a new data store.</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/solr_store.png" src="../../_images/solr_store.png" />
+<p class="caption"><span class="caption-text"><em>SOLR in the list of vector data sources</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="configuring-a-solr-data-store">
+<span id="community-solr-configure-store"></span><h2>Configuring a SOLR data store<a class="headerlink" href="#configuring-a-solr-data-store" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/solr_configuration.png" src="../../_images/solr_configuration.png" />
+<p class="caption"><span class="caption-text"><em>Configuring a SOLR data store</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">solr_url</span></code></p></td>
+<td><p>Provide a link to the SOLR server that provides the documents</p></td>
+</tr>
+</tbody>
+</table>
+<p>Once the parameters are entered and confirmed, GeoServer will contact the SOLR server and
+fetch a list of layer names and fill the layer chooser page accordingly:</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/solr_layerlist.png" src="../../_images/solr_layerlist.png" />
+<p class="caption"><span class="caption-text"><em>List of layers available in the SOLR server</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="configuring-a-new-solr-base-layer">
+<h2>Configuring a new SOLR base layer<a class="headerlink" href="#configuring-a-new-solr-base-layer" title="Permalink to this headline">¶</a></h2>
+<p>Once the layer name is chosen, the usual layer configuration panel will appear, with a pop-up showing
+in a table the fields available:</p>
+<div class="figure align-center" id="id4">
+<img alt="../../_images/solr_fieldlist.png" src="../../_images/solr_fieldlist.png" />
+<p class="caption"><span class="caption-text"><em>The layer field list configuration</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Is</span> <span class="pre">empty</span></code></p></td>
+<td><p>Read only fields, checked if the field has no values in the documents associated to this layer</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Use</span></code></p></td>
+<td><p>Used to select the fields that will make up this layer features</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Name</span></code></p></td>
+<td><p>Name of the field</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Type</span></code></p></td>
+<td><p>Type of the field, as derived from the SOLR schema. For geometry types, you have the option to provide a more specific data type</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SRID</span></code></p></td>
+<td><p>Native spatial reference ID of the geometries</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Default</span> <span class="pre">geometry</span></code></p></td>
+<td><p>Indicates if the geometry field is the default one. Useful if the documents contain more than one geometry field,
+as SLDs and spatial filters will hit the default geometry field unless otherwise specified</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Identifier</span></code></p></td>
+<td><p>Check if the field can be used as the feature identifier</p></td>
+</tr>
+</tbody>
+</table>
+<p>By default the list will contain only the fields that have at least one non null value in the documents
+associated to the layer, but it is possible to get the full list by un-checking the “Hide field if empty”
+check-box:</p>
+<div class="figure align-center" id="id5">
+<img alt="../../_images/solr_fieldlist_all.png" src="../../_images/solr_fieldlist_all.png" />
+<p class="caption"><span class="caption-text"><em>Showing all fields available in SOLR</em></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>Once the table is filled with the all the required parameters, press the “Apply” button to confirm
+and go back to the main layer configuration panel.
+Should the choice of fields be modified, you can click the “Configure SOLR fields” just below the “Feature Type Details” panel.</p>
+<div class="figure align-center" id="id6">
+<img alt="../../_images/solr_fieldlist_edit.png" src="../../_images/solr_fieldlist_edit.png" />
+<p class="caption"><span class="caption-text"><em>Going back to the field list editor</em></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p>The rest of the layer configuration works as normal, once all the fields are provided you’ll be able to
+save and use the layer in WMS and WFS.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In order to compute the bounding box GeoServer will have to fetch all the geometries making up the layer out of SOLR,
+this operation might take some time, you’re advised to manually entered the native bounding box when configuring a
+layer out of a large document set</p>
+</div>
+</div>
+<div class="section" id="custom-q-and-fq-parameters">
+<h2>Custom <code class="docutils literal notranslate"><span class="pre">q</span></code> and <code class="docutils literal notranslate"><span class="pre">fq</span></code> parameters<a class="headerlink" href="#custom-q-and-fq-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The SOLR store will translate most OGC filters, as specified in SLD, CQL Filter or OGC filter,
+down into the SOLR engine for native filtering, using the <code class="docutils literal notranslate"><span class="pre">fq</span></code> parameter.
+However, in some occasions you might need to specify manually either <code class="docutils literal notranslate"><span class="pre">q</span></code> or <code class="docutils literal notranslate"><span class="pre">fq</span></code>, to leverage
+some native SOLR filtering ability that cannot be expressed via OGC filters.</p>
+<p>This can be done by specifying those as <code class="docutils literal notranslate"><span class="pre">viewparams</span></code>, pretty much like in parametric sql views
+atop relational databases.</p>
+<p>For example, the following URL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/nurc/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap
+     &amp;layers=nurc:active&amp;styles=geo2&amp;bbox=0.0,0.0,24.0,44.0&amp;width=279&amp;height=512
+     &amp;srs=EPSG:4326&amp;format=application/openlayers
+     &amp;viewparams=fq:security_ss:WEP
+</pre></div>
+</div>
+<p>Will send down to SOLR a query looking like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">omitHeader</span><span class="o">=</span><span class="n">true</span><span class="o">&amp;</span><span class="n">fl</span><span class="o">=</span><span class="n">geo</span><span class="p">,</span><span class="nb">id</span><span class="o">&amp;</span><span class="n">q</span><span class="o">=*</span><span class="p">:</span><span class="o">*&amp;</span><span class="n">rows</span><span class="o">=</span><span class="mi">2147483647</span><span class="o">&amp;</span><span class="n">sort</span><span class="o">=</span><span class="nb">id</span> <span class="n">asc</span>
+<span class="o">&amp;</span><span class="n">fq</span><span class="o">=</span><span class="n">status_s</span><span class="p">:</span><span class="n">active</span> <span class="n">AND</span> <span class="n">geo</span><span class="p">:</span><span class="s2">&quot;Intersects(POLYGON ((-0.125 -0.5333333333333333, -0.125 44.53333333333333,</span>
+<span class="mf">24.125</span> <span class="mf">44.53333333333333</span><span class="p">,</span> <span class="mf">24.125</span> <span class="o">-</span><span class="mf">0.5333333333333333</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.125</span> <span class="o">-</span><span class="mf">0.5333333333333333</span><span class="p">)))</span><span class="s2">&quot;</span>
+<span class="o">&amp;</span><span class="n">fq</span><span class="o">=</span><span class="n">security_ss</span><span class="p">:</span><span class="n">WEP</span><span class="o">&amp;</span><span class="n">cursorMark</span><span class="o">=*</span>
+</pre></div>
+</div>
+<p>You can notice that:</p>
+<ul class="simple">
+<li><p>Only the columns needed for the display (in this case, a single geometry) are retrieved</p></li>
+<li><p>The bbox and layer identification filters are specified in the first <code class="docutils literal notranslate"><span class="pre">fq</span></code></p></li>
+<li><p>The custom <code class="docutils literal notranslate"><span class="pre">fq</span></code> is passed as a second <code class="docutils literal notranslate"><span class="pre">fq</span></code> parameter (SOLR will treat it as being and-ed with
+the previous one)</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="index.html" title="previous chapter">SOLR data store</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="load.html" title="next chapter">Loading spatial data into SOLR</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">SOLR layer configuration</a><ul>
+<li><a class="reference internal" href="#mapping-documents-to-layers">Mapping documents to layers</a></li>
+<li><a class="reference internal" href="#installing-the-solr-extension">Installing the SOLR extension</a></li>
+<li><a class="reference internal" href="#connecting-to-a-solr-server">Connecting to a SOLR server</a></li>
+<li><a class="reference internal" href="#configuring-a-solr-data-store">Configuring a SOLR data store</a></li>
+<li><a class="reference internal" href="#configuring-a-new-solr-base-layer">Configuring a new SOLR base layer</a></li>
+<li><a class="reference internal" href="#custom-q-and-fq-parameters">Custom <code class="docutils literal notranslate"><span class="pre">q</span></code> and <code class="docutils literal notranslate"><span class="pre">fq</span></code> parameters</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="index.html" title="previous chapter">SOLR data store</a></li>
+            <li>Next: <a href="load.html" title="next chapter">Loading spatial data into SOLR</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/solr/configure.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

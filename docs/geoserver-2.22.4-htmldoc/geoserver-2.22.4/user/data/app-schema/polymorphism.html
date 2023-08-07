@@ -1,0 +1,466 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polymorphism &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Data Access Integration" href="data-access-integration.html" />
+    <link rel="prev" title="Feature Chaining" href="feature-chaining.html" /> 
+  </head><body class="data/app-schema/polymorphism">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Polymorphism</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="data-access-integration.html" title="Data Access Integration" accesskey="N">Next</a></li>
+  <li>
+    <a href="feature-chaining.html" title="Feature Chaining" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="polymorphism">
+<span id="app-schema-polymorphism"></span><h1>Polymorphism<a class="headerlink" href="#polymorphism" title="Permalink to this headline">¶</a></h1>
+<p>Polymorphism in this context refers to the ability of an attribute to have different forms.
+Depending on the source value, it could be encoded with a specific structure, type, as an xlink:href reference, or not encoded at all.
+To achieve this, we reuse feature chaining syntax and allow OCQL functions in the linkElement tag.
+Read more about <a class="reference internal" href="feature-chaining.html#app-schema-feature-chaining"><span class="std std-ref">Feature Chaining</span></a>, if you’re not familiar with the syntax.</p>
+<div class="section" id="data-type-polymorphism">
+<h2>Data-type polymorphism<a class="headerlink" href="#data-type-polymorphism" title="Permalink to this headline">¶</a></h2>
+<p>You can use normal feature chaining to get an attribute to be encoded as a certain type.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">VALUE_ID</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">NumericType</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">FEATURE_LINK</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">VALUE_ID</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">FEATURE_LINK</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Note: NumericType here is a mappingName, whereas gsml:CGI_TermValue is a targetElement.</p>
+<p>In the above example, ex:someAttribute would be encoded with the configuration in NumericType if the foreign key matches the linkField.
+Both instances would be encoded if the foreign key matches the candidate keys in both linked configurations.
+Therefore this would only work for 0 to many relationships.</p>
+<p>Functions can be used for single attribute instances. See <a class="reference internal" href="#useful-functions">useful functions</a> for a list of commonly used functions. Specify the function in the linkElement, and it would map it to the first matching FeatureTypeMapping.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">VALUE_ID</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span>
+            <span class="n">Recode</span><span class="p">(</span><span class="n">CLASS_TEXT</span><span class="p">,</span> <span class="s1">&#39;numeric&#39;</span><span class="p">,</span> <span class="s1">&#39;NumericType&#39;</span><span class="p">,</span> <span class="s1">&#39;literal&#39;</span><span class="p">,</span> <span class="s1">&#39;gsml:CGI_TermValue&#39;</span><span class="p">)</span>
+        <span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">FEATURE_LINK</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The above example means, if the CLASS_TEXT value is ‘numeric’, it would link to ‘NumericType’ FeatureTypeMapping, with VALUE_ID as foreign key to the linked type.
+It would require all the potential matching types to have a common attribute that is specified in linkField. In this example, the linkField is FEATURE_LINK, which is a fake attribute used only for feature chaining.
+You can omit the linkField and OCQL if the FeatureTypeMapping being linked to has the same sourceType with the container type.
+This would save us from unnecessary extra queries, which would affect performance.
+For example:</p>
+<p>FeatureTypeMapping of the container type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">FeatureTypeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceDataStore</span><span class="o">&gt;</span><span class="n">PropertyFiles</span><span class="o">&lt;/</span><span class="n">sourceDataStore</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceType</span><span class="o">&gt;</span><span class="n">PolymorphicFeature</span><span class="o">&lt;/</span><span class="n">sourceType</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>FeatureTypeMapping of NumericType points to the same table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">FeatureTypeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">mappingName</span><span class="o">&gt;</span><span class="n">NumericType</span><span class="o">&lt;/</span><span class="n">mappingName</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceDataStore</span><span class="o">&gt;</span><span class="n">PropertyFiles</span><span class="o">&lt;/</span><span class="n">sourceDataStore</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceType</span><span class="o">&gt;</span><span class="n">PolymorphicFeature</span><span class="o">&lt;/</span><span class="n">sourceType</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>FeatureTypeMapping of gsml:CGI_TermValue also points to the same table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">FeatureTypeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceDataStore</span><span class="o">&gt;</span><span class="n">PropertyFiles</span><span class="o">&lt;/</span><span class="n">sourceDataStore</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceType</span><span class="o">&gt;</span><span class="n">PolymorphicFeature</span><span class="o">&lt;/</span><span class="n">sourceType</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">CGI_TermValue</span><span class="o">&lt;/</span><span class="n">targetElement</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In this case, we can omit linkField in the polymorphic attribute mapping:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span>
+            <span class="n">Recode</span><span class="p">(</span><span class="n">CLASS_TEXT</span><span class="p">,</span> <span class="s1">&#39;numeric&#39;</span><span class="p">,</span> <span class="s1">&#39;NumericType&#39;</span><span class="p">,</span> <span class="s1">&#39;literal&#39;</span><span class="p">,</span> <span class="s1">&#39;gsml:CGI_TermValue&#39;</span><span class="p">)</span>
+        <span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">isMultiple</span><span class="o">&gt;</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">isMultiple</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="referential-polymorphism">
+<h2>Referential polymorphism<a class="headerlink" href="#referential-polymorphism" title="Permalink to this headline">¶</a></h2>
+<p>This is when an attribute is set to be encoded as an xlink:href reference on the top level.
+When the scenario only has reference cases in it, setting a function in Client Property will do the job. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="n">if_then_else</span><span class="p">(</span><span class="n">isNull</span><span class="p">(</span><span class="n">NUMERIC_VALUE</span><span class="p">),</span> <span class="s1">&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;</span><span class="p">,</span> <span class="n">strConcat</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="n">NUMERIC_VALUE</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The above example means, if NUMERIC_VALUE is null, the attribute should be encoded as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span> <span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;urn:ogc:def:nil:OGC:1.0:missing&quot;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Otherwise, it would be encoded as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span> <span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;#123&quot;</span><span class="o">&gt;</span>
+    <span class="n">where</span> <span class="n">NUMERIC_VALUE</span> <span class="o">=</span> <span class="s1">&#39;123&#39;</span>
+</pre></div>
+</div>
+<p>However, this is not possible when we have cases where a fully structured attribute is also a possibility.
+The <a class="reference internal" href="#toxlinkhref">toxlinkhref</a> function can be used for this scenario. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span>
+            <span class="n">if_then_else</span><span class="p">(</span><span class="n">isNull</span><span class="p">(</span><span class="n">NUMERIC_VALUE</span><span class="p">),</span> <span class="n">toXlinkHref</span><span class="p">(</span><span class="s1">&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;</span><span class="p">),</span>
+              <span class="n">if_then_else</span><span class="p">(</span><span class="n">lessEqualThan</span><span class="p">(</span><span class="n">NUMERIC_VALUE</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="s1">&#39;numeric_value&#39;</span><span class="p">,</span> <span class="n">toXlinkHref</span><span class="p">(</span><span class="s1">&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;</span><span class="p">)))</span>
+        <span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The above example means, if NUMERIC_VALUE is null, the output would be encoded as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ex</span><span class="p">:</span><span class="n">someAttribute</span> <span class="n">xlink</span><span class="p">:</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;urn:ogc:def:nil:OGC:1.0:missing&quot;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Otherwise, if NUMERIC_VALUE is less or equal than 1000, it would be encoded with attributes from FeatureTypeMapping with ‘numeric_value’ mappingName.
+If NUMERIC_VALUE is greater than 1000, it would be encoded as the first scenario.</p>
+</div>
+<div class="section" id="useful-functions">
+<h2>Useful functions<a class="headerlink" href="#useful-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="if-then-else-function">
+<h3>if_then_else function<a class="headerlink" href="#if-then-else-function" title="Permalink to this headline">¶</a></h3>
+<p><strong>Syntax</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">if_then_else</span><span class="p">(</span><span class="n">BOOLEAN_EXPRESSION</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">default</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>BOOLEAN_EXPRESSION</strong>: could be a Boolean column value, or a Boolean function</p></li>
+<li><p><strong>value</strong>: the value to map to, if BOOLEAN_EXPRESSION is true</p></li>
+<li><p><strong>default value</strong>: the value to map to, if BOOLEAN_EXPRESSION is false</p></li>
+</ul>
+</div>
+<div class="section" id="recode-function">
+<h3>Recode function<a class="headerlink" href="#recode-function" title="Permalink to this headline">¶</a></h3>
+<p><strong>Syntax</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Recode</span><span class="p">(</span><span class="n">EXPRESSION</span><span class="p">,</span> <span class="n">key1</span><span class="p">,</span> <span class="n">value1</span><span class="p">,</span> <span class="n">key2</span><span class="p">,</span> <span class="n">value2</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>EXPRESSION</strong>: column name to get values from, or another function</p></li>
+<li><dl class="simple">
+<dt><strong>key-n</strong>:</dt><dd><ul>
+<li><p>key expression to map to value-n</p></li>
+<li><p>if the evaluated value of EXPRESSION doesn’t match any key, nothing would be encoded for the attribute.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>value-n</strong>: value expression which translates to a mappingName or targetElement</p></li>
+</ul>
+</div>
+<div class="section" id="lessequalthan">
+<h3>lessEqualThan<a class="headerlink" href="#lessequalthan" title="Permalink to this headline">¶</a></h3>
+<p>Returns true if ATTRIBUTE_EXPRESSION evaluates to less or equal than LIMIT_EXPRESSION.</p>
+<p><strong>Syntax</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lessEqualThan</span><span class="p">(</span><span class="n">ATTRIBUTE_EXPRESSION</span><span class="p">,</span> <span class="n">LIMIT_EXPRESSION</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>ATTRIBUTE_EXPRESSION</strong>: expression of the attribute being evaluated.</p></li>
+<li><p><strong>LIMIT_EXPRESSION</strong>: expression of the numeric value to be compared against.</p></li>
+</ul>
+</div>
+<div class="section" id="lessthan">
+<h3>lessThan<a class="headerlink" href="#lessthan" title="Permalink to this headline">¶</a></h3>
+<p>Returns true if ATTRIBUTE_EXPRESSION evaluates to less than LIMIT_EXPRESSION.</p>
+<p><strong>Syntax</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lessThan</span><span class="p">(</span><span class="n">ATTRIBUTE_EXPRESSION</span><span class="p">,</span> <span class="n">LIMIT_EXPRESSION</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>ATTRIBUTE_EXPRESSION</strong>: expression of the attribute being evaluated.</p></li>
+<li><p><strong>LIMIT_EXPRESSION</strong>: expression of the numeric value to be compared against.</p></li>
+</ul>
+</div>
+<div class="section" id="equalto">
+<h3>equalTo<a class="headerlink" href="#equalto" title="Permalink to this headline">¶</a></h3>
+<p>Compares two expressions and returns true if they’re equal.</p>
+<p><strong>Syntax</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">equalTo</span><span class="p">(</span><span class="n">LHS_EXPRESSION</span><span class="p">,</span> <span class="n">RHS_EXPRESSION</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="isnull">
+<h3>isNull<a class="headerlink" href="#isnull" title="Permalink to this headline">¶</a></h3>
+<p>Returns a Boolean that is true if the expression evaluates to null.</p>
+<p><strong>Syntax</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">isNull</span><span class="p">(</span><span class="n">EXPRESSION</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>EXPRESSION</strong>: expression to be evaluated.</p></li>
+</ul>
+</div>
+<div class="section" id="toxlinkhref">
+<h3>toXlinkHref<a class="headerlink" href="#toxlinkhref" title="Permalink to this headline">¶</a></h3>
+<p>Special function written for referential polymorphism and feature chaining, not to be used outside of linkElement.
+It infers that the attribute should be encoded as xlink:href.</p>
+<p><strong>Syntax</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">toXlinkHref</span><span class="p">(</span><span class="n">XLINK_HREF_EXPRESSION</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>XLINK_HREF_EXPRESSION</strong>:</dt><dd><ul>
+<li><p>could be a function or a literal</p></li>
+<li><p>has to be wrapped in single quotes if it’s a literal</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>To get toXlinkHref function working, you need to declare xlink URI in the namespaces.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="other-functions">
+<h3>Other functions<a class="headerlink" href="#other-functions" title="Permalink to this headline">¶</a></h3>
+<p>Please refer to <a class="reference internal" href="../../filter/function_reference.html#filter-function-reference"><span class="std std-ref">Filter Function Reference</span></a>.</p>
+</div>
+<div class="section" id="combinations">
+<h3>Combinations<a class="headerlink" href="#combinations" title="Permalink to this headline">¶</a></h3>
+<p>You can combine functions, but it might affect performance.
+E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">if_then_else</span><span class="p">(</span><span class="n">isNull</span><span class="p">(</span><span class="n">NUMERIC_VALUE</span><span class="p">),</span> <span class="n">toXlinkHref</span><span class="p">(</span><span class="s1">&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;</span><span class="p">),</span>
+    <span class="n">if_then_else</span><span class="p">(</span><span class="n">lessEqualThan</span><span class="p">(</span><span class="n">NUMERIC_VALUE</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="s1">&#39;numeric_value&#39;</span><span class="p">,</span> <span class="n">toXlinkHref</span><span class="p">(</span><span class="s1">&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>When specifying a mappingName or targetElement as a value in functions, make sure they’re enclosed in single quotes.</p></li>
+<li><p>Some functions have no null checking, and will fail when they encounter null.</p></li>
+<li><p>The workaround for this is to wrap the expression with isNull() function if null is known to exist in the data set.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="null-or-missing-value">
+<h2>Null or missing value<a class="headerlink" href="#null-or-missing-value" title="Permalink to this headline">¶</a></h2>
+<p>To skip the attribute for a specific case, you can use Expression.NIL as a value in if_then_else or not include the key in <a class="reference internal" href="#recode-function">Recode function</a> .
+E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">if_then_else</span><span class="p">(</span><span class="n">isNull</span><span class="p">(</span><span class="n">VALUE</span><span class="p">),</span> <span class="n">Expression</span><span class="o">.</span><span class="n">NIL</span><span class="p">,</span> <span class="s1">&#39;gsml:CGI_TermValue&#39;</span><span class="p">)</span>
+    <span class="n">means</span> <span class="n">the</span> <span class="n">attribute</span> <span class="n">would</span> <span class="ow">not</span> <span class="n">be</span> <span class="n">encoded</span> <span class="k">if</span> <span class="n">VALUE</span> <span class="ow">is</span> <span class="n">null</span><span class="o">.</span>
+
+<span class="n">Recode</span><span class="p">(</span><span class="n">VALUE</span><span class="p">,</span> <span class="s1">&#39;term_value&#39;</span><span class="p">,</span> <span class="s1">&#39;gsml:CGI_TermValue&#39;</span><span class="p">)</span>
+    <span class="n">means</span> <span class="n">the</span> <span class="n">attribute</span> <span class="n">would</span> <span class="ow">not</span> <span class="n">be</span> <span class="n">encoded</span> <span class="k">if</span> <span class="n">VALUE</span> <span class="ow">is</span> <span class="n">anything</span> <span class="n">but</span> <span class="s1">&#39;term_value&#39;</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>To encode an attribute as xlink:href that represents missing value on the top level, see <a class="reference internal" href="#referential-polymorphism">Referential Polymorphism</a>.</p>
+</div>
+<div class="section" id="any-type">
+<h2>Any type<a class="headerlink" href="#any-type" title="Permalink to this headline">¶</a></h2>
+<p>Having xs:anyType as the attribute type itself infers that it is polymorphic, since they can be encoded as any type.</p>
+<p>If the type is pre-determined and would always be the same, we might need to specify <a class="reference internal" href="mapping-file.html#app-schema-mapping-file-targetattributenode"><span class="std std-ref">targetAttributeNode (optional)</span></a>.
+E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">om</span><span class="p">:</span><span class="n">result</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">MeasureType</span><span class="o">&lt;</span><span class="n">targetAttributeNode</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">TOPAGE</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">xsi</span><span class="p">:</span><span class="nb">type</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;gml:MeasureType&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">uom</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="s1">&#39;http://www.opengis.net/def/uom/UCUM/0/Ma&#39;</span><span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">ClientProperty</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>If the casting type is complex, this is not a requirement as app-schema is able to automatically determine the type from the XPath in targetAttribute.
+E.g., in this example <code class="docutils literal notranslate"><span class="pre">om:result</span></code> is automatically specialised as a MappedFeatureType:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">om</span><span class="p">:</span><span class="n">result</span><span class="o">/</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">/</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">NAME</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Alternatively, we can use feature chaining. For the same example above, the mapping would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">om</span><span class="p">:</span><span class="n">result</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">OCQL</span><span class="o">&gt;</span><span class="n">LEX_D</span><span class="o">&lt;/</span><span class="n">OCQL</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span><span class="n">gsml</span><span class="p">:</span><span class="n">MappedFeature</span><span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">linkField</span><span class="o">&gt;</span><span class="n">gml</span><span class="p">:</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">linkField</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>If the type is conditional, the mapping style for such attributes is the same as any other polymorphic attributes. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">targetAttribute</span><span class="o">&gt;</span><span class="n">om</span><span class="p">:</span><span class="n">result</span><span class="o">&lt;/</span><span class="n">targetAttribute</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">linkElement</span><span class="o">&gt;</span>
+               <span class="n">Recode</span><span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="n">Expression</span><span class="o">.</span><span class="n">Nil</span><span class="p">,</span> <span class="n">toXlinkHref</span><span class="p">(</span><span class="s1">&#39;urn:ogc:def:nil:OGC::missing&#39;</span><span class="p">),</span><span class="s1">&#39;numeric&#39;</span><span class="p">,</span>
+               <span class="n">toXlinkHref</span><span class="p">(</span><span class="n">strConcat</span><span class="p">(</span><span class="s1">&#39;urn:numeric-value::&#39;</span><span class="p">,</span> <span class="n">NUMERIC_VALUE</span><span class="p">)),</span> <span class="s1">&#39;literal&#39;</span><span class="p">,</span> <span class="s1">&#39;TermValue2&#39;</span><span class="p">)</span>
+            <span class="o">&lt;/</span><span class="n">linkElement</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">sourceExpression</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">AttributeMapping</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="filters">
+<h2>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h2>
+<p>Filters should work as usual, as long as the users know what they want to filter.
+For example, when an attribute could be encoded as gsml:CGI_TermValue or gsml:CGI_NumericValue, users can run filters with property names of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>ex:someAttribute/gsml:CGI_TermValue/gsml:value to return matching attributes that are encoded as gsml:CGI_TermValue and satisfy the filter.</p></li>
+<li><p>likewise, ex:someAttribute/gsml:CGI_NumericValue/gsml:principalValue should return matching gsml:CGI_NumericValue attributes.</p></li>
+</ul>
+</div></blockquote>
+<p>Another limitation is filtering attributes of an xlink:href attribute pointing to an instance outside of the document.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="feature-chaining.html" title="previous chapter">Feature Chaining</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="data-access-integration.html" title="next chapter">Data Access Integration</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Polymorphism</a><ul>
+<li><a class="reference internal" href="#data-type-polymorphism">Data-type polymorphism</a></li>
+<li><a class="reference internal" href="#referential-polymorphism">Referential polymorphism</a></li>
+<li><a class="reference internal" href="#useful-functions">Useful functions</a><ul>
+<li><a class="reference internal" href="#if-then-else-function">if_then_else function</a></li>
+<li><a class="reference internal" href="#recode-function">Recode function</a></li>
+<li><a class="reference internal" href="#lessequalthan">lessEqualThan</a></li>
+<li><a class="reference internal" href="#lessthan">lessThan</a></li>
+<li><a class="reference internal" href="#equalto">equalTo</a></li>
+<li><a class="reference internal" href="#isnull">isNull</a></li>
+<li><a class="reference internal" href="#toxlinkhref">toXlinkHref</a></li>
+<li><a class="reference internal" href="#other-functions">Other functions</a></li>
+<li><a class="reference internal" href="#combinations">Combinations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#null-or-missing-value">Null or missing value</a></li>
+<li><a class="reference internal" href="#any-type">Any type</a></li>
+<li><a class="reference internal" href="#filters">Filters</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="feature-chaining.html" title="previous chapter">Feature Chaining</a></li>
+            <li>Next: <a href="data-access-integration.html" title="next chapter">Data Access Integration</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/polymorphism.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

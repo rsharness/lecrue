@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audit Logging &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Monitor Query API" href="query.html" />
+    <link rel="prev" title="Monitor Configuration" href="configuration.html" /> 
+  </head><body class="extensions/monitoring/audit">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Extensions</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Monitoring</a> &raquo;</li>
+    <li>Audit Logging</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="query.html" title="Monitor Query API" accesskey="N">Next</a></li>
+  <li>
+    <a href="configuration.html" title="Monitor Configuration" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="audit-logging">
+<span id="monitor-audit"></span><h1>Audit Logging<a class="headerlink" href="#audit-logging" title="Permalink to this headline">¶</a></h1>
+<p>The history mode logs all requests into a database. This can put a very significant strain
+on the database and can lead to insertion issues as the request table begins to host
+millions of records.</p>
+<p>As an alternative to the history mode it’s possible to enable the auditing logger, which will log
+the details of each request in a file, which is periodically rolled. Secondary applications can
+then process these log files and built ad-hoc summaries off line.</p>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code> file can contain the following items to enable and configure file auditing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">audit</span><span class="o">.</span><span class="n">enabled</span><span class="o">=</span><span class="n">true</span>
+<span class="n">audit</span><span class="o">.</span><span class="n">path</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">the</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">directory</span>
+<span class="n">audit</span><span class="o">.</span><span class="n">roll_limit</span><span class="o">=</span><span class="mi">20</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">audit.enable</span></code> is used to turn on the logger (it is off by default).
+The <code class="docutils literal notranslate"><span class="pre">audit.path</span></code> is the directory where the log files will be created.
+The <code class="docutils literal notranslate"><span class="pre">audit.roll_limit</span></code> is the number of requests logged into a file before rolling happens.
+The files are also automatically rolled at the beginning of each day.</p>
+<p>In clustered installations with a shared data directory the audit path will need to be different
+for each node. In this case it’s possible to specify the audit path by using a JVM system variable,
+add the following to the JVM startup options and it will override whatever is specified in
+<code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code>:</p>
+<blockquote>
+<div><p>-DGEOSERVER_AUDIT_PATH=/path/to/the/logs/directory</p>
+</div></blockquote>
+</div>
+<div class="section" id="log-files">
+<h2>Log Files<a class="headerlink" href="#log-files" title="Permalink to this headline">¶</a></h2>
+<p>The log directory will contain a number of log files following the <code class="docutils literal notranslate"><span class="pre">geoserver_audit_yyyymmdd_nn.log</span></code>
+pattern. The <code class="docutils literal notranslate"><span class="pre">nn</span></code> is increased at each roll of the file. The contents of the log directory will look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">geoserver_audit_20110811_2</span><span class="o">.</span><span class="n">log</span>
+<span class="n">geoserver_audit_20110811_3</span><span class="o">.</span><span class="n">log</span>
+<span class="n">geoserver_audit_20110811_4</span><span class="o">.</span><span class="n">log</span>
+<span class="n">geoserver_audit_20110811_5</span><span class="o">.</span><span class="n">log</span>
+<span class="n">geoserver_audit_20110811_6</span><span class="o">.</span><span class="n">log</span>
+<span class="n">geoserver_audit_20110811_7</span><span class="o">.</span><span class="n">log</span>
+<span class="n">geoserver_audit_20110811_8</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>By default each log file contents will be a xml document looking like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;Requests&gt;
+        &lt;Request id=&quot;168&quot;&gt;
+           &lt;Service&gt;WMS&lt;/Service&gt;
+           &lt;Version&gt;1.1.1&lt;/Version&gt;
+           &lt;Operation&gt;GetMap&lt;/Operation&gt;
+           &lt;SubOperation&gt;&lt;/SubOperation&gt;
+           &lt;Resources&gt;GeoSolutions:elba-deparea&lt;/Resources&gt;
+           &lt;ResourcesProcessingTime&gt;4&lt;/ResourcesProcessingTime&gt;
+           &lt;LabelsProcessingTime&gt;0&lt;/LabelsProcessingTime&gt;
+           &lt;Path&gt;/GeoSolutions/wms&lt;/Path&gt;
+           &lt;QueryString&gt;LAYERS=GeoSolutions:elba-deparea&amp;amp;STYLES=&amp;amp;FORMAT=image/png&amp;amp;TILED=true&amp;amp;TILESORIGIN=9.916,42.312&amp;amp;SERVICE=WMS&amp;amp;VERSION=1.1.1&amp;amp;REQUEST=GetMap&amp;amp;EXCEPTIONS=application/vnd.ogc.se_inimage&amp;amp;SRS=EPSG:4326&amp;amp;BBOX=9.58375,42.64425,9.916,42.9765&amp;amp;WIDTH=256&amp;amp;HEIGHT=256&lt;/QueryString&gt;
+           &lt;HttpMethod&gt;GET&lt;/HttpMethod&gt;
+           &lt;StartTime&gt;2011-08-11T20:19:28.277Z&lt;/StartTime&gt;
+           &lt;EndTime&gt;2011-08-11T20:19:28.29Z&lt;/EndTime&gt;
+           &lt;TotalTime&gt;13&lt;/TotalTime&gt;
+           &lt;RemoteAddr&gt;192.168.1.5&lt;/RemoteAddr&gt;
+           &lt;RemoteHost&gt;192.168.1.5&lt;/RemoteHost&gt;
+           &lt;Host&gt;demo1.geo-solutions.it&lt;/Host&gt;
+           &lt;RemoteUser&gt;admin&lt;/RemoteUser&gt;
+           &lt;ResponseStatus&gt;200&lt;/ResponseStatus&gt;
+           &lt;ResponseLength&gt;1670&lt;/ResponseLength&gt;
+           &lt;ResponseContentType&gt;image/png&lt;/ResponseContentType&gt;
+           &lt;Failed&gt;false&lt;/Failed&gt;
+        &lt;/Request&gt;
+        ...
+&lt;/Requests&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="customizing-log-contents">
+<h2>Customizing Log Contents<a class="headerlink" href="#customizing-log-contents" title="Permalink to this headline">¶</a></h2>
+<p>The log contents are driven by three FreeMarker templates.</p>
+<p><code class="docutils literal notranslate"><span class="pre">header.ftl</span></code> is used once when a new log file is created to form the first few lines of the file.
+The default header template is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;Requests&gt;
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">content.ftl</span></code> is used to write out the request details. The default template dumps all the known fields about the request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;#escape x as x?xml&gt;
+&lt;Request id=&quot;${id!&quot;&quot;}&quot;&gt;
+   &lt;Service&gt;${service!&quot;&quot;}&lt;/Service&gt;
+   &lt;Version&gt;${owsVersion!&quot;&quot;}&lt;/Version&gt;
+   &lt;Operation&gt;${operation!&quot;&quot;}&lt;/Operation&gt;
+   &lt;SubOperation&gt;${subOperation!&quot;&quot;}&lt;/SubOperation&gt;
+   &lt;Resources&gt;${resourcesList!&quot;&quot;}&lt;/Resources&gt;
+   &lt;ResourcesProcessingTime&gt;${resourcesProcessingTimeList!&quot;&quot;}&lt;/ResourcesProcessingTime&gt;
+   &lt;LabelsProcessingTime&gt;${labellingProcessingTime!&quot;&quot;}&lt;/LabelsProcessingTime&gt;
+   &lt;Path&gt;${path!&quot;&quot;}&lt;/Path&gt;
+   &lt;QueryString&gt;${queryString!&quot;&quot;}&lt;/QueryString&gt;
+   &lt;#if bodyAsString??&gt;
+   &lt;Body&gt;
+   ${bodyAsString}
+   &lt;/Body&gt;
+   &lt;/#if&gt;
+   &lt;HttpMethod&gt;${httpMethod!&quot;&quot;}&lt;/HttpMethod&gt;
+   &lt;StartTime&gt;${startTime?datetime?iso_utc_ms}&lt;/StartTime&gt;
+   &lt;EndTime&gt;${endTime?datetime?iso_utc_ms}&lt;/EndTime&gt;
+   &lt;TotalTime&gt;${totalTime}&lt;/TotalTime&gt;
+   &lt;RemoteAddr&gt;${remoteAddr!&quot;&quot;}&lt;/RemoteAddr&gt;
+   &lt;RemoteHost&gt;${remoteHost!&quot;&quot;}&lt;/RemoteHost&gt;
+   &lt;Host&gt;${host}&lt;/Host&gt;
+   &lt;RemoteUser&gt;${remoteUser!&quot;&quot;}&lt;/RemoteUser&gt;
+   &lt;ResponseStatus&gt;${responseStatus!&quot;&quot;}&lt;/ResponseStatus&gt;
+   &lt;ResponseLength&gt;${responseLength?c}&lt;/ResponseLength&gt;
+   &lt;ResponseContentType&gt;${responseContentType!&quot;&quot;}&lt;/ResponseContentType&gt;
+   &lt;CacheResult&gt;${cacheResult!&quot;&quot;}&lt;/CacheResult&gt;
+   &lt;MissReason&gt;${missReason!&quot;&quot;}&lt;/MissReason&gt;
+   &lt;#if error??&gt;
+   &lt;Failed&gt;true&lt;/Failed&gt;
+   &lt;ErrorMessage&gt;${errorMessage!&quot;&quot;}&lt;/ErrorMessage&gt;
+   &lt;#else&gt;
+   &lt;Failed&gt;false&lt;/Failed&gt;
+   &lt;/#if&gt;
+&lt;/Request&gt;
+&lt;/#escape&gt;
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">footer.ftl</span></code> is executed just once when the log file is closed to build the last few lines of the file.
+The default footer template is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;/</span><span class="n">Requests</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The administrator is free to provide alternate templates, they can be placed in the same directory
+as <code class="docutils literal notranslate"><span class="pre">monitor.properties</span></code>, with the same names as above. GeoServer will pick them up automatically.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="configuration.html" title="previous chapter">Monitor Configuration</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="query.html" title="next chapter">Monitor Query API</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Audit Logging</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#log-files">Log Files</a></li>
+<li><a class="reference internal" href="#customizing-log-contents">Customizing Log Contents</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="configuration.html" title="previous chapter">Monitor Configuration</a></li>
+            <li>Next: <a href="query.html" title="next chapter">Monitor Query API</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/extensions/monitoring/audit.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authenticating to the Web Admin Interface &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Authentication to OWS and REST services" href="owsrest.html" />
+    <link rel="prev" title="Authentication chain" href="chain.html" /> 
+  </head><body class="security/auth/web">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Security</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Authentication</a> &raquo;</li>
+    <li>Authenticating to the Web Admin Interface</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="owsrest.html" title="Authentication to OWS and REST services" accesskey="N">Next</a></li>
+  <li>
+    <a href="chain.html" title="Authentication chain" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="authenticating-to-the-web-admin-interface">
+<span id="security-auth-webadmin"></span><h1>Authenticating to the Web Admin Interface<a class="headerlink" href="#authenticating-to-the-web-admin-interface" title="Permalink to this headline">¶</a></h1>
+<p>The method of authenticating to the <a class="reference internal" href="../../webadmin/index.html#web-admin"><span class="std std-ref">Web administration interface</span></a> application is typical of most web applications that provide login capabilities. The application is based primarily on form-based authentication, in which a user authenticates through a form in a web browser. Upon successful authentication a session is created on the server, eliminating the need for a user to repeat the login process for each page they wish to access. An optional “Remember Me” setting is also supported which will store authentication information in a client-side cookie to allow the user to bypass the form-based authentication after the initial session has timed out.</p>
+<p>The typical process of authentication is as follows:</p>
+<ol class="arabic simple">
+<li><p>User visits the home page of the web admin for the very first time, so neither a session or “Remember Me” cookie is present. In this case, the user is anonymously authenticated.</p></li>
+<li><p>User accesses a secured page and is presented with a login form.</p></li>
+<li><p>Upon successful login a session is created. Depending on the privileges of the account used to log in, the user will either be directed to the requested page or be redirected back to the home page.</p></li>
+<li><p>Upon subsequent requests to secured pages, the user is authenticated via browser session until the session expires or the user logs out.</p></li>
+</ol>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following shows the default configuration of the authentication chain for the web admin.</p>
+<div class="figure align-center" id="id1">
+<img alt="../../_images/auth_chain_web1.png" src="../../_images/auth_chain_web1.png" />
+<p class="caption"><span class="caption-text"><em>GeoServer authentication chain, with filter and provider chains</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>In this example the filter chain is made up of the following filters:</p>
+<ul class="simple">
+<li><p><strong>Session</strong>—Handles session integration, recognizing existing sessions and creating new sessions on demand</p></li>
+<li><p><strong>Logout</strong>—Handles ending sessions (user logout)</p></li>
+<li><p><strong>Form login</strong>—Handles form logins</p></li>
+<li><p><strong>Remember Me</strong>—Handles “Remember Me” authentication, reading when the flag is set on a form login, creating the appropriate cookie, and recognizing the cookie on future requests</p></li>
+<li><p><strong>Anonymous</strong>—Handles anonymous access</p></li>
+</ul>
+<p>The provider chain is made up of two providers:</p>
+<ul class="simple">
+<li><p><strong>Root</strong>—The <a class="reference internal" href="../root.html#security-root"><span class="std std-ref">Root account</span></a> has a special “super user” provider. As this account is rarely used, this provider is rarely invoked.</p></li>
+<li><p><strong>Username/password</strong>—Performs username/password authentication against a user database.</p></li>
+</ul>
+<p>To following example requests illustrate how the elements of the various chains work.</p>
+<div class="section" id="first-time-visit">
+<h3>First time visit<a class="headerlink" href="#first-time-visit" title="Permalink to this headline">¶</a></h3>
+<p>This example describes the process when a user visits the home page of the web admin for the first time.</p>
+<div class="figure align-center" id="id2">
+<img alt="../../_images/auth_chain_web2.png" src="../../_images/auth_chain_web2.png" />
+<p class="caption"><span class="caption-text"><em>Authentication chain for a first time visit from a user</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The first filter to execute is the <em>Session</em> filter. It checks for an existing session, but finds none, so processing continues to the next filter in the chain. The <em>Logout</em> filter checks for the case of a user logging out, which also is not the case, so processing continues. The <em>Form login</em> filter checks for a form login, and also finds none. The <em>Remember Me</em> filter determines if this request can be authenticated from a previous session cookie, but in this case it cannot. The final filter to execute is the <em>Anonymous</em> filter which checks if the user specified any credentials. In this case the user has not provided any credentials, so the request is authenticated anonymously. Since no authentication is required to view the home page, the provider chain is not invoked.</p>
+<p>The last response to the request directs the user to the home page.</p>
+</div>
+<div class="section" id="user-logs-on">
+<h3>User logs on<a class="headerlink" href="#user-logs-on" title="Permalink to this headline">¶</a></h3>
+<p>This examples describes the process invoked when a user logs on to the web admin via the login form.</p>
+<div class="figure align-center" id="id3">
+<img alt="../../_images/auth_chain_web3.png" src="../../_images/auth_chain_web3.png" />
+<p class="caption"><span class="caption-text"><em>Authentication chain for a user logging in</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <em>Session</em> filter finds no existing session, and processing continues. The <em>Logout</em> filter checks for a logout request, finds none, and continues. The <em>Form login</em> filter recognizes the request as a form login and begins the authentication process. It extracts the username and password from the request and invokes the provider chain.</p>
+<p>In the provider chain, the <em>Root</em> provider checks for the root account login, but doesn’t find it so processing continues to the next provider. The <em>Username/password</em> provider checks if the supplied credentials are valid. If they are valid the authentication succeeds, user is redirected to the home page and is considered to be logged on. During the post-processing step the <em>Session</em> filter recognizes that a successful authentication has taken place and creates a new session.</p>
+<p>If the credentials are invalid, the user will be returned to the login form page and asked to try again.</p>
+</div>
+<div class="section" id="user-visits-another-page">
+<h3>User visits another page<a class="headerlink" href="#user-visits-another-page" title="Permalink to this headline">¶</a></h3>
+<p>This example describes the process invoked when a user who is already logged on visits another page in the web admin.</p>
+<div class="figure align-center" id="id4">
+<img alt="../../_images/auth_chain_web4.png" src="../../_images/auth_chain_web4.png" />
+<p class="caption"><span class="caption-text"><em>Authentication chain for a user visiting another page after logging in</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <em>Session</em> filter executes and finds an existing session that is still valid. The session contains the authentication details and no further chain processing is required. The response is the page requested by the user.</p>
+</div>
+<div class="section" id="user-returns-after-session-time-out">
+<h3>User returns after session time out<a class="headerlink" href="#user-returns-after-session-time-out" title="Permalink to this headline">¶</a></h3>
+<p>This example describes the process invoked when a user returns to the web admin after the previously created session has timed out.</p>
+<p>A session will time out after a certain period of time. When the user returns to the web admin, this becomes essentially the same chain of events as the user visiting the web app for the first time (as described previously). The chain proceeds to the <em>Anonymous</em> filter that authenticates anonymously. Since the page requested is likely to be a page that requires authentication, the user is redirected to the home page and is not logged on.</p>
+</div>
+<div class="section" id="user-logs-on-with-remember-me-flag-set">
+<h3>User logs on with “Remember Me” flag set<a class="headerlink" href="#user-logs-on-with-remember-me-flag-set" title="Permalink to this headline">¶</a></h3>
+<p>This example describes the process for logging on with the “Remember Me” flag set.</p>
+<p>The chain of events for logging on with “Remember Me” set is identical to the process for when the flag is not set, except that after the successful authentication the <em>Form login</em> filter recognizes the “Remember Me” flag and triggers the creation of the browser cookie used to persist the authentication information. The user is now logged on and is directed to the home page.</p>
+</div>
+<div class="section" id="user-returns-after-session-time-out-with-remember-me">
+<h3>User returns after session time out (with “Remember Me”)<a class="headerlink" href="#user-returns-after-session-time-out-with-remember-me" title="Permalink to this headline">¶</a></h3>
+<p>This example describes the process invoked when the user returns to the web admin after a period of inactivity, while the “Remember Me” flag is set.</p>
+<div class="figure align-center" id="id5">
+<img alt="../../_images/auth_chain_web5.png" src="../../_images/auth_chain_web5.png" />
+<p class="caption"><span class="caption-text"><em>Authentication chain for a user returning after session time out with the “Remember Me” flag</em></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>Even though the “Remember Me” flag is set, the user’s session on the server will still time out as normal. As such, the chain proceeds accordingly through the filters, starting with the <em>Session</em> filter, which finds no valid session. The <em>Logout</em> and <em>Form login</em> filters do not apply here.  The <em>Remember Me</em> filter recognizes the browser cookie and is able to authenticate the request. The user is directed to whatever page was accessed and remains logged on.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="chain.html" title="previous chapter">Authentication chain</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="owsrest.html" title="next chapter">Authentication to OWS and REST services</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Authenticating to the Web Admin Interface</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#first-time-visit">First time visit</a></li>
+<li><a class="reference internal" href="#user-logs-on">User logs on</a></li>
+<li><a class="reference internal" href="#user-visits-another-page">User visits another page</a></li>
+<li><a class="reference internal" href="#user-returns-after-session-time-out">User returns after session time out</a></li>
+<li><a class="reference internal" href="#user-logs-on-with-remember-me-flag-set">User logs on with “Remember Me” flag set</a></li>
+<li><a class="reference internal" href="#user-returns-after-session-time-out-with-remember-me">User returns after session time out (with “Remember Me”)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="chain.html" title="previous chapter">Authentication chain</a></li>
+            <li>Next: <a href="owsrest.html" title="next chapter">Authentication to OWS and REST services</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/security/auth/web.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

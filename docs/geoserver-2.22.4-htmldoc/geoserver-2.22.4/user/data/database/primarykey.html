@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controlling feature ID generation in spatial databases &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Custom SQL session start/stop scripts" href="sqlsession.html" />
+    <link rel="prev" title="SQL Views" href="sqlview.html" /> 
+  </head><body class="data/database/primarykey">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Databases</a> &raquo;</li>
+    <li>Controlling feature ID generation in spatial databases</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="sqlsession.html" title="Custom SQL session start/stop scripts" accesskey="N">Next</a></li>
+  <li>
+    <a href="sqlview.html" title="SQL Views" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="controlling-feature-id-generation-in-spatial-databases">
+<span id="primarykey"></span><h1>Controlling feature ID generation in spatial databases<a class="headerlink" href="#controlling-feature-id-generation-in-spatial-databases" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>All spatial database data stores (PostGIS, Oracle, MySQL and so on) normally derive the feature ID from the table primary key and assume certain conventions on how to locate the next value for the key in case a new feature needs to be generated (WFS insert operation).</p>
+<p>Common conventions rely on finding auto-increment columns (PostGIS) or finding a sequence that is named after a specific convention such as <code class="docutils literal notranslate"><span class="pre">&lt;table&gt;_&lt;column&gt;_SEQUENCE</span></code> (Oracle case).</p>
+<p>In case none of the above is found, normally the store will fall back on generating random feature IDs at each new request, making the table unsuitable for feature ID based searches and transactions.</p>
+</div>
+<div class="section" id="metadata-table-description">
+<h2>Metadata table description<a class="headerlink" href="#metadata-table-description" title="Permalink to this headline">¶</a></h2>
+<p>These defaults can be overridden manually by creating a <cite>primary key metadata table</cite> that specifies which columns to use and what strategy to use to generate new primary key values. The (schema qualified) table can be created with this SQL statement (this one is valid for PostGIS and ORACLE, adapt it to your specific database, you may remove the check at the end if you want to):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">PostGIS</span> <span class="n">DDL</span>
+
+<span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">my_schema</span><span class="o">.</span><span class="n">gt_pk_metadata</span> <span class="p">(</span>
+  <span class="n">table_schema</span> <span class="n">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="n">NOT</span> <span class="n">NULL</span><span class="p">,</span>
+  <span class="n">table_name</span> <span class="n">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="n">NOT</span> <span class="n">NULL</span><span class="p">,</span>
+  <span class="n">pk_column</span> <span class="n">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="n">NOT</span> <span class="n">NULL</span><span class="p">,</span>
+  <span class="n">pk_column_idx</span> <span class="n">INTEGER</span><span class="p">,</span>
+  <span class="n">pk_policy</span> <span class="n">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+  <span class="n">pk_sequence</span> <span class="n">VARCHAR</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span>
+  <span class="n">unique</span> <span class="p">(</span><span class="n">table_schema</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">pk_column</span><span class="p">),</span>
+  <span class="n">check</span> <span class="p">(</span><span class="n">pk_policy</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;sequence&#39;</span><span class="p">,</span> <span class="s1">&#39;assigned&#39;</span><span class="p">,</span> <span class="s1">&#39;autogenerated&#39;</span><span class="p">))</span>
+<span class="p">)</span>
+
+
+<span class="o">--</span><span class="n">ORACLE</span> <span class="n">DDL</span>
+
+<span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">gt_pk_metadata</span> <span class="p">(</span>
+  <span class="n">table_schema</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="n">NOT</span> <span class="n">NULL</span><span class="p">,</span>
+  <span class="n">table_name</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="n">NOT</span> <span class="n">NULL</span><span class="p">,</span>
+  <span class="n">pk_column</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="n">NOT</span> <span class="n">NULL</span><span class="p">,</span>
+  <span class="n">pk_column_idx</span> <span class="n">NUMBER</span><span class="p">(</span><span class="mi">38</span><span class="p">),</span>
+  <span class="n">pk_policy</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+  <span class="n">pk_sequence</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span>
+  <span class="n">constraint</span>  <span class="n">chk_pk_policy</span> <span class="n">check</span> <span class="p">(</span><span class="n">pk_policy</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;sequence&#39;</span><span class="p">,</span> <span class="s1">&#39;assigned&#39;</span><span class="p">,</span> <span class="s1">&#39;autogenerated&#39;</span><span class="p">)));</span>
+
+<span class="n">CREATE</span> <span class="n">UNIQUE</span> <span class="n">INDEX</span> <span class="n">gt_pk_metadata_table_idx01</span> <span class="n">ON</span> <span class="n">gt_pk_metadata</span> <span class="p">(</span><span class="n">table_schema</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">pk_column</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The table can be given a different name. In that case, the (schema qualified) name of the table must be specified in the <cite>primary key metadata table</cite> configuration parameter of the store.</p>
+<p>The following table describes the meaning of each column in the metadata table.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Column</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">table_schema</span></p></td>
+<td><p>Name of the database schema in which the table is located.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">table_name</span></p></td>
+<td><p>Name of the table or view to be published</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">pk_column</span></p></td>
+<td><p>Name of a column used to form the feature IDs</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">pk_column_idx</span></p></td>
+<td><p>Index of the column in a multi-column key, else NULL. In case multi column keys are needed, multiple records with the same table schema and table name will be used.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">pk_policy</span></p></td>
+<td><p>The new value generation policy, used in case a new feature needs to be added in the table (following a WFS-T insert operation).</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">pk_sequence</span></p></td>
+<td><p>The name of the database sequence to be used when generating a new value for the pk_column.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The possible values for <code class="docutils literal notranslate"><span class="pre">pk_policy</span></code> are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>assigned</cite>. The value of the attribute in the newly inserted feature will be used (this assumes the “expose primary keys” flag has been enabled)</p></li>
+<li><p><cite>sequence</cite>. The value of the attribute will be generated from the next value of a sequence indicated in the <code class="docutils literal notranslate"><span class="pre">pk_sequence</span></code> column.</p></li>
+<li><p><cite>autogenerated</cite>. The column is an auto-increment one, the next value in the auto-increment will be used.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="using-the-metadata-table-with-views">
+<h2>Using the metadata table with views<a class="headerlink" href="#using-the-metadata-table-with-views" title="Permalink to this headline">¶</a></h2>
+<p>GeoServer can publish spatial views without issues, but normally results in two side effects:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>the view is treated as read only</p></li>
+<li><p>the feature IDs are randomly generated</p></li>
+</ul>
+</div></blockquote>
+<p>The metadata table can also refer to views, just use the view name in the <code class="docutils literal notranslate"><span class="pre">table_name</span></code> column: this will result in stable ids, and in databases supporting updatable views, it will also make the code treat the view as writable (thus, enabling usage of WFS-T on it).</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="sqlview.html" title="previous chapter">SQL Views</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="sqlsession.html" title="next chapter">Custom SQL session start/stop scripts</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Controlling feature ID generation in spatial databases</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#metadata-table-description">Metadata table description</a></li>
+<li><a class="reference internal" href="#using-the-metadata-table-with-views">Using the metadata table with views</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="sqlview.html" title="previous chapter">SQL Views</a></li>
+            <li>Next: <a href="sqlsession.html" title="next chapter">Custom SQL session start/stop scripts</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/database/primarykey.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

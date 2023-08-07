@@ -1,0 +1,78 @@
+version: '3'
+###################################
+#      Containers
+###################################
+services:
+# ======== Data Layer ========
+  postgis:
+    image: geosolutionsit/postgis
+    container_name: lecrue-postgis
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      - POSTGRES_USER=cartographer
+      - POSTGRES_PASSWORD=Jules20kVerne
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - POSTGRES_DB=gis
+    volumes:
+      - ./datastor/pg_data/data:/var/lib/postgresql/data
+      # - ./datastor/pg_data/10:/var/lib/postgresql/10
+    networks:
+      lacrue_net:
+        ipv4_address: 172.31.0.101
+# ========  Geoserver - backend server  ========
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.24.x
+    container_name: lecrue-geoserver
+    ports:
+      - 8080:8080
+    restart: always
+    networks:
+      lacrue_net:
+        ipv4_address: 172.31.0.100
+    environment:
+      - INSTALL_EXTENSIONS=true
+      - STABLE_EXTENSIONS=wps,csw,authkey,css,imagemap,vectortiles,web-resource,wmts-multi-dimensional,sldservice,charts
+      - EXTRA_JAVA_OPTS=-Xms1G -Xmx2G
+    volumes:
+      - ./datastor/geo/tiffs/:/opt/mapdata
+      - ./datastor/geo/libs/:/opt/additional_libs
+      - ./datastor/geo/data/:/opt/geoserver_data
+      - ./datastor/geo/blob/:/opt/blob
+    depends_on:
+    # comment out if commenting out below db-server
+    # db connection will auto-disable in geoserver if not present
+      - postgis
+# =========  Frontend  ========
+  mapstore:
+    # user: 1000:976    # testing for volume mount issues
+    image: geosolutionsit/mapstore2:latest
+    container_name: lecru-mapstore
+    ports:
+      - 80:8080
+      # - 443:8443 # TBD 
+    restart: always
+    networks:
+      lacrue_net:
+        ipv4_address: 172.31.0.102
+    volumes:
+      - ./datastor/mapstore/webapps:/usr/local/tomcat/webapps
+      - ./datastor/mapstore/config:/usr/local/tomcat/conf
+    depends_on:
+      - geoserver
+      - postgis
+#####################################
+#     Networking - Optional
+#####################################
+networks:
+  lacrue_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.31.0.0/24"  # Update this to match requirements - !!! Update service IPs
+####################################
+#     Volumes
+#####################################
+volumes:
+  datastor:

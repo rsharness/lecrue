@@ -1,0 +1,611 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Release Guide &#8212; GeoServer 2.22.4 Developer Manual</title>
+    <link rel="stylesheet" href="../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Release Testing Checklist" href="../release-testing-checklist/index.html" />
+    <link rel="prev" title="Release Schedule" href="../release-schedule/index.html" /> 
+  </head><body class="release-guide/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search &hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../index.html">GeoServer 2.22.4 Developer Manual</a> &raquo;</li>
+    <li>Release Guide</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../release-testing-checklist/index.html" title="Release Testing Checklist" accesskey="N">Next</a></li>
+  <li>
+    <a href="../release-schedule/index.html" title="Release Schedule" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="release-guide">
+<span id="id1"></span><h1>Release Guide<a class="headerlink" href="#release-guide" title="Permalink to this headline">¶</a></h1>
+<p>This guide details the process of performing a GeoServer release.</p>
+<div class="section" id="before-you-start">
+<h2>Before you start<a class="headerlink" href="#before-you-start" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="snapshot-release">
+<h3>SNAPSHOT release<a class="headerlink" href="#snapshot-release" title="Permalink to this headline">¶</a></h3>
+<p>For any release (including release candidates) a GeoServer release requires an
+corresponding GeoTools and GeoWebCache release. Therefore before you start you should
+coordinate a release with these projects. Either performing the release yourself or
+asking a volunteer to perform the release.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://docs.geotools.org/latest/developer/procedures/release.html">GeoTools Release Guide</a></p></li>
+<li><p><a class="reference external" href="https://github.com/GeoWebCache/geowebcache/blob/master/geowebcache/release/RELEASE_GUIDE.txt">GeoWebCache RELEASE_GUIDE.txt</a></p></li>
+</ul>
+</div>
+<div class="section" id="notify-developer-list">
+<h3>Notify developer list<a class="headerlink" href="#notify-developer-list" title="Permalink to this headline">¶</a></h3>
+<p>Send an email to the <a class="reference external" href="https://lists.sourceforge.net/lists/listinfo/geoserver-devel">GeoServer developer list</a> a few days in advance, even though the release date has been agreed upon before hand. It is a good idea to remind developers to get any fixes 24 hours prior to release day, and to start a team discussion to identify any known blockers.</p>
+</div>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>The following are necessary to perform a GeoServer release:</p>
+<ol class="arabic simple">
+<li><p>Commit access to the GeoServer <a class="reference external" href="https://Github.com/geoserver/geoserver">Git repository</a></p></li>
+<li><p>Build access to <a class="reference external" href="http://build.geoserver.org/jenkins/">Jenkins</a></p></li>
+<li><p>Edit access to the GeoServer <a class="reference external" href="http://blog.geoserver.org">Blog</a></p></li>
+<li><p>Administration rights to GeoServer <a class="reference external" href="https://osgeo-org.atlassian.net/projects/GEOS">JIRA</a></p></li>
+<li><p>Release/file management privileges in <a class="reference external" href="https://sourceforge.net/projects/geoserver/">SourceForge</a></p></li>
+</ol>
+</div>
+<div class="section" id="versions-and-revisions">
+<h2>Versions and revisions<a class="headerlink" href="#versions-and-revisions" title="Permalink to this headline">¶</a></h2>
+<p>When performing a release we don’t require a “code freeze” in which no developers can commit to the repository. Instead we release from a revision that is known to pass all tests, including unit/integration tests as well as CITE tests.</p>
+<p>To obtain the GeoServer and Geotools revisions that have passed the <a class="reference external" href="https://build.geoserver.org/view/testing-cite/">CITE test</a>, navigate to the latest Jenkins run of the CITE test  and view it’s console output and select to view its full log. For example:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://build.geoserver.org/job/2.11-cite-wms-1.1/286/consoleText">https://build.geoserver.org/job/2.11-cite-wms-1.1/286/consoleText</a></p>
+</div></blockquote>
+<p>Perform a search on the log for ‘git revision’ (this is the GeoServer revision) and you should obtain the following:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>version = 2.11-SNAPSHOT
+git revision = 08f43fa77fdcd0698640d823065b6dfda7f87497
+git branch = origin/2.11.x
+build date = 18-Dec-2017 19:51
+geotools version = 17-SNAPSHOT
+geotools revision = a91a88002c7b2958140321fbba4d5ed0fa85b78d
+geowebcache version = 1.11-SNAPSHOT
+geowebcache revision = 0f1cbe9466e424621fae9fefdab4ac5a7e26bd8b/0f1cb
+</pre></div>
+</div>
+<p>Since most GeoServer releases require an official GeoTools release, the GeoTools revision is usually not needed.</p>
+</div>
+<div class="section" id="release-in-jira">
+<h2>Release in JIRA<a class="headerlink" href="#release-in-jira" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Navigate to the <a class="reference external" href="https://osgeo-org.atlassian.net/projects/GEOS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&amp;status=released-unreleased">GeoServer project page</a> in JIRA.</p></li>
+<li><p>Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6.</p></li>
+<li><p>Click in the Actions column for the version you are releasing and select Release. Enter the release date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2.</p></li>
+</ol>
+</div>
+<div class="section" id="if-you-are-cutting-the-first-rc-of-a-series-create-the-stable-branch">
+<h2>If you are cutting the first RC of a series, create the stable branch<a class="headerlink" href="#if-you-are-cutting-the-first-rc-of-a-series-create-the-stable-branch" title="Permalink to this headline">¶</a></h2>
+<p>When creating the first release candidate of a series, there are some extra steps to create the new stable branch and update the version on the main development branch.</p>
+<ul>
+<li><p>Checkout the main development branch and make sure it is up to date and that there are no changes in your local workspace:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+<span class="n">git</span> <span class="n">pull</span>
+<span class="n">git</span> <span class="n">status</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the new stable branch and push it to GitHub; for example, if the main development branch is <code class="docutils literal notranslate"><span class="pre">2.11-SNAPSHOT</span></code> and the remote for the official GeoServer is called <code class="docutils literal notranslate"><span class="pre">geoserver</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="mf">2.11</span><span class="o">.</span><span class="n">x</span>
+<span class="n">git</span> <span class="n">push</span> <span class="n">geoserver</span> <span class="mf">2.11</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+</li>
+<li><p>Enable <a class="reference external" href="https://github.com/geoserver/geoserver/settings/branches">GitHub branch protection</a> for the new stable branch: tick “Protect this branch” (only) and press “Save changes”.</p></li>
+<li><p>Checkout the main development branch:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">main</span>
+</pre></div>
+</div>
+</li>
+<li><p>Update the version in all pom.xml files; for example, if changing the main development branch from <code class="docutils literal notranslate"><span class="pre">2.17-SNAPSHOT</span></code> to <code class="docutils literal notranslate"><span class="pre">2.18-SNAPSHOT</span></code>.</p>
+<p>Edit <code class="file docutils literal notranslate"><span class="pre">build/rename.xml</span></code> to update GeoServer, GeoTools and GeoWebCache version numbers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nb">property</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;current&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;2.17&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="nb">property</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;release&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;2.18&quot;</span><span class="o">/&gt;</span>
+<span class="o">..</span>
+<span class="o">&lt;</span><span class="n">replacefilter</span> <span class="n">token</span><span class="o">=</span><span class="s2">&quot;23-SNAPSHOT&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;24-SNAPSHOT&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">replacefilter</span> <span class="n">token</span><span class="o">=</span><span class="s2">&quot;1.17-SNAPSHOT&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;1.18-SNAPSHOT&quot;</span><span class="o">/&gt;</span>
+</pre></div>
+</div>
+<p>And then run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ant</span> <span class="o">-</span><span class="n">f</span> <span class="n">build</span><span class="o">/</span><span class="n">rename</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>use of sed</p>
+<p>To update these files using sed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">find</span> <span class="o">.</span> <span class="o">-</span><span class="n">name</span> <span class="n">pom</span><span class="o">.</span><span class="n">xml</span> <span class="o">-</span><span class="n">exec</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/2.11-SNAPSHOT/2.12-SNAPSHOT/g&#39;</span> <span class="p">{}</span> \<span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">sed</span></code> behaves differently on Linux vs. Mac OS X. If running on OS X, the <code class="docutils literal notranslate"><span class="pre">-i</span></code> should be followed by <code class="docutils literal notranslate"><span class="pre">''</span> <span class="pre">-e</span></code> for each of these <code class="docutils literal notranslate"><span class="pre">sed</span></code> commands.</p>
+</div>
+<p>Update release artifact paths and labels, for example, if changing the main development branch from <code class="docutils literal notranslate"><span class="pre">2.11-SNAPSHOT</span></code> to <code class="docutils literal notranslate"><span class="pre">2.12-SNAPSHOT</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/2.11-SNAPSHOT/2.12-SNAPSHOT/g&#39;</span> <span class="n">src</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="nb">bin</span><span class="o">.</span><span class="n">xml</span>
+<span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/2.11-SNAPSHOT/2.12-SNAPSHOT/g&#39;</span> <span class="n">src</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="n">installer</span><span class="o">/</span><span class="n">win</span><span class="o">/</span><span class="n">GeoServerEXE</span><span class="o">.</span><span class="n">nsi</span>
+<span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/2.11-SNAPSHOT/2.12-SNAPSHOT/g&#39;</span> <span class="n">src</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="n">installer</span><span class="o">/</span><span class="n">win</span><span class="o">/</span><span class="n">wrapper</span><span class="o">.</span><span class="n">conf</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These can be written as a single <code class="docutils literal notranslate"><span class="pre">sed</span></code> command with multiple files.</p>
+</div>
+<p>Update GeoTools dependency; for example if changing from <code class="docutils literal notranslate"><span class="pre">17-SNAPSHOT</span></code> to <code class="docutils literal notranslate"><span class="pre">18-SNAPSHOT</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/17-SNAPSHOT/18-SNAPSHOT/g&#39;</span> <span class="n">src</span><span class="o">/</span><span class="n">pom</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<p>Update GeoWebCache dependency; for example if changing from <code class="docutils literal notranslate"><span class="pre">1.11-SNAPSHOT</span></code> to <code class="docutils literal notranslate"><span class="pre">1.12-SNAPSHOT</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/1.11-SNAPSHOT/1.12-SNAPSHOT/g&#39;</span> <span class="n">src</span><span class="o">/</span><span class="n">pom</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<p>Manually update hardcoded versions in configuration files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">doc/en/developer/source/conf.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doc/en/docguide/source/conf.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doc/en/user/source/conf.py</span></code></p></li>
+</ul>
+</div>
+</li>
+<li><p>Add the new version to the documentation index (<code class="docutils literal notranslate"><span class="pre">doc/en/index.html</span></code>) just after line 105, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">tr</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://geoserver.org/release/2.12.x/&quot;</span><span class="o">&gt;</span><span class="mf">2.12</span><span class="o">.</span><span class="n">x</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;2.12.x/en/user/&quot;</span><span class="o">&gt;</span><span class="n">User</span> <span class="n">Manual</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;2.12.x/en/developer/&quot;</span><span class="o">&gt;</span><span class="n">Developer</span> <span class="n">Manual</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">tr</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Commit the changes and push to the main development branch on GitHub:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">am</span> <span class="s2">&quot;Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes&quot;</span>
+<span class="n">git</span> <span class="n">push</span> <span class="n">geoserver</span> <span class="n">main</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the new RC version in <a class="reference external" href="https://osgeo-org.atlassian.net/projects/GEOS">JIRA</a> for issues on the main development branch; for example, if the main development branch is now <code class="docutils literal notranslate"><span class="pre">2.12-SNAPSHOT</span></code>, create a Jira version <code class="docutils literal notranslate"><span class="pre">2.12-RC1</span></code> for the first release of the <code class="docutils literal notranslate"><span class="pre">2.12.x</span></code> series</p></li>
+<li><p>Update the main, nightly and live-docs jobs on build.geoserver.org:</p>
+<ul class="simple">
+<li><p>disable the maintenance jobs, and remove them from the geoserver view</p></li>
+<li><p>create new jobs, copying from the existing stable jobs, and edit the branch.</p></li>
+<li><p>modify the last line of the live-docs builds, changing <code class="docutils literal notranslate"><span class="pre">stable</span></code> to <code class="docutils literal notranslate"><span class="pre">maintain</span></code> for the previous stable branch. The new job you created should publish to <code class="docutils literal notranslate"><span class="pre">stable</span></code>, and the main development branch will continue to publish to <code class="docutils literal notranslate"><span class="pre">latest</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Update the cite tests on build.geoserver.org:</p>
+<ul class="simple">
+<li><p>disable the maintenance jobs, and remove them from the geoserver view</p></li>
+<li><p>create new jobs, copying from the existing main development branch jobs, editing the branch in the build command.</p></li>
+</ul>
+</li>
+<li><p>Announce on the developer mailing list that the new stable branch has been created.</p></li>
+<li><p>Switch to the new branch and update the documentation links, replacing <code class="docutils literal notranslate"><span class="pre">docs.geoserver.org/latest</span></code> with <code class="docutils literal notranslate"><span class="pre">docs.geoserver.org/2.12.x</span></code> (for example):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doc/en/developer/source/conf.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doc/en/user/source/conf.py</span></code></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="build-the-release">
+<h2>Build the Release<a class="headerlink" href="#build-the-release" title="Permalink to this headline">¶</a></h2>
+<p>Run the <a class="reference external" href="https://build.geoserver.org/view/geoserver/job/geoserver-release/">geoserver-release</a> job in Jenkins. The job takes the following parameters:</p>
+<p><strong>BRANCH</strong></p>
+<blockquote>
+<div><p>The branch to release from, “2.2.x”, “2.1.x”, etc… This must be a stable branch. Releases are not performed from the main development branch.</p>
+</div></blockquote>
+<p><strong>REV</strong></p>
+<blockquote>
+<div><p>The Git revision number to release from. eg, “24ae10fe662c….”. If left blank the latest revision (ie HEAD) on the <code class="docutils literal notranslate"><span class="pre">BRANCH</span></code> being released is used.</p>
+</div></blockquote>
+<p><strong>VERSION</strong></p>
+<blockquote>
+<div><p>The version/name of the release to build, “2.1.4”, “2.2”, etc…</p>
+</div></blockquote>
+<p><strong>GT_VERSION</strong></p>
+<blockquote>
+<div><p>The GeoTools version to include in the release. This may be specified as a version number such as “8.0” or “2.7.5”. Alternatively the version may be specified as a Git branch/revision pair in the form <code class="docutils literal notranslate"><span class="pre">&lt;branch&gt;&#64;&lt;revision&gt;</span></code>. For example “<a class="reference external" href="mailto:main&#37;&#52;&#48;36ba65jg53">main<span>&#64;</span>36ba65jg53</a>…..”. Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.</p>
+</div></blockquote>
+<p><strong>GWC_VERSION</strong></p>
+<blockquote>
+<div><p>The GeoWebCache version to include in the release. This may be specified as a version number such as “1.3-RC3”. Alternatively the version may be specified as a Git revision of the form <code class="docutils literal notranslate"><span class="pre">&lt;branch&gt;&#64;&lt;revision&gt;</span></code> such as “<a class="reference external" href="mailto:master&#37;&#52;&#48;1b3243jb">master<span>&#64;</span>1b3243jb</a>…”. Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again, this version must be a version number corresponding to an official GeoTools release.</p>
+</div></blockquote>
+<p><strong>GIT_USER</strong></p>
+<blockquote>
+<div><p>The Git username to use for the release.</p>
+</div></blockquote>
+<p><strong>GIT_EMAIL</strong></p>
+<blockquote>
+<div><p>The Git email to use for the release.</p>
+</div></blockquote>
+<p>This job will checkout the specified branch/revision and build the GeoServer
+release artifacts against the GeoTools/GeoWebCache versions specified. When
+successfully complete all release artifacts will be listed under artifacts in the job summary.</p>
+<p>Additionally when the job completes it fires off a job for a windows worker. When this job
+completes it will list the <code class="docutils literal notranslate"><span class="pre">.exe</span></code> artifacts.</p>
+</div>
+<div class="section" id="test-the-artifacts">
+<h2>Test the Artifacts<a class="headerlink" href="#test-the-artifacts" title="Permalink to this headline">¶</a></h2>
+<p>Download and try out some of the artifacts from the above location and do a
+quick smoke test that there are no issues. Engage other developers to help
+test on the developer list.</p>
+</div>
+<div class="section" id="publish-the-release">
+<h2>Publish the Release<a class="headerlink" href="#publish-the-release" title="Permalink to this headline">¶</a></h2>
+<p>Run the <a class="reference external" href="https://build.geoserver.org/view/geoserver/job/geoserver-release-publish/">geoserver-release-publish</a> in Jenkins. The job takes the following parameters:</p>
+<p><strong>VERSION</strong></p>
+<blockquote>
+<div><p>The version being released. The same value s specified for <code class="docutils literal notranslate"><span class="pre">VERSION</span></code> when running the <code class="docutils literal notranslate"><span class="pre">geoserver-release</span></code> job.</p>
+</div></blockquote>
+<p><strong>BRANCH</strong></p>
+<blockquote>
+<div><p>The branch being released from.  The same value specified for <code class="docutils literal notranslate"><span class="pre">BRANCH</span></code> when running the <code class="docutils literal notranslate"><span class="pre">geoserver-release</span></code> job.</p>
+</div></blockquote>
+<p>This job will rsync all the artifacts located at:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">build</span><span class="o">.</span><span class="n">geoserver</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">release</span><span class="o">/&lt;</span><span class="n">RELEASE</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>to the SourceForge FRS server. Navigate to <a class="reference external" href="http://sourceforge.net/projects/geoserver/">Sourceforge</a> and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags on the <code class="docutils literal notranslate"><span class="pre">.exe</span></code>, <code class="docutils literal notranslate"><span class="pre">.dmg</span></code> and <code class="docutils literal notranslate"><span class="pre">.bin</span></code> artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.</p>
+</div>
+<div class="section" id="release-notes">
+<h2>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h2>
+<p>This job will tag the release located in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">geoserver</span><span class="o">/</span><span class="n">tags</span><span class="o">/&lt;</span><span class="n">RELEASE</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Publish JIRA markdown release notes to github tag:</p>
+<ol class="arabic">
+<li><p>Select the correct release from <a class="reference external" href="https://osgeo-org.atlassian.net/projects/GEOS?orderField=RANK&amp;selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page&amp;status=released">JIRA Releases</a> page.</p></li>
+<li><p>From the release page, locate the <span class="guilabel">Release notes</span> button at the top of the page to open the release notes edit</p></li>
+<li><p>Generate release notes as markdown:</p>
+<ul class="simple">
+<li><p>Select format <cite>Markdown</cite></p></li>
+<li><p>Layout: Issue key with link</p></li>
+<li><p>Issue types: <cite>Bug</cite> and <cite>Improvement</cite></p></li>
+</ul>
+<p>Change the heading to <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">Release</kbd> <kbd class="kbd docutils literal notranslate">notes</kbd></kbd>, and apply the change with <span class="guilabel">Done</span>.</p>
+<p>Use <span class="guilabel">Copy to clipboard</span> to obtain the markdown, similar to the following:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># Release notes
+
+### Bug
+
+[GEOS-10264](https://osgeo-org.atlassian.net/browse/GEOS-10264) Address startup warning File option not set for appender \[geoserverlogfile\]
+
+[GEOS-10263](https://osgeo-org.atlassian.net/browse/GEOS-10263) WPSRequestBuilderTest assumes that JTS:area is the first process in the list
+
+[GEOS-10255](https://osgeo-org.atlassian.net/browse/GEOS-10255) i18n user interface inconsistent layout with br tags used for layout
+
+[GEOS-10245](https://osgeo-org.atlassian.net/browse/GEOS-10245) jdbcconfig: prefixedName filter field not updated
+
+[GEOS-9950](https://osgeo-org.atlassian.net/browse/GEOS-9950) MapPreviewPage logs unable to find property: format.wfs.text/csv continuously
+
+### Improvement
+
+[GEOS-10246](https://osgeo-org.atlassian.net/browse/GEOS-10246) jdbcconfig: performance slow-down from unnecessary transactions
+
+### New Feature
+
+[GEOS-10223](https://osgeo-org.atlassian.net/browse/GEOS-10223) Support MBTiles in OGC Tiles API
+
+### Task
+
+[GEOS-10247](https://osgeo-org.atlassian.net/browse/GEOS-10247) Reuse of service documentation references for workspace, metadata and default language
+</pre></div>
+</div>
+</li>
+<li><p>Navigate to github tags <a class="reference external" href="https://github.com/geoserver/geoserver/tags">https://github.com/geoserver/geoserver/tags</a></p>
+<p>Locate the new tag from the list, and use <span class="menuselection">… ‣ Create release</span></p>
+<ul class="simple">
+<li><p>Release title: <cite>GeoServer 2.20.0</cite></p></li>
+<li><p>Write: Paste the markdown from Jira release notes editor</p></li>
+</ul>
+<p>Use <span class="guilabel">Publish release</span> button to publish the release notes.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="create-the-download-page">
+<h2>Create the download page<a class="headerlink" href="#create-the-download-page" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="http://geoserver.org/">GeoServer website</a> is managed as a <a class="reference external" href="https://github.com/geoserver/geoserver.github.io">GitHub Pages repository</a>. Follow the <a class="reference external" href="https://github.com/geoserver/geoserver.github.io#releases">instructions</a> in the repository to create a download page for the release. This requires the url of the blog post announcing the release, so wait until after you have posted the announcement to do this.</p>
+</div>
+<div class="section" id="post-the-documentation">
+<h2>Post the Documentation<a class="headerlink" href="#post-the-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For now, this requires Boundless credentials; if you do not have them, please ask on the <a class="reference external" href="https://lists.sourceforge.net/lists/listinfo/geoserver-devel">GeoServer developer list</a> for someone to perform this step for you.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This content will likely move to GitHub in the near future.</p>
+</div>
+<ol class="arabic">
+<li><p>Log in to the server.</p></li>
+<li><p>Create the following new directories:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">docs</span><span class="o">.</span><span class="n">geoserver</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">htdocs</span><span class="o">/</span><span class="n">a</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">c</span>
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">docs</span><span class="o">.</span><span class="n">geoserver</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">htdocs</span><span class="o">/</span><span class="n">a</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">c</span><span class="o">/</span><span class="n">developer</span>
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">docs</span><span class="o">.</span><span class="n">geoserver</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">htdocs</span><span class="o">/</span><span class="n">a</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">c</span><span class="o">/</span><span class="n">user</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">a.b.c</span></code> is the full release number.</p>
+</li>
+<li><p>Download the HTML documentation archive from the GeoServer download page, and extract the contents of both user manuals to the appropriate directory:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /var/www/docs.geoserver.org/htdocs/a.b.c/
+sudo wget http://downloads.sourceforge.net/geoserver/geoserver-a.b.c-htmldoc.zip
+sudo unzip geoserver-a.b.c-htmldoc.zip
+sudo rm geoserver-a.b.c-htmldoc.zip
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Steps 2 and 3 have now been automated by a bash script on the server, and can be completed by executing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo /var/www/docs.geoserver.org/htdocs/postdocs.sh a.b.c
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Open the file <code class="file docutils literal notranslate"><span class="pre">/var/www/docs.geoserver.org/htdocs/index.html</span></code> in a text editor.</p></li>
+<li><p>Add a new entry in the table for the most recent release:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">tr</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://geoserver.org/release/a.b.c/&quot;</span><span class="o">&gt;</span><span class="n">a</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">c</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;a.b.c/user/&quot;</span><span class="o">&gt;</span><span class="n">User</span> <span class="n">Manual</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;a.b.c/developer/&quot;</span><span class="o">&gt;</span><span class="n">Developer</span> <span class="n">Manual</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">tr</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Save and close this file.</p></li>
+</ol>
+</div>
+<div class="section" id="announce-the-release">
+<h2>Announce the Release<a class="headerlink" href="#announce-the-release" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="geoserver-blog">
+<h3>GeoServer Blog<a class="headerlink" href="#geoserver-blog" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This announcement should be made for all releases, including release candidates.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This step requires an account on <a class="reference external" href="http://blog.geoserver.org/">http://blog.geoserver.org/</a></p>
+</div>
+<ol class="arabic">
+<li><p>Log into the <a class="reference external" href="http://blog.geoserver.org/wp-login.php">GeoServer Blog</a>.</p></li>
+<li><p>Create a new post. The post should be more “colorful” than the average
+announcement. It is meant to market and show off any and all new
+features.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>The GeoServer team is pleased to announce the release of
+<span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://geoserver.org/release/2.5.1/&quot;</span><span class="p">&gt;</span>GeoServer 2.5.1<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>:
+<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+   <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Downloads (<span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.1/geoserver-2.5.1-bin.zip/download&quot;</span><span class="p">&gt;</span>zip<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>,
+       <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.1/geoserver-2.5.1-war.zip/download&quot;</span><span class="p">&gt;</span>war<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>,
+       <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.1/geoserver-2.5.1.dmg/download&quot;</span><span class="p">&gt;</span>dmg<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> and
+       <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.1/geoserver-2.5.1.exe/download&quot;</span><span class="p">&gt;</span>exe<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>) are listed on the
+       <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://geoserver.org/release/2.5.1/&quot;</span><span class="p">&gt;</span>GeoServer 2.5.1<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> page
+       along with documentation and extensions.
+      <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+         <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>This release includes and is made in conjunction with
+           <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://geotoolsnews.blogspot.com/2014/05/geotools-111-released.html&quot;</span><span class="p">&gt;</span>GeoTools 11.1<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>.<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+   <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+   <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Thanks to <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://www.warwickshire.gov.uk/&quot;</span><span class="p">&gt;</span>Warwickshire County Council<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+       for some great GeoWebCache integration work:
+      <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+         <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>GeoWebCache tile layer HTTP cache headers are now taken from GeoServer layer configuration<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+         <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>GeoWebCache settings are now correctly saved on Windows<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+   <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+   <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>A wide range of improvements provided by the community
+      <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+         <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Scale hints now exposed in WMS GetCapabilities document<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+         <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Fixed Symbology Encoding 1.1 encoding of relative external graphics<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+         <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Addressed axis order issues cascading WMS 1.3.0 services through GeoServer<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+   <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+More details can be found in the
+<span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&amp;version=10164&quot;</span><span class="p">&gt;</span>GeoServer 2.5.1 Release Notes<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>.
+</pre></div>
+</div>
+</li>
+<li><p>Examples of content:</p>
+<ul>
+<li><p>Link to the <strong>Download Page</strong> in the wiki created above, and possibly to the
+installers for each platform.</p>
+<p>Example: <a class="reference external" href="http://blog.geoserver.org/2013/07/28/geoserver-2-3-4-released/">GeoServer 2.3.4 Released</a></p>
+</li>
+<li><p>Indicate which version of GeoTools is used, and thank your employer.</p></li>
+<li><p>Link to completed pull requests and Jira tickets, looking for new features or
+important bug fixes to highlight. Make a point to thank new contributors
+and sponsors.</p>
+<p>Example: <a class="reference external" href="http://blog.geoserver.org/2013/04/23/geoserver-2-3-1-released/">GeoServer 2.3.1 released</a></p>
+</li>
+<li><p>For the run up to a major release you can build up a list of the new features and
+change requests.</p>
+<p>Example: <a class="reference external" href="http://blog.geoserver.org/2013/07/22/geoserver-2-4-beta-released/">GeoServer 2.4 Beta Released</a></p>
+</li>
+<li><p>For the major release you can spend a bit more time on the new features, linking
+to blog posts if they are available.</p>
+<p>Example: <a class="reference external" href="http://blog.geoserver.org/2013/01/29/geoserver-2-3-beta-released/">GeoServer 2.3-beta released</a></p>
+</li>
+</ul>
+</li>
+<li><p>Do not publish the post right away. Instead ask the devel list for review.</p></li>
+</ol>
+</div>
+<div class="section" id="mailing-lists">
+<h3>Mailing lists<a class="headerlink" href="#mailing-lists" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This announcement should be made for all releases, including release candidates.</p>
+</div>
+<p>Send an email to both the developers list and users list announcing the
+release. The message should be relatively short. You can base it on the blog post.
+The following is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Subject: GeoServer 2.5.1 Released
+
+The GeoServer team is happy to announce the release of GeoServer 2.5.1.
+
+The release is available for download from:
+
+http://geoserver.org/release/2.5.1/
+
+GeoServer 2.5.1 is the next the stable release of GeoServer and is recommended for production deployment.
+
+This release comes with some exciting new features. The new and
+noteworthy include:
+
+* By popular request Top/Bottom labels when configuring layer group order
+* You can now identify GeoServer “nodes” in a cluster by configuring a label and color in the UI. Documentation and example in the user guide.
+* Have you ever run GeoServer and not quite gotten your file permissions correct? GeoServer now has better logging when it cannot your data directory and is required to “fall back” to the embedded data directory during start up.
+* We have a new GRIB community module (community modules are not in the release until they pass a    QA check, but great to see new development taking shape)
+* Documentation on the jp2kak extension now in the user guide
+* Additional documentation for the image mosaic in the user guide with tutorials covering the plugin, raster time-series, time and elevation and footprint management.
+* WCS 2.0 support continues to improve with DescribeCoverage now supporting null values
+* Central Authentication Service (CAS) authentication has received a lot of QA this release and is now available in the GeoServer 2.5.x series.
+* This release is made in conjunction with GeoTools 11.1
+
+Along with many other improvements and bug fixes:
+
+* https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&amp;version=10164
+
+Thanks to Andrea and Jody (GeoSolutions and Boundless) for publishing this release. A very special thanks to all those who contributed bug fixes, new
+features, bug reports, and testing to this release.
+
+--
+The GeoServer Team
+</pre></div>
+</div>
+</div>
+<div class="section" id="osgeo-anouncement">
+<h3>OSGeo Anouncement<a class="headerlink" href="#osgeo-anouncement" title="Permalink to this headline">¶</a></h3>
+<p>For major releases OSGeo asks that a news item be submitted:</p>
+<ul class="simple">
+<li><p>Login to the osgeo.org website, create a news item using the release announcement text above.</p></li>
+</ul>
+<p>And that an announcement is sent to discuss:</p>
+<ul class="simple">
+<li><p>Mail major release announcements to <a class="reference external" href="mailto:discuss&#37;&#52;&#48;osgeo&#46;org">discuss<span>&#64;</span>osgeo<span>&#46;</span>org</a> (you will need to <a class="reference external" href="https://lists.osgeo.org/listinfo/discuss">subscribe first</a> ).</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../release-schedule/index.html" title="previous chapter">Release Schedule</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../release-testing-checklist/index.html" title="next chapter">Release Testing Checklist</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Release Guide</a><ul>
+<li><a class="reference internal" href="#before-you-start">Before you start</a><ul>
+<li><a class="reference internal" href="#snapshot-release">SNAPSHOT release</a></li>
+<li><a class="reference internal" href="#notify-developer-list">Notify developer list</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#versions-and-revisions">Versions and revisions</a></li>
+<li><a class="reference internal" href="#release-in-jira">Release in JIRA</a></li>
+<li><a class="reference internal" href="#if-you-are-cutting-the-first-rc-of-a-series-create-the-stable-branch">If you are cutting the first RC of a series, create the stable branch</a></li>
+<li><a class="reference internal" href="#build-the-release">Build the Release</a></li>
+<li><a class="reference internal" href="#test-the-artifacts">Test the Artifacts</a></li>
+<li><a class="reference internal" href="#publish-the-release">Publish the Release</a></li>
+<li><a class="reference internal" href="#release-notes">Release notes</a></li>
+<li><a class="reference internal" href="#create-the-download-page">Create the download page</a></li>
+<li><a class="reference internal" href="#post-the-documentation">Post the Documentation</a></li>
+<li><a class="reference internal" href="#announce-the-release">Announce the Release</a><ul>
+<li><a class="reference internal" href="#geoserver-blog">GeoServer Blog</a></li>
+<li><a class="reference internal" href="#mailing-lists">Mailing lists</a></li>
+<li><a class="reference internal" href="#osgeo-anouncement">OSGeo Anouncement</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../release-schedule/index.html" title="previous chapter">Release Schedule</a></li>
+            <li>Next: <a href="../release-testing-checklist/index.html" title="next chapter">Release Testing Checklist</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/developer/source/release-guide/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

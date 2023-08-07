@@ -1,0 +1,854 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elasticsearch data store &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Features-Templating Extension" href="../features-templating/index.html" />
+    <link rel="prev" title="DDS/BIL(World Wind Data Formats) Extension" href="../dds/index.html" /> 
+  </head><body class="community/elasticsearch/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Community modules</a> &raquo;</li>
+    <li>Elasticsearch data store</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../features-templating/index.html" title="Features-Templating Extension" accesskey="N">Next</a></li>
+  <li>
+    <a href="../dds/index.html" title="DDS/BIL(World Wind Data Formats) Extension" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="elasticsearch-data-store">
+<h1><a class="toc-backref" href="#id3">Elasticsearch data store</a><a class="headerlink" href="#elasticsearch-data-store" title="Permalink to this headline">¶</a></h1>
+<p>Elasticsearch is a popular distributed search and analytics engine that enables complex search features in near real-time. Default field type mappings support string, numeric, boolean and date types and allow complex, hierarchical documents. Custom field type mappings can be defined for geospatial document fields. The <code class="docutils literal notranslate"><span class="pre">geo_point</span></code> type supports point geometries that can be specified through a coordinate string, geohash or coordinate array. The <code class="docutils literal notranslate"><span class="pre">geo_shape</span></code> type supports Point, LineString,  Polygon, MultiPoint, MultiLineString, MultiPolygon and GeometryCollection GeoJSON types as well as envelope and circle types. Custom options allow configuration of the type and precision of the spatial index.</p>
+<p>This data store allows features from an Elasticsearch index to be published through GeoServer. Both <code class="docutils literal notranslate"><span class="pre">geo_point</span></code> and <code class="docutils literal notranslate"><span class="pre">geo_shape</span></code> type mappings are supported. OGC filters are converted to Elasticsearch queries and can be combined with native Elasticsearch queries in WMS and WFS requests.</p>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#elasticsearch-data-store" id="id3">Elasticsearch data store</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configuration" id="id4">Configuration</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configuring-data-store" id="id5">Configuring data store</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configuring-authentication" id="id6">Configuring authentication</a></p></li>
+<li><p><a class="reference internal" href="#configuring-https-ssl" id="id7">Configuring HTTPS/SSL</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#configuring-layer" id="id8">Configuring layer</a></p></li>
+<li><p><a class="reference internal" href="#configuring-logging" id="id9">Configuring logging</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#filtering" id="id10">Filtering</a></p>
+<ul>
+<li><p><a class="reference internal" href="#native-queries" id="id11">Native queries</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="id12">Examples</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#aggregations" id="id13">Aggregations</a></p>
+<ul>
+<li><p><a class="reference internal" href="#geohash-grid-aggregations" id="id14">Geohash grid aggregations</a></p></li>
+<li><p><a class="reference internal" href="#grid-strategy" id="id15">Grid Strategy</a></p>
+<ul>
+<li><p><a class="reference internal" href="#basic" id="id16">Basic</a></p></li>
+<li><p><a class="reference internal" href="#metric" id="id17">Metric</a></p></li>
+<li><p><a class="reference internal" href="#nested" id="id18">Nested</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#implementing-a-custom-grid-strategy" id="id19">Implementing a custom Grid Strategy</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#faq" id="id20">FAQ</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="configuration">
+<h2><a class="toc-backref" href="#id4">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="configuring-data-store">
+<h3><a class="toc-backref" href="#id5">Configuring data store</a><a class="headerlink" href="#configuring-data-store" title="Permalink to this headline">¶</a></h3>
+<p>Once the Elasticsearch GeoServer extension is installed, <code class="docutils literal notranslate"><span class="pre">Elasticsearch</span> <span class="pre">index</span></code> will be an available vector data source format when creating a new data store.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../_images/elasticsearch_store.png"><img alt="new_store" class="align-middle" src="../../_images/elasticsearch_store.png" style="width: 624.0px; height: 211.0px;" /></a></p></td>
+</tr>
+</tbody>
+</table>
+<p id="config-elasticsearch">The Elasticsearch data store configuration panel includes connection parameters and search settings.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../_images/elasticsearch_configuration.png"><img alt="store_config" src="../../_images/elasticsearch_configuration.png" style="width: 358.6px; height: 794.2px;" /></a></p></td>
+</tr>
+</tbody>
+</table>
+<p>Available data store configuration parameters are summarized in the following table:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Parameter</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p>elasticsearch_host</p></td>
+<td><p>Host (IP) for connecting to Elasticsearch. HTTP scheme and port can optionally be included to override the defaults. Multiple hosts can be provided. Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">localhost</span>
+<span class="n">localhost</span><span class="p">:</span><span class="mi">9200</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">9200</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">9200</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">somehost</span><span class="o">.</span><span class="n">somedomain</span><span class="p">:</span><span class="mi">9200</span><span class="p">,</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">anotherhost</span><span class="o">.</span><span class="n">somedomain</span><span class="p">:</span><span class="mi">9200</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>elasticsearch_port</p></td>
+<td><p>Default HTTP port for connecting to Elasticsearch. Ignored if the hostname includes the port.</p></td>
+</tr>
+<tr class="row-even"><td><p>user</p></td>
+<td><p>Elasticsearch user. Must have superuser privilege on index.</p></td>
+</tr>
+<tr class="row-odd"><td><p>passwd</p></td>
+<td><p>Elasticsearch user password</p></td>
+</tr>
+<tr class="row-even"><td><p>runas_geoserver_user</p></td>
+<td><p>Whether to submit requests on behalf of the authenticated GeoServer user</p></td>
+</tr>
+<tr class="row-odd"><td><p>proxy_user</p></td>
+<td><p>Elasticsearch user for document queries. If not provided then admin user credentials are used for all requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>proxy_passwd</p></td>
+<td><p>Elasticsearch proxy user password</p></td>
+</tr>
+<tr class="row-odd"><td><p>index_name</p></td>
+<td><p>Index name or alias (wildcards supported)</p></td>
+</tr>
+<tr class="row-even"><td><p>reject_unauthorized</p></td>
+<td><p>Whether to validate the server certificate during the SSL handshake for https connections</p></td>
+</tr>
+<tr class="row-odd"><td><p>default_max_features</p></td>
+<td><p>Default used when maxFeatures is unlimited</p></td>
+</tr>
+<tr class="row-even"><td><p>source_filtering_enabled</p></td>
+<td><p>Whether to enable filtering of the _source field</p></td>
+</tr>
+<tr class="row-odd"><td><p>scroll_enabled</p></td>
+<td><p>Enable the Elasticsearch scan and scroll API</p></td>
+</tr>
+<tr class="row-even"><td><p>scroll_size</p></td>
+<td><p>Number of documents per shard when using the scroll API</p></td>
+</tr>
+<tr class="row-odd"><td><p>scroll_time</p></td>
+<td><p>Search context timeout when using the scroll API</p></td>
+</tr>
+<tr class="row-even"><td><p>array_encoding</p></td>
+<td><p>Array encoding strategy. Allowed values are <code class="docutils literal notranslate"><span class="pre">JSON</span></code> (keep arrays) and <code class="docutils literal notranslate"><span class="pre">CSV</span></code> (keep first array element).</p></td>
+</tr>
+<tr class="row-odd"><td><p>grid_size</p></td>
+<td><p>Hint for Geohash grid size (numRows*numCols)</p></td>
+</tr>
+<tr class="row-even"><td><p>grid_threshold</p></td>
+<td><p>Geohash grid aggregation precision will be the minimum necessary so that actual_grid_size/grid_size &gt; grid_threshold</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="configuring-authentication">
+<h4><a class="toc-backref" href="#id6">Configuring authentication</a><a class="headerlink" href="#configuring-authentication" title="Permalink to this headline">¶</a></h4>
+<p>Basic authentication is supported through the <code class="docutils literal notranslate"><span class="pre">user</span></code> and <code class="docutils literal notranslate"><span class="pre">passwd</span></code> credential parameters. The provided user must have
+superuser privilege on the index to enable the mapping and alias requests performed during store initialization.
+Note that aliases must already be present on the elasticsearch index. If you enter an alias which is not present, the
+plugin will not generate it for you. Optional <code class="docutils literal notranslate"><span class="pre">proxy_user</span></code> and <code class="docutils literal notranslate"><span class="pre">proxy_passwd</span></code> parameters can be used to specify an
+alternate user for document search (OGC service) requests. The proxy user can have restricted privileges on the index
+through document level security. If not provided the default user is used for all requests.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">runas_geoserver_user</span></code> flag can be used to enable Elasticsearch requests to be submitted on behalf of the
+authenticated GeoServer user. When the run-as mechanism is configured the plugin will add the <code class="docutils literal notranslate"><span class="pre">es-security-runas-user</span></code>
+header with the authenticated GeoServer username. See <a class="reference external" href="https://www.elastic.co/guide/en/x-pack/current/run-as-privilege.html">X-Pack run-as documentation</a> for more information. Note the run-as mechanism
+is applied only to document search requests.</p>
+<p>For added security it is recommended to define <code class="docutils literal notranslate"><span class="pre">proxy_user</span></code> and <code class="docutils literal notranslate"><span class="pre">proxy_passwd</span></code> when using the run-as mechanism. The
+proxy user will be used when submitting requests on behalf of the GeoServer user and can have restricted privileges
+enabling access only to documents that all users can have access to. The plugin can optionally be deployed to
+require user credentials and proxy credentials and to force the use of <code class="docutils literal notranslate"><span class="pre">runas_geoserver_user</span></code> by setting the
+environment variable <code class="docutils literal notranslate"><span class="pre">org.geoserver.elasticsearch.xpack.force-runas</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export JAVA_OPTS=&quot;-Dorg.geoserver.elasticsearch.xpack.force-runas $JAVA_OPTS&quot;
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuring-https-ssl">
+<h4><a class="toc-backref" href="#id7">Configuring HTTPS/SSL</a><a class="headerlink" href="#configuring-https-ssl" title="Permalink to this headline">¶</a></h4>
+<p>System properties are supported for SSL/TLS configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">javax</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">ssl</span><span class="o">.</span><span class="n">trustStore</span>
+<span class="n">javax</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">ssl</span><span class="o">.</span><span class="n">trustStorePassword</span>
+<span class="n">javax</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">ssl</span><span class="o">.</span><span class="n">keyStore</span>
+<span class="n">javax</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">ssl</span><span class="o">.</span><span class="n">keyStorePassword</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://hc.apache.org/httpcomponents-userClient-ga/httpclient/apidocs/org/apache/http/impl/userClient/HttpClientBuilder.html">HttpClientBuilder</a>  documentation for available properties.</p>
+<p>For example use <code class="docutils literal notranslate"><span class="pre">javax.net.ssl.trustStore[Password]</span></code> to validate server certificate:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export JAVA_OPTS=&quot;-Djavax.net.ssl.trustStore=/path/to/truststore.jks -Djavax.net.ssl.trustStorePassword=changeme $JAVA_OPTS &quot;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="configuring-layer">
+<h3><a class="toc-backref" href="#id8">Configuring layer</a><a class="headerlink" href="#configuring-layer" title="Permalink to this headline">¶</a></h3>
+<p>The initial layer configuration panel for an Elasticsearch layer will include an additional pop-up showing a table of available fields.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../_images/elasticsearch_fieldlist.png"><img alt="field_list" class="align-middle" src="../../_images/elasticsearch_fieldlist.png" style="width: 1024.0px; height: 553.0px;" /></a></p></td>
+</tr>
+</tbody>
+</table>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Item</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">All</span></code></p></td>
+<td><p>Use all fields in the layer feature type</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Use</span></code></p></td>
+<td><p>Used to select the fields that will make up the layer feature type</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Name</span></code></p></td>
+<td><p>Name of the field</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Type</span></code></p></td>
+<td><p>Type of the field, as derived from the Elasticsearch schema. For geometry types, you have the option to provide a more specific data type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Order</span></code></p></td>
+<td><p>Integer order values are used to sort fields, where fields with smaller order are returned first</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Custom</span> <span class="pre">Name</span></code></p></td>
+<td><p>Provides the option to give the field a custom name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Default</span> <span class="pre">Geometry</span></code></p></td>
+<td><p>Indicates if the geometry field is the default one. Useful if the documents contain more than one geometry field, as SLDs and spatial filters will hit the default geometry field unless otherwise specified</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Stored</span></code></p></td>
+<td><p>Indicates whether the field is stored in the index</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Analyzed</span></code></p></td>
+<td><p>Indicates whether the field is analyzed</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SRID</span></code></p></td>
+<td><p>Native spatial reference ID of the geometries. Currently only EPSG:4326 is supported.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Valid</span> <span class="pre">Date</span> <span class="pre">Formats</span></code></p></td>
+<td><p>Possible valid date formats used for parsing field values and printing filter elements</p></td>
+</tr>
+</tbody>
+</table>
+<p>To return to the field table after it has been closed, click the “Configure Elasticsearch fields” button below the “Feature Type Details” panel on the layer configuration page.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../_images/elasticsearch_fieldlist_edit.png"><img alt="field_list_edit" class="align-middle" src="../../_images/elasticsearch_fieldlist_edit.png" style="width: 695.0px; height: 399.0px;" /></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="configuring-logging">
+<h3><a class="toc-backref" href="#id9">Configuring logging</a><a class="headerlink" href="#configuring-logging" title="Permalink to this headline">¶</a></h3>
+<p>Logging is configurable through Log4j. The data store includes logging such as the query object being sent to Elasticsearch, which is logged at a lower level than may be enabled by default. To enable these logs, add the following lines to the GeoServer logging configuration file (see GeoServer Global Settings):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log4j</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">org</span><span class="o">.</span><span class="n">geoserver</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">elasticsearch</span><span class="o">=</span><span class="n">DEBUG</span>
+<span class="n">log4j</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">org</span><span class="o">.</span><span class="n">geoserver</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">elasticsearch</span><span class="o">=</span><span class="n">DEBUG</span>
+</pre></div>
+</div>
+<p>The logging configuration file will be in the <code class="docutils literal notranslate"><span class="pre">logs</span></code> subdirectory in the GeoServer data directory. Check GeoServer global settings for which logging profile is being used (e.g. <code class="docutils literal notranslate"><span class="pre">DEFAULT_LOGGING</span></code>, etc.).</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../_images/elasticsearch_logging.png"><img alt="logging" class="align-middle" src="../../_images/elasticsearch_logging.png" style="width: 474.0px; height: 679.0px;" /></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="filtering">
+<h2><a class="toc-backref" href="#id10">Filtering</a><a class="headerlink" href="#filtering" title="Permalink to this headline">¶</a></h2>
+<p>Filtering capabilities include OpenGIS simple comparisons, temporal comparisons, as well as other common filter comparisons. Elasticsearch natively supports numerous spatial filter operators, depending on the type:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">geo_shape</span></code> types natively support BBOX/Intersects, Within and Disjoint binary spatial operators</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">geo_point</span></code> types natively support BBOX and Within binary spatial operators, as well as the DWithin and Beyond distance buffer operators</p></li>
+</ul>
+<p>Requests involving spatial filter operators not natively supported by Elasticsearch will include an additional filtering operation on the results returned from the query, which may impact performance.</p>
+<div class="section" id="native-queries">
+<h3><a class="toc-backref" href="#id11">Native queries</a><a class="headerlink" href="#native-queries" title="Permalink to this headline">¶</a></h3>
+<p>Native Elasticsearch queries can be applied in WMS feature requests through a custom rendering transformation, <code class="docutils literal notranslate"><span class="pre">vec:GeoHashGrid</span></code>, which translates aggregation response data into a raster for display.  If supplied, the query is combined with the query derived from the request bbox, CQL or OGC filter using the AND logical binary operator.</p>
+</div>
+<div class="section" id="examples">
+<h3><a class="toc-backref" href="#id12">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>BBOX and CQL filter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/test/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap
+     &amp;layers=test:active&amp;styles=&amp;bbox=-1,-1,10,10&amp;width=279&amp;height=512
+     &amp;srs=EPSG:4326&amp;format=application/openlayers&amp;maxFeatures=1000
+     &amp;cql_filter=standard_ss=&#39;IEEE 802.11b&#39;
+</pre></div>
+</div>
+<p>BBOX and native query:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   http://localhost:8080/geoserver/test/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap
+        &amp;layers=test:active&amp;styles=NativeQueryStyle&amp;bbox=-1,-1,10,10&amp;width=279&amp;height=512
+        &amp;srs=EPSG:4326&amp;format=application/openlayers&amp;maxFeatures=1000
+
+
+&lt;StyledLayerDescriptor version=&quot;1.0.0&quot;
+      xsi:schemaLocation=&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;
+      xmlns=&quot;http://www.opengis.net/sld&quot;
+      xmlns:ogc=&quot;http://www.opengis.net/ogc&quot;
+      xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
+      xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+    &lt;NamedLayer&gt;
+      &lt;Name&gt;test&lt;/Name&gt;
+      &lt;UserStyle&gt;
+        &lt;Title&gt;Test&lt;/Title&gt;
+        &lt;Abstract&gt;Test Native Query&lt;/Abstract&gt;
+        &lt;FeatureTypeStyle&gt;
+          &lt;Transformation&gt;
+            &lt;ogc:Function name=&quot;vec:GeoHashGrid&quot;&gt;
+              &lt;ogc:Function name=&quot;parameter&quot;&gt;
+                &lt;ogc:Literal&gt;data&lt;/ogc:Literal&gt;
+              &lt;/ogc:Function&gt;
+              &lt;ogc:Function name=&quot;parameter&quot;&gt;
+                &lt;ogc:Literal&gt;queryDefinition&lt;/ogc:Literal&gt;
+                &lt;ogc:Literal&gt;{&quot;term&quot;:{&quot;standard_ss&quot;:&quot;IEEE 802.11b&quot;}}
+              &lt;/ogc:Function&gt;
+              &lt;ogc:Function name=&quot;parameter&quot;&gt;
+                &lt;ogc:Literal&gt;outputBBOX&lt;/ogc:Literal&gt;
+                &lt;ogc:Function name=&quot;env&quot;&gt;
+                  &lt;ogc:Literal&gt;wms_bbox&lt;/ogc:Literal&gt;
+                &lt;/ogc:Function&gt;
+              &lt;/ogc:Function&gt;
+              &lt;ogc:Function name=&quot;parameter&quot;&gt;
+                &lt;ogc:Literal&gt;outputWidth&lt;/ogc:Literal&gt;
+                &lt;ogc:Function name=&quot;env&quot;&gt;
+                  &lt;ogc:Literal&gt;wms_width&lt;/ogc:Literal&gt;
+                &lt;/ogc:Function&gt;
+              &lt;/ogc:Function&gt;
+              &lt;ogc:Function name=&quot;parameter&quot;&gt;
+                &lt;ogc:Literal&gt;outputHeight&lt;/ogc:Literal&gt;
+                &lt;ogc:Function name=&quot;env&quot;&gt;
+                  &lt;ogc:Literal&gt;wms_height&lt;/ogc:Literal&gt;
+                &lt;/ogc:Function&gt;
+              &lt;/ogc:Function&gt;
+            &lt;/ogc:Function&gt;
+          &lt;/Transformation&gt;
+          &lt;Rule&gt;
+           &lt;RasterSymbolizer&gt;
+             &lt;Geometry&gt;
+               &lt;!-- Actual geometry property name in feature source --&gt;
+               &lt;ogc:PropertyName&gt;geo&lt;/ogc:PropertyName&gt;&lt;/Geometry&gt;
+             &lt;Opacity&gt;0.6&lt;/Opacity&gt;
+             &lt;ColorMap type=&quot;ramp&quot; &gt;
+               &lt;ColorMapEntry color=&quot;#FFFFFF&quot; quantity=&quot;0&quot; label=&quot;nodata&quot; opacity=&quot;0&quot;/&gt;
+               &lt;ColorMapEntry color=&quot;#2851CC&quot; quantity=&quot;1&quot; label=&quot;values&quot;/&gt;
+               &lt;ColorMapEntry color=&quot;#211F1F&quot; quantity=&quot;2&quot; label=&quot;label&quot;/&gt;
+               &lt;ColorMapEntry color=&quot;#EE0F0F&quot; quantity=&quot;3&quot; label=&quot;label&quot;/&gt;
+               &lt;ColorMapEntry color=&quot;#AAAAAA&quot; quantity=&quot;4&quot; label=&quot;label&quot;/&gt;
+               &lt;ColorMapEntry color=&quot;#6FEE4F&quot; quantity=&quot;5&quot; label=&quot;label&quot;/&gt;
+               &lt;ColorMapEntry color=&quot;#DDB02C&quot; quantity=&quot;10&quot; label=&quot;label&quot;/&gt;
+             &lt;/ColorMap&gt;
+           &lt;/RasterSymbolizer&gt;
+          &lt;/Rule&gt;
+        &lt;/FeatureTypeStyle&gt;
+      &lt;/UserStyle&gt;
+    &lt;/NamedLayer&gt;
+   &lt;/StyledLayerDescriptor&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="aggregations">
+<h2><a class="toc-backref" href="#id13">Aggregations</a><a class="headerlink" href="#aggregations" title="Permalink to this headline">¶</a></h2>
+<p>Elasticsearch aggregations are supported through WMS requests by including the query in WMS requests through a custom rendering transformation, <code class="docutils literal notranslate"><span class="pre">vec:GeoHashGrid</span></code>, which translates aggregation response data into a raster for display.</p>
+<p>Note that size is set to zero when an aggregation is supplied so only aggregation features are returned (e.g. maxFeatures is ignored and there will be no search hit results). See <a class="reference internal" href="#faq">FAQ</a> for common issues using aggregations.</p>
+<div class="section" id="geohash-grid-aggregations">
+<h3><a class="toc-backref" href="#id14">Geohash grid aggregations</a><a class="headerlink" href="#geohash-grid-aggregations" title="Permalink to this headline">¶</a></h3>
+<p>Geohash grid aggregation support includes dynamic precision updating and a custom rendering transformation for visualization. Geohash grid aggregation precision is updated dynamically to approximate the specified <code class="docutils literal notranslate"><span class="pre">grid_size</span></code> based on current bbox extent and the additional <code class="docutils literal notranslate"><span class="pre">grid_threshold</span></code> parameter as described above.</p>
+<p>Geohash grid aggregation visualization is supported in WMS requests through a custom rendering transformation, <code class="docutils literal notranslate"><span class="pre">vec:GeoHashGrid</span></code>, which translates aggregation response data into a raster for display. By default raster values correspond to the aggregation bucket <code class="docutils literal notranslate"><span class="pre">doc_count</span></code>. The following shows an example GeoServer style that uses the GeoHashGrid rendering transformation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;StyledLayerDescriptor version=&quot;1.0.0&quot;
+    xsi:schemaLocation=&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;
+    xmlns=&quot;http://www.opengis.net/sld&quot;
+    xmlns:ogc=&quot;http://www.opengis.net/ogc&quot;
+    xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+  &lt;NamedLayer&gt;
+    &lt;Name&gt;GeoHashGrid&lt;/Name&gt;
+    &lt;UserStyle&gt;
+      &lt;Title&gt;GeoHashGrid&lt;/Title&gt;
+      &lt;Abstract&gt;GeoHashGrid aggregation&lt;/Abstract&gt;
+      &lt;FeatureTypeStyle&gt;
+        &lt;Transformation&gt;
+          &lt;ogc:Function name=&quot;vec:GeoHashGrid&quot;&gt;
+            &lt;ogc:Function name=&quot;parameter&quot;&gt;
+              &lt;ogc:Literal&gt;data&lt;/ogc:Literal&gt;
+            &lt;/ogc:Function&gt;
+            &lt;ogc:Function name=&quot;parameter&quot;&gt;
+              &lt;ogc:Literal&gt;gridStrategy&lt;/ogc:Literal&gt;
+              &lt;ogc:Literal&gt;Basic&lt;/ogc:Literal&gt;
+            &lt;/ogc:Function&gt;
+            &lt;ogc:Function name=&quot;parameter&quot;&gt;
+              &lt;ogc:Literal&gt;outputBBOX&lt;/ogc:Literal&gt;
+              &lt;ogc:Function name=&quot;env&quot;&gt;
+                &lt;ogc:Literal&gt;wms_bbox&lt;/ogc:Literal&gt;
+              &lt;/ogc:Function&gt;
+            &lt;/ogc:Function&gt;
+            &lt;ogc:Function name=&quot;parameter&quot;&gt;
+              &lt;ogc:Literal&gt;outputWidth&lt;/ogc:Literal&gt;
+              &lt;ogc:Function name=&quot;env&quot;&gt;
+                &lt;ogc:Literal&gt;wms_width&lt;/ogc:Literal&gt;
+              &lt;/ogc:Function&gt;
+            &lt;/ogc:Function&gt;
+            &lt;ogc:Function name=&quot;parameter&quot;&gt;
+              &lt;ogc:Literal&gt;outputHeight&lt;/ogc:Literal&gt;
+              &lt;ogc:Function name=&quot;env&quot;&gt;
+                &lt;ogc:Literal&gt;wms_height&lt;/ogc:Literal&gt;
+              &lt;/ogc:Function&gt;
+            &lt;/ogc:Function&gt;
+          &lt;/ogc:Function&gt;
+        &lt;/Transformation&gt;
+        &lt;Rule&gt;
+         &lt;RasterSymbolizer&gt;
+           &lt;Geometry&gt;
+             &lt;!-- Actual geometry property name in feature source --&gt;
+             &lt;ogc:PropertyName&gt;geo&lt;/ogc:PropertyName&gt;&lt;/Geometry&gt;
+           &lt;Opacity&gt;0.6&lt;/Opacity&gt;
+           &lt;ColorMap type=&quot;ramp&quot; &gt;
+             &lt;ColorMapEntry color=&quot;#FFFFFF&quot; quantity=&quot;0&quot; label=&quot;nodata&quot; opacity=&quot;0&quot;/&gt;
+             &lt;ColorMapEntry color=&quot;#2851CC&quot; quantity=&quot;1&quot; label=&quot;values&quot;/&gt;
+             &lt;ColorMapEntry color=&quot;#211F1F&quot; quantity=&quot;2&quot; label=&quot;label&quot;/&gt;
+             &lt;ColorMapEntry color=&quot;#EE0F0F&quot; quantity=&quot;3&quot; label=&quot;label&quot;/&gt;
+             &lt;ColorMapEntry color=&quot;#AAAAAA&quot; quantity=&quot;4&quot; label=&quot;label&quot;/&gt;
+             &lt;ColorMapEntry color=&quot;#6FEE4F&quot; quantity=&quot;5&quot; label=&quot;label&quot;/&gt;
+             &lt;ColorMapEntry color=&quot;#DDB02C&quot; quantity=&quot;10&quot; label=&quot;label&quot;/&gt;
+           &lt;/ColorMap&gt;
+         &lt;/RasterSymbolizer&gt;
+        &lt;/Rule&gt;
+      &lt;/FeatureTypeStyle&gt;
+    &lt;/UserStyle&gt;
+  &lt;/NamedLayer&gt;
+ &lt;/StyledLayerDescriptor&gt;
+</pre></div>
+</div>
+<p>Example WMS request including Geohash grid aggregation with the above custom style:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://localhost:8080/geoserver/test/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap
+     &amp;layers=test:active&amp;styles=geohashgrid&amp;bbox=0.0,0.0,24.0,44.0&amp;srs=EPSG:4326
+     &amp;width=418&amp;height=768&amp;format=application/openlayers
+</pre></div>
+</div>
+<p>The ES aggregation definition can be computed automatically, or provided as an explicit parameter,
+for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;parameter&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">aggregationDefinition</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="p">{</span><span class="s2">&quot;agg&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;geohash_grid&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;_ogr_geometry_.coordinates&quot;</span><span class="p">,</span> <span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}}}</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The store may update the precision to a smaller value, if it finds it goes beyond the aggregation
+limits setup in its configuration, see <code class="docutils literal notranslate"><span class="pre">grid_size</span></code> and <code class="docutils literal notranslate"><span class="pre">grid_threshold</span></code> above.</p>
+</div>
+<div class="section" id="grid-strategy">
+<h3><a class="toc-backref" href="#id15">Grid Strategy</a><a class="headerlink" href="#grid-strategy" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">gridStrategy</span></code>: Parameter to identify the <code class="docutils literal notranslate"><span class="pre">org.geoserver.process.elasticsearch.GeoHashGrid</span></code> implementation that will be used to convert each geohashgrid bucket into a raster value (number).</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 40%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Name</p></td>
+<td><p>gridStrategy</p></td>
+<td><p>gridStrategyArgs</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p>Basic</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">basic</span></code></p></td>
+<td><p>no</p></td>
+<td><p>Raster value is geohashgrid bucket <code class="docutils literal notranslate"><span class="pre">doc_count</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Metric</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">metric</span></code></p></td>
+<td><p>yes</p></td>
+<td><p>Raster value is geohashgrid bucket metric value.</p></td>
+</tr>
+<tr class="row-even"><td><p>Nested</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nested_agg</span></code></p></td>
+<td><p>yes</p></td>
+<td><p>Extract raster value from nested aggregation results.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">gridStrategyArgs</span></code>: (Optional) Parameter used to specify an optional argument list for the grid strategy.</p>
+<p><code class="docutils literal notranslate"><span class="pre">emptyCellValue</span></code>: (Optional) Parameter used to specify the value for empty grid cells. By default, empty grid cells are set to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">scaleMin</span></code>, <code class="docutils literal notranslate"><span class="pre">scaleMax</span></code>: (Optional) Parameters used to specify a scale applied to all raster values. Each tile request is scaled according to the min and max values for that tile. It is best to use a non-tiled layer with this parameter to avoid confusing results.</p>
+<p><code class="docutils literal notranslate"><span class="pre">useLog</span></code>: (Optional) Flag indicating whether to apply logarithm to raster values (applied prior to scaling, if applicable)</p>
+<div class="section" id="basic">
+<h4><a class="toc-backref" href="#id16">Basic</a><a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h4>
+<p>Raster value is geohashgrid bucket <code class="docutils literal notranslate"><span class="pre">doc_count</span></code>.</p>
+<p>Example Aggregation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;agg&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;geohash_grid&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;geo&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Example bucket:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;xv&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;doc_count&quot;</span> <span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Extracted raster value: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+</div>
+<div class="section" id="metric">
+<h4><a class="toc-backref" href="#id17">Metric</a><a class="headerlink" href="#metric" title="Permalink to this headline">¶</a></h4>
+<p>Raster value is geohashgrid bucket metric value.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Argument Index</p></td>
+<td><p>Default Value</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">metric</span></code></p></td>
+<td><p>Key used to pluck metric object from top level bucket. Empty string results in plucking doc_count.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>Key used to pluck the value from the metric object.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example Aggregation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;agg&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;geohash_grid&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;geo&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;aggs&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;magnitude&quot;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Example bucket:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;xv&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;doc_count&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span> <span class="p">:</span> <span class="mf">4.9</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Extracted raster value: <code class="docutils literal notranslate"><span class="pre">4.9</span></code></p>
+</div>
+<div class="section" id="nested">
+<h4><a class="toc-backref" href="#id18">Nested</a><a class="headerlink" href="#nested" title="Permalink to this headline">¶</a></h4>
+<p>Extract raster value from nested aggregation results.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Argument Index</p></td>
+<td><p>Default Value</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nested</span></code></p></td>
+<td><p>Key used to pluck nested aggregation results from the geogrid bucket.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>empty string</p></td>
+<td><p>Key used to pluck metric object from each nested aggregation bucket. Empty string results in plucking doc_count.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>Key used to pluck the value from the metric object.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">largest</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">largest</span></code> | <code class="docutils literal notranslate"><span class="pre">smallest</span></code>. Strategy used to select a bucket from the nested aggregation buckets. The grid cell raster value is extracted from the selected bucket.</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">key</span></code> | <code class="docutils literal notranslate"><span class="pre">value</span></code>. Strategy used to extract the raster value from the selected bucket. <code class="docutils literal notranslate"><span class="pre">value</span></code>: Raster value is the selected bucket’s metric value. <code class="docutils literal notranslate"><span class="pre">key</span></code>: Raster value is the selected bucket’s key.</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>null</p></td>
+<td><p>(Optional) Map used to convert String keys into numeric values. Use the format <code class="docutils literal notranslate"><span class="pre">key1:1;key2:2</span></code>. Only utilized when raster strategy is <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example Aggregation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;agg&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;geohash_grid&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;geo&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;aggs&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;nested&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;histogram&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;magnitude&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="s2">&quot;min_doc_count&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Example Parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;parameter&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">gridStrategyArgs</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">nested</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">largest</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">key</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Example bucket:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;xv&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;doc_count&quot;</span> <span class="p">:</span> <span class="mi">1729</span><span class="p">,</span>
+  <span class="s2">&quot;nested&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;buckets&quot;</span> <span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;key&quot;</span> <span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s2">&quot;doc_count&quot;</span> <span class="p">:</span> <span class="mi">5</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;key&quot;</span> <span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+        <span class="s2">&quot;doc_count&quot;</span> <span class="p">:</span> <span class="mi">107</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;key&quot;</span> <span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
+        <span class="s2">&quot;doc_count&quot;</span> <span class="p">:</span> <span class="mi">1506</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;key&quot;</span> <span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="s2">&quot;doc_count&quot;</span> <span class="p">:</span> <span class="mi">100</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;key&quot;</span> <span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
+        <span class="s2">&quot;doc_count&quot;</span> <span class="p">:</span> <span class="mi">11</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Extracted raster value: <code class="docutils literal notranslate"><span class="pre">4.0</span></code></p>
+</div>
+</div>
+<div class="section" id="implementing-a-custom-grid-strategy">
+<h3><a class="toc-backref" href="#id19">Implementing a custom Grid Strategy</a><a class="headerlink" href="#implementing-a-custom-grid-strategy" title="Permalink to this headline">¶</a></h3>
+<p>By default the raster values computed in the geohash grid aggregation rendering transformation correspond to the top level <code class="docutils literal notranslate"><span class="pre">doc_count</span></code>. Adding an additional strategy for computing the raster values from bucket data currently requires source code updates to the <code class="docutils literal notranslate"><span class="pre">gt-elasticsearch-process</span></code> module as described below.</p>
+<p>First create a custom implementation of <code class="docutils literal notranslate"><span class="pre">org.geoserver.process.elasticsearch.GeoHashGrid</span></code> and provide an implementation of the <code class="docutils literal notranslate"><span class="pre">computeCellValue</span></code> method, which takes the raw bucket data and returns the raster value. For example the default basic implementation simply returns the doc_count:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">public</span> <span class="k">class</span> <span class="nc">BasicGeoHashGrid</span> <span class="n">extends</span> <span class="n">GeoHashGrid</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="n">public</span> <span class="n">Number</span> <span class="n">computeCellValue</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">bucket</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">Number</span><span class="p">)</span> <span class="n">bucket</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doc_count&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then update <code class="docutils literal notranslate"><span class="pre">org.geoserver.process.elasticsearch.GeoHashGridProcess</span></code> and add a new entry to the Strategy enum to point to the custom implementation.</p>
+<p>After deploying the customized plugin the new geohash grid computer can be used by updating the <code class="docutils literal notranslate"><span class="pre">gridStrategy</span></code> parameter in the GeoServer style:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">StyledLayerDescriptor</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span>
+    <span class="o">...</span>
+        <span class="o">&lt;</span><span class="n">Transformation</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vec:GeoHashGrid&quot;</span><span class="o">&gt;</span>
+            <span class="o">...</span>
+            <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;parameter&quot;</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">gridStrategy</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span><span class="n">NewName</span><span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Literal</span><span class="o">&gt;</span>
+            <span class="o">&lt;/</span><span class="n">ogc</span><span class="p">:</span><span class="n">Function</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="faq">
+<span id="id1"></span><h2><a class="toc-backref" href="#id20">FAQ</a><a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>By default arrays are returned directly, which is suitable for many output formats including GeoJSON. When using CSV output format with layers containing arrays it’s necessary to set the <code class="docutils literal notranslate"><span class="pre">array_encoding</span></code> store parameter to <code class="docutils literal notranslate"><span class="pre">CSV</span></code>. Note however when using the <code class="docutils literal notranslate"><span class="pre">CSV</span></code> array encoding that only the first value will be returned.</p></li>
+<li><p>When updating from pre-2.11.0 versions of the plugin it may be necessary to reload older layers to enable full aggregation and time support. Missing aggregation data or errors of the form <code class="docutils literal notranslate"><span class="pre">IllegalArgumentException:</span> <span class="pre">Illegal</span> <span class="pre">pattern</span> <span class="pre">component</span></code> indicate a layer reload is necessary. In this case the layer must be removed and re-added to GeoServer (e.g. a feature type reload will not be sufficient).</p></li>
+<li><p>Commas in the native query and aggregation body must be escaped with a backslash. Additionally body may need to be URL encoded.</p></li>
+<li><p>Geometry property name in the aggregation SLD RasterSymbolizer must be a valid geometry property in the layer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PropertyIsEqualTo</span></code> maps to an Elasticsearch term query, which will return documents that contain the supplied term. When searching on an analyzed string field, ensure that the search values are consistent with the analyzer used in the index. For example, values may need to be lowercase when querying fields analyzed with the default analyzer. See the Elasticsearch term query documentation for more information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PropertyIsLike</span></code> maps to either a query string query or a regexp query, depending on whether the field is analyzed or not. Reserved characters should be escaped as applicable. Note case sensitive and insensitive searches may not be supported for analyzed and not analyzed fields, respectively. See Elasticsearch query string and regexp query documentation for more information.</p></li>
+<li><p>Date conversions are handled using the valid date formats from the associated type mapping, or <code class="docutils literal notranslate"><span class="pre">date_optional_time</span></code> if not found. Note that UTC timezone is used for both parsing and printing of dates.</p></li>
+<li><p>Filtering on Elasticsearch <code class="docutils literal notranslate"><span class="pre">object</span></code> types is supported. By default, field names will include the full path to the field (e.g. “parent.child.field_name”), but this can be changed in the GeoServer layer configuration.</p>
+<ul>
+<li><p>When referencing fields with path elements using <code class="docutils literal notranslate"><span class="pre">cql_filter</span></code>, it may be necessary to quote the name (e.g. <code class="docutils literal notranslate"><span class="pre">cql_filter=&quot;parent.child.field_name&quot;='value'</span></code>)</p></li>
+</ul>
+</li>
+<li><p>Filtering on Elasticsearch <code class="docutils literal notranslate"><span class="pre">nested</span></code> types is supported only for non-geospatial fields.</p></li>
+<li><p>Circle geometries are approximate and may not be fully consistent with the implementation in Elasticsearch, especially at extreme latitudes (see <a class="reference external" href="https://github.com/ngageoint/elasticgeo/issues/86">#86</a>).</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">joda-shaded</span></code> module may need to be excluded when importing the project into Eclipse. Otherwise modules may have build errors of the form <code class="docutils literal notranslate"><span class="pre">DateTimeFormatter</span> <span class="pre">cannot</span> <span class="pre">be</span> <span class="pre">resolved</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">type</span></code>.</p></li>
+<li><p>When updating from Elasticgeo 2.16.0, note that the <code class="docutils literal notranslate"><span class="pre">Short</span> <span class="pre">Names</span></code> feature has been removed as it is not compatible with Elasticsearch 2.0 and beyond. Previous fields which used the short names will be reverted to the full name, but you can still use aliasing to accomplish the same effect.</p></li>
+</ul>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../dds/index.html" title="previous chapter">DDS/BIL(World Wind Data Formats) Extension</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../features-templating/index.html" title="next chapter">Features-Templating Extension</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Elasticsearch data store</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#configuring-data-store">Configuring data store</a><ul>
+<li><a class="reference internal" href="#configuring-authentication">Configuring authentication</a></li>
+<li><a class="reference internal" href="#configuring-https-ssl">Configuring HTTPS/SSL</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-layer">Configuring layer</a></li>
+<li><a class="reference internal" href="#configuring-logging">Configuring logging</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#filtering">Filtering</a><ul>
+<li><a class="reference internal" href="#native-queries">Native queries</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#aggregations">Aggregations</a><ul>
+<li><a class="reference internal" href="#geohash-grid-aggregations">Geohash grid aggregations</a></li>
+<li><a class="reference internal" href="#grid-strategy">Grid Strategy</a><ul>
+<li><a class="reference internal" href="#basic">Basic</a></li>
+<li><a class="reference internal" href="#metric">Metric</a></li>
+<li><a class="reference internal" href="#nested">Nested</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementing-a-custom-grid-strategy">Implementing a custom Grid Strategy</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#faq">FAQ</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../dds/index.html" title="previous chapter">DDS/BIL(World Wind Data Formats) Extension</a></li>
+            <li>Next: <a href="../features-templating/index.html" title="next chapter">Features-Templating Extension</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/community/elasticsearch/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

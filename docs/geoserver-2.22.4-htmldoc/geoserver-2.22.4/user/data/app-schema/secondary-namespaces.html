@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secondary Namespaces &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="CQL functions" href="cql-functions.html" />
+    <link rel="prev" title="Supported GML Versions" href="supported-gml-versions.html" /> 
+  </head><body class="data/app-schema/secondary-namespaces">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Application schemas</a> &raquo;</li>
+    <li>Secondary Namespaces</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="cql-functions.html" title="CQL functions" accesskey="N">Next</a></li>
+  <li>
+    <a href="supported-gml-versions.html" title="Supported GML Versions" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="secondary-namespaces">
+<span id="app-schema-secondary-namespaces"></span><h1>Secondary Namespaces<a class="headerlink" href="#secondary-namespaces" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-is-a-secondary-namespace">
+<h2>What is a secondary namespace?<a class="headerlink" href="#what-is-a-secondary-namespace" title="Permalink to this headline">¶</a></h2>
+<p>A secondary namespace is one that is referenced indirectly by the main schema, that is, one schema imports another one as shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">xsd</span> <span class="n">imports</span> <span class="n">b</span><span class="o">.</span><span class="n">xsd</span>
+<span class="n">b</span><span class="o">.</span><span class="n">xsd</span> <span class="n">imports</span> <span class="n">c</span><span class="o">.</span><span class="n">xsd</span>
+</pre></div>
+</div>
+<p>(using a, b and c as the respective namespace prefixes for a.xsd, b.xsd and c.xsd):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">xsd</span> <span class="n">declares</span> <span class="n">b</span><span class="p">:</span><span class="n">prefix</span>
+<span class="n">b</span><span class="o">.</span><span class="n">xsd</span> <span class="n">declares</span> <span class="n">c</span><span class="p">:</span><span class="n">prefix</span>
+</pre></div>
+</div>
+<p>The GeoTools encoder does not honour these namespaces and writes out:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;a:&quot;</span> <span class="p">,</span> <span class="s2">&quot;b:&quot;</span> <span class="n">but</span> <span class="n">NOT</span> <span class="s2">&quot;c:&quot;</span>
+</pre></div>
+</div>
+<p>The result is c’s element being encoded as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">null</span><span class="p">:</span><span class="n">cElement</span><span class="o">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="when-to-configure-for-secondary-namespaces">
+<h2>When to configure for secondary namespaces<a class="headerlink" href="#when-to-configure-for-secondary-namespaces" title="Permalink to this headline">¶</a></h2>
+<p>If your application spans several namespaces which may be very common in application schemas.</p>
+<p>A sure sign that calls for secondary namespace configuration is when prefixes for namespaces are printed out as the literal string “null” or error messages like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">IOException</span><span class="p">:</span> <span class="n">The</span> <span class="n">prefix</span> <span class="s2">&quot;null&quot;</span> <span class="k">for</span> <span class="n">element</span> <span class="s2">&quot;null:something&quot;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">bound</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using secondary namespaces, requests involving complex featuretypes
+must be made to the <strong>global OWS service</strong> only, not to <a class="reference internal" href="../../configuration/virtual-services.html#virtual-services"><span class="std std-ref">Virtual Services</span></a>.
+This is because virtual services are restricted to a single namespace,
+and thus are not able to access secondary namespaces.</p>
+</div>
+<p>In order to allow GeoServer App-Schema to support secondary namespaces, please follow the steps outlined below:</p>
+<p>Using the sampling namespace as an example.</p>
+</div>
+<div class="section" id="step-1-create-the-secondary-namespace-folder">
+<h2>Step 1:Create the Secondary Namespace folder<a class="headerlink" href="#step-1-create-the-secondary-namespace-folder" title="Permalink to this headline">¶</a></h2>
+<p>Create a folder to represent the secondary namespace in the data/workspaces directory,
+in our example that will be the “sa” folder.</p>
+</div>
+<div class="section" id="step-2-create-files">
+<h2>Step 2:Create files<a class="headerlink" href="#step-2-create-files" title="Permalink to this headline">¶</a></h2>
+<p>Create  two files below in the “sa” folder:</p>
+<ol class="arabic simple">
+<li><p>namespace.xml</p></li>
+<li><p>workspace.xml</p></li>
+</ol>
+</div>
+<div class="section" id="step-3-edit-content-of-files">
+<h2>Step 3:Edit content of files<a class="headerlink" href="#step-3-edit-content-of-files" title="Permalink to this headline">¶</a></h2>
+<p>Contents of these files are as follows:</p>
+<p>namespace.xml(uri is a valid uri for the secondary namespace, in this case the sampling namespace uri):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">namespace</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">sa_workspace</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">prefix</span><span class="o">&gt;</span><span class="n">sa</span><span class="o">&lt;/</span><span class="n">prefix</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">uri</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">opengis</span><span class="o">.</span><span class="n">net</span><span class="o">/</span><span class="n">sampling</span><span class="o">/</span><span class="mf">1.0</span><span class="o">&lt;/</span><span class="n">uri</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">namespace</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>workspace.xml:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">workspace</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nb">id</span><span class="o">&gt;</span><span class="n">sa_workspace</span><span class="o">&lt;/</span><span class="nb">id</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">sa</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">workspace</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>That’s it.</p>
+<p>Your workspace is now configured to use a Secondary Namespace.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="supported-gml-versions.html" title="previous chapter">Supported GML Versions</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="cql-functions.html" title="next chapter">CQL functions</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Secondary Namespaces</a><ul>
+<li><a class="reference internal" href="#what-is-a-secondary-namespace">What is a secondary namespace?</a></li>
+<li><a class="reference internal" href="#when-to-configure-for-secondary-namespaces">When to configure for secondary namespaces</a></li>
+<li><a class="reference internal" href="#step-1-create-the-secondary-namespace-folder">Step 1:Create the Secondary Namespace folder</a></li>
+<li><a class="reference internal" href="#step-2-create-files">Step 2:Create files</a></li>
+<li><a class="reference internal" href="#step-3-edit-content-of-files">Step 3:Edit content of files</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="supported-gml-versions.html" title="previous chapter">Supported GML Versions</a></li>
+            <li>Next: <a href="cql-functions.html" title="next chapter">CQL functions</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/app-schema/secondary-namespaces.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

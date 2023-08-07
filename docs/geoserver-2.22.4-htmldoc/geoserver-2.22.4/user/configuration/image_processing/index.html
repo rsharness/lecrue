@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Processing &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Raster Access" href="../raster_access.html" />
+    <link rel="prev" title="Global Settings" href="../globalsettings.html" /> 
+  </head><body class="configuration/image_processing/index">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Server configuration</a> &raquo;</li>
+    <li>Image Processing</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="../raster_access.html" title="Raster Access" accesskey="N">Next</a></li>
+  <li>
+    <a href="../globalsettings.html" title="Global Settings" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="image-processing">
+<span id="jai"></span><h1>Image Processing<a class="headerlink" href="#image-processing" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://java.sun.com/javase/technologies/desktop/media/jai/">Java Advanced Imaging</a> (JAI) is an image processing library built by Sun Microsystems.
+<a class="reference external" href="https://jai-imageio.dev.java.net/">JAI Image I/O Tools</a> provides reader, writer, and stream plug-ins for the standard Java Image I/O Framework.</p>
+<p>Several JAI parameters, used by both WMS and WCS operations, can be configured in the Image Processing page.</p>
+<div class="figure align-default" id="id2">
+<img alt="../../_images/image_processing.png" src="../../_images/image_processing.png" />
+<p class="caption"><span class="caption-text">Image Processing</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="memory-tiling">
+<h2>Memory &amp; Tiling<a class="headerlink" href="#memory-tiling" title="Permalink to this headline">¶</a></h2>
+<p>When supporting large images it is efficient to work on image subsets without loading everything to memory. A widely used approach is tiling which basically builds a tessellation of the original image so that image data can be read in parts rather than whole. Since very often processing one tile involves surrounding tiles, tiling needs to be accompanied by a tile-caching mechanism. The following JAI parameters allow you to manage the JAI cache mechanism for optimized performance.</p>
+<p><strong>Memory Capacity</strong>—For memory allocation for tiles, JAI provides an interface called TileCache. Memory Capacity sets the global JAI TileCache as a percentage of the available heap. A number between 0 and 1 exclusive. If the Memory Capacity is smaller than the current capacity, the tiles in the cache are flushed to achieve the desired settings. If you set a large amount of memory for the tile cache, interactive operations are faster but the tile cache fills up very quickly. If you set a low amount of memory for the tile cache, the performance degrades.</p>
+<p><strong>Memory Threshold</strong>—Sets the global JAI TileCache Memory threshold. Refers to the fractional amount of cache memory to retain during tile removal. JAI Memory Threshold value must be between 0.0 and 1.0. The Memory Threshold visible on the <a class="reference internal" href="../../extensions/monitoring/reference.html#status"><span class="std std-ref">Status</span></a> page.</p>
+<p><strong>Tile Threads</strong>—JAI utilizes a TileScheduler for tile calculation. Tile computation may make use of multithreading for improved performance. The Tile Threads parameter sets the TileScheduler, indicating the number of threads to be used when loading tiles.</p>
+<p><strong>Tile Threads Priority</strong>—Sets the global JAI Tile Scheduler thread priorities. Values range from 1 (Min) to 10 (Max), with default priority set to 5 (Normal).</p>
+<p><strong>Tile Recycling</strong>—Enable/Disable JAI Cache Tile Recycling. If selected, Tile Recycling allows JAI to re-use already loaded tiles, which can provide significant performance improvement.</p>
+<p><strong>Native Acceleration</strong>—To improve the computation speed of image processing applications, the JAI comes with both Java Code and native code for many platform. If the Java Virtual Machine (JVM) finds the native code, then that will be used. If the native code is not available, the Java code will be used. As such, the JAI package is able to provide optimized implementations for different platforms that can take advantage of each platform’s capabilities.</p>
+<p><strong>JPEG Native Acceleration</strong>—Enables/disable JAI JPEG Native Acceleration. When selected, enables JPEG native code, which may speed performance, but compromise security and crash protection.</p>
+<p><strong>PNG Encoder Type</strong>—Provides a selection of the PNG encoder between the Java own encoder, the JAI ImageIO native one, and a <a class="reference external" href="https://code.google.com/p/pngj/">PNGJ</a> based one:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The Java standard encoder is always set to maximum compression. It provides the smallest output images, balanced by a high performance cost (up to six times slower than the other two alternatives).</p></li>
+<li><p>The ImageIO native encoder, available only when the ImageIO native extensions are installed, provided higher performance, but also generated significantly larger PNG images</p></li>
+<li><p>The PNGJ based encoder provides the best performance and generated PNG images that are just slightly larger than the Java standard encoder. It is the recommended choice, but it’s also newer than the other two, so in case of misbehavior the other two encoders are left as an option for the administrator.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Mosaic Native Acceleration</strong>—To reduce the overhead of handling them, large data sets are often split into smaller chunks and then combined to create an image mosaic. An example of this is aerial imagery which usually comprises thousands of small images at very high resolution. Both native and JAI implementations of mosaic are provided. When selected, Mosaic Native Acceleration use the native implementation for creating mosaics.</p>
+<p><strong>Warp Native Acceleration</strong>—Also for the Warp operation are provided both native and JAI implementations. If the checkbox is enabled, then the native operation is used for the warp operation.</p>
+<p><em>It is quite important to remember that faster encoders are not necessarily going to visibly improve performance, if data loading and processing/rendering are dominating the response time, choosing a better encoder will likely not provide the expected benefits.</em></p>
+</div>
+<div class="section" id="jai-ext">
+<span id="jaiext"></span><h2>JAI-EXT<a class="headerlink" href="#jai-ext" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/geosolutions-it/jai-ext">JAI-EXT</a> library is open-source project which aims to replace closed source JAI project provided by Sun. The main difference between <em>JAI</em> and <em>JAI-EXT</em> operations is the support for external <strong>Region of Interests</strong> (ROI) and image <strong>NoData</strong> in <em>JAI-EXT</em>.</p>
+<p>The following panel is be available at the bottom of the JAI Settings page</p>
+<div class="figure align-default" id="id3">
+<img alt="../../_images/JAIEXT.png" src="../../_images/JAIEXT.png" />
+<p class="caption"><span class="caption-text">JAI/JAIEXT Setup panel</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>This panel can be used to selectively enable/disable JAI-EXT operations in favor of JAI ones.</p>
+<p>By default, <strong>JAI-EXT</strong> operations are enabled. In case of misbehavior add the following java option to GeoServer startup script and restart GeoServer to disable them.</p>
+<blockquote>
+<div><div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>-Dorg.geotools.coverage.jaiext.enabled=false
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Users should take care that <em>JAI</em> native libraries are not supported by <em>JAI-EXT</em>, since <em>JAI-EXT</em> is a pure Java API.</p>
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="../globalsettings.html" title="previous chapter">Global Settings</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="../raster_access.html" title="next chapter">Raster Access</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Image Processing</a><ul>
+<li><a class="reference internal" href="#memory-tiling">Memory &amp; Tiling</a></li>
+<li><a class="reference internal" href="#jai-ext">JAI-EXT</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="../globalsettings.html" title="previous chapter">Global Settings</a></li>
+            <li>Next: <a href="../raster_access.html" title="next chapter">Raster Access</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/configuration/image_processing/index.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

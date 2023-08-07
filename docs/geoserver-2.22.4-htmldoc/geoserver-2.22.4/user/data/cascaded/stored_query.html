@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cascaded Web Feature Service Stored Queries &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="External Web Map Server" href="wms.html" />
+    <link rel="prev" title="External Web Feature Server" href="wfs.html" /> 
+  </head><body class="data/cascaded/stored_query">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">Data management</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">Cascaded service data</a> &raquo;</li>
+    <li>Cascaded Web Feature Service Stored Queries</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="wms.html" title="External Web Map Server" accesskey="N">Next</a></li>
+  <li>
+    <a href="wfs.html" title="External Web Feature Server" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="cascaded-web-feature-service-stored-queries">
+<span id="data-external-stored-query"></span><h1>Cascaded Web Feature Service Stored Queries<a class="headerlink" href="#cascaded-web-feature-service-stored-queries" title="Permalink to this headline">¶</a></h1>
+<p>Stored query is a feature of Web Feature Services. It allows servers to serve pre-configured filter queries or even queries that cannot be expressed as GetFeature filter queries. This feature of GeoServer allows to create cascaded layers out of stored queries.</p>
+<p>Stored queries are read-only, and layers derived from cascaded stored queries cannot be updated with WFS-T.</p>
+<div class="section" id="cascaded-stored-query-parameters">
+<h2>Cascaded stored query parameters<a class="headerlink" href="#cascaded-stored-query-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The relationship between stored query parameters and the schema returned by the query is not well defined. For cascaded stored queries to work, the relationship between the query received by GeoServer and the parameters passed to the stored query must be defined.</p>
+<p>When you set up a layer based on a stored query, you have to select which stored query to cascade and what values are passed to each parameter. Cascaded stored queries can leverage view parameters passed to the query. This is similar to how arbitrary parameters are passed to <a class="reference internal" href="../database/sqlview.html#sql-views"><span class="std std-ref">SQL Views</span></a>. GeoServer supports multiple strategies to pass these values. See below for a full list.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Parameter type</strong></p></td>
+<td><p><strong>Explanation</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">No mapping</span></p></td>
+<td><p>The value of the view parameter will be passed as is to the stored query. No parameter will be passed if there
+is no view parameter of the same name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">Blocked</span></p></td>
+<td><p>This parameter will never be passed to the stored query</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">Default</span></p></td>
+<td><p>The specified value is used unless overwritten by a view parameter</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="guilabel">Static</span></p></td>
+<td><p>The specified value is always used (view parameter value will be ignored)</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="guilabel">CQL Expression</span></p></td>
+<td><p>An expression that will be evaluated on every request (see below for more details)</p></td>
+</tr>
+</tbody>
+</table>
+<p>See <a class="reference internal" href="../database/sqlview.html#using-a-parametric-sql-view"><span class="std std-ref">Using a parametric SQL View</span></a> for more details how clients pass view parameters to GeoServer.</p>
+</div>
+<div class="section" id="cql-expressions">
+<h2>CQL expressions<a class="headerlink" href="#cql-expressions" title="Permalink to this headline">¶</a></h2>
+<p>Parameter mappings configured as CQL expressions are evaluated for each request using a context derived from the request query and the view parameters. General information on CQL expressions is available here <a class="reference internal" href="../../filter/ecql_reference.html#ecql-expr"><span class="std std-ref">Expression</span></a>.</p>
+<p>The context contains the following properties that may be used in the expressions:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Property name</strong></p></td>
+<td><p><strong>Explanation</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bboxMinX</span></code> <code class="docutils literal notranslate"><span class="pre">bboxMinY</span></code> <code class="docutils literal notranslate"><span class="pre">bboxMaxX</span></code> <code class="docutils literal notranslate"><span class="pre">bboxMaxY</span></code></p></td>
+<td><p>Evaluates to a corner coordinate of the full extent of the query</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">defaultSRS</span></code></p></td>
+<td><p>Evaluates to the default SRS of the feature type</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">viewparam:name</span></code></p></td>
+<td><p>Evaluates to the value of the view parameter <em>name</em> in this query</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="configuring-a-cascaded-stored-query-layer">
+<h2>Configuring a cascaded stored query layer<a class="headerlink" href="#configuring-a-cascaded-stored-query-layer" title="Permalink to this headline">¶</a></h2>
+<p>In order to create a cascaded stored query layer the administrator invokes the Create new layer page. When an <a class="reference internal" href="wfs.html#data-external-wfs"><span class="std std-ref">External Web Feature Server</span></a> is selected, the usual list of tables and views available for publication appears, a link <span class="guilabel">Configure Cascaded Stored Query…</span> also appears:</p>
+<div class="figure align-default">
+<img alt="../../_images/csqaddnew.png" src="../../_images/csqaddnew.png" />
+</div>
+<p>Selecting the <span class="guilabel">Configure Cascaded Stored Query…</span> link opens a new page where the parameter mapping is set up. By default all parameters are set up as <span class="guilabel">No mapping</span>.</p>
+<div class="figure align-default">
+<img alt="../../_images/csqconfigure.png" src="../../_images/csqconfigure.png" />
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="wfs.html" title="previous chapter">External Web Feature Server</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="wms.html" title="next chapter">External Web Map Server</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Cascaded Web Feature Service Stored Queries</a><ul>
+<li><a class="reference internal" href="#cascaded-stored-query-parameters">Cascaded stored query parameters</a></li>
+<li><a class="reference internal" href="#cql-expressions">CQL expressions</a></li>
+<li><a class="reference internal" href="#configuring-a-cascaded-stored-query-layer">Configuring a cascaded stored query layer</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="wfs.html" title="previous chapter">External Web Feature Server</a></li>
+            <li>Next: <a href="wms.html" title="next chapter">External Web Map Server</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/data/cascaded/stored_query.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

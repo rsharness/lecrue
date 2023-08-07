@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Specifying symbolizer sizes in ground units &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Label Obstacles" href="label-obstacles.html" />
+    <link rel="prev" title="Variable substitution in SLD" href="substitution.html" /> 
+  </head><body class="styling/sld/extensions/uom">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Extensions in GeoServer</a> &raquo;</li>
+    <li>Specifying symbolizer sizes in ground units</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="label-obstacles.html" title="Label Obstacles" accesskey="N">Next</a></li>
+  <li>
+    <a href="substitution.html" title="Variable substitution in SLD" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="specifying-symbolizer-sizes-in-ground-units">
+<span id="unit-of-measure"></span><h1>Specifying symbolizer sizes in ground units<a class="headerlink" href="#specifying-symbolizer-sizes-in-ground-units" title="Permalink to this headline">¶</a></h1>
+<p>The SLD 1.0 specification allows giving symbolizer sizes in a single unit of measure: pixels.
+This means that the size of symbolizers is the same at all zoom levels (which is usually the desired behaviour).</p>
+<p>The Symbology Encoding 1.1 specification provides a <code class="docutils literal notranslate"><span class="pre">uom</span></code> attribute on <code class="docutils literal notranslate"><span class="pre">Symbolizer</span></code> elements.
+This allows specifying styling parameter sizes in ground units of metres or feet, as well as the default which is screen pixels.
+When ground units are used, the screen size of styled elements increases as the map is zoomed in to larger scales.
+GeoServer supports the SE 1.1 <code class="docutils literal notranslate"><span class="pre">uom</span></code> attribute in its extended SLD 1.0 support.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This extended feature is officially supported in GeoServer 2.1.0.  It is available in GeoServer 2.0.3 if the <code class="docutils literal notranslate"><span class="pre">-DenableDpiUomRescaling=true</span></code> system variable is specified for the JVM.</p>
+</div>
+<p>The value of the <code class="docutils literal notranslate"><span class="pre">uom</span></code> attribute is a URI indicating the desired unit.  The units of measure supported are those given in the SE 1.1 specification:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">opengeospatial</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">se</span><span class="o">/</span><span class="n">units</span><span class="o">/</span><span class="n">metre</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">opengeospatial</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">se</span><span class="o">/</span><span class="n">units</span><span class="o">/</span><span class="n">foot</span>
+<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">opengeospatial</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">se</span><span class="o">/</span><span class="n">units</span><span class="o">/</span><span class="n">pixel</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">px</span></code> override modifier for parameters values is not currently supported.</p>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>The following SLD shows the <code class="docutils literal notranslate"><span class="pre">uom</span></code> attribute used to specify the width of a <code class="docutils literal notranslate"><span class="pre">LineSymbolizer</span></code> in metres:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
+<span class="nt">&lt;StyledLayerDescriptor</span> <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span> <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+  <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;NamedLayer&gt;</span>
+    <span class="nt">&lt;Name&gt;</span>5m blue line<span class="nt">&lt;/Name&gt;</span>
+    <span class="nt">&lt;UserStyle&gt;</span>
+      <span class="nt">&lt;Title&gt;</span>tm blue line<span class="nt">&lt;/Title&gt;</span>
+      <span class="nt">&lt;Abstract&gt;</span>Default line style, 5m wide blue<span class="nt">&lt;/Abstract&gt;</span>
+
+      <span class="nt">&lt;FeatureTypeStyle&gt;</span>
+        <span class="nt">&lt;Rule&gt;</span>
+          <span class="nt">&lt;Title&gt;</span>Blue Line, 5m large<span class="nt">&lt;/Title&gt;</span>
+          <span class="nt">&lt;LineSymbolizer</span> <span class="na">uom=</span><span class="s">&quot;http://www.opengeospatial.org/se/units/metre&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;Stroke&gt;</span>
+              <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#0000FF<span class="nt">&lt;/CssParameter&gt;</span>
+              <span class="nt">&lt;CssParameter</span> <span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>5<span class="nt">&lt;/CssParameter&gt;</span>
+            <span class="nt">&lt;/Stroke&gt;</span>
+          <span class="nt">&lt;/LineSymbolizer&gt;</span>
+        <span class="nt">&lt;/Rule&gt;</span>
+
+      <span class="nt">&lt;/FeatureTypeStyle&gt;</span>
+    <span class="nt">&lt;/UserStyle&gt;</span>
+  <span class="nt">&lt;/NamedLayer&gt;</span>
+<span class="nt">&lt;/StyledLayerDescriptor&gt;</span>
+</pre></div>
+</div>
+<p>Applying the style to the <code class="docutils literal notranslate"><span class="pre">tiger:tiger_roads</span></code> dataset shows how the line widths increase as the map is zoomed in:</p>
+<div class="figure align-default">
+<img alt="../../../_images/roads_uom1.png" src="../../../_images/roads_uom1.png" />
+</div>
+<div class="figure align-default">
+<img alt="../../../_images/roads_uom2.png" src="../../../_images/roads_uom2.png" />
+</div>
+<div class="figure align-default">
+<img alt="../../../_images/roads_uom3.png" src="../../../_images/roads_uom3.png" />
+</div>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="substitution.html" title="previous chapter">Variable substitution in SLD</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="label-obstacles.html" title="next chapter">Label Obstacles</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Specifying symbolizer sizes in ground units</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="substitution.html" title="previous chapter">Variable substitution in SLD</a></li>
+            <li>Next: <a href="label-obstacles.html" title="next chapter">Label Obstacles</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/extensions/uom.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>

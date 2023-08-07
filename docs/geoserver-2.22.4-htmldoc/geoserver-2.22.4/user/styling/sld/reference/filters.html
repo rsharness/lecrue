@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filters &#8212; GeoServer 2.22.4 User Manual</title>
+    <link rel="stylesheet" href="../../../_static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="../../../_static/blueprint/print.css" type="text/css" media="print" /> 
+    <!--[if IE]>
+    <link rel="stylesheet" href="../../../_static/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/geoserver.ico"/>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="PointSymbolizer" href="pointsymbolizer.html" />
+    <link rel="prev" title="Rules" href="rules.html" /> 
+  </head><body class="styling/sld/reference/filters">
+<div id="header" class="selfclear">
+    <div class="wrap selfclear">
+        <div id="logo"><a href="http://geoserver.org">GeoServer</a></div>
+        <ul id="top-nav">
+            <li class="first"><a href="http://geoserver.org/about/">About</a></li>
+            <li><a href="http://geoserver.org/blog">Blog</a></li>
+            <li><a href="http://geoserver.org/download/">Download</a></li>
+            <li><a href="https://docs.geoserver.org/">Documentation</a></li>
+        </ul>
+
+        <form id="quick-search" action="../../../search.html" method="get">
+            <fieldset>
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search User Manual&hellip;" />
+                <input id="quick-search-submit" type="image" value="Search" src="../../../_static/chrome/search_icon_green.png" />
+            </fieldset>
+        </form>
+    </div><!-- /.wrap -->
+</div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="content-left" class="content-border"></div>
+        <div id="content">
+        
+<ul id="breadcrumbs">
+  
+    <li><a href="../../../index.html">GeoServer 2.22.4 User Manual</a> &raquo;</li>
+        <li><a href="../../index.html" accesskey="U">Styling</a> &raquo;</li>
+        <li><a href="../index.html" accesskey="U">SLD Styling</a> &raquo;</li>
+        <li><a href="index.html" accesskey="U">SLD Reference</a> &raquo;</li>
+    <li>Filters</li>
+</ul>
+        
+<ul id="relatedlinks" class="selfclear">
+  <li class="first"><a href="pointsymbolizer.html" title="PointSymbolizer" accesskey="N">Next</a></li>
+  <li>
+    <a href="rules.html" title="Rules" accesskey="P">Previous</a>|
+  </li>
+</ul>
+          
+  <div class="section" id="filters">
+<span id="sld-reference-filters"></span><h1>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h1>
+<p>A <em>filter</em> is the mechanism in SLD for specifying conditions.
+They are similar in functionality to the SQL “WHERE” clause.
+Filters are used within <a class="reference internal" href="rules.html#sld-reference-rules"><span class="std std-ref">Rules</span></a> to determine which styles should be applied to which features in a data set.
+The filter language used by SLD follows the <a class="reference external" href="http://www.opengeospatial.org/standards/filter">OGC Filter Encoding standard</a>.
+It is described in detail in the <a class="reference internal" href="../../../filter/filter_reference.html#filter-fe-reference"><span class="std std-ref">Filter Encoding Reference</span></a>.</p>
+<p>A filter condition is specified by using a <strong>comparison operator</strong> or a <strong>spatial operator</strong>,
+or two or more of these combined by <strong>logical operators</strong>.
+The operators are usually used to compare properties of the features being filtered
+to other properties or to literal data.</p>
+<div class="section" id="comparison-operators">
+<h2>Comparison operators<a class="headerlink" href="#comparison-operators" title="Permalink to this headline">¶</a></h2>
+<p>Comparison operators are used to specify conditions on the non-spatial attributes of a feature.
+The following <strong>binary comparison operators</strong> are available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsEqualTo&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsNotEqualTo&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLessThan&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLessThanOrEqualTo&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsGreaterThan&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsGreaterThanOrEqualTo&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>These operators contain two <a class="reference internal" href="#sld-filter-expression"><span class="std std-ref">filter expressions</span></a> to be compared.
+The first operand is often a <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code>,
+but both operands may be any expression, function or literal value.</p>
+<p>Binary comparison operators may include a <code class="docutils literal notranslate"><span class="pre">matchCase</span></code> attribute with the value <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>.
+If this attribute is <code class="docutils literal notranslate"><span class="pre">true</span></code> (which is the default), string comparisons are case-sensitive.
+If the attribute is specified and has the value <code class="docutils literal notranslate"><span class="pre">false</span></code> strings comparisons do not check case.</p>
+<p>Other available <strong>value comparison operators</strong> are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLike&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsNull&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsBetween&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLike&gt;</span></code> matches a string property value against a text <strong>pattern</strong>.
+It contains a <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code> element
+containing the name of the property containing the string to be matched
+and a <code class="docutils literal notranslate"><span class="pre">&lt;Literal&gt;</span></code> element containing the pattern.
+The pattern is specified by a sequence of regular characters and
+three special pattern characters.
+The pattern characters are defined by the following required attributes of the <code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsLike&gt;</span></code> element:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wildCard</span></code> specifies a pattern character which matches any sequence of zero or more characters</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">singleChar</span></code> specifies a pattern character which matches any single character</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">escapeChar</span></code> specifies an escape character which can be used to escape these pattern characters</p></li>
+</ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsNull&gt;</span></code> tests whether a property value is null.
+It contains a single <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code> element containing the name of the property containing the value to be tested.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;PropertyIsBetween&gt;</span></code> tests whether an expression value lies within a range.
+It contains a <a class="reference internal" href="#sld-filter-expression"><span class="std std-ref">filter expression</span></a> providing the value to test,
+followed by the elements <code class="docutils literal notranslate"><span class="pre">&lt;LowerBoundary&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;UpperBoundary&gt;</span></code>,
+each containing a <a class="reference internal" href="#sld-filter-expression"><span class="std std-ref">filter expression</span></a>.</p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The following filter selects features whose <code class="docutils literal notranslate"><span class="pre">NAME</span></code> attribute has the value of “New York”:</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;PropertyName&gt;</span>NAME<span class="nt">&lt;/PropertyName&gt;</span>
+   <span class="nt">&lt;Literal&gt;</span>New York<span class="nt">&lt;/Literal&gt;</span>
+<span class="nt">&lt;/PropertyIsEqualTo&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The following filter selects features whose geometry area is greater than 1,000,000:</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PropertyIsGreaterThan&gt;</span>
+   <span class="nt">&lt;ogc:Function</span> <span class="na">name=</span><span class="s">&quot;area&quot;</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;PropertyName&gt;</span>GEOMETRY<span class="nt">&lt;/PropertyName&gt;</span>
+   <span class="nt">&lt;/ogc:Function&gt;</span>
+   <span class="nt">&lt;Literal&gt;</span>1000000<span class="nt">&lt;/Literal&gt;</span>
+<span class="nt">&lt;/PropertyIsGreaterThan&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="spatial-operators">
+<h2>Spatial operators<a class="headerlink" href="#spatial-operators" title="Permalink to this headline">¶</a></h2>
+<p>Spatial operators are used to specify conditions on the geometric attributes of a feature.
+The following spatial operators are available:</p>
+<p><strong>Topological Operators</strong></p>
+<p>These operators test topological spatial relationships using the standard OGC Simple Features predicates:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Intersects&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Equals&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Disjoint&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Touches&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Within&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Overlaps&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Crosses&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Contains&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>The content for these operators is a <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code> element
+for a geometry-valued property
+and a GML geometry literal.</p>
+<p><strong>Distance Operators</strong></p>
+<p>These operators compute distance relationships between geometries:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;DWithin&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Beyond&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>The content for these elements is a <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code> element for a geometry-valued property,
+a GML geometry literal, and a <code class="docutils literal notranslate"><span class="pre">&lt;Distance&gt;</span></code> element containing the value for the distance tolerance.
+The <code class="docutils literal notranslate"><span class="pre">&lt;Distance&gt;</span></code> element may include an optional <code class="docutils literal notranslate"><span class="pre">units</span></code> attribute.</p>
+<p><strong>Bounding Box Operator</strong></p>
+<p>This operator tests whether a feature geometry attribute intersects a given bounding box:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;BBOX&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>The content is an optional <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code> element, and a GML envelope literal.
+If the <code class="docutils literal notranslate"><span class="pre">PropertyName</span></code> is omitted the default geometry attribute is assumed.</p>
+<div class="section" id="id1">
+<h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The following filter selects features with a geometry that intersects the point (1,1):</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Intersects&gt;</span>
+   <span class="nt">&lt;PropertyName&gt;</span>GEOMETRY<span class="nt">&lt;/PropertyName&gt;</span>
+   <span class="nt">&lt;Literal&gt;</span>
+      <span class="nt">&lt;gml:Point&gt;</span>
+         <span class="nt">&lt;gml:coordinates&gt;</span>1 1<span class="nt">&lt;/gml:coordinates&gt;</span>
+      <span class="nt">&lt;/gml:Point&gt;</span>
+   <span class="nt">&lt;/Literal&gt;</span>
+<span class="nt">&lt;/Intersects&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The following filter selects features with a geometry that intersects
+the box [-10,0 : 10,10]:</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ogc:BBOX&gt;</span>
+  <span class="nt">&lt;ogc:PropertyName&gt;</span>GEOMETRY<span class="nt">&lt;/ogc:PropertyName&gt;</span>
+  <span class="nt">&lt;gml:Box</span> <span class="na">srsName=</span><span class="s">&quot;urn:x-ogc:def:crs:EPSG:4326&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;gml:coord&gt;</span>
+      <span class="nt">&lt;gml:X&gt;</span>-10<span class="nt">&lt;/gml:X&gt;</span> <span class="nt">&lt;gml:Y&gt;</span>0<span class="nt">&lt;/gml:Y&gt;</span>
+    <span class="nt">&lt;/gml:coord&gt;</span>
+    <span class="nt">&lt;gml:coord&gt;</span>
+      <span class="nt">&lt;gml:X&gt;</span>10<span class="nt">&lt;/gml:X&gt;</span> <span class="nt">&lt;gml:Y&gt;</span>10<span class="nt">&lt;/gml:Y&gt;</span>
+    <span class="nt">&lt;/gml:coord&gt;</span>
+  <span class="nt">&lt;/gml:Box&gt;</span>
+<span class="nt">&lt;/ogc:BBOX&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="logical-operators">
+<h2>Logical operators<a class="headerlink" href="#logical-operators" title="Permalink to this headline">¶</a></h2>
+<p>Logical operators are used to create logical combinations of other filter operators.
+They may be nested to any depth.
+The following logical operators are available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;And&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Or&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Not&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>The content for <code class="docutils literal notranslate"><span class="pre">&lt;And&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;Or&gt;</span></code> is two filter operator elements.
+The content for <code class="docutils literal notranslate"><span class="pre">&lt;Not&gt;</span></code> is a single filter operator element.</p>
+<div class="section" id="id2">
+<h3>Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The following filter uses <code class="docutils literal notranslate"><span class="pre">&lt;And&gt;</span></code> to combine a comparison operator and a spatial operator:</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;And&gt;</span>
+   <span class="nt">&lt;PropertyIsEqualTo&gt;</span>
+      <span class="nt">&lt;PropertyName&gt;</span>NAME<span class="nt">&lt;/PropertyName&gt;</span>
+      <span class="nt">&lt;Literal&gt;</span>New York<span class="nt">&lt;/Literal&gt;</span>
+   <span class="nt">&lt;/PropertyIsEqualTo&gt;</span>
+   <span class="nt">&lt;Intersects&gt;</span>
+      <span class="nt">&lt;PropertyName&gt;</span>GEOMETRY<span class="nt">&lt;/PropertyName&gt;</span>
+      <span class="nt">&lt;Literal&gt;</span>
+         <span class="nt">&lt;gml:Point&gt;</span>
+             <span class="nt">&lt;gml:coordinates&gt;</span>1 1<span class="nt">&lt;/gml:coordinates&gt;</span>
+         <span class="nt">&lt;/gml:Point&gt;</span>
+      <span class="nt">&lt;/Literal&gt;</span>
+   <span class="nt">&lt;/Intersects&gt;</span>
+<span class="nt">&lt;/And&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="filter-expressions">
+<span id="sld-filter-expression"></span><h2>Filter Expressions<a class="headerlink" href="#filter-expressions" title="Permalink to this headline">¶</a></h2>
+<p>Filter expressions allow performing computation on data values.
+The following elements can be used to form expressions.</p>
+<p><strong>Arithmetic Operators</strong></p>
+<p>These operators perform arithmetic on numeric values.
+Each contains two expressions as sub-elements.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Add&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Sub&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Mul&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Div&gt;</span></code></p></li>
+</ul>
+</div></blockquote>
+<p><strong>Functions</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;Function&gt;</span></code> element specifies a filter function to be evaluated.
+The <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute gives the function name.
+The element contains a sequence of zero or more
+filter expressions providing the function arguments.
+See the <a class="reference internal" href="../../../filter/function_reference.html#filter-function-reference"><span class="std std-ref">Filter Function Reference</span></a> for details of the functions provided by GeoServer.</p>
+<p><strong>Feature Property Values</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;PropertyName&gt;</span></code> element allows referring to the value of a given feature attribute.
+It contains a string specifying the attribute name.</p>
+<p><strong>Literals</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;Literal&gt;</span></code> element allows specifying constant values
+of numeric, boolean, string, date or geometry type.</p>
+</div>
+</div>
+
+
+        <div class="selfclear pagination-nav">
+            <div class="leftwise"><strong>Previous</strong>: <a href="rules.html" title="previous chapter">Rules</a></div>
+            <div class="rightwise"><strong>Next</strong>: <a href="pointsymbolizer.html" title="next chapter">PointSymbolizer</a></div>
+        </div>
+        </div><!-- /#content> -->
+        <div id="content-right" class="content-border"></div>
+        
+  <div id="sidebar" class="contrast">
+      <div id="toc" class="section">
+        <h3 class="pngfix"><a href="../../../index.html">Table Of Contents</a></h3>
+        <ul>
+<li><a class="reference internal" href="#">Filters</a><ul>
+<li><a class="reference internal" href="#comparison-operators">Comparison operators</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#spatial-operators">Spatial operators</a><ul>
+<li><a class="reference internal" href="#id1">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logical-operators">Logical operators</a><ul>
+<li><a class="reference internal" href="#id2">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#filter-expressions">Filter Expressions</a></li>
+</ul>
+</li>
+</ul>
+
+        <div class="section-footer"></div>
+      </div>
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+            <li>Previous: <a href="rules.html" title="previous chapter">Rules</a></li>
+            <li>Next: <a href="pointsymbolizer.html" title="next chapter">PointSymbolizer</a></li>
+          </ul>
+        </div>
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        
+        <li><a href="https://github.com/geoserver/geoserver/tree/main/doc/en/user/source/styling/sld/reference/filters.rst">Edit</a></li>
+        </ul>
+        </div>
+      <div class="section">
+        <h3>Known GeoServer issues</h3>
+        <ul class="this-page-menu">
+          <li><a href="https://osgeo-org.atlassian.net/projects/GEOS/summary">Jira issue tracker</a></li>
+        </ul>
+      </div>
+  </div><!-- /#sidebar -->
+    </div><!-- /.wrap> -->
+  </div><!-- /#main -->
+<div id="footer">
+    <div class="wrap">
+        &copy; Copyright 2023, Open Source Geospatial Foundation. License <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution</a>.
+        Last updated on Jun 18, 2023.
+        Created using <a href="http://www.sphinx-doc.org/">Sphinx</a>.
+    </div><!-- /.wrap> -->
+</div><!-- /#footer -->
+  </body>
+</html>
